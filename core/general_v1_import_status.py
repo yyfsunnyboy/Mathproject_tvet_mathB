@@ -26,6 +26,9 @@ STAGES = (
     "db_write",
     "pdf_alignment",
     "asset_linking",
+    "auto_review",
+    "ai_healing",
+    "stage1_gate",
 )
 _MAX_TASKS = 50
 _ERROR_MAX_CHARS = 300
@@ -50,6 +53,9 @@ _RE_IMPORT_COMPLETE = re.compile(
     r"Import complete: skills=(\d+),.*?examples=(\d+), practices=(\d+),.*?needs_review=(\d+), skipped=(\d+)"
 )
 _RE_STAGE1_GATE = re.compile(r"\[STAGE1 GATE\] status=(\w+) rows=(\d+) blocked=(\d+) needs_review=(\d+) reasons=(\{.*\})")
+_RE_AUTO_REVIEW = re.compile(r"\[AUTO REVIEW\] stage=(auto_review|ai_healing|stage1_gate) status=(\w+)")
+# Written-data counters are undone on rollback; review counters stay as diagnostics for the teacher.
+_ROLLBACK_COUNTS = ("imported_questions", "existing_reused_questions", "formal_skills_created", "visual_attached")
 _STAGE1_RANK = {"READY": 0, "NEEDS_REVIEW": 1, "BLOCKED": 2}
 _VISUAL_REVIEW_STATUSES = ("VISUAL_UNCERTAIN", "VISUAL_REQUIRED_MISSING")
 
@@ -79,6 +85,7 @@ class GeneralV1ImportStatus:
         self.pair_total = 0
         self.pairs: list[dict[str, Any]] = []
         self._pair_open = False
+        self._pair_baseline: dict[str, Any] = {}
         self.error: dict[str, str] | None = None
         self.skill_ids: set[str] = set()
         self.counts: dict[str, Any] = {
@@ -102,6 +109,7 @@ class GeneralV1ImportStatus:
             "visual_needs_review": None,
             "pdf_visual_status_counts": None,
             "stage1_gate": None,
+            "staged_rolled_back": False,
         }
         self.updated_at = time.time()
 
@@ -122,6 +130,7 @@ class GeneralV1ImportStatus:
             self.current_pair = name
             self.pair_index = index
             self._pair_open = True
+            self._pair_baseline = {k: self.counts[k] for k in _ROLLBACK_COUNTS}
             if self.stages["word_parse"] == "pending":
                 self.stages["word_parse"] = "running"
             self._touch()
@@ -132,12 +141,13 @@ class GeneralV1ImportStatus:
                 return
             self._pair_open = False
             status = str((process_result or {}).get("status") or "") if isinstance(process_result, dict) else ""
-            if exc is None and status == "success":
+            if exc is None and status in ("success", "needs_review"):
                 self.counts["successful_pairs"] += 1
                 for stage, value in self.stages.items():
                     if value == "running":
                         self.stages[stage] = "done"
-                self.pairs.append({"base_name": name, "status": "success", "message": ""})
+                self.pairs.append({"base_name": name, "status": status,
+                                   "message": "需人工確認，正式資料未寫入" if status == "needs_review" else ""})
             else:
                 raw = exc if exc is not None else (process_result or {}).get("message") if isinstance(process_result, dict) else ""
                 summary = safe_error_summary(raw)
@@ -157,7 +167,13 @@ class GeneralV1ImportStatus:
                 self.message = "教材匯入失敗"
             else:
                 self.state = "completed"
-                self.message = "教材匯入完成"
+                gate = self.counts["stage1_gate"]
+                if any(p["status"] == "needs_review" for p in self.pairs):
+                    self.message = "自動稽核完成：待人工確認，正式資料未寫入"
+                elif gate is not None and gate["status"] != "READY":
+                    self.message = "教材匯入完成，Stage 1 待人工確認"
+                else:
+                    self.message = "教材匯入完成"
             self._touch()
 
     def fail(self, exc: BaseException | str) -> None:
@@ -182,6 +198,15 @@ class GeneralV1ImportStatus:
 
     def _observe_locked(self, text: str) -> None:
         c = self.counts
+        auto = _RE_AUTO_REVIEW.search(text)
+        if auto:
+            stage, status = auto.groups()
+            self._set(stage, "running" if status == "running" else "done" if status in ("done", "ready") else "failed")
+            if status == "needs_review":
+                # The pending transaction was rolled back: this pair wrote no questions or figures.
+                c["staged_rolled_back"] = True
+                c.update(self._pair_baseline)
+            return
         if _RE_EXTRACT.search(text):
             self._set("word_parse", "running")
             return
@@ -253,6 +278,7 @@ class GeneralV1ImportStatus:
         m = _RE_STAGE1_GATE.search(text)
         if m:
             status = m.group(1) if m.group(1) in _STAGE1_RANK else "BLOCKED"
+            self._set("stage1_gate", "done" if status == "READY" else "failed")
             try:
                 reasons = ast.literal_eval(m.group(5))
             except (ValueError, SyntaxError):

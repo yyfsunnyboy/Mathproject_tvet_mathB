@@ -1,0 +1,32 @@
+{
+ "gh_LinearPermutation": {
+  "status": "production_published",
+  "component_count": 19,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 17,
+  "static_count": 0
+ },
+ "gh_PermutationWithIdenticalItems": {
+  "status": "production_published",
+  "component_count": 10,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 9,
+  "static_count": 0
+ },
+ "gh_RepeatedPermutation": {
+  "status": "production_published",
+  "component_count": 8,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 7,
+  "static_count": 0
+ }
+}

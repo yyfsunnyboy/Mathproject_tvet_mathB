@@ -2486,6 +2486,875 @@
         }
       }
     },
+    "discrete.permutations": {
+      "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-27: one-time Promotion and Publish of 數學2 Unit 4 排列 (gh_LinearPermutation 19 + gh_PermutationWithIdenticalItems 10 + gh_RepeatedPermutation 8 components; fixed graded row 12801); no Flask / Cloudflare restart",
+      "bundle_sha256": "ebcd5e40b80e1f6b6609078ea4a8bc34a427f1888d9238d7a78307df7ceb09fa",
+      "capabilities": [
+        "adjacent_separated",
+        "colored_distinct_items",
+        "column_shooting_order",
+        "counting_claim",
+        "distinct_digit_numbers",
+        "distribute_distinct",
+        "ends_and_block",
+        "ends_from_group",
+        "fixed_order_insertion",
+        "grid_paths",
+        "identical_arrangement",
+        "line_walk",
+        "multiset_digit_numbers",
+        "relative_order_three",
+        "restricted_assignment",
+        "selected_arrangement",
+        "two_group_line"
+      ],
+      "domain_module": "core.domain.promoted.permutations.permutations_domain",
+      "entrypoint": "build_permutations_matrix",
+      "operations": {
+        "adjacent_separated": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "adjacent_separated"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_adjacent_separated_matrix"
+        },
+        "colored_distinct_items": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "colored_distinct_items"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_colored_distinct_items_matrix"
+        },
+        "column_shooting_order": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "column_shooting_order"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_column_shooting_order_matrix"
+        },
+        "counting_claim": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "counting_claim"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_counting_claim_matrix"
+        },
+        "distinct_digit_numbers": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "distinct_digit_numbers"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_distinct_digit_numbers_matrix"
+        },
+        "distribute_distinct": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "distribute_distinct"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_distribute_distinct_matrix"
+        },
+        "ends_and_block": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "ends_and_block"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_ends_and_block_matrix"
+        },
+        "ends_from_group": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "ends_from_group"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_ends_from_group_matrix"
+        },
+        "fixed_order_insertion": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "fixed_order_insertion"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_fixed_order_insertion_matrix"
+        },
+        "grid_paths": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "grid_paths"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_grid_paths_matrix"
+        },
+        "identical_arrangement": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "identical_arrangement"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_identical_arrangement_matrix"
+        },
+        "line_walk": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "line_walk"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_line_walk_matrix"
+        },
+        "multiset_digit_numbers": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "multiset_digit_numbers"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_multiset_digit_numbers_matrix"
+        },
+        "relative_order_three": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "relative_order_three"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_relative_order_three_matrix"
+        },
+        "restricted_assignment": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "restricted_assignment"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_restricted_assignment_matrix"
+        },
+        "selected_arrangement": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "selected_arrangement"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_selected_arrangement_matrix"
+        },
+        "two_group_line": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_permutations_matrix",
+          "payload_adapter": "core.domain.promoted.permutations.permutations_adapter.adapt_permutations_matrix",
+          "provided_capabilities": [
+            "two_group_line"
+          ],
+          "runtime_contract": "permutations_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_two_group_line_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "permutations_adapter.py": "bc053842fb244db0e568f719ec0994cb5a890bf03e22079be4c3eaf053c828e6",
+        "permutations_domain.py": "0e032cdf58368da71b1ac58b92fc321489ba8bebe8b0c2765dd6ad9e2f554988"
+      },
+      "package_import": "core.domain.promoted.permutations",
+      "package_name": "permutations",
+      "proposal_id": "capability_discrete_permutations_5aaa48d3",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-ebcd5e40b80e",
+      "skill_bindings": {
+        "gh_LinearPermutation": {
+          "allowed_operations": [
+            "adjacent_separated",
+            "counting_claim",
+            "distinct_digit_numbers",
+            "ends_and_block",
+            "ends_from_group",
+            "fixed_order_insertion",
+            "relative_order_three",
+            "restricted_assignment",
+            "selected_arrangement",
+            "two_group_line"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_PermutationWithIdenticalItems": {
+          "allowed_operations": [
+            "colored_distinct_items",
+            "column_shooting_order",
+            "counting_claim",
+            "grid_paths",
+            "identical_arrangement",
+            "line_walk",
+            "multiset_digit_numbers"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_RepeatedPermutation": {
+          "allowed_operations": [
+            "counting_claim",
+            "distribute_distinct",
+            "identical_arrangement"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
+    "discrete.sets_counting": {
+      "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-27: one-time Promotion and Publish of 數學2 Unit 3 計數原理 (gh_LogicAndSets 8 + gh_CountingPrinciples 21 components; fixed self-check row 12746); no Flask / Cloudflare restart",
+      "bundle_sha256": "61f56dc423502ef0c2e512490d1f1b0e5af532f666c8dfe0d33333524ac37d89",
+      "capabilities": [
+        "at_least_one_pairing",
+        "choice_product",
+        "coin_payment",
+        "coin_toss_sequences",
+        "condition_relation",
+        "dice_sum_multiples",
+        "divisor_counting",
+        "equation_root_sets",
+        "finite_set_operations",
+        "grade_selection",
+        "graph_paths",
+        "implication_truth",
+        "interval_set_operations",
+        "multiples_counting",
+        "ordered_at_least_one",
+        "proposition_truth",
+        "race_outcomes",
+        "region_pairs_claim",
+        "three_set_counting",
+        "tiling_count",
+        "two_set_counting"
+      ],
+      "domain_module": "core.domain.promoted.counting_sets.counting_sets_domain",
+      "entrypoint": "build_counting_sets_matrix",
+      "operations": {
+        "at_least_one_pairing": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "at_least_one_pairing"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_at_least_one_pairing_matrix"
+        },
+        "choice_product": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "choice_product"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_choice_product_matrix"
+        },
+        "coin_payment": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "coin_payment"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_coin_payment_matrix"
+        },
+        "coin_toss_sequences": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "coin_toss_sequences"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_coin_toss_sequences_matrix"
+        },
+        "condition_relation": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "condition_relation"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_condition_relation_matrix"
+        },
+        "dice_sum_multiples": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "dice_sum_multiples"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_dice_sum_multiples_matrix"
+        },
+        "divisor_counting": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "divisor_counting"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_divisor_counting_matrix"
+        },
+        "equation_root_sets": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "equation_root_sets"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_equation_root_sets_matrix"
+        },
+        "finite_set_operations": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "finite_set_operations"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_finite_set_operations_matrix"
+        },
+        "grade_selection": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "grade_selection"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_grade_selection_matrix"
+        },
+        "graph_paths": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "graph_paths"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_graph_paths_matrix"
+        },
+        "implication_truth": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "implication_truth"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_implication_truth_matrix"
+        },
+        "interval_set_operations": {
+          "checker_keys": [
+            "inequality_solution_checker",
+            "multi_part_answer_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "interval_set_operations"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "inequality",
+            "multi_part"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_interval_set_operations_matrix"
+        },
+        "multiples_counting": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "multiples_counting"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_multiples_counting_matrix"
+        },
+        "ordered_at_least_one": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "ordered_at_least_one"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_ordered_at_least_one_matrix"
+        },
+        "proposition_truth": {
+          "checker_keys": [
+            "choice_label_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "proposition_truth"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "single_choice",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer",
+            "single_choice"
+          ],
+          "validator": "validate_proposition_truth_matrix"
+        },
+        "race_outcomes": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "race_outcomes"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_race_outcomes_matrix"
+        },
+        "region_pairs_claim": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "region_pairs_claim"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_region_pairs_claim_matrix"
+        },
+        "three_set_counting": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "three_set_counting"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_three_set_counting_matrix"
+        },
+        "tiling_count": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "tiling_count"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_tiling_count_matrix"
+        },
+        "two_set_counting": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_counting_sets_matrix",
+          "payload_adapter": "core.domain.promoted.counting_sets.counting_sets_adapter.adapt_counting_sets_matrix",
+          "provided_capabilities": [
+            "two_set_counting"
+          ],
+          "runtime_contract": "counting_sets_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_two_set_counting_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "counting_sets_adapter.py": "de6b17295e600bb8331260eda9468b56d34dc31d6ad3e333eca85eca42f63c00",
+        "counting_sets_domain.py": "df84f39680251d969b515c10a3a59a88fd0862ca5b00147d12f42c5b9fd0c4e2"
+      },
+      "package_import": "core.domain.promoted.counting_sets",
+      "package_name": "counting_sets",
+      "proposal_id": "capability_discrete_counting_sets_a7509fdf",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-61f56dc42350",
+      "skill_bindings": {
+        "gh_CountingPrinciples": {
+          "allowed_operations": [
+            "at_least_one_pairing",
+            "choice_product",
+            "coin_payment",
+            "coin_toss_sequences",
+            "dice_sum_multiples",
+            "divisor_counting",
+            "grade_selection",
+            "graph_paths",
+            "multiples_counting",
+            "ordered_at_least_one",
+            "race_outcomes",
+            "region_pairs_claim",
+            "three_set_counting",
+            "tiling_count",
+            "two_set_counting"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_LogicAndSets": {
+          "allowed_operations": [
+            "condition_relation",
+            "equation_root_sets",
+            "finite_set_operations",
+            "implication_truth",
+            "interval_set_operations",
+            "proposition_truth"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
     "function.cubic_graph": {
       "approved_by": "yeh.ivan@hlbh.hlc.edu.tw",
       "bundle_sha256": "d6700365e954ab364d6ae7c14b848b7dc7e6408d34df5cddeec2bf2cec83aaed",

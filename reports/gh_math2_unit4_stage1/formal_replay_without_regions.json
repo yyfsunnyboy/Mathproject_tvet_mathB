@@ -1,0 +1,340 @@
+{
+  "mode": "without_regions",
+  "source": {
+    "docx_sha256": "327f295a06d70490f7f4ac89c5ff59d17b58df9afba6232cfbb53a284d7b508a",
+    "pdf_sha256": "bf39d447345e163ab4bab942337cd96ca9460eaf477f89953d284b7ed35025cb"
+  },
+  "gemini_response": "reconstructed_from_original_title_inventory_report",
+  "publisher_assumption": "longteng",
+  "grade_assumption": 10,
+  "protected_state_unchanged": true,
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "needs_review",
+      "stage1_gate": {
+        "import_complete": true,
+        "stage1_ready": false,
+        "status": "BLOCKED",
+        "rows": 38,
+        "blocked": [
+          {
+            "id": 12797,
+            "label": "隨堂練習7",
+            "reasons": [
+              "required_figure_missing"
+            ]
+          },
+          {
+            "id": 12801,
+            "label": "4習題 基礎題6",
+            "reasons": [
+              "required_figure_missing"
+            ]
+          },
+          {
+            "id": 12803,
+            "label": "4習題 進階題14",
+            "reasons": [
+              "required_figure_missing"
+            ]
+          }
+        ],
+        "needs_review": [],
+        "reasons": {
+          "required_figure_missing": 3
+        }
+      },
+      "stage1_auto_review": {
+        "changes": [
+          {
+            "id": 12774,
+            "field": "detailed_solution",
+            "kind": "source_symbol"
+          },
+          {
+            "id": 12776,
+            "field": "detailed_solution",
+            "kind": "source_symbol"
+          },
+          {
+            "id": 12777,
+            "field": "detailed_solution",
+            "kind": "source_symbol"
+          },
+          {
+            "id": 12805,
+            "field": "detailed_solution",
+            "kind": "source_symbol"
+          }
+        ],
+        "issues": [],
+        "source": {
+          "docx_sha256": "327f295a06d70490f7f4ac89c5ff59d17b58df9afba6232cfbb53a284d7b508a",
+          "pdf_sha256": "bf39d447345e163ab4bab942337cd96ca9460eaf477f89953d284b7ed35025cb"
+        },
+        "heal_passes": 1,
+        "ai_items": 0
+      },
+      "row_count": 31,
+      "rows": [
+        {
+          "id": 1382,
+          "label": "例題1",
+          "skill_id": "gh_LinearPermutation",
+          "problem_text": "學校獨唱比賽共有6位同學報名參加，出場順序由抽籤決定。共有多少種可能的抽籤結果？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1383,
+          "label": "隨堂練習",
+          "skill_id": "gh_LinearPermutation",
+          "problem_text": "縣長選舉共有5人登記參選，參選號次由抽籤決定。共有多少種可能的抽籤結果？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1384,
+          "label": "例題2",
+          "skill_id": "gh_LinearPermutation",
+          "problem_text": "某歌手想從7首歌中，選出4首在簽唱會中依序表演，其安排的方案共有多少種？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1385,
+          "label": "例題3",
+          "skill_id": "gh_LinearPermutation",
+          "problem_text": "從0, 1, 2, 3, 4等五個數字中，任選3個相異數字，共可排出多少個三位數？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1386,
+          "label": "例題4",
+          "skill_id": "gh_LinearPermutation",
+          "problem_text": "男生4人及女生3人排成一列拍照。(1)若女生3人完全相鄰，則共有多少種排法？(2)若女生3人完全分開，則共有多少種排法？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1387,
+          "label": "例題5",
+          "skill_id": "gh_LinearPermutation",
+          "problem_text": "學校想從7名學生中選派4人分別到臺大、臺師大、清大與陽明交大等四所大學參加研習，其中甲同學不到臺大，乙同學不到陽明交大。請問共有多少種選派的方案？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1388,
+          "label": "例題6",
+          "skill_id": "gh_PermutationWithIdenticalItems",
+          "problem_text": "甲、乙兩人負責在7天年假期間到公司值班，其中甲值班4天，乙值班3天。請問年假值班的安排共有多少種？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1389,
+          "label": "隨堂練習",
+          "skill_id": "gh_PermutationWithIdenticalItems",
+          "problem_text": "開往動物園的電聯車有7節車廂。若打算將其中3節車廂漆上相同的無尾熊圖樣，4節車廂漆上相同的貓熊圖樣，則此7節車廂圖樣的安排共有多少種？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1390,
+          "label": "例題7",
+          "skill_id": "gh_PermutationWithIdenticalItems",
+          "problem_text": "在右圖的棋盤街道中，從A到B走捷徑（只能向右或向上走的路徑），求下列情形各有多少種方法？(1)任意走捷徑。(2)經C點。(3)經C點或經D點。(4)不經C點且不經D點。",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1391,
+          "label": "例題8",
+          "skill_id": "gh_PermutationWithIdenticalItems",
+          "problem_text": "由6個數字0, 0, 1, 1, 2, 2排成的六位數，共有多少個？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1392,
+          "label": "例題9",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "某兔子挖了三個可以藏身的洞。已知未來的四個晚上，該兔子每晚都待在這三個洞的其中之一來躲避敵人，回答下列問題。(1)共有多少種藏身安排？(2)若三個洞都要待過，則共有多少種藏身安排？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1393,
+          "label": "隨堂練習",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "自動販賣機有6種飲料可供選擇，三個人運動完後各購買一罐飲料。(1)共有多少種選購方法？(2)若三人約定所選的飲料不可以相同，則共有多少種選購方法？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1394,
+          "label": "例題10",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "將4本不同的書全部分給甲、乙、丙三人，求下列情形各有多少種分法。(1)任意分。(2)甲至少得1本。(3)甲恰得1本。",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1395,
+          "label": "習題 觀念澄清 1",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "下列敘述對的打「○」，錯的打「×」。□(1) 將「讀」、「書」、「好」三個字任意排列，共有6種排法。",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1396,
+          "label": "習題 觀念澄清 2",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "下列敘述對的打「○」，錯的打「×」。□(2) 從5個人中任選3個人排成一列，共有 P(5,3) 種排法。",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1397,
+          "label": "習題 觀念澄清 3",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "下列敘述對的打「○」，錯的打「×」。□(3) 將六個字母PAPAPA任意排成一列，共有 6!/(3!3!) 種排法。",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1398,
+          "label": "習題 觀念澄清 4",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "下列敘述對的打「○」，錯的打「×」。□(4) 將4名新生任意分發到3個班級，共有 3^4 種分法。",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1399,
+          "label": "習題 1",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "「IMO」是國際數學奧林匹克的縮寫。現有5種不同的顏色可供選擇，將這3個字母分別用不同顏色來寫（一字一色），共有多少種選擇？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1400,
+          "label": "習題 2",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "用六個數字0, 1, 2, 3, 4, 5組成沒有重複數字的三位數。(1) 能組成多少個三位數？(2) 這些三位數中，不是5的倍數者有多少個？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1401,
+          "label": "習題 3",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "有九隻大小不同的貓，其中二隻黃色、三隻白色及四隻黑色。將這九隻貓排成一列，求下列各排列數。(1) 黃、白、黑三顏色貓各連排在一起。(2) 任二隻黑貓不相鄰。",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1402,
+          "label": "習題 4",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "有5個工程隊承建5個不同的建案，每個工程隊承建一個建案，其中甲工程隊不能承建1號建案，乙工程隊不能承建2號建案，共有多少種承建方案？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1403,
+          "label": "習題 5",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "將甲、乙、丙三名志工安排在週一至週六的6天中支援園遊會服務的工作。若要求每人參加兩天，且每天安排一人，則共有多少種安排的方法？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1404,
+          "label": "習題 6",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "下圖為一街道圖。求從A取捷徑走到B，共有多少種方法？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1405,
+          "label": "習題 7",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "社團幹部5人訂午餐，每人各訂一個便當，有雞腿、排骨、魚排3種便當可選，但其中任一種便當至多只能作4人份。請問5人共有多少種選購方法？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1406,
+          "label": "習題 8",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "電視臺將連續播放6個廣告，其中含有4個不同的商業廣告以及2個不同的公益廣告。若要求首尾必須播放公益廣告，則共有多少種播放方式？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1407,
+          "label": "習題 9",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "兩對夫婦各帶一個小孩到遊樂園玩，六人購票後排成一列依序入園。為安全起見，首尾一定排兩位爸爸，而且兩個小孩一定排在一起，則入園的排隊方法共有多少種？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1408,
+          "label": "習題 10",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "由數字2, 3組成四位數，且數字2, 3至少都出現一次，這樣的四位數共有多少個？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1409,
+          "label": "習題 11",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "在數線上有一個運動物體從原點出發，在此數線上跳動，每次向正方向或負方向跳1個單位，跳動過程可重複經過任何一點。若經過6次跳動後運動物體落在點 +4 處，則此運動物體共有多少種跳動方法？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1410,
+          "label": "習題 12",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "某班慶生會原訂的5個節目已排成節目單。若臨時再增加2個新節目，且原有5個節目的相對順序保持不變，則增加2個新節目後的節目單可以有多少種？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1411,
+          "label": "習題 13",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "將A, B, C, D, E, F六個字母排成一列，若A, B都須在C的同一側，則共有多少種排法？",
+          "anchor": null,
+          "notes": {}
+        },
+        {
+          "id": 1412,
+          "label": "習題 14",
+          "skill_id": "gh_RepeatedPermutation",
+          "problem_text": "用三串分別為2個紅氣球、3個黃氣球和3個藍氣球來當射擊靶子，如圖所示。若每次射破的氣球，都必須是該串尚未被射破氣球中最低的那一個，則射破全部8個氣球可以有多少種次序？",
+          "anchor": null,
+          "notes": {}
+        }
+      ],
+      "logs": [
+        "INFO: [PDF VISUAL] ok=True statuses={'NO_VISUAL_REQUIRED': 34, 'VISUAL_ATTACHED': 1, 'VISUAL_REQUIRED_MISSING': 3} ambiguous=0 unanchored=0 stale_duplicates=0 warnings=[]",
+        "INFO: [AUTO REVIEW] stage=auto_review status=running",
+        "INFO: [AUTO REVIEW] stage=auto_review status=done changes=4",
+        "INFO: [AUTO REVIEW] stage=ai_healing status=done items=0",
+        "INFO: [STAGE1 GATE] status=BLOCKED rows=38 blocked=3 needs_review=0 reasons={\"required_figure_missing\": 3}",
+        "WARN: [AUTO REVIEW] stage=stage1_gate status=needs_review; staged DB changes rolled back"
+      ]
+    }
+  ]
+}

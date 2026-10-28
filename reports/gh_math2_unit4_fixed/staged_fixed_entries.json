@@ -1,0 +1,199 @@
+{
+ "schema": "fixed_textbook_practice.v1.staged",
+ "entries": {
+  "12801": {
+   "skill_id": "gh_PermutationWithIdenticalItems",
+   "label": "習題基礎題6（街道圖・自動判分）",
+   "mode": "graded",
+   "answer": "62",
+   "answer_contract": {
+    "presentation_mode": "short_answer",
+    "answer_type": "rational",
+    "checker": "rational_checker",
+    "checker_key": "rational_checker",
+    "answer_equivalence": "rational_equivalent",
+    "equivalence": "rational_equivalent",
+    "equivalence_type": "rational_equivalent",
+    "answer_shape": "fixed_textbook_rational"
+   },
+   "reference_solution": [
+    "走捷徑只能向右或向上；缺少的街道不能走。把每個路口標上「從 A 走捷徑到該路口的方法數」：某路口的方法數＝（左邊路口，若有街道相連）的方法數＋（下方路口，若有街道相連）的方法數。",
+    "由下往上，每一排由左至右的方法數依序為：最下排 $1,1,1,1,1,1$；第 2 排 $1,2,3,4,0,1$；第 3 排 $1,3,6,10,10,11$；第 4 排 $1,0,0,10,20,31$；最上排 $1,1,1,11,31,62$。",
+    "所以從 A 取捷徑走到 B 共有 $62$ 種方法。"
+   ],
+   "problem_text_sha256": "8d4cac1d65fc363e02da58f22074518b63e07453de56ebeec294bb799d120da8",
+   "oracle": {
+    "method": "PDF vector street graph (page 16) == PNG pixel graph; routes counted by DP and by explicit listing",
+    "page": 16,
+    "bbox": [
+     261.0,
+     403.0,
+     348.0,
+     480.0
+    ],
+    "pdf_sha256": "bf39d447345e163ab4bab942337cd96ca9460eaf477f89953d284b7ed35025cb",
+    "street_graph": {
+     "width": 5,
+     "height": 4,
+     "horizontal_edges": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       4
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       1,
+       4
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       4,
+       0
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       4,
+       4
+      ]
+     ],
+     "vertical_edges": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       5,
+       0
+      ],
+      [
+       5,
+       1
+      ],
+      [
+       5,
+       2
+      ],
+      [
+       5,
+       3
+      ]
+     ]
+    },
+    "script": "reports/gh_math2_unit4_fixed/derive_fixed_oracles.py"
+   }
+  }
+ }
+}

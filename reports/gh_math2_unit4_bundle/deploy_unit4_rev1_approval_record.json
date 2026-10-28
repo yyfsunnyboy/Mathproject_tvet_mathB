@@ -1,0 +1,13 @@
+{
+ "time": "2026-10-27 22:28:57 +0800",
+ "bundle_file_sha256_before_approval": "2cd7bbf9665a5c53bf415a5579696d296919de0dbcc0044479559b2b0bb4c4db",
+ "bundle_canonical_sha256_before": "825d6eb099b855fe0609c242af5439c40f568b4086f20cb3a90eb88afd3171ae",
+ "bundle_file_sha256_after_approval": "460cfa566220fca52c3f60c7198a976e6d02ab36649c8dd6f69682559fecddda",
+ "package_files": {
+  "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "permutations_adapter.py": "bc053842fb244db0e568f719ec0994cb5a890bf03e22079be4c3eaf053c828e6",
+  "permutations_domain.py": "0e032cdf58368da71b1ac58b92fc321489ba8bebe8b0c2765dd6ad9e2f554988"
+ },
+ "approval_scope": "revision 1: 普高數學2 Unit 4 排列 — domain discrete.permutations (17 operations: adjacent_separated, colored_distinct_items, column_shooting_order, counting_claim, distinct_digit_numbers, distribute_distinct, ends_and_block, ends_from_group, fixe",
+ "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-27: one-time Promotion and Publish of 數學2 Unit 4 排列 (gh_LinearPermutation 19 + gh_PermutationWithIdenticalItems 10 + gh_RepeatedPermutation 8 components; fixed graded row 12801); no Flask / Cloudflare restart"
+}

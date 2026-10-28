@@ -1,0 +1,853 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_math2u4_rehearsal\\run",
+ "deferred": {
+  "12801": "下圖為一街道圖，從 A 取捷徑走到 B：街道圖是不規則的方格（有些街道線不存在），圖形本身就是題目，無法改數字而不重畫；以教材原題保留（FIXED_GRADED），答案由圖檔像素讀出的街道圖獨立推導並經動態規劃與逐路徑枚舉交叉驗證"
+ },
+ "promotion": {
+  "domain_key": "discrete.permutations",
+  "registry_revision": "promoted-00f060a494f6",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12774": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "variants": 8,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a7762f884e699bdb5fae147630bb00293b9b1881b5dd62b2d1a3566188c67652",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 8
+   }
+  },
+  "12775": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "57bb8a0f87d23daa2f42fe96cbc1682ab9af9d8bfc0f1c0f2f321762a21f58e6",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12776": {
+   "skill": "gh_LinearPermutation",
+   "operation": "distinct_digit_numbers",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "485a7daad6da9f2d73a7c16ed9d7c9f40fb36f40f966568d9a43beba728d6ea7",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12777": {
+   "skill": "gh_LinearPermutation",
+   "operation": "adjacent_separated",
+   "variants": 12,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f98c65e05f4426bff7f6998da0e71ca77c3851178bd591538a7d1505713504c5",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 12
+   }
+  },
+  "12778": {
+   "skill": "gh_LinearPermutation",
+   "operation": "restricted_assignment",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "07d8725588cfaac0596b80d5e61918697e1efc531595e2d8a7724bb2dcce695e",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12779": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "variants": 8,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d5e025573a00bcb7c80aebc4f32f0f1ab256ff74ff729fbcba5c38e97034c81b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 8
+   }
+  },
+  "12780": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c876147b68092942a9f73ffa9fabeea0d4e2e3ef6b7df7e2aba4ff052f413199",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12781": {
+   "skill": "gh_LinearPermutation",
+   "operation": "restricted_assignment",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ab5173398d410d63833a44586eaae04c6eecf6af9b5075b4897b6d0d26c7ab1a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12782": {
+   "skill": "gh_LinearPermutation",
+   "operation": "two_group_line",
+   "variants": 13,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3c76d39fb31df4ce50854de022c46125d249e71f56edea48cb1c242db48959aa",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 13
+   }
+  },
+  "12783": {
+   "skill": "gh_LinearPermutation",
+   "operation": "restricted_assignment",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3e8577de3e58618f7db5c1d6dbbc944199472e1e2d7bc3db16d86ffa6a2ed589",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12784": {
+   "skill": "gh_LinearPermutation",
+   "operation": "counting_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "dbc78b87e02f0460e0afaa88eee968e9981856a785ddba1012b440d4ce5fc52e",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12785": {
+   "skill": "gh_LinearPermutation",
+   "operation": "counting_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "06ab910dad38071ca88d9adf3204dbb0c481c570fcd56c41641e96a5d686d1e9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12786": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ae7a53bb61e343963e3790aeb512766d17ca1993cdca7e61c73162f9e743523a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12787": {
+   "skill": "gh_LinearPermutation",
+   "operation": "distinct_digit_numbers",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "edb93a7474eca696c9fe0351b04db74ef9079808d1052a9636fcfb7c803c40eb",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12788": {
+   "skill": "gh_LinearPermutation",
+   "operation": "restricted_assignment",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "268d649b0cf75825f02c693ce63251dc3ec0d85d7491fea65c14b66107121e2b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12789": {
+   "skill": "gh_LinearPermutation",
+   "operation": "ends_from_group",
+   "variants": 11,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "dfc41ccefcc5ee22c2374dd4e6083033b6094571f2cb675c1301e85c1063dbc1",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 11
+   }
+  },
+  "12790": {
+   "skill": "gh_LinearPermutation",
+   "operation": "ends_and_block",
+   "variants": 11,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "67ee40d101e374a98a6165d8bd6d0644f2f7bf255aed712e610f7c7e176ffa49",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 11
+   }
+  },
+  "12791": {
+   "skill": "gh_LinearPermutation",
+   "operation": "fixed_order_insertion",
+   "variants": 11,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a467135ce432858a5de6e0c137e626922932a31e3edf36d080ad524084fc546d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 11
+   }
+  },
+  "12792": {
+   "skill": "gh_LinearPermutation",
+   "operation": "relative_order_three",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6214cb990d8bc6c5726675426ee2a492ad6ac0c0cbb5f042739f58fdb0005623",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12793": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "identical_arrangement",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a6a6651be5775835cb48a6bf3c76d81721467fab524468c82595d5b374669e1d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12794": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "grid_paths",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f7b7446debbb5a1f1247b07d71060f8fdc4cfa0b020c84197493847eb70905e2",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12795": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "multiset_digit_numbers",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b423a91ed9975fd742b0c3f0ff65f1d857ef9deaab005376c0e671a3e4a0e4d1",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12796": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "identical_arrangement",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "56e5afee86d6eb66e9085fb20e9ab9c28b4fe8d1af9099ddaa853badb00ea335",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12797": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "grid_paths",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "aeb8484bdee1fe6adb89bab386c991850eb5773d476b59dd88c3a5009a78541e",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12798": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "multiset_digit_numbers",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ecdda29a8c6d7a68c2cba74943d43e7ba8dc3344ff975482f5c438fdaea6e0b3",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12799": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "counting_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "db8f087bf405fea6ddb9bb7bf22b6ca0dc2f6e61baa21f81b2d8d419517f96e1",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12800": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "colored_distinct_items",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "4e3d28917de3ca1e4eadf714991761f73cf5cf1bc23363a0a0f267016a3a4eda",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12802": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "line_walk",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "dfd63e5829104435d82d5e7e37be2a09176623d397ad67c2528fedd2ea953dd7",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12803": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "column_shooting_order",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "753c5206ae17ab0d53a663a58c5931ff5a404741dff5fa8f1acec33aed1f3b47",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12804": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "variants": 12,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "44d6583cb2969a6d2bc00bc843a1fb35fd0b7c0029e62f337a33151088d6d4ca",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 12
+   }
+  },
+  "12805": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "variants": 16,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0afd49a0cfe67da73ecd609772a99838f91a2c9d51d565cd3355e3069527274f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 16
+   }
+  },
+  "12806": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "variants": 15,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c039d33f23606ceb4564f95b4c970d8cb5c500f9f343c8b2f5fd8fde495601b9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 15
+   }
+  },
+  "12807": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "variants": 12,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "018602be65f7291ee9358acf105a5bb47e86745249b5d588026ea2a430745357",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 12
+   }
+  },
+  "12808": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "counting_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "175e529ada99b6c3e748c13d04033268f3c563bbd7288ba88ee4828d26c0f97c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12809": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "identical_arrangement",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "16895e0b3f23cb8a982dfbd39fdc0384c13261157b0bebfdac77009be3d66f1f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12810": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "variants": 16,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ecf01deab2c5e942403b9a656d240d09befaf6e470bc9885b7bb0ddf071c8749",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 16
+   }
+  },
+  "12811": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f26f13fd9c11694efedcc6eee2e0c9f306f4b63ff03d068580251ba10e43b630",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  }
+ },
+ "publish": {
+  "gh_LinearPermutation": {
+   "status": "production_published",
+   "component_count": 19,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 17,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12774",
+    "src_12775",
+    "src_12776",
+    "src_12777",
+    "src_12778",
+    "src_12779",
+    "src_12780",
+    "src_12781",
+    "src_12782",
+    "src_12783",
+    "src_12784",
+    "src_12785",
+    "src_12786",
+    "src_12787",
+    "src_12788",
+    "src_12789",
+    "src_12790",
+    "src_12791",
+    "src_12792"
+   ]
+  },
+  "gh_PermutationWithIdenticalItems": {
+   "status": "production_published",
+   "component_count": 10,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 9,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12793",
+    "src_12794",
+    "src_12795",
+    "src_12796",
+    "src_12797",
+    "src_12798",
+    "src_12799",
+    "src_12800",
+    "src_12802",
+    "src_12803"
+   ]
+  },
+  "gh_RepeatedPermutation": {
+   "status": "production_published",
+   "component_count": 8,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 7,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12804",
+    "src_12805",
+    "src_12806",
+    "src_12807",
+    "src_12808",
+    "src_12809",
+    "src_12810",
+    "src_12811"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_LinearPermutation": {
+   "served_examples": {
+    "12774": 4,
+    "12775": 4,
+    "12776": 4,
+    "12777": 4,
+    "12778": 4,
+    "12779": 5,
+    "12780": 4,
+    "12781": 4,
+    "12782": 4,
+    "12783": 4,
+    "12784": 4,
+    "12785": 4,
+    "12786": 4,
+    "12787": 5,
+    "12788": 5,
+    "12789": 4,
+    "12790": 5,
+    "12791": 4,
+    "12792": 4
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_PermutationWithIdenticalItems": {
+   "served_examples": {
+    "12793": 8,
+    "12794": 8,
+    "12795": 8,
+    "12796": 8,
+    "12797": 8,
+    "12798": 8,
+    "12799": 8,
+    "12800": 8,
+    "12802": 8,
+    "12803": 8
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_RepeatedPermutation": {
+   "served_examples": {
+    "12804": 10,
+    "12805": 10,
+    "12806": 10,
+    "12807": 10,
+    "12808": 10,
+    "12809": 10,
+    "12810": 10,
+    "12811": 10
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "production_paths_written": []
+}

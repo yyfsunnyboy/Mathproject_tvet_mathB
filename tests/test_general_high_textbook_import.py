@@ -200,6 +200,7 @@ def test_boxed_concept_check_item_starts_item(line):
     [
         ("設數線上兩點 \\(A\\left ( { 5 } \\right )\\)、\\(B\\left ( { 12 } \\right )\\)。求AB的長。", False),
         ("設 A(12), B(-6) 為數線上兩點，求P的坐標。", False),
+        ("在數線上從原點出發，每次向正方向或負方向跳 \\(1\\) 個單位。經過 \\(6\\) 次跳動後落在點 \\(+4\\)，求跳動方法數。", False),
         ("請寫出數線上 P 點的座標。", True),
         ("如右圖，數線上 A(3)，求 P 點坐標。", True),
     ],
@@ -970,6 +971,11 @@ def test_general_v1_status_completed_with_real_counts(monkeypatch):
             queue.put(message)
             if "AI 內容解析" in message:
                 seen_running.append(dict(queue.general_status.snapshot()))
+        for message in ("INFO: [AUTO REVIEW] stage=auto_review status=running",
+                        "INFO: [AUTO REVIEW] stage=auto_review status=done changes=0",
+                        "INFO: [AUTO REVIEW] stage=ai_healing status=done items=0",
+                        "INFO: [AUTO REVIEW] stage=stage1_gate status=ready"):
+            queue.put(message)
         return {"status": "success"}
 
     _task_id, snap, messages = _run_general_v1_task(monkeypatch, _fake_process)

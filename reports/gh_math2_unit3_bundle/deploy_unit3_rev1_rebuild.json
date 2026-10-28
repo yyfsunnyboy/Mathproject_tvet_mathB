@@ -1,0 +1,327 @@
+{
+ "failures": {},
+ "deferred": {
+  "12746": "寫出兩個命題的否定命題（自由文字）：沒有已授權的自由文字／命題文字等價判分契約，不以字串比對或 AI 判斷替代；題型沒有可驗證的作答形式，改為教材原題自評（FIXED_UNGRADED），解答以真值表逐一驗證（德摩根律）：隨堂練習2「2是偶數且2是質數」「π=3或π是正數」的否定命題"
+ },
+ "report": {
+  "12744": {
+   "skill": "gh_LogicAndSets",
+   "operation": "interval_set_operations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12745": {
+   "skill": "gh_LogicAndSets",
+   "operation": "proposition_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12747": {
+   "skill": "gh_LogicAndSets",
+   "operation": "condition_relation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12748": {
+   "skill": "gh_LogicAndSets",
+   "operation": "finite_set_operations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12749": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "race_outcomes",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 12,
+   "failures": []
+  },
+  "12750": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "choice_product",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12751": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "divisor_counting",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12752": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "at_least_one_pairing",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12753": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "two_set_counting",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12754": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "three_set_counting",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12755": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "coin_payment",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12756": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "graph_paths",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 12,
+   "failures": []
+  },
+  "12757": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "dice_sum_multiples",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 9,
+   "failures": []
+  },
+  "12758": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "choice_product",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12759": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "divisor_counting",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12760": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "ordered_at_least_one",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12761": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "two_set_counting",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12762": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "multiples_counting",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12763": {
+   "skill": "gh_LogicAndSets",
+   "operation": "proposition_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12764": {
+   "skill": "gh_LogicAndSets",
+   "operation": "implication_truth",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "variants": 14,
+   "failures": []
+  },
+  "12765": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "region_pairs_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12766": {
+   "skill": "gh_LogicAndSets",
+   "operation": "finite_set_operations",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12767": {
+   "skill": "gh_LogicAndSets",
+   "operation": "equation_root_sets",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12768": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "coin_toss_sequences",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 9,
+   "failures": []
+  },
+  "12769": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "grade_selection",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12770": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "two_set_counting",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12771": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "three_set_counting",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12772": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "two_set_counting",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12773": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "tiling_count",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "variants": 6,
+   "failures": []
+  }
+ }
+}

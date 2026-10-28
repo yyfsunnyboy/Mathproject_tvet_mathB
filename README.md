@@ -1,6 +1,6 @@
-# MathProject — Verified AI Code Generation for Adaptive Mathematics Learning
+# AI 自適應學習平台（MathProject）— Verified AI Code Generation for Adaptive Mathematics Learning
 
-具備**可驗證 AI 程式生成**、**數學判分**與**適性學習**能力的數學教學平台。
+**AI 自適應學習平台**是一套具備**可驗證 AI 程式生成**、**數學判分**與**適性學習**能力的數學教學平台（專案代號 MathProject）。
 
 > **▶️ 公開 Demo（唯讀）：<https://mathb.math-adaptive.org/review-demo>** — 展示模式僅開放技高課綱、不寫入正式資料（`core/guest_demo.py`）。
 

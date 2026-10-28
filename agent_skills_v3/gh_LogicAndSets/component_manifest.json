@@ -1,0 +1,95 @@
+{
+  "skill_id": "gh_LogicAndSets",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 8,
+  "components": [
+    {
+      "component_id": "src_12744",
+      "textbook_example_id": 12744,
+      "status": "verified",
+      "problem_type_id": "interval_set_operations",
+      "domain_operation": "interval_set_operations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12744/generate.py"
+    },
+    {
+      "component_id": "src_12745",
+      "textbook_example_id": 12745,
+      "status": "verified",
+      "problem_type_id": "proposition_truth",
+      "domain_operation": "proposition_truth",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12745/generate.py"
+    },
+    {
+      "component_id": "src_12747",
+      "textbook_example_id": 12747,
+      "status": "verified",
+      "problem_type_id": "condition_relation",
+      "domain_operation": "condition_relation",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12747/generate.py"
+    },
+    {
+      "component_id": "src_12748",
+      "textbook_example_id": 12748,
+      "status": "verified",
+      "problem_type_id": "finite_set_operations",
+      "domain_operation": "finite_set_operations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12748/generate.py"
+    },
+    {
+      "component_id": "src_12763",
+      "textbook_example_id": 12763,
+      "status": "verified",
+      "problem_type_id": "proposition_truth",
+      "domain_operation": "proposition_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12763/generate.py"
+    },
+    {
+      "component_id": "src_12764",
+      "textbook_example_id": 12764,
+      "status": "verified",
+      "problem_type_id": "implication_truth",
+      "domain_operation": "implication_truth",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12764/generate.py"
+    },
+    {
+      "component_id": "src_12766",
+      "textbook_example_id": 12766,
+      "status": "verified",
+      "problem_type_id": "finite_set_operations",
+      "domain_operation": "finite_set_operations",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12766/generate.py"
+    },
+    {
+      "component_id": "src_12767",
+      "textbook_example_id": 12767,
+      "status": "verified",
+      "problem_type_id": "equation_root_sets",
+      "domain_operation": "equation_root_sets",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12767/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,238 @@
+{
+  "skill_id": "gh_CountingPrinciples",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 21,
+  "components": [
+    {
+      "component_id": "src_12749",
+      "textbook_example_id": 12749,
+      "status": "verified",
+      "problem_type_id": "race_outcomes",
+      "domain_operation": "race_outcomes",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12749/generate.py"
+    },
+    {
+      "component_id": "src_12750",
+      "textbook_example_id": 12750,
+      "status": "verified",
+      "problem_type_id": "choice_product",
+      "domain_operation": "choice_product",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12750/generate.py"
+    },
+    {
+      "component_id": "src_12751",
+      "textbook_example_id": 12751,
+      "status": "verified",
+      "problem_type_id": "divisor_counting",
+      "domain_operation": "divisor_counting",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12751/generate.py"
+    },
+    {
+      "component_id": "src_12752",
+      "textbook_example_id": 12752,
+      "status": "verified",
+      "problem_type_id": "at_least_one_pairing",
+      "domain_operation": "at_least_one_pairing",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12752/generate.py"
+    },
+    {
+      "component_id": "src_12753",
+      "textbook_example_id": 12753,
+      "status": "verified",
+      "problem_type_id": "two_set_counting",
+      "domain_operation": "two_set_counting",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12753/generate.py"
+    },
+    {
+      "component_id": "src_12754",
+      "textbook_example_id": 12754,
+      "status": "verified",
+      "problem_type_id": "three_set_counting",
+      "domain_operation": "three_set_counting",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12754/generate.py"
+    },
+    {
+      "component_id": "src_12755",
+      "textbook_example_id": 12755,
+      "status": "verified",
+      "problem_type_id": "coin_payment",
+      "domain_operation": "coin_payment",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12755/generate.py"
+    },
+    {
+      "component_id": "src_12756",
+      "textbook_example_id": 12756,
+      "status": "verified",
+      "problem_type_id": "graph_paths",
+      "domain_operation": "graph_paths",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12756/generate.py"
+    },
+    {
+      "component_id": "src_12757",
+      "textbook_example_id": 12757,
+      "status": "verified",
+      "problem_type_id": "dice_sum_multiples",
+      "domain_operation": "dice_sum_multiples",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12757/generate.py"
+    },
+    {
+      "component_id": "src_12758",
+      "textbook_example_id": 12758,
+      "status": "verified",
+      "problem_type_id": "choice_product",
+      "domain_operation": "choice_product",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12758/generate.py"
+    },
+    {
+      "component_id": "src_12759",
+      "textbook_example_id": 12759,
+      "status": "verified",
+      "problem_type_id": "divisor_counting",
+      "domain_operation": "divisor_counting",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12759/generate.py"
+    },
+    {
+      "component_id": "src_12760",
+      "textbook_example_id": 12760,
+      "status": "verified",
+      "problem_type_id": "ordered_at_least_one",
+      "domain_operation": "ordered_at_least_one",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12760/generate.py"
+    },
+    {
+      "component_id": "src_12761",
+      "textbook_example_id": 12761,
+      "status": "verified",
+      "problem_type_id": "two_set_counting",
+      "domain_operation": "two_set_counting",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12761/generate.py"
+    },
+    {
+      "component_id": "src_12762",
+      "textbook_example_id": 12762,
+      "status": "verified",
+      "problem_type_id": "multiples_counting",
+      "domain_operation": "multiples_counting",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12762/generate.py"
+    },
+    {
+      "component_id": "src_12765",
+      "textbook_example_id": 12765,
+      "status": "verified",
+      "problem_type_id": "region_pairs_claim",
+      "domain_operation": "region_pairs_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12765/generate.py"
+    },
+    {
+      "component_id": "src_12768",
+      "textbook_example_id": 12768,
+      "status": "verified",
+      "problem_type_id": "coin_toss_sequences",
+      "domain_operation": "coin_toss_sequences",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12768/generate.py"
+    },
+    {
+      "component_id": "src_12769",
+      "textbook_example_id": 12769,
+      "status": "verified",
+      "problem_type_id": "grade_selection",
+      "domain_operation": "grade_selection",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12769/generate.py"
+    },
+    {
+      "component_id": "src_12770",
+      "textbook_example_id": 12770,
+      "status": "verified",
+      "problem_type_id": "two_set_counting",
+      "domain_operation": "two_set_counting",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12770/generate.py"
+    },
+    {
+      "component_id": "src_12771",
+      "textbook_example_id": 12771,
+      "status": "verified",
+      "problem_type_id": "three_set_counting",
+      "domain_operation": "three_set_counting",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12771/generate.py"
+    },
+    {
+      "component_id": "src_12772",
+      "textbook_example_id": 12772,
+      "status": "verified",
+      "problem_type_id": "two_set_counting",
+      "domain_operation": "two_set_counting",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12772/generate.py"
+    },
+    {
+      "component_id": "src_12773",
+      "textbook_example_id": 12773,
+      "status": "verified",
+      "problem_type_id": "tiling_count",
+      "domain_operation": "tiling_count",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12773/generate.py"
+    }
+  ]
+}

@@ -755,6 +755,11 @@ def apply_general_high_source_skill_map(
                 summary["unmapped"].append(title)
             else:
                 seen.add(title)
+                prior = notes.get("skill_binding") or {}
+                if (row.skill_id == skill and prior.get("source") == "general_high_source_skill_map"
+                        and prior.get("map_id") == entry.get("id")):
+                    row.notes = json.dumps(notes, ensure_ascii=False)
+                    continue  # re-import of an already aligned row: keep the original binding record
                 notes["skill_binding"] = {
                     "source": "general_high_source_skill_map",
                     "map_id": entry.get("id"),
@@ -914,6 +919,10 @@ def enrich_general_high_pdf_visuals(
                 row.notes = json.dumps(notes, ensure_ascii=False)
             targets.append(row)
 
+        from core.textbook_stage1_auto_review import verified_visual_regions
+        reviewed_regions = verified_visual_regions(
+            pdf, curriculum="general", volume=volume, chapter=chapter_title
+        )
         enrich = enrich_textbook_examples_with_pdf_visuals(
             pdf_path=pdf,
             examples=targets,
@@ -923,6 +932,7 @@ def enrich_general_high_pdf_visuals(
             write_notes=True,
             publish_assets=bool(policy.get("visual_publish_assets", False)),
             assemble_visual_groups=True,
+            region_overrides=reviewed_regions,
         )
         enrich_rows = {r.get("id"): r for r in enrich.get("rows") or []}
         pdf_sha256 = fingerprint_file(pdf)
@@ -957,7 +967,7 @@ def enrich_general_high_pdf_visuals(
             row.notes = json.dumps(notes, ensure_ascii=False)
             summary["status_counts"][status] = summary["status_counts"].get(status, 0) + 1
             summary["rows"].append({"id": row.id, "title": row.source_description, "status": status, **er})
-        if policy.get("general_replacement"):
+        if policy.get("general_replacement") or policy.get("auto_stage1_review"):
             db.session.flush()
         else:
             db.session.commit()
@@ -965,7 +975,7 @@ def enrich_general_high_pdf_visuals(
         summary["enrichment"] = {k: v for k, v in enrich.items() if k != "rows"}
     except Exception as exc:
         db.session.rollback()
-        if policy.get("general_replacement"):
+        if policy.get("general_replacement") or policy.get("auto_stage1_review"):
             raise
         summary["warnings"].append(f"enrichment_failed:{type(exc).__name__}: {exc}")
         current_app.logger.warning(f"[PDF VISUAL] general-high enrichment failed: {exc}")
@@ -1333,6 +1343,9 @@ _DIAGRAM_REQUIRED_RE = re.compile(
     r"線段\s*AB\s*如圖|著色|路線圖|棋盤式街道圖|樹狀圖|圓環|示意圖|題圖"
 )
 _NUMBER_LINE_POINT_COORD_RE = re.compile(r"[A-Z]\s*(?:\\left\s*)?[\(（]\s*\{?\s*-?\s*[0-9a-z]")
+_NUMBER_LINE_STEP_RE = re.compile(r"(?:每次|每步).{0,40}\d+\s*個?\s*(?:單位|格)")
+_NUMBER_LINE_COUNT_RE = re.compile(r"(?:經過|跳動|移動|行走).{0,12}\d+\s*次")
+_NUMBER_LINE_DESTINATION_RE = re.compile(r"(?:落在|到達|停在|位於).{0,15}點")
 _DIAGRAM_DEPENDENCY_PHRASE_RE = re.compile(
     r"如圖|下圖|上圖|右圖|左圖|依圖|根據圖|由圖可知|圖中|圖形中|如圖所示|"
     r"如右圖|如左圖|如下圖|如上圖|附圖"
@@ -1359,8 +1372,15 @@ def classify_image_dependency(
     combined = "\n".join(p for p in (q, cap, hint) if p)
 
     diagram_cues = {m.group(0) for m in _DIAGRAM_REQUIRED_RE.finditer(combined)}
-    if diagram_cues == {"數線上"} and _NUMBER_LINE_POINT_COORD_RE.search(q):
-        # "設數線上兩點 A(5)、B(12)" defines the points in text; no figure is required.
+    plain_q = re.sub(r"\\[()\[\]]", "", q)
+    text_defined_motion = (
+        re.search(r"(?:從|由).{0,24}(?:出發|開始)", plain_q)
+        and _NUMBER_LINE_STEP_RE.search(plain_q)
+        and _NUMBER_LINE_COUNT_RE.search(plain_q)
+        and _NUMBER_LINE_DESTINATION_RE.search(plain_q)
+    )
+    if diagram_cues == {"數線上"} and (_NUMBER_LINE_POINT_COORD_RE.search(q) or text_defined_motion):
+        # Coordinates or a complete move/count/destination contract define the number line in text.
         diagram_cues = set()
     if diagram_cues:
         return {
@@ -3958,6 +3978,8 @@ def process_textbook_file(
 ):
     """Process textbook file and import parsed content."""
 
+    auto_stage_root = None
+    auto_created_assets = []
     try:
         import_policy = dict(import_policy or {})
         execution_arch = str(import_policy.get("execution_arch", "native") or "native").strip().lower()
@@ -4197,6 +4219,13 @@ def process_textbook_file(
 
         if import_policy.get("general_replacement") and not general_high_scan:
             raise ValueError("general_replacement_source_scan_missing")
+        auto_stage1 = bool(import_policy.get("auto_stage1_review") and general_high_scan and not outline_only)
+        if auto_stage1:
+            import tempfile
+            from pathlib import Path
+            auto_stage_root = Path(tempfile.mkdtemp(prefix="stage1_auto_"))
+            import_policy["visual_asset_root"] = str(auto_stage_root)
+            import_policy["visual_publish_assets"] = False
         result = save_to_database(
             parsed_data,
             curriculum_info,
@@ -4223,7 +4252,7 @@ def process_textbook_file(
                 scan=general_high_scan,
                 curriculum_info=curriculum_info,
                 queue=queue,
-                defer_commit=bool(import_policy.get("general_replacement")),
+                defer_commit=bool(import_policy.get("general_replacement") or auto_stage1),
             )
             if import_policy.get("general_replacement") and result["source_skill_map"].get("error"):
                 raise ValueError(result["source_skill_map"]["error"])
@@ -4240,8 +4269,46 @@ def process_textbook_file(
                     raise ValueError("general_replacement_pdf_enrichment_failed")
             elif queue is not None:
                 queue.put("INFO: [PDF VISUAL] skipped reason=paired_pdf_missing")
-            # "Import complete" means rows were written; Stage 1 READY means they are a trustworthy source.
-            result["stage1_gate"] = evaluate_general_high_stage1_gate(curriculum_info, general_high_scan, queue=queue)
+            if auto_stage1:
+                from core.textbook_stage1_auto_review import review_and_heal_rows
+                from core.textbook_stage1_gate import format_gate_log_line
+
+                unit = general_high_scan.get("chapter") or {}
+                chapter = normalize_general_high_chapter_section(f"{unit.get('unit')} {unit.get('title')}")[0]
+                review_rows = TextbookExample.query.filter_by(
+                    source_curriculum="general", source_volume=str(curriculum_info.get("volume") or ""),
+                    source_chapter=chapter,
+                ).all()
+                allowed_skills = {
+                    sid: paragraph for sid, paragraph in db.session.query(
+                        SkillCurriculum.skill_id, SkillCurriculum.paragraph
+                    ).filter_by(curriculum="general", volume=str(curriculum_info.get("volume") or ""),
+                                chapter=chapter).all()
+                }
+                queue.put("INFO: [AUTO REVIEW] stage=auto_review status=running")
+                auto_review = review_and_heal_rows(
+                    review_rows, docx_path=file_path, pdf_path=optional_enrich_pdf_path,
+                    expected_count=len(general_high_scan.get("items") or []),
+                    allowed_skills=allowed_skills,
+                    asset_roots=[auto_stage_root, current_app.root_path],
+                )
+                result["stage1_auto_review"] = {k: auto_review[k] for k in ("changes", "issues", "source", "heal_passes", "ai_items")}
+                queue.put(f"INFO: [AUTO REVIEW] stage=auto_review status=done changes={len(auto_review['changes'])}")
+                queue.put(f"INFO: [AUTO REVIEW] stage=ai_healing status=done items={auto_review['ai_items']}")
+                result["stage1_gate"] = auto_review["gate"]
+                queue.put("INFO: " + format_gate_log_line(auto_review["gate"]))
+                if not auto_review["gate"].get("stage1_ready"):
+                    db.session.rollback()
+                    import shutil
+                    shutil.rmtree(auto_stage_root, ignore_errors=True)
+                    queue.put("WARN: [AUTO REVIEW] stage=stage1_gate status=needs_review; staged DB changes rolled back")
+                    return {"status": "needs_review", "message": "Stage 1 尚有需人工確認的內容，正式資料未寫入。",
+                            "stage1_gate": auto_review["gate"], "stage1_auto_review": result["stage1_auto_review"]}
+                db.session.flush()
+                queue.put("INFO: [AUTO REVIEW] stage=stage1_gate status=ready")
+            else:
+                # "Import complete" means rows were written; Stage 1 READY means source fidelity passed.
+                result["stage1_gate"] = evaluate_general_high_stage1_gate(curriculum_info, general_high_scan, queue=queue)
         try:
             temp_dir = (_DOCX_IMPORT_CONTEXT or {}).get("temp_media_dir")
             if temp_dir and bool(current_app.config.get("CLEAN_ORPHAN_DOCX_MEDIA", True)):
@@ -4284,7 +4351,14 @@ def process_textbook_file(
             db.session.flush()
             stale_removed = cleanup_stale_chapter_skill_bindings(db.session, import_policy["general_replacement"])
             queue.put(f"INFO: [GENERAL REPLACE] stale_unit_skill_bindings_removed={stale_removed}")
+        if auto_stage1:
+            from core.textbook_stage1_auto_review import publish_staged_assets
+            auto_created_assets = publish_staged_assets(review_rows, auto_stage_root, current_app.root_path)
+        if import_policy.get("general_replacement") or auto_stage1:
             db.session.commit()
+        if auto_stage_root is not None:
+            import shutil
+            shutil.rmtree(auto_stage_root, ignore_errors=True)
         return {
             "status": "success", 
             "message": (f"教材分析與匯入成功。\n"
@@ -4299,8 +4373,13 @@ def process_textbook_file(
         }
 
     except Exception as e:
-        if (import_policy or {}).get("general_replacement"):
+        if (import_policy or {}).get("general_replacement") or (import_policy or {}).get("auto_stage1_review"):
             db.session.rollback()
+        for path in auto_created_assets:
+            path.unlink(missing_ok=True)
+        if auto_stage_root is not None:
+            import shutil
+            shutil.rmtree(auto_stage_root, ignore_errors=True)
         current_app.logger.error(f"解析教材內容時發生錯誤: {e}")
         import traceback
         traceback.print_exc()
@@ -8540,7 +8619,7 @@ def save_to_database(
                         current_app.logger.info(saved_msg)
                         queue.put(f"INFO: {saved_msg}")
 
-        if import_policy.get("general_replacement"):
+        if import_policy.get("general_replacement") or import_policy.get("auto_stage1_review"):
             db.session.flush()
         else:
             db.session.commit()
@@ -8616,7 +8695,7 @@ def save_to_database(
         tb = traceback.format_exc()
         current_app.logger.error(f"寫入資料庫中斷: {e}\n{tb}")
         queue.put(f"ERROR: 寫入資料庫中斷: {e}")
-        if import_policy.get("general_replacement"):
+        if import_policy.get("general_replacement") or import_policy.get("auto_stage1_review"):
             raise
         return {}
 

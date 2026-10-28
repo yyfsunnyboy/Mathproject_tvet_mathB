@@ -1,0 +1,21 @@
+{
+ "12746": {
+  "verified": {
+   "de_morgan_truth_table": true,
+   "atoms": {
+    "2是偶數": true,
+    "2是質數": true,
+    "pi=3": false,
+    "pi是正數": true
+   },
+   "part_1": {
+    "original": true,
+    "negation": false
+   },
+   "part_2": {
+    "original": true,
+    "negation": false
+   }
+  }
+ }
+}

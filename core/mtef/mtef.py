@@ -1,6 +1,6 @@
 from io import BytesIO
 from .record import MtLine, MtChar, MtTmpl, MtPile, MtMatrix, MtEmbellRd, MtfontStyleDef, MtSize, MtfontDef, MtColorDefIndex, MtColorDef, MtEqnPrefs, RecordType, OptionType, CharTypeface, SelectorType, EmbellType, MtAST
-from .chars import Chars, SpecialChar
+from .chars import Chars, SpecialChar, SpaceTypefaceChars
 from .latex_normalize import normalize_parallel_latex
 from .helper import Helper
 
@@ -691,6 +691,10 @@ class MTEF:
                 hexExtend = "/mathmode"
             elif face == CharTypeface.fnTEXT:
                 typefaceFmt = "{ \\rm{ %s } }"
+
+            if face == CharTypeface.fnSPACE and mtcode in SpaceTypefaceChars:
+                # Verified layout-only spacer in the MTEF space typeface (see chars.SpaceTypefaceChars).
+                return SpaceTypefaceChars[mtcode], None
 
             hexCode = "%04x" % (mtcode or 0)
             # Prefer explicit Chars keys (including intentional empty mappings

@@ -625,6 +625,18 @@
                                     <span class="processing-step-icon" data-icon></span>
                                     <span>圖片與題目關聯</span>
                                 </div>
+                                <div class="processing-step" data-step="auto_review">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>自動稽核</span>
+                                </div>
+                                <div class="processing-step" data-step="ai_healing">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>AI 修復</span>
+                                </div>
+                                <div class="processing-step" data-step="stage1_gate">
+                                    <span class="processing-step-icon" data-icon></span>
+                                    <span>Stage 1 Gate 驗證</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -721,7 +733,10 @@
                 'ai_alignment',
                 'db_write',
                 'pdf_alignment',
-                'asset_linking'
+                'asset_linking',
+                'auto_review',
+                'ai_healing',
+                'stage1_gate'
             ];
 
             const PENDING_ONLY_STEPS = {
@@ -1408,7 +1423,8 @@
                 var r = data.result || {};
                 var pairs = r.pairs || [];
                 return {
-                    status: data.state === 'completed' ? 'success' : 'failed',
+                    status: data.state === 'completed'
+                        ? (r.stage1_ready === true ? 'success' : 'needs_review') : 'failed',
                     sourcePairsStats: {
                         total: r.source_pairs,
                         successful: r.successful_pairs,
@@ -1451,9 +1467,20 @@
                 if (!banner) return;
                 if (data.state === 'completed') {
                     var failedPairs = (data.result && data.result.failed_pairs) || 0;
+                    var ready = data.result && data.result.stage1_ready === true;
+                    if (!ready) {
+                        var gate = (data.result && data.result.stage1_gate) || {};
+                        banner.innerHTML = '<div class="alert alert-warning mb-0"><strong>需人工確認：Stage 1 尚未封板' +
+                            (data.result && data.result.staged_rolled_back ? '，本次匯入未寫入正式資料' : '') + '</strong>' +
+                            '<div class="small mt-1">Gate：' + escapeHtml(gate.status || EMPTY_DISPLAY) +
+                            '；阻擋 ' + escapeHtml(String(gate.blocked !== undefined ? gate.blocked : EMPTY_DISPLAY)) +
+                            '、待確認 ' + escapeHtml(String(gate.needs_review !== undefined ? gate.needs_review : EMPTY_DISPLAY)) +
+                            (failedPairs > 0 ? '；另有 ' + failedPairs + ' 組匯入失敗' : '') + '</div></div>';
+                        return;
+                    }
                     banner.innerHTML = failedPairs > 0
                         ? '<div class="alert alert-warning mb-0"><i class="bi bi-exclamation-triangle-fill"></i> <strong>教材匯入完成（' + failedPairs + ' 組失敗）</strong></div>'
-                        : '<div class="alert alert-success mb-0"><strong>✅ 教材匯入完成</strong></div>';
+                        : '<div class="alert alert-success mb-0"><strong>✅ 教材匯入完成，Stage 1 READY</strong></div>';
                     return;
                 }
                 var err = data.error || {};
@@ -1589,6 +1616,8 @@
                     statusHtml = '<div class="alert alert-info mb-0"><i class="bi bi-shield-check"></i> <strong>來源檔案驗證完成，等待教材解析</strong></div>';
                 } else if (status === 'source_stored') {
                     statusHtml = '<div class="alert alert-success mb-0"><i class="bi bi-folder-check"></i> <strong>教材來源已儲存</strong></div>';
+                } else if (status === 'needs_review') {
+                    statusHtml = '<div class="alert alert-warning mb-0"><strong>需人工確認：Stage 1 尚未封板</strong></div>';
                 } else if (status === 'partial') {
                     statusHtml = '<div class="alert alert-warning mb-0"><i class="bi bi-exclamation-triangle-fill"></i> <strong>部分完成</strong></div>';
                 } else if (status === 'failed') {

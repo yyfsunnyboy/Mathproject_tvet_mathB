@@ -1,0 +1,40 @@
+{
+ "schema": "fixed_textbook_practice.v1.staged",
+ "entries": {
+  "12746": {
+   "skill_id": "gh_LogicAndSets",
+   "label": "隨堂練習2 複合命題的否定（自評）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "(1) 先找出兩個簡單命題，再用笛摩根定律否定「且」",
+    "(2) 先找出兩個簡單命題，再用笛摩根定律否定「或」"
+   ],
+   "reference_solution": [
+    "「且」的否定要把「且」改成「或」，並把兩個簡單命題各自否定：$\\sim(P\\land Q)\\equiv(\\sim P)\\lor(\\sim Q)$；「或」的否定則把「或」改成「且」：$\\sim(P\\lor Q)\\equiv(\\sim P)\\land(\\sim Q)$。",
+    "(1) 原命題「2是偶數且 $2$ 是質數」的否定是「$2$ 不是偶數或 $2$ 不是質數」。原命題為真，否定為假。",
+    "(2) 原命題「$\\pi=3$ 或 $\\pi$ 是正數」的否定是「$\\pi\\neq 3$ 且 $\\pi$ 不是正數」，也就是「$\\pi\\neq 3$ 且 $\\pi\\le 0$」。原命題為真，否定為假。"
+   ],
+   "problem_text_sha256": "45cb03507fde0544fa75d425be5423ba2299ff226dc4f7ef586d4e1b00d89a87",
+   "oracle": {
+    "verified": {
+     "de_morgan_truth_table": true,
+     "atoms": {
+      "2是偶數": true,
+      "2是質數": true,
+      "pi=3": false,
+      "pi是正數": true
+     },
+     "part_1": {
+      "original": true,
+      "negation": false
+     },
+     "part_2": {
+      "original": true,
+      "negation": false
+     }
+    },
+    "script": "reports/gh_math2_unit3_fixed/derive_fixed_oracles.py"
+   }
+  }
+ }
+}

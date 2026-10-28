@@ -1,0 +1,216 @@
+{
+  "skill_id": "gh_LinearPermutation",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 19,
+  "components": [
+    {
+      "component_id": "src_12774",
+      "textbook_example_id": 12774,
+      "status": "verified",
+      "problem_type_id": "selected_arrangement",
+      "domain_operation": "selected_arrangement",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12774/generate.py"
+    },
+    {
+      "component_id": "src_12775",
+      "textbook_example_id": 12775,
+      "status": "verified",
+      "problem_type_id": "selected_arrangement",
+      "domain_operation": "selected_arrangement",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12775/generate.py"
+    },
+    {
+      "component_id": "src_12776",
+      "textbook_example_id": 12776,
+      "status": "verified",
+      "problem_type_id": "distinct_digit_numbers",
+      "domain_operation": "distinct_digit_numbers",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12776/generate.py"
+    },
+    {
+      "component_id": "src_12777",
+      "textbook_example_id": 12777,
+      "status": "verified",
+      "problem_type_id": "adjacent_separated",
+      "domain_operation": "adjacent_separated",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12777/generate.py"
+    },
+    {
+      "component_id": "src_12778",
+      "textbook_example_id": 12778,
+      "status": "verified",
+      "problem_type_id": "restricted_assignment",
+      "domain_operation": "restricted_assignment",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12778/generate.py"
+    },
+    {
+      "component_id": "src_12779",
+      "textbook_example_id": 12779,
+      "status": "verified",
+      "problem_type_id": "selected_arrangement",
+      "domain_operation": "selected_arrangement",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12779/generate.py"
+    },
+    {
+      "component_id": "src_12780",
+      "textbook_example_id": 12780,
+      "status": "verified",
+      "problem_type_id": "selected_arrangement",
+      "domain_operation": "selected_arrangement",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12780/generate.py"
+    },
+    {
+      "component_id": "src_12781",
+      "textbook_example_id": 12781,
+      "status": "verified",
+      "problem_type_id": "restricted_assignment",
+      "domain_operation": "restricted_assignment",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12781/generate.py"
+    },
+    {
+      "component_id": "src_12782",
+      "textbook_example_id": 12782,
+      "status": "verified",
+      "problem_type_id": "two_group_line",
+      "domain_operation": "two_group_line",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12782/generate.py"
+    },
+    {
+      "component_id": "src_12783",
+      "textbook_example_id": 12783,
+      "status": "verified",
+      "problem_type_id": "restricted_assignment",
+      "domain_operation": "restricted_assignment",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12783/generate.py"
+    },
+    {
+      "component_id": "src_12784",
+      "textbook_example_id": 12784,
+      "status": "verified",
+      "problem_type_id": "counting_claim",
+      "domain_operation": "counting_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12784/generate.py"
+    },
+    {
+      "component_id": "src_12785",
+      "textbook_example_id": 12785,
+      "status": "verified",
+      "problem_type_id": "counting_claim",
+      "domain_operation": "counting_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12785/generate.py"
+    },
+    {
+      "component_id": "src_12786",
+      "textbook_example_id": 12786,
+      "status": "verified",
+      "problem_type_id": "selected_arrangement",
+      "domain_operation": "selected_arrangement",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12786/generate.py"
+    },
+    {
+      "component_id": "src_12787",
+      "textbook_example_id": 12787,
+      "status": "verified",
+      "problem_type_id": "distinct_digit_numbers",
+      "domain_operation": "distinct_digit_numbers",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12787/generate.py"
+    },
+    {
+      "component_id": "src_12788",
+      "textbook_example_id": 12788,
+      "status": "verified",
+      "problem_type_id": "restricted_assignment",
+      "domain_operation": "restricted_assignment",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12788/generate.py"
+    },
+    {
+      "component_id": "src_12789",
+      "textbook_example_id": 12789,
+      "status": "verified",
+      "problem_type_id": "ends_from_group",
+      "domain_operation": "ends_from_group",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12789/generate.py"
+    },
+    {
+      "component_id": "src_12790",
+      "textbook_example_id": 12790,
+      "status": "verified",
+      "problem_type_id": "ends_and_block",
+      "domain_operation": "ends_and_block",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12790/generate.py"
+    },
+    {
+      "component_id": "src_12791",
+      "textbook_example_id": 12791,
+      "status": "verified",
+      "problem_type_id": "fixed_order_insertion",
+      "domain_operation": "fixed_order_insertion",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12791/generate.py"
+    },
+    {
+      "component_id": "src_12792",
+      "textbook_example_id": 12792,
+      "status": "verified",
+      "problem_type_id": "relative_order_three",
+      "domain_operation": "relative_order_three",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12792/generate.py"
+    }
+  ]
+}

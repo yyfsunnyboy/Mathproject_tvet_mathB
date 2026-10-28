@@ -1,0 +1,82 @@
+{
+ "scenario": "unauthorized",
+ "result_status": "needs_review",
+ "result_message": "Stage 1 尚有需人工確認的內容，正式資料未寫入。",
+ "gate_line": "INFO: [STAGE1 GATE] status=BLOCKED rows=30 blocked=0 needs_review=0 reasons={\"stale_rows_require_manual_cleanup\": 1}",
+ "review_issues": [
+  {
+   "reason": "stale_rows_require_manual_cleanup",
+   "ids": [
+    1362,
+    1363,
+    1364,
+    1365,
+    1366,
+    1367,
+    1368,
+    1369,
+    1370,
+    1371,
+    1372,
+    1373,
+    1374,
+    1375,
+    1376,
+    1377,
+    1378,
+    1379,
+    1380,
+    1381
+   ],
+   "count": 20
+  }
+ ],
+ "gemini_requests": [
+  "INFO: --- 正在執行 AI 內容解析 ---",
+  "INFO: converted_docx_latex metadata-only Gemini payload (title inventory)",
+  "INFO: [PDF VISUAL] ok=True statuses={'NO_VISUAL_REQUIRED': 26, 'VISUAL_UNCERTAIN': 2, 'VISUAL_ATTACHED': 2} ambiguous=0 unanchored=13 stale_duplicates=7 warnings=[]"
+ ],
+ "before": {
+  "rows": 20,
+  "old_rows(<12744)": 20,
+  "labels_unique": true,
+  "anchors_non_null": 0,
+  "anchors_unique": 0,
+  "skills": {},
+  "binding_rows": 2,
+  "math_parse_failed": 0,
+  "asset_rows": [],
+  "visual_missing_flags": 0,
+  "ids": [
+   1362,
+   1381
+  ],
+  "chapter_content_digest": "881af9b86909650c",
+  "id_skill_map_digest": "f3f8f6094133ae1a",
+  "other_tables_textbook_digest": "ed3ac1172722b341f3bbbce81240eb2cae47de1b47e205b54c764e09a735f1b3"
+ },
+ "after": {
+  "rows": 20,
+  "old_rows(<12744)": 20,
+  "labels_unique": true,
+  "anchors_non_null": 0,
+  "anchors_unique": 0,
+  "skills": {},
+  "binding_rows": 2,
+  "math_parse_failed": 0,
+  "asset_rows": [],
+  "visual_missing_flags": 0,
+  "ids": [
+   1362,
+   1381
+  ],
+  "chapter_content_digest": "881af9b86909650c",
+  "id_skill_map_digest": "f3f8f6094133ae1a",
+  "other_tables_textbook_digest": "ed3ac1172722b341f3bbbce81240eb2cae47de1b47e205b54c764e09a735f1b3"
+ },
+ "published_assets": [],
+ "formal_db_unchanged": true,
+ "formal_uploads_textbook_import_instance_untouched": true,
+ "formal_files_changed": [],
+ "sources_present": true
+}

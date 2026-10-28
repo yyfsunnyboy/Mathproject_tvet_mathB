@@ -12,6 +12,18 @@ SpecialChar = {
 	"}": "\\}",
 }
 
+# Private-use codes that are verified to be *pure layout spacing* when (and only when) they appear in the MTEF
+# space typeface (``fnSPACE`` = 24).  They carry no mathematical meaning and are dropped from LaTeX.
+# Anything else in the private-use area stays visible so the Stage 1 gate reports it instead of guessing.
+#
+# 0xEF08: authoring spacer MathType puts between a letter and its following sub/superscript template
+#   (e.g. ``P`` + EF08 + SUBSUP for the permutation symbol P_k^n).  Evidence (Unit 4 DOCX / PDF pair):
+#   typeface 152 = 128 + fnSPACE(24); the paired PDF has no glyph for it (only a ~2 pt gap between "P" and
+#   the scripts), and the PDF equation reads P_3^5 / P_k^n = n!/(n-k)!.
+SpaceTypefaceChars = {
+	0xEF08: "",
+}
+
 Chars = {
 	"char/0x0020":          " ",
 	"char/0x0021":          "!",

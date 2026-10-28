@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "pdf_sha256": "fe5ce0b620d368f2a87ca12494fbebb23722abaabd18eca8e5dba4d8a187a36c",
+      "curriculum": "general",
+      "volume": "數學2",
+      "chapter": "單元3 計數原理",
+      "verified_by": "authorized_unit3_stage1_2026-10-26",
+      "verified_on": "2026-10-26",
+      "regions": {
+        "隨堂練習6": [{"page": 9, "bbox": [420, 650, 520, 730], "why": "A-B-C-D path graph in the question"}],
+        "3習題 進階題8": [{"page": 18, "bbox": [415, 585, 530, 650], "why": "six-cell L shape required to define tiling region"}]
+      }
+    },
+    {
+      "pdf_sha256": "bf39d447345e163ab4bab942337cd96ca9460eaf477f89953d284b7ed35025cb",
+      "curriculum": "general",
+      "volume": "數學2",
+      "chapter": "單元4 排列",
+      "verified_by": "unit4_authoritative_pdf_visual_review_2026-10-27",
+      "verified_on": "2026-10-27",
+      "regions": {
+        "例題7": [{"page": 10, "bbox": [414.0, 160.0, 511.0, 218.0], "why": "Question's A-B-C-D street grid; PDF vector bounds x=414.3..510.5 y=160.6..217.6; solution grid lower on page excluded"}],
+        "隨堂練習7": [{"page": 11, "bbox": [409.0, 344.0, 511.0, 418.0], "why": "Question's A-B-C-D street grid beside stem; PDF vector bounds x=409.5..510.5 y=344.2..417.8; example 8 below excluded"}],
+        "4習題 基礎題6": [{"page": 16, "bbox": [261.0, 403.0, 348.0, 480.0], "why": "Street graph directly below exercise 6 stem; PDF vector bounds x=261.7..347.7 y=403.4..479.7; exercises 5 and 7 excluded"}],
+        "4習題 進階題14": [{"page": 18, "bbox": [379.0, 556.0, 436.0, 663.0], "why": "Three balloon strings defining the lowest-balloon order; PDF vector bounds x=379.9..435.1 y=557.0..661.6; decorative person and darts excluded"}]
+      }
+    }
+  ]
+}

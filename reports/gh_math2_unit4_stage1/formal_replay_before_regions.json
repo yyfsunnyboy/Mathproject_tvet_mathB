@@ -1,0 +1,83 @@
+{
+  "status": "needs_review",
+  "message": "Stage 1 尚有需人工確認的內容，正式資料未寫入。",
+  "stage1_gate": {
+    "import_complete": true,
+    "stage1_ready": false,
+    "status": "BLOCKED",
+    "rows": 38,
+    "blocked": [
+      {
+        "id": 12797,
+        "label": "隨堂練習7",
+        "reasons": [
+          "required_figure_missing"
+        ]
+      },
+      {
+        "id": 12801,
+        "label": "4習題 基礎題6",
+        "reasons": [
+          "required_figure_missing"
+        ]
+      },
+      {
+        "id": 12802,
+        "label": "4習題 進階題11",
+        "reasons": [
+          "required_figure_missing"
+        ]
+      },
+      {
+        "id": 12803,
+        "label": "4習題 進階題14",
+        "reasons": [
+          "required_figure_missing"
+        ]
+      }
+    ],
+    "needs_review": [],
+    "reasons": {
+      "required_figure_missing": 4
+    }
+  },
+  "stage1_auto_review": {
+    "changes": [
+      {
+        "id": 12774,
+        "field": "detailed_solution",
+        "kind": "source_symbol"
+      },
+      {
+        "id": 12776,
+        "field": "detailed_solution",
+        "kind": "source_symbol"
+      },
+      {
+        "id": 12777,
+        "field": "detailed_solution",
+        "kind": "source_symbol"
+      },
+      {
+        "id": 12805,
+        "field": "detailed_solution",
+        "kind": "source_symbol"
+      }
+    ],
+    "issues": [],
+    "source": {
+      "docx_sha256": "327f295a06d70490f7f4ac89c5ff59d17b58df9afba6232cfbb53a284d7b508a",
+      "pdf_sha256": "bf39d447345e163ab4bab942337cd96ca9460eaf477f89953d284b7ed35025cb"
+    },
+    "heal_passes": 1,
+    "ai_items": 0
+  },
+  "logs": [
+    "INFO: [PDF VISUAL] ok=True statuses={'NO_VISUAL_REQUIRED': 33, 'VISUAL_ATTACHED': 1, 'VISUAL_REQUIRED_MISSING': 3, 'VISUAL_UNCERTAIN': 1} ambiguous=0 unanchored=0 stale_duplicates=0 warnings=[]",
+    "INFO: [AUTO REVIEW] stage=auto_review status=running",
+    "INFO: [AUTO REVIEW] stage=auto_review status=done changes=4",
+    "INFO: [AUTO REVIEW] stage=ai_healing status=done items=0",
+    "INFO: [STAGE1 GATE] status=BLOCKED rows=38 blocked=4 needs_review=0 reasons={\"required_figure_missing\": 4}",
+    "WARN: [AUTO REVIEW] stage=stage1_gate status=needs_review; staged DB changes rolled back"
+  ]
+}

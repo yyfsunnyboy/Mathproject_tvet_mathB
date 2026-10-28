@@ -1,0 +1,95 @@
+{
+  "skill_id": "gh_RepeatedPermutation",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 8,
+  "components": [
+    {
+      "component_id": "src_12804",
+      "textbook_example_id": 12804,
+      "status": "verified",
+      "problem_type_id": "distribute_distinct",
+      "domain_operation": "distribute_distinct",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12804/generate.py"
+    },
+    {
+      "component_id": "src_12805",
+      "textbook_example_id": 12805,
+      "status": "verified",
+      "problem_type_id": "distribute_distinct",
+      "domain_operation": "distribute_distinct",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12805/generate.py"
+    },
+    {
+      "component_id": "src_12806",
+      "textbook_example_id": 12806,
+      "status": "verified",
+      "problem_type_id": "distribute_distinct",
+      "domain_operation": "distribute_distinct",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12806/generate.py"
+    },
+    {
+      "component_id": "src_12807",
+      "textbook_example_id": 12807,
+      "status": "verified",
+      "problem_type_id": "distribute_distinct",
+      "domain_operation": "distribute_distinct",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12807/generate.py"
+    },
+    {
+      "component_id": "src_12808",
+      "textbook_example_id": 12808,
+      "status": "verified",
+      "problem_type_id": "counting_claim",
+      "domain_operation": "counting_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12808/generate.py"
+    },
+    {
+      "component_id": "src_12809",
+      "textbook_example_id": 12809,
+      "status": "verified",
+      "problem_type_id": "identical_arrangement",
+      "domain_operation": "identical_arrangement",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12809/generate.py"
+    },
+    {
+      "component_id": "src_12810",
+      "textbook_example_id": 12810,
+      "status": "verified",
+      "problem_type_id": "distribute_distinct",
+      "domain_operation": "distribute_distinct",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12810/generate.py"
+    },
+    {
+      "component_id": "src_12811",
+      "textbook_example_id": 12811,
+      "status": "verified",
+      "problem_type_id": "distribute_distinct",
+      "domain_operation": "distribute_distinct",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12811/generate.py"
+    }
+  ]
+}

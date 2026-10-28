@@ -1,0 +1,13 @@
+{
+ "time": "2026-10-27 07:12:31 +0800",
+ "bundle_file_sha256_before_approval": "460744600de6f2f3ba401fb72e2709c2a1ecc3af26855e65258b43f3001a73c0",
+ "bundle_canonical_sha256_before": "aa1387bd49d1e2ec80487891585834fa973fbd5a643d5cddc35cc043a188b3cf",
+ "bundle_file_sha256_after_approval": "25ea1d9f5397e28e85604611249602ee6fe85a812e45803c6dc6bf7e5398a228",
+ "package_files": {
+  "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "counting_sets_adapter.py": "de6b17295e600bb8331260eda9468b56d34dc31d6ad3e333eca85eca42f63c00",
+  "counting_sets_domain.py": "df84f39680251d969b515c10a3a59a88fd0862ca5b00147d12f42c5b9fd0c4e2"
+ },
+ "approval_scope": "revision 1: 普高數學2 Unit 3 計數原理 — domain discrete.sets_counting (21 operations: at_least_one_pairing, choice_product, coin_payment, coin_toss_sequences, condition_relation, dice_sum_multiples, divisor_counting, equation_root_sets, finite_set_",
+ "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-27: one-time Promotion and Publish of 數學2 Unit 3 計數原理 (gh_LogicAndSets 8 + gh_CountingPrinciples 21 components; fixed self-check row 12746); no Flask / Cloudflare restart"
+}

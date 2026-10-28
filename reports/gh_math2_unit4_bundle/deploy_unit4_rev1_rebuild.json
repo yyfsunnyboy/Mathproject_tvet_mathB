@@ -1,0 +1,415 @@
+{
+ "failures": {},
+ "deferred": {
+  "12801": "下圖為一街道圖，從 A 取捷徑走到 B：街道圖是不規則的方格（有些街道線不存在），圖形本身就是題目，無法改數字而不重畫；以教材原題保留（FIXED_GRADED），答案由圖檔像素讀出的街道圖獨立推導並經動態規劃與逐路徑枚舉交叉驗證"
+ },
+ "report": {
+  "12774": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 8,
+   "failures": []
+  },
+  "12775": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12776": {
+   "skill": "gh_LinearPermutation",
+   "operation": "distinct_digit_numbers",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12777": {
+   "skill": "gh_LinearPermutation",
+   "operation": "adjacent_separated",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 12,
+   "failures": []
+  },
+  "12778": {
+   "skill": "gh_LinearPermutation",
+   "operation": "restricted_assignment",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12779": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 8,
+   "failures": []
+  },
+  "12780": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12781": {
+   "skill": "gh_LinearPermutation",
+   "operation": "restricted_assignment",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12782": {
+   "skill": "gh_LinearPermutation",
+   "operation": "two_group_line",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 13,
+   "failures": []
+  },
+  "12783": {
+   "skill": "gh_LinearPermutation",
+   "operation": "restricted_assignment",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12784": {
+   "skill": "gh_LinearPermutation",
+   "operation": "counting_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12785": {
+   "skill": "gh_LinearPermutation",
+   "operation": "counting_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12786": {
+   "skill": "gh_LinearPermutation",
+   "operation": "selected_arrangement",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12787": {
+   "skill": "gh_LinearPermutation",
+   "operation": "distinct_digit_numbers",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12788": {
+   "skill": "gh_LinearPermutation",
+   "operation": "restricted_assignment",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12789": {
+   "skill": "gh_LinearPermutation",
+   "operation": "ends_from_group",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 11,
+   "failures": []
+  },
+  "12790": {
+   "skill": "gh_LinearPermutation",
+   "operation": "ends_and_block",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 11,
+   "failures": []
+  },
+  "12791": {
+   "skill": "gh_LinearPermutation",
+   "operation": "fixed_order_insertion",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 11,
+   "failures": []
+  },
+  "12792": {
+   "skill": "gh_LinearPermutation",
+   "operation": "relative_order_three",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LinearPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12793": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "identical_arrangement",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12794": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "grid_paths",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12795": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "multiset_digit_numbers",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12796": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "identical_arrangement",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12797": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "grid_paths",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12798": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "multiset_digit_numbers",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12799": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "counting_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12800": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "colored_distinct_items",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12802": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "line_walk",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12803": {
+   "skill": "gh_PermutationWithIdenticalItems",
+   "operation": "column_shooting_order",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_PermutationWithIdenticalItems",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12804": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "variants": 12,
+   "failures": []
+  },
+  "12805": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "variants": 16,
+   "failures": []
+  },
+  "12806": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "variants": 15,
+   "failures": []
+  },
+  "12807": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "variants": 12,
+   "failures": []
+  },
+  "12808": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "counting_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12809": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "identical_arrangement",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  },
+  "12810": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "variants": 16,
+   "failures": []
+  },
+  "12811": {
+   "skill": "gh_RepeatedPermutation",
+   "operation": "distribute_distinct",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_RepeatedPermutation",
+    "verified"
+   ],
+   "variants": 20,
+   "failures": []
+  }
+ }
+}

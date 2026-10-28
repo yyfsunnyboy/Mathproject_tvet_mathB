@@ -1,0 +1,73 @@
+{
+ "unit": {
+  "curriculum": "general",
+  "volume": "數學2",
+  "chapter": "單元3 計數原理"
+ },
+ "backup": "reports\\gh_math2_unit3_stage1\\sandbox\\apply_backups\\kumon_math_before_math2_unit3_stage1_20261026_224747_233485.db",
+ "backup_sha256": "ccefc8540bd00db8c2d4ade4f278301f7068d4bc0c439173275894268b6115d2",
+ "created_assets": [
+  {
+   "path": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元3_計數原理/sec_unknown_3計數原理/in_class_practice_隨堂練習6_source_typein_class_practice_linked_example例題6_dedupe9a208c96948d35b4_general__fig1.png",
+   "sha256": "5f8d79c1e21d8bce4da5c1736802d7b6d60ae340d627e8dcb5330af95a81749a",
+   "size_bytes": 8422,
+   "row_id": 12756
+  },
+  {
+   "path": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元3_計數原理/sec_unknown_3計數原理/advanced_exercise_3習題_進階題8_source_typeadvanced_exercise_dedupe4a7b7dc528b2a973_general__fig1.png",
+   "sha256": "b646feb8b401a37d6bc5dd3feae6993655948be881c8e6a609ce0e335d773bfd",
+   "size_bytes": 1056,
+   "row_id": 12773
+  }
+ ],
+ "change_set_sha256": "7e8880fea3e7a2dc6cfd896e7cfcb24332755d32f6e48e5ccc612a20712a455e",
+ "status": "applied_verified",
+ "verification": {
+  "rows": 30,
+  "skills": {
+   "gh_LogicAndSets": 9,
+   "gh_CountingPrinciples": 21
+  },
+  "gate": "READY",
+  "blocked": 0,
+  "needs_review": 0,
+  "math_parse_failed": 0,
+  "assets": 2
+ },
+ "outside_digests": {
+  "textbook_outside": "24ac2b5e841ecebdd67221a4e083ae064514e7a99826825d40c1538565701de9",
+  "ablation_settings": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "ablation_summary": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "adaptive_learning_logs": "39f81c9401a3fdd15773de2343cfbf7a68320249a0710181be92d1c3d466c254",
+  "adaptive_review_state": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "b4_chap2_visibility_audit_logs": "34f2f6b131939a27cfb37fc7a8b526c33911ecc2da4fb32d54ba18e02fa6a8d6",
+  "class_students": "588aa1db84164d9b2742c1183261e91ef0a5f77026c330b02d79cbf4ac53c628",
+  "classes": "9924a66d3248e1e03167d5b7e2a695cd2a0050ea39fb2597a3511072e776782c",
+  "evaluation_items": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "exam_analysis": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "execution_samples": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "experiment_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "experiment_runs": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "gencode_component_tracker": "a876b07af7fbd0c1951c9d2c277f8f6eb6520cc060835f3342cf5d446eed66a6",
+  "gencode_v3_orchestrator_jobs": "fb5ce9f9275ed8154871e7f6890618e04777c33583f30a7cbe9446f15392f4bd",
+  "healer_events": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "learning_diagnosis": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "mistake_logs": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "mistake_notebook_entries": "5feb1b382b699af14b50cc9819c9e0ea1420a1e6a144e2584ff159fdf61afd1e",
+  "node_competency": "51bbc80b6f9bbac27bdbec91f3238f3c8c459e1e1aaed835432d47b5452db3a3",
+  "practice_attempts": "d9b1076e854b9aa6e02571c93df9ce19c2732d91bcd5b4e99918f312da6998b5",
+  "progress": "f0458c36dc977f555d1a5d8a322bfeb866c898d13991a5037574320ab276960c",
+  "prompt_templates": "effee6e2daa71c345530f4328176da1c628dffdd56d490a349f6643e9b20fdf9",
+  "questions": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "quiz_attempts": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "skill_curriculum": "ee030be50237599eecaa160bfa152e87ea4831f947e1bc075ec03870972b9c4c",
+  "skill_family_bridge": "7fcf804656e66f89615828f78045e97885fc7d2655492b3242b4611545314df5",
+  "skill_gencode_prompt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "skill_prerequisites": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "skills_info": "67647ae34a2eb5d8aae2a78ef05300231365d4b1bff77496bee6791b8415eef5",
+  "student_abilities": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "student_uploaded_questions": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "system_settings": "158de069e73dd9dff470c4a463368b1f44b68e63e7d7feb82d40e89a4c25a7c7",
+  "users": "1b38819ddc59e2f9b8aaea700877f697907890443bc223c5748d66103041ef4a"
+ }
+}

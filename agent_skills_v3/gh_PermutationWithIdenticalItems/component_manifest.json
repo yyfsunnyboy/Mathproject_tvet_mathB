@@ -1,0 +1,117 @@
+{
+  "skill_id": "gh_PermutationWithIdenticalItems",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 10,
+  "components": [
+    {
+      "component_id": "src_12793",
+      "textbook_example_id": 12793,
+      "status": "verified",
+      "problem_type_id": "identical_arrangement",
+      "domain_operation": "identical_arrangement",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12793/generate.py"
+    },
+    {
+      "component_id": "src_12794",
+      "textbook_example_id": 12794,
+      "status": "verified",
+      "problem_type_id": "grid_paths",
+      "domain_operation": "grid_paths",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12794/generate.py"
+    },
+    {
+      "component_id": "src_12795",
+      "textbook_example_id": 12795,
+      "status": "verified",
+      "problem_type_id": "multiset_digit_numbers",
+      "domain_operation": "multiset_digit_numbers",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12795/generate.py"
+    },
+    {
+      "component_id": "src_12796",
+      "textbook_example_id": 12796,
+      "status": "verified",
+      "problem_type_id": "identical_arrangement",
+      "domain_operation": "identical_arrangement",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12796/generate.py"
+    },
+    {
+      "component_id": "src_12797",
+      "textbook_example_id": 12797,
+      "status": "verified",
+      "problem_type_id": "grid_paths",
+      "domain_operation": "grid_paths",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12797/generate.py"
+    },
+    {
+      "component_id": "src_12798",
+      "textbook_example_id": 12798,
+      "status": "verified",
+      "problem_type_id": "multiset_digit_numbers",
+      "domain_operation": "multiset_digit_numbers",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12798/generate.py"
+    },
+    {
+      "component_id": "src_12799",
+      "textbook_example_id": 12799,
+      "status": "verified",
+      "problem_type_id": "counting_claim",
+      "domain_operation": "counting_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12799/generate.py"
+    },
+    {
+      "component_id": "src_12800",
+      "textbook_example_id": 12800,
+      "status": "verified",
+      "problem_type_id": "colored_distinct_items",
+      "domain_operation": "colored_distinct_items",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12800/generate.py"
+    },
+    {
+      "component_id": "src_12802",
+      "textbook_example_id": 12802,
+      "status": "verified",
+      "problem_type_id": "line_walk",
+      "domain_operation": "line_walk",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12802/generate.py"
+    },
+    {
+      "component_id": "src_12803",
+      "textbook_example_id": 12803,
+      "status": "verified",
+      "problem_type_id": "column_shooting_order",
+      "domain_operation": "column_shooting_order",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12803/generate.py"
+    }
+  ]
+}

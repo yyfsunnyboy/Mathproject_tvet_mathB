@@ -1,0 +1,83 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "discrete.permutations",
+ "registry_revision": "promoted-ebcd5e40b80e",
+ "bundle_sha256": "ebcd5e40b80e1f6b6609078ea4a8bc34a427f1888d9238d7a78307df7ceb09fa",
+ "allowed_operations": [
+  "adjacent_separated",
+  "colored_distinct_items",
+  "column_shooting_order",
+  "counting_claim",
+  "distinct_digit_numbers",
+  "distribute_distinct",
+  "ends_and_block",
+  "ends_from_group",
+  "fixed_order_insertion",
+  "grid_paths",
+  "identical_arrangement",
+  "line_walk",
+  "multiset_digit_numbers",
+  "relative_order_three",
+  "restricted_assignment",
+  "selected_arrangement",
+  "two_group_line"
+ ],
+ "skill_bindings": {
+  "gh_PermutationWithIdenticalItems": {
+   "fixed_domain_key": "discrete.permutations",
+   "allowed_operations": [
+    "colored_distinct_items",
+    "column_shooting_order",
+    "counting_claim",
+    "grid_paths",
+    "identical_arrangement",
+    "line_walk",
+    "multiset_digit_numbers"
+   ]
+  },
+  "gh_LinearPermutation": {
+   "fixed_domain_key": "discrete.permutations",
+   "allowed_operations": [
+    "adjacent_separated",
+    "counting_claim",
+    "distinct_digit_numbers",
+    "ends_and_block",
+    "ends_from_group",
+    "fixed_order_insertion",
+    "relative_order_three",
+    "restricted_assignment",
+    "selected_arrangement",
+    "two_group_line"
+   ]
+  },
+  "gh_RepeatedPermutation": {
+   "fixed_domain_key": "discrete.permutations",
+   "allowed_operations": [
+    "counting_claim",
+    "distribute_distinct",
+    "identical_arrangement"
+   ]
+  }
+ },
+ "operations_executed": {
+  "adjacent_separated": 1,
+  "colored_distinct_items": 1,
+  "column_shooting_order": 1,
+  "counting_claim": 4,
+  "distinct_digit_numbers": 2,
+  "distribute_distinct": 6,
+  "ends_and_block": 1,
+  "ends_from_group": 1,
+  "fixed_order_insertion": 1,
+  "grid_paths": 2,
+  "identical_arrangement": 3,
+  "line_walk": 1,
+  "multiset_digit_numbers": 2,
+  "relative_order_three": 1,
+  "restricted_assignment": 4,
+  "selected_arrangement": 5,
+  "two_group_line": 1
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\permutations"
+}

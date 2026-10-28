@@ -1,0 +1,9 @@
+{
+  "pdf_sha256": "fe5ce0b620d368f2a87ca12494fbebb23722abaabd18eca8e5dba4d8a187a36c",
+  "verified_by": "Unit 3 Stage 1 PDF page review",
+  "verified_on": "2026-10-26",
+  "regions": {
+    "隨堂練習6": [{"page": 9, "bbox": [420, 650, 520, 730], "why": "A-B-C-D path graph in question region"}],
+    "3習題 進階題8": [{"page": 18, "bbox": [415, 585, 530, 650], "why": "six-cell L shape needed to define tiling region"}]
+  }
+}

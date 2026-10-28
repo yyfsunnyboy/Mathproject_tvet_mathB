@@ -2013,6 +2013,7 @@ def admin_textbook_importer_v3():
                     'docx_formula_source_mode': 'converted_docx_latex',
                     'formula_postprocess_mode': 'convert_only',
                     'general_replacement': replacement_policy,
+                    'auto_stage1_review': True,
                 },
                 track_general_status=True,
             )

@@ -29,6 +29,9 @@ _SUB_RE = re.compile(r"(?:^|(?<=[\s。，；：！？]))[\(（]\s*(\d{1,2})\s*[\
 _LOST_SYMBOL_RE = re.compile(r"[A-Za-z0-9\)]\s{2,}[A-Za-z0-9]")
 _CORRUPT_MARKERS = ("MATH_PARSE_FAILED", "[FORMULA_MISSING]", "[FORMULA_IMAGE_", "[MATH")
 _PROOF_CLAIM_RE = re.compile(r"恆|成立|倍數|整除|相等|等於|為真|不等式")
+# Unmapped Unicode private-use glyphs (MathType/Symbol fonts) inside imported text mean a math symbol was not
+# faithfully converted.  They are never guessed: the row stays BLOCKED until the converter is fixed from source evidence.
+_PRIVATE_USE_RE = re.compile("[\ue000-\uf8ff]")
 
 
 def _notes(row: Any) -> dict[str, Any]:
@@ -83,6 +86,11 @@ def math_fidelity_issues(text: str) -> list[str]:
     return issues
 
 
+def private_use_symbols(text: str) -> list[str]:
+    """Sorted ``U+XXXX`` codes of unresolved private-use characters in ``text`` (empty when faithful)."""
+    return sorted({"U+%04X" % ord(c) for c in _PRIVATE_USE_RE.findall(str(text or ""))})
+
+
 def evaluate_row(row: Any) -> dict[str, list[str]]:
     notes = _notes(row)
     stem = _field(row, "problem_text")
@@ -93,6 +101,11 @@ def evaluate_row(row: Any) -> dict[str, list[str]]:
     blockers.extend(stem_completeness_issues(stem, _field(row, "problem_type")))
     blockers.extend(f"stem_{i}" for i in math_fidelity_issues(stem))
     reviews.extend(f"solution_{i}" for i in math_fidelity_issues(solution))
+    # Unknown private-use symbols are a Blocker in the stem and in the solution: no automatic guessing.
+    if private_use_symbols(stem):
+        blockers.append("stem_unresolved_private_use_symbol")
+    if private_use_symbols(solution):
+        blockers.append("solution_unresolved_private_use_symbol")
 
     assets = [a for a in (notes.get("image_assets") or []) if isinstance(a, dict) and a.get("path")]
     accepted = [a for a in assets if str(a.get("visual_status") or "accepted").lower() == "accepted" and not a.get("needs_crop_review")]

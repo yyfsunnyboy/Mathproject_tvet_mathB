@@ -83,6 +83,45 @@
         "7習題 進階題11": "gh_TangentLinesOfACircle",
         "7習題 進階題13": "gh_TangentLinesOfACircle"
       }
+    },
+    {
+      "id": "general_數學2_單元3_計數原理_stage1_v1",
+      "curriculum": "general",
+      "volume": "數學2",
+      "chapter": "單元3 計數原理",
+      "confirmed_by": "user_authorized_stage1_2026-10-26",
+      "titles": {
+        "例題1": "gh_LogicAndSets",
+        "隨堂練習1": "gh_LogicAndSets",
+        "隨堂練習2": "gh_LogicAndSets",
+        "隨堂練習3": "gh_LogicAndSets",
+        "隨堂練習4": "gh_LogicAndSets",
+        "例題2": "gh_CountingPrinciples",
+        "例題3": "gh_CountingPrinciples",
+        "例題4": "gh_CountingPrinciples",
+        "例題5": "gh_CountingPrinciples",
+        "例題6": "gh_CountingPrinciples",
+        "例題7": "gh_CountingPrinciples",
+        "隨堂練習5": "gh_CountingPrinciples",
+        "隨堂練習6": "gh_CountingPrinciples",
+        "隨堂練習7": "gh_CountingPrinciples",
+        "隨堂練習8": "gh_CountingPrinciples",
+        "隨堂練習9": "gh_CountingPrinciples",
+        "隨堂練習10": "gh_CountingPrinciples",
+        "隨堂練習11": "gh_CountingPrinciples",
+        "隨堂練習12": "gh_CountingPrinciples",
+        "3習題 觀念澄清1": "gh_LogicAndSets",
+        "3習題 觀念澄清2": "gh_LogicAndSets",
+        "3習題 觀念澄清3": "gh_CountingPrinciples",
+        "3習題 基礎題1": "gh_LogicAndSets",
+        "3習題 基礎題2": "gh_LogicAndSets",
+        "3習題 基礎題3": "gh_CountingPrinciples",
+        "3習題 基礎題4": "gh_CountingPrinciples",
+        "3習題 基礎題5": "gh_CountingPrinciples",
+        "3習題 基礎題6": "gh_CountingPrinciples",
+        "3習題 進階題7": "gh_CountingPrinciples",
+        "3習題 進階題8": "gh_CountingPrinciples"
+      }
     }
   ]
 }

@@ -1,0 +1,98 @@
+{
+ "facade": {
+  "gh_LinearPermutation": {
+   "served_examples": {
+    "12774": 4,
+    "12775": 4,
+    "12776": 4,
+    "12777": 4,
+    "12778": 4,
+    "12779": 5,
+    "12780": 4,
+    "12781": 4,
+    "12782": 4,
+    "12783": 4,
+    "12784": 4,
+    "12785": 4,
+    "12786": 4,
+    "12787": 5,
+    "12788": 5,
+    "12789": 4,
+    "12790": 5,
+    "12791": 4,
+    "12792": 4
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_PermutationWithIdenticalItems": {
+   "served_examples": {
+    "12793": 8,
+    "12794": 8,
+    "12795": 8,
+    "12796": 8,
+    "12797": 8,
+    "12798": 8,
+    "12799": 8,
+    "12800": 8,
+    "12802": 8,
+    "12803": 8
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_RepeatedPermutation": {
+   "served_examples": {
+    "12804": 10,
+    "12805": 10,
+    "12806": 10,
+    "12807": 10,
+    "12808": 10,
+    "12809": 10,
+    "12810": 10,
+    "12811": 10
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "manifest_status": {
+  "gh_LinearPermutation": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 19
+  },
+  "gh_PermutationWithIdenticalItems": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 10
+  },
+  "gh_RepeatedPermutation": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 8
+  }
+ },
+ "manifest_components": {
+  "gh_LinearPermutation": 19,
+  "gh_PermutationWithIdenticalItems": 10,
+  "gh_RepeatedPermutation": 8
+ },
+ "manifest_matches_specs": true,
+ "fixed_entries": [
+  "12719",
+  "12727",
+  "12731",
+  "12735",
+  "12746",
+  "12801"
+ ],
+ "fixed_12801_live": true,
+ "fixed_unit2_kept": true,
+ "fixed_entry_bound_to_stage1_stem": {
+  "12801": true
+ },
+ "other_units_published": {
+  "gh_LogicAndSets": true,
+  "gh_CountingPrinciples": true
+ },
+ "tracker_not_verified": {},
+ "tracker_missing": []
+}

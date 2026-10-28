@@ -1,0 +1,979 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_discrete_permutations_5aaa48d3",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-27: one-time Promotion and Publish of 數學2 Unit 4 排列 (gh_LinearPermutation 19 + gh_PermutationWithIdenticalItems 10 + gh_RepeatedPermutation 8 components; fixed graded row 12801); no Flask / Cloudflare restart",
+    "approved_revision": 1,
+    "approval_scope": "revision 1: 普高數學2 Unit 4 排列 — domain discrete.permutations (17 operations: adjacent_separated, colored_distinct_items, column_shooting_order, counting_claim, distinct_digit_numbers, distribute_distinct, ends_and_block, ends_from_group, fixed_order_insertion, grid_paths, identical_arrangement, line_walk, multiset_digit_numbers, relative_order_three, restricted_assignment, selected_arrangement, two_group_line); Skills gh_LinearPermutation (19 components: 12774, 12775, 12776, 12777, 12778, 12779, 12780, 12781, 12782, 12783, 12784, 12785, 12786, 12787, 12788, 12789, 12790, 12791, 12792); gh_PermutationWithIdenticalItems (10 components: 12793, 12794, 12795, 12796, 12797, 12798, 12799, 12800, 12802, 12803); gh_RepeatedPermutation (8 components: 12804, 12805, 12806, 12807, 12808, 12809, 12810, 12811); 37 of the 38 formal rows (ids 12774-12811). Not dynamic: 12801 (street graph whose answer 62 is read from the printed figure; kept as FIXED_GRADED textbook original via configs/fixed_textbook_practice.json, merged only at the authorized release). Figure rows 12794 / 12797 (street grids) and 12803 (balloon columns) are dynamic; the reviewed textbook crop (reuse_textbook_image) is attached only to the variant that restates the figure's own structure, every other variant states its data in words with no figure cue. Format hints never show the answer."
+  },
+  "domain_key": "discrete.permutations",
+  "package_name": "permutations",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "permutations_adapter.py": "bc053842fb244db0e568f719ec0994cb5a890bf03e22079be4c3eaf053c828e6",
+    "permutations_domain.py": "0e032cdf58368da71b1ac58b92fc321489ba8bebe8b0c2765dd6ad9e2f554988"
+  },
+  "domain_module": "permutations_domain",
+  "entrypoint": "build_permutations_matrix",
+  "capabilities": [
+    "adjacent_separated",
+    "colored_distinct_items",
+    "column_shooting_order",
+    "counting_claim",
+    "distinct_digit_numbers",
+    "distribute_distinct",
+    "ends_and_block",
+    "ends_from_group",
+    "fixed_order_insertion",
+    "grid_paths",
+    "identical_arrangement",
+    "line_walk",
+    "multiset_digit_numbers",
+    "relative_order_three",
+    "restricted_assignment",
+    "selected_arrangement",
+    "two_group_line"
+  ],
+  "operations": {
+    "adjacent_separated": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_adjacent_separated_matrix",
+      "provided_capabilities": [
+        "adjacent_separated"
+      ]
+    },
+    "colored_distinct_items": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_colored_distinct_items_matrix",
+      "provided_capabilities": [
+        "colored_distinct_items"
+      ]
+    },
+    "column_shooting_order": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_column_shooting_order_matrix",
+      "provided_capabilities": [
+        "column_shooting_order"
+      ]
+    },
+    "counting_claim": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_counting_claim_matrix",
+      "provided_capabilities": [
+        "counting_claim"
+      ]
+    },
+    "distinct_digit_numbers": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_distinct_digit_numbers_matrix",
+      "provided_capabilities": [
+        "distinct_digit_numbers"
+      ]
+    },
+    "distribute_distinct": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_distribute_distinct_matrix",
+      "provided_capabilities": [
+        "distribute_distinct"
+      ]
+    },
+    "ends_and_block": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_ends_and_block_matrix",
+      "provided_capabilities": [
+        "ends_and_block"
+      ]
+    },
+    "ends_from_group": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_ends_from_group_matrix",
+      "provided_capabilities": [
+        "ends_from_group"
+      ]
+    },
+    "fixed_order_insertion": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_fixed_order_insertion_matrix",
+      "provided_capabilities": [
+        "fixed_order_insertion"
+      ]
+    },
+    "grid_paths": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_grid_paths_matrix",
+      "provided_capabilities": [
+        "grid_paths"
+      ]
+    },
+    "identical_arrangement": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_identical_arrangement_matrix",
+      "provided_capabilities": [
+        "identical_arrangement"
+      ]
+    },
+    "line_walk": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_line_walk_matrix",
+      "provided_capabilities": [
+        "line_walk"
+      ]
+    },
+    "multiset_digit_numbers": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_multiset_digit_numbers_matrix",
+      "provided_capabilities": [
+        "multiset_digit_numbers"
+      ]
+    },
+    "relative_order_three": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_relative_order_three_matrix",
+      "provided_capabilities": [
+        "relative_order_three"
+      ]
+    },
+    "restricted_assignment": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_restricted_assignment_matrix",
+      "provided_capabilities": [
+        "restricted_assignment"
+      ]
+    },
+    "selected_arrangement": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_selected_arrangement_matrix",
+      "provided_capabilities": [
+        "selected_arrangement"
+      ]
+    },
+    "two_group_line": {
+      "handler": "build_permutations_matrix",
+      "payload_adapter": "permutations_adapter.adapt_permutations_matrix",
+      "runtime_contract": "permutations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_two_group_line_matrix",
+      "provided_capabilities": [
+        "two_group_line"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_PermutationWithIdenticalItems": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "colored_distinct_items",
+        "column_shooting_order",
+        "counting_claim",
+        "grid_paths",
+        "identical_arrangement",
+        "line_walk",
+        "multiset_digit_numbers"
+      ]
+    },
+    "gh_LinearPermutation": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "adjacent_separated",
+        "counting_claim",
+        "distinct_digit_numbers",
+        "ends_and_block",
+        "ends_from_group",
+        "fixed_order_insertion",
+        "relative_order_three",
+        "restricted_assignment",
+        "selected_arrangement",
+        "two_group_line"
+      ]
+    },
+    "gh_RepeatedPermutation": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "counting_claim",
+        "distribute_distinct",
+        "identical_arrangement"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "adjacent_separated": [
+      {
+        "seed": 1,
+        "constraints": {
+          "men": 4,
+          "women": 3
+        }
+      }
+    ],
+    "colored_distinct_items": [
+      {
+        "seed": 1,
+        "constraints": {
+          "counts": [
+            2,
+            3,
+            4
+          ],
+          "colors": [
+            "黃",
+            "白",
+            "黑"
+          ],
+          "asks": [
+            "each_color_together",
+            "last_color_apart"
+          ]
+        }
+      }
+    ],
+    "column_shooting_order": [
+      {
+        "seed": 1,
+        "constraints": {
+          "counts": [
+            2,
+            3,
+            3
+          ],
+          "colors": [
+            "紅",
+            "黃",
+            "藍"
+          ],
+          "figure": "balloons"
+        }
+      }
+    ],
+    "counting_claim": [
+      {
+        "seed": 1,
+        "constraints": {
+          "setting": {
+            "kind": "arrangement",
+            "n": 3,
+            "chars": [
+              "讀",
+              "書",
+              "好"
+            ]
+          },
+          "claim": {
+            "form": "number",
+            "value": 6
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "setting": {
+            "kind": "selection",
+            "n": 5,
+            "k": 3
+          },
+          "claim": {
+            "form": "perm",
+            "n": 5,
+            "k": 3
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "setting": {
+            "kind": "identical",
+            "counts": [
+              3,
+              3
+            ],
+            "word": "PAPAPA"
+          },
+          "claim": {
+            "form": "multinomial",
+            "counts": [
+              2,
+              2,
+              2
+            ]
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "setting": {
+            "kind": "repeated",
+            "boxes": 3,
+            "items": 4
+          },
+          "claim": {
+            "form": "power",
+            "base": 4,
+            "exp": 3
+          }
+        }
+      }
+    ],
+    "distinct_digit_numbers": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "pick",
+          "digits": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "length": 3,
+          "asks": [
+            "total"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "compose",
+          "digits": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "length": 3,
+          "asks": [
+            "total",
+            "not_multiple_of_5"
+          ]
+        }
+      }
+    ],
+    "distribute_distinct": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "rabbit",
+          "boxes": 3,
+          "asks": [
+            {
+              "kind": "any",
+              "items": 4
+            },
+            {
+              "kind": "onto",
+              "items": 4
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "books",
+          "boxes": 3,
+          "asks": [
+            {
+              "kind": "any",
+              "items": 4
+            },
+            {
+              "kind": "first_at_least",
+              "items": 4,
+              "k": 1
+            },
+            {
+              "kind": "first_exactly",
+              "items": 4,
+              "k": 1
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "vending",
+          "boxes": 6,
+          "asks": [
+            {
+              "kind": "any",
+              "items": 3
+            },
+            {
+              "kind": "all_different",
+              "items": 3
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "rooms",
+          "boxes": 3,
+          "asks": [
+            {
+              "kind": "each_at_most",
+              "items": 4,
+              "cap": 4
+            },
+            {
+              "kind": "each_at_most",
+              "items": 5,
+              "cap": 4
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "lunch",
+          "boxes": 3,
+          "asks": [
+            {
+              "kind": "each_at_most",
+              "items": 5,
+              "cap": 4
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "digits",
+          "digits": [
+            2,
+            3
+          ],
+          "boxes": 2,
+          "asks": [
+            {
+              "kind": "onto",
+              "items": 4
+            }
+          ]
+        }
+      }
+    ],
+    "ends_and_block": [
+      {
+        "seed": 1,
+        "constraints": {
+          "end_group": 2,
+          "singles": 2,
+          "block": 2
+        }
+      }
+    ],
+    "ends_from_group": [
+      {
+        "seed": 1,
+        "constraints": {
+          "special": 2,
+          "others": 4
+        }
+      }
+    ],
+    "fixed_order_insertion": [
+      {
+        "seed": 1,
+        "constraints": {
+          "base": 5,
+          "added": 2
+        }
+      }
+    ],
+    "grid_paths": [
+      {
+        "seed": 1,
+        "constraints": {
+          "width": 7,
+          "height": 3,
+          "points": {
+            "C": [
+              2,
+              1
+            ],
+            "D": [
+              4,
+              2
+            ]
+          },
+          "asks": [
+            "any",
+            "via_C",
+            "via_C_or_D",
+            "avoid_both"
+          ],
+          "figure": "example7"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "width": 6,
+          "height": 4,
+          "points": {
+            "C": [
+              3,
+              1
+            ],
+            "D": [
+              4,
+              2
+            ]
+          },
+          "asks": [
+            "any",
+            "via_C",
+            "via_C_or_D",
+            "avoid_both"
+          ],
+          "figure": "practice7"
+        }
+      }
+    ],
+    "identical_arrangement": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "duty",
+          "counts": [
+            4,
+            3
+          ],
+          "names": [
+            "甲",
+            "乙"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "train",
+          "counts": [
+            3,
+            4
+          ],
+          "animals": [
+            "無尾熊",
+            "貓熊"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "volunteers",
+          "counts": [
+            2,
+            2,
+            2
+          ]
+        }
+      }
+    ],
+    "line_walk": [
+      {
+        "seed": 1,
+        "constraints": {
+          "steps": 6,
+          "target": 4
+        }
+      }
+    ],
+    "multiset_digit_numbers": [
+      {
+        "seed": 1,
+        "constraints": {
+          "digits": [
+            0,
+            0,
+            1,
+            1,
+            2,
+            2
+          ],
+          "ask": "number"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "digits": [
+            4,
+            5,
+            5,
+            5,
+            8,
+            8,
+            8
+          ],
+          "ask": "even"
+        }
+      }
+    ],
+    "relative_order_three": [
+      {
+        "seed": 1,
+        "constraints": {
+          "n": 6,
+          "pair": [
+            0,
+            1
+          ],
+          "ref": 2,
+          "mode": "same_side"
+        }
+      }
+    ],
+    "restricted_assignment": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "universities",
+          "n": 7,
+          "k": 4,
+          "forbidden": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "names": [
+            "甲",
+            "乙"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "relay",
+          "n": 6,
+          "k": 4,
+          "forbidden": [
+            [
+              0,
+              0
+            ]
+          ],
+          "names": []
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "family",
+          "n": 5,
+          "k": 5,
+          "forbidden": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              4
+            ]
+          ],
+          "names": [
+            "爸爸",
+            "么兒"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "projects",
+          "n": 5,
+          "k": 5,
+          "forbidden": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "names": [
+            "甲",
+            "乙"
+          ]
+        }
+      }
+    ],
+    "selected_arrangement": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "lottery_singing",
+          "n": 6,
+          "k": 6
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "songs",
+          "n": 7,
+          "k": 4
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "lottery_election",
+          "n": 5,
+          "k": 5
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "sites",
+          "n": 6,
+          "k": 3
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "colors",
+          "word": "IMO",
+          "n": 5,
+          "k": 3
+        }
+      }
+    ],
+    "two_group_line": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "baseball",
+          "a": 4,
+          "b": 5
+        }
+      }
+    ]
+  },
+  "deferred_components": {
+    "12801": "下圖為一街道圖，從 A 取捷徑走到 B：街道圖是不規則的方格（有些街道線不存在），圖形本身就是題目，無法改數字而不重畫；以教材原題保留（FIXED_GRADED），答案由圖檔像素讀出的街道圖獨立推導並經動態規劃與逐路徑枚舉交叉驗證"
+  }
+}

@@ -1,0 +1,87 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "discrete.sets_counting",
+ "registry_revision": "promoted-61f56dc42350",
+ "bundle_sha256": "61f56dc423502ef0c2e512490d1f1b0e5af532f666c8dfe0d33333524ac37d89",
+ "allowed_operations": [
+  "at_least_one_pairing",
+  "choice_product",
+  "coin_payment",
+  "coin_toss_sequences",
+  "condition_relation",
+  "dice_sum_multiples",
+  "divisor_counting",
+  "equation_root_sets",
+  "finite_set_operations",
+  "grade_selection",
+  "graph_paths",
+  "implication_truth",
+  "interval_set_operations",
+  "multiples_counting",
+  "ordered_at_least_one",
+  "proposition_truth",
+  "race_outcomes",
+  "region_pairs_claim",
+  "three_set_counting",
+  "tiling_count",
+  "two_set_counting"
+ ],
+ "skill_bindings": {
+  "gh_CountingPrinciples": {
+   "fixed_domain_key": "discrete.sets_counting",
+   "allowed_operations": [
+    "at_least_one_pairing",
+    "choice_product",
+    "coin_payment",
+    "coin_toss_sequences",
+    "dice_sum_multiples",
+    "divisor_counting",
+    "grade_selection",
+    "graph_paths",
+    "multiples_counting",
+    "ordered_at_least_one",
+    "race_outcomes",
+    "region_pairs_claim",
+    "three_set_counting",
+    "tiling_count",
+    "two_set_counting"
+   ]
+  },
+  "gh_LogicAndSets": {
+   "fixed_domain_key": "discrete.sets_counting",
+   "allowed_operations": [
+    "condition_relation",
+    "equation_root_sets",
+    "finite_set_operations",
+    "implication_truth",
+    "interval_set_operations",
+    "proposition_truth"
+   ]
+  }
+ },
+ "operations_executed": {
+  "at_least_one_pairing": 1,
+  "choice_product": 2,
+  "coin_payment": 1,
+  "coin_toss_sequences": 1,
+  "condition_relation": 1,
+  "dice_sum_multiples": 1,
+  "divisor_counting": 2,
+  "equation_root_sets": 1,
+  "finite_set_operations": 2,
+  "grade_selection": 1,
+  "graph_paths": 1,
+  "implication_truth": 1,
+  "interval_set_operations": 1,
+  "multiples_counting": 1,
+  "ordered_at_least_one": 1,
+  "proposition_truth": 2,
+  "race_outcomes": 1,
+  "region_pairs_claim": 1,
+  "three_set_counting": 2,
+  "tiling_count": 1,
+  "two_set_counting": 4
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\counting_sets"
+}

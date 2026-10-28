@@ -1,0 +1,975 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_discrete_counting_sets_a7509fdf",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-27: one-time Promotion and Publish of 數學2 Unit 3 計數原理 (gh_LogicAndSets 8 + gh_CountingPrinciples 21 components; fixed self-check row 12746); no Flask / Cloudflare restart",
+    "approved_revision": 1,
+    "approval_scope": "revision 1: 普高數學2 Unit 3 計數原理 — domain discrete.sets_counting (21 operations: at_least_one_pairing, choice_product, coin_payment, coin_toss_sequences, condition_relation, dice_sum_multiples, divisor_counting, equation_root_sets, finite_set_operations, grade_selection, graph_paths, implication_truth, interval_set_operations, multiples_counting, ordered_at_least_one, proposition_truth, race_outcomes, region_pairs_claim, three_set_counting, tiling_count, two_set_counting); Skills gh_LogicAndSets (8 components: 12744, 12745, 12747, 12748, 12763, 12764, 12766, 12767); gh_CountingPrinciples (21 components: 12749, 12750, 12751, 12752, 12753, 12754, 12755, 12756, 12757, 12758, 12759, 12760, 12761, 12762, 12765, 12768, 12769, 12770, 12771, 12772, 12773); 29 of the 30 formal rows (ids 12744-12773). Deferred from dynamic generation: 12746 (free-text negation of compound propositions, kept as FIXED_UNGRADED self-check via configs/fixed_textbook_practice.json, released separately). Figure rows 12756 (path graph) and 12773 (L-shaped tiling) are dynamic and reuse the reviewed textbook crop (reuse_textbook_image); the figure is never varied, so every variant keeps the printed graph / region and only the asked quantity changes. Format hints never show the answer."
+  },
+  "domain_key": "discrete.sets_counting",
+  "package_name": "counting_sets",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "counting_sets_adapter.py": "de6b17295e600bb8331260eda9468b56d34dc31d6ad3e333eca85eca42f63c00",
+    "counting_sets_domain.py": "df84f39680251d969b515c10a3a59a88fd0862ca5b00147d12f42c5b9fd0c4e2"
+  },
+  "domain_module": "counting_sets_domain",
+  "entrypoint": "build_counting_sets_matrix",
+  "capabilities": [
+    "at_least_one_pairing",
+    "choice_product",
+    "coin_payment",
+    "coin_toss_sequences",
+    "condition_relation",
+    "dice_sum_multiples",
+    "divisor_counting",
+    "equation_root_sets",
+    "finite_set_operations",
+    "grade_selection",
+    "graph_paths",
+    "implication_truth",
+    "interval_set_operations",
+    "multiples_counting",
+    "ordered_at_least_one",
+    "proposition_truth",
+    "race_outcomes",
+    "region_pairs_claim",
+    "three_set_counting",
+    "tiling_count",
+    "two_set_counting"
+  ],
+  "operations": {
+    "at_least_one_pairing": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_at_least_one_pairing_matrix",
+      "provided_capabilities": [
+        "at_least_one_pairing"
+      ]
+    },
+    "choice_product": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_choice_product_matrix",
+      "provided_capabilities": [
+        "choice_product"
+      ]
+    },
+    "coin_payment": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_coin_payment_matrix",
+      "provided_capabilities": [
+        "coin_payment"
+      ]
+    },
+    "coin_toss_sequences": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_coin_toss_sequences_matrix",
+      "provided_capabilities": [
+        "coin_toss_sequences"
+      ]
+    },
+    "condition_relation": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_condition_relation_matrix",
+      "provided_capabilities": [
+        "condition_relation"
+      ]
+    },
+    "dice_sum_multiples": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_dice_sum_multiples_matrix",
+      "provided_capabilities": [
+        "dice_sum_multiples"
+      ]
+    },
+    "divisor_counting": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_divisor_counting_matrix",
+      "provided_capabilities": [
+        "divisor_counting"
+      ]
+    },
+    "equation_root_sets": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_equation_root_sets_matrix",
+      "provided_capabilities": [
+        "equation_root_sets"
+      ]
+    },
+    "finite_set_operations": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_finite_set_operations_matrix",
+      "provided_capabilities": [
+        "finite_set_operations"
+      ]
+    },
+    "grade_selection": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_grade_selection_matrix",
+      "provided_capabilities": [
+        "grade_selection"
+      ]
+    },
+    "graph_paths": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_graph_paths_matrix",
+      "provided_capabilities": [
+        "graph_paths"
+      ]
+    },
+    "implication_truth": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_implication_truth_matrix",
+      "provided_capabilities": [
+        "implication_truth"
+      ]
+    },
+    "interval_set_operations": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "inequality",
+        "multi_part"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "inequality_solution_checker",
+        "multi_part_answer_checker"
+      ],
+      "validator": "validate_interval_set_operations_matrix",
+      "provided_capabilities": [
+        "interval_set_operations"
+      ]
+    },
+    "multiples_counting": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_multiples_counting_matrix",
+      "provided_capabilities": [
+        "multiples_counting"
+      ]
+    },
+    "ordered_at_least_one": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_ordered_at_least_one_matrix",
+      "provided_capabilities": [
+        "ordered_at_least_one"
+      ]
+    },
+    "proposition_truth": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "single_choice",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer",
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_proposition_truth_matrix",
+      "provided_capabilities": [
+        "proposition_truth"
+      ]
+    },
+    "race_outcomes": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_race_outcomes_matrix",
+      "provided_capabilities": [
+        "race_outcomes"
+      ]
+    },
+    "region_pairs_claim": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_region_pairs_claim_matrix",
+      "provided_capabilities": [
+        "region_pairs_claim"
+      ]
+    },
+    "three_set_counting": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_three_set_counting_matrix",
+      "provided_capabilities": [
+        "three_set_counting"
+      ]
+    },
+    "tiling_count": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_tiling_count_matrix",
+      "provided_capabilities": [
+        "tiling_count"
+      ]
+    },
+    "two_set_counting": {
+      "handler": "build_counting_sets_matrix",
+      "payload_adapter": "counting_sets_adapter.adapt_counting_sets_matrix",
+      "runtime_contract": "counting_sets_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_two_set_counting_matrix",
+      "provided_capabilities": [
+        "two_set_counting"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_CountingPrinciples": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "at_least_one_pairing",
+        "choice_product",
+        "coin_payment",
+        "coin_toss_sequences",
+        "dice_sum_multiples",
+        "divisor_counting",
+        "grade_selection",
+        "graph_paths",
+        "multiples_counting",
+        "ordered_at_least_one",
+        "race_outcomes",
+        "region_pairs_claim",
+        "three_set_counting",
+        "tiling_count",
+        "two_set_counting"
+      ]
+    },
+    "gh_LogicAndSets": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "condition_relation",
+        "equation_root_sets",
+        "finite_set_operations",
+        "implication_truth",
+        "interval_set_operations",
+        "proposition_truth"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "at_least_one_pairing": [
+      {
+        "seed": 1,
+        "constraints": {
+          "head": {
+            "total": 6,
+            "vet": 4
+          },
+          "tail": {
+            "total": 4,
+            "vet": 3
+          }
+        }
+      }
+    ],
+    "choice_product": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "menu",
+          "groups": [
+            {
+              "label": "主菜",
+              "count": 4
+            },
+            {
+              "label": "湯",
+              "count": 3
+            },
+            {
+              "label": "飲料",
+              "count": 2
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "staff",
+          "groups": [
+            {
+              "label": "內科醫師",
+              "count": 8
+            },
+            {
+              "label": "外科醫師",
+              "count": 6
+            }
+          ]
+        }
+      }
+    ],
+    "coin_payment": [
+      {
+        "seed": 1,
+        "constraints": {
+          "coins": [
+            10,
+            50
+          ],
+          "total": 160
+        }
+      }
+    ],
+    "coin_toss_sequences": [
+      {
+        "seed": 1,
+        "constraints": {
+          "max_tosses": 4,
+          "run": 2
+        }
+      }
+    ],
+    "condition_relation": [
+      {
+        "seed": 1,
+        "constraints": {
+          "cond": {
+            "kind": "abs_eq",
+            "c": 3
+          },
+          "target": {
+            "kind": "eq",
+            "c": 3
+          }
+        }
+      }
+    ],
+    "dice_sum_multiples": [
+      {
+        "seed": 1,
+        "constraints": {
+          "modulus": 5
+        }
+      }
+    ],
+    "divisor_counting": [
+      {
+        "seed": 1,
+        "constraints": {
+          "n": 360,
+          "multiple_of": 18,
+          "exclude_multiple_of": null
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "n": 240,
+          "multiple_of": 4,
+          "exclude_multiple_of": 5
+        }
+      }
+    ],
+    "equation_root_sets": [
+      {
+        "seed": 1,
+        "constraints": {
+          "A": {
+            "kind": "square",
+            "rhs": 1
+          },
+          "B": {
+            "kind": "quad",
+            "b": -2,
+            "c": -3
+          },
+          "items": [
+            "intersection",
+            "union"
+          ]
+        }
+      }
+    ],
+    "finite_set_operations": [
+      {
+        "seed": 1,
+        "constraints": {
+          "universe": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "A": [
+            1,
+            2,
+            3
+          ],
+          "B": [
+            2,
+            3,
+            4
+          ],
+          "items": [
+            "intersection",
+            "union",
+            "a_minus_b",
+            "a_complement"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "A": [
+            1,
+            2,
+            4,
+            5
+          ],
+          "B": [
+            1,
+            3,
+            6
+          ],
+          "items": [
+            "intersection",
+            "union",
+            "a_minus_b",
+            "b_minus_a"
+          ]
+        }
+      }
+    ],
+    "grade_selection": [
+      {
+        "seed": 1,
+        "constraints": {
+          "grades": [
+            3,
+            4,
+            6
+          ]
+        }
+      }
+    ],
+    "graph_paths": [
+      {
+        "seed": 1,
+        "constraints": {
+          "vertices": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "edges": [
+            [
+              "A",
+              "B"
+            ],
+            [
+              "A",
+              "D"
+            ],
+            [
+              "B",
+              "C"
+            ],
+            [
+              "B",
+              "D"
+            ],
+            [
+              "C",
+              "D"
+            ]
+          ],
+          "start": "A",
+          "end": "C"
+        }
+      }
+    ],
+    "implication_truth": [
+      {
+        "seed": 1,
+        "constraints": {
+          "claim": "ab0_and"
+        }
+      }
+    ],
+    "interval_set_operations": [
+      {
+        "seed": 1,
+        "constraints": {
+          "A": {
+            "lo": 1,
+            "hi": 3
+          },
+          "B": {
+            "lo": 2,
+            "hi": 4
+          },
+          "items": [
+            "intersection",
+            "union",
+            "a_minus_b",
+            "a_complement"
+          ]
+        }
+      }
+    ],
+    "multiples_counting": [
+      {
+        "seed": 1,
+        "constraints": {
+          "limit": 300,
+          "divisors": [
+            2,
+            3,
+            5
+          ]
+        }
+      }
+    ],
+    "ordered_at_least_one": [
+      {
+        "seed": 1,
+        "constraints": {
+          "others": 5,
+          "special": 4,
+          "picks": 2
+        }
+      }
+    ],
+    "proposition_truth": [
+      {
+        "seed": 1,
+        "constraints": {
+          "atoms": [
+            {
+              "kind": "fact",
+              "id": "rect_square"
+            },
+            {
+              "kind": "fact",
+              "id": "eq_tri_isos"
+            },
+            {
+              "kind": "compare",
+              "a": 3,
+              "op": ">",
+              "b": 5
+            }
+          ],
+          "options": [
+            [
+              "atom",
+              0
+            ],
+            [
+              "atom",
+              1
+            ],
+            [
+              "and",
+              0,
+              1
+            ],
+            [
+              "or",
+              1,
+              2
+            ],
+            [
+              "or",
+              0,
+              2
+            ]
+          ],
+          "mode": "select_true"
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "atoms": [
+            {
+              "kind": "compare",
+              "a": 5,
+              "op": ">",
+              "b": 8
+            },
+            {
+              "kind": "compare",
+              "a": 5,
+              "op": "<",
+              "b": 7
+            }
+          ],
+          "options": [
+            [
+              "or",
+              0,
+              1
+            ]
+          ],
+          "mode": "truth"
+        }
+      }
+    ],
+    "race_outcomes": [
+      {
+        "seed": 1,
+        "constraints": {
+          "wins_needed": 2,
+          "winner": "甲",
+          "sport": "桌球"
+        }
+      }
+    ],
+    "region_pairs_claim": [
+      {
+        "seed": 1,
+        "constraints": {
+          "south": 2,
+          "north": 3,
+          "claimed": 4,
+          "relation": "same_region"
+        }
+      }
+    ],
+    "three_set_counting": [
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "union_and_none",
+          "U": 40,
+          "A": 15,
+          "B": 19,
+          "C": 20,
+          "AB": 10,
+          "BC": 12,
+          "CA": 8,
+          "ABC": 3
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "union",
+          "A": 20,
+          "B": 10,
+          "C": 5,
+          "AB": 6,
+          "BC": 3,
+          "CA": 3,
+          "ABC": 1
+        }
+      }
+    ],
+    "tiling_count": [
+      {
+        "seed": 1,
+        "constraints": {
+          "cells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              3,
+              0
+            ],
+            [
+              4,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "ask": {
+            "kind": "total"
+          }
+        }
+      }
+    ],
+    "two_set_counting": [
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "union_and_none",
+          "U": 40,
+          "A": 35,
+          "B": 15,
+          "AB": 12
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "missing_set",
+          "union": 20,
+          "A": 12,
+          "AB": 5
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "union",
+          "U": 40,
+          "A": 20,
+          "B": 30,
+          "AB": 15
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "kind": "intersection_range",
+          "U": 40,
+          "A": 30,
+          "B": 25
+        }
+      }
+    ]
+  },
+  "deferred_components": {
+    "12746": "寫出兩個命題的否定命題（自由文字）：沒有已授權的自由文字／命題文字等價判分契約，不以字串比對或 AI 判斷替代；題型沒有可驗證的作答形式，改為教材原題自評（FIXED_UNGRADED），解答以真值表逐一驗證（德摩根律）：隨堂練習2「2是偶數且2是質數」「π=3或π是正數」的否定命題"
+  }
+}

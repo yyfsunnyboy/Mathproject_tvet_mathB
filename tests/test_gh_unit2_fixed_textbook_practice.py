@@ -82,7 +82,7 @@ def test_config_is_bound_to_the_stage1_stems_and_the_derived_oracles():
         rows = {r[0]: SimpleNamespace(id=r[0], skill_id=r[1], problem_text=r[2]) for r in con.execute("select id, skill_id, problem_text from textbook_examples where id in (12719,12727,12731,12735)")}
     finally:
         con.close()
-    assert sorted(F.load_entries()) == [12719, 12727, 12731, 12735]
+    assert {12719, 12727, 12731, 12735} <= set(F.load_entries())  # later units (e.g. Unit 3: 12746) add their own entries
     oracles = json.loads((ROOT / "reports/gh_math2_unit2_fixed/fixed_oracles.json").read_text(encoding="utf-8"))
     for rid, row in rows.items():
         entry = F.entry_for_row(row)

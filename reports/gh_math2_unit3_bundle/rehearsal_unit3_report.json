@@ -1,0 +1,666 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_math2u3_rehearsal\\run",
+ "deferred": {
+  "12746": "寫出兩個命題的否定命題（自由文字）：沒有已授權的自由文字／命題文字等價判分契約，不以字串比對或 AI 判斷替代；題型沒有可驗證的作答形式，改為教材原題自評（FIXED_UNGRADED），解答以真值表逐一驗證（德摩根律）：隨堂練習2「2是偶數且2是質數」「π=3或π是正數」的否定命題"
+ },
+ "promotion": {
+  "domain_key": "discrete.sets_counting",
+  "registry_revision": "promoted-62f5caa565dd",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12744": {
+   "skill": "gh_LogicAndSets",
+   "operation": "interval_set_operations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "31913f0d858c508c682768856a5fdac7810ca25ad1a8f7baa352c060a6811a40",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12745": {
+   "skill": "gh_LogicAndSets",
+   "operation": "proposition_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "eedfc36db5266e7a0f39b2b90453ae6bdff3989be22194abce59c3970be69146",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12747": {
+   "skill": "gh_LogicAndSets",
+   "operation": "condition_relation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ae2b8013673dd57634536893db26504724254856ea4e92313f779ebe849373a3",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12748": {
+   "skill": "gh_LogicAndSets",
+   "operation": "finite_set_operations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "339ca631837fcd8bd01f42bdd822fe58292600fdec71e3008fcf8934f226d911",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12749": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "race_outcomes",
+   "variants": 12,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "811cb9836d7e39b318bec4e766207e97354d94e14e31641e1ce919a4b8868762",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 12
+   }
+  },
+  "12750": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "choice_product",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a82751bc1772f46890d8729e1d49d1663302f0a5a8d463d5e5d29350092c60e2",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12751": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "divisor_counting",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e44c311c66da54d18c88e773014144364a227b435a84487fd6f65e4a355ee62d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12752": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "at_least_one_pairing",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "92db2fd644b10eef434e386e22c44dc80d16602228946233ad21115a1b9b47da",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12753": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "two_set_counting",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f05558376556cde0e8bd78821574412244cb843307e01e2eebd0b407bf575992",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12754": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "three_set_counting",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c914e2010956c557bf8bd00d32883b09bff7aa294867ba7474d16724c6340322",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12755": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "coin_payment",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3b2d16967137d1c7e67d315f4992db96f494842cc20c35a82b3e491289ae1ca0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12756": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "graph_paths",
+   "variants": 12,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9710f45f84e781c467cc32f914c8002445e16cb678d7ad6ad71a3d02cbf95b39",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 12
+   }
+  },
+  "12757": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "dice_sum_multiples",
+   "variants": 9,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "24272e699647943f61db0c52de4dd6a4923a51cd1177bbf5cf25f38c914955a9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 9
+   }
+  },
+  "12758": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "choice_product",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d4de4f57d8703682cc699317450870f8aa82e101827997f3756454d4c14a3201",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12759": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "divisor_counting",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "4f002c637a5f870bc5d3269e910e4b84ee042a14d36c4ef71acece321258eaac",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12760": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "ordered_at_least_one",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "770e2b10422797347f088db84ae6d72856e1cd3ed34827f56979b2494962a9db",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12761": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "two_set_counting",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0bb91995e809ae645cdecd9e92fc836a352a6aef3123390f0c2129dfdd915c92",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12762": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "multiples_counting",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5e8f5c426b0c865385e9e95bf92a9eb97c93fed7d072723c42c506e2455600be",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12763": {
+   "skill": "gh_LogicAndSets",
+   "operation": "proposition_truth",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ca7ae9fd359670885bcd3e0c62af7fad64f3cb1f9b564d2372a3223b61410fbc",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12764": {
+   "skill": "gh_LogicAndSets",
+   "operation": "implication_truth",
+   "variants": 14,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3835310d18f23a9fd34a256415d4b73e7543982ef4a3aade0d05f1c517e7e193",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 14
+   }
+  },
+  "12765": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "region_pairs_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "cf3cc548572123f95201f0d65c660ab3378021dcd1b0e8fd1cef0880de77e6ee",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12766": {
+   "skill": "gh_LogicAndSets",
+   "operation": "finite_set_operations",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6c8462ba4e2878e4eacb93602d4503d6a7f9430fed83c1f2c038c7f14ee86416",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12767": {
+   "skill": "gh_LogicAndSets",
+   "operation": "equation_root_sets",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_LogicAndSets",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d1a49da5f734221133f2c458ae86f0aed2a9734ea74e367e5bc84c4276d71d7f",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12768": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "coin_toss_sequences",
+   "variants": 9,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "83af20ac2064224d1e9bac245a75ee6c7e06cdd6743ad555be0000fb9e9d1df5",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 9
+   }
+  },
+  "12769": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "grade_selection",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "7faa8c939ff096c4dfeeda3684ea0f20dd82707097d9dc125401a6d4be47d268",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12770": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "two_set_counting",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1bd60b89349a027d7979fd780bf779644bf51b55dc23da99346f8d81b4851f64",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12771": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "three_set_counting",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b7dff8ac052fb9797b5a9664b03f1432e0fccad1e548619a33986d9d6a58368d",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12772": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "two_set_counting",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "42fe75eb214b38555e86b90e24883f18ceadfc3afaac359fa4b9f776ab569602",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12773": {
+   "skill": "gh_CountingPrinciples",
+   "operation": "tiling_count",
+   "variants": 6,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_CountingPrinciples",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "7ad5c4b0d52c4dd6d3c1334f38d0d4b9c181517be565cd891b01206645589fe1",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 6
+   }
+  }
+ },
+ "publish": {
+  "gh_CountingPrinciples": {
+   "status": "production_published",
+   "component_count": 21,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 20,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12749",
+    "src_12750",
+    "src_12751",
+    "src_12752",
+    "src_12753",
+    "src_12754",
+    "src_12755",
+    "src_12756",
+    "src_12757",
+    "src_12758",
+    "src_12759",
+    "src_12760",
+    "src_12761",
+    "src_12762",
+    "src_12765",
+    "src_12768",
+    "src_12769",
+    "src_12770",
+    "src_12771",
+    "src_12772",
+    "src_12773"
+   ]
+  },
+  "gh_LogicAndSets": {
+   "status": "production_published",
+   "component_count": 8,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 5,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12744",
+    "src_12745",
+    "src_12747",
+    "src_12748",
+    "src_12763",
+    "src_12764",
+    "src_12766",
+    "src_12767"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_CountingPrinciples": {
+   "served_examples": {
+    "12749": 4,
+    "12750": 4,
+    "12751": 4,
+    "12752": 4,
+    "12753": 3,
+    "12754": 4,
+    "12755": 4,
+    "12756": 3,
+    "12757": 4,
+    "12758": 4,
+    "12759": 4,
+    "12760": 4,
+    "12761": 4,
+    "12762": 4,
+    "12765": 4,
+    "12768": 4,
+    "12769": 4,
+    "12770": 3,
+    "12771": 3,
+    "12772": 4,
+    "12773": 4
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_LogicAndSets": {
+   "served_examples": {
+    "12744": 10,
+    "12745": 10,
+    "12747": 10,
+    "12748": 10,
+    "12763": 10,
+    "12764": 10,
+    "12766": 10,
+    "12767": 10
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "production_paths_written": []
+}

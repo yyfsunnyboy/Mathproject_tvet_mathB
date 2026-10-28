@@ -1,0 +1,64 @@
+{
+ "scenario": "replace",
+ "result_status": "success",
+ "result_message": "教材分析與匯入成功。\n新增/更新技能 0 個\n新增課程綱要 0 筆\n新增課本例題 7 筆\n新增練習題 23 筆\n新增隨堂練習 12 筆\n練習題需審核 0 筆\n練習題跳過 0 筆\nV3 出題能力請至 /skills 建立或補全",
+ "gate_line": "INFO: [STAGE1 GATE] status=READY rows=30 blocked=0 needs_review=0 reasons={}",
+ "review_issues": null,
+ "gemini_requests": [
+  "INFO: --- 正在執行 AI 內容解析 ---",
+  "INFO: converted_docx_latex metadata-only Gemini payload (title inventory)",
+  "INFO: [PDF VISUAL] ok=True statuses={'NO_VISUAL_REQUIRED': 26, 'VISUAL_UNCERTAIN': 2, 'VISUAL_ATTACHED': 2} ambiguous=0 unanchored=0 stale_duplicates=0 warnings=[]"
+ ],
+ "before": {
+  "rows": 20,
+  "old_rows(<12744)": 20,
+  "labels_unique": true,
+  "anchors_non_null": 0,
+  "anchors_unique": 0,
+  "skills": {},
+  "binding_rows": 2,
+  "math_parse_failed": 0,
+  "asset_rows": [],
+  "visual_missing_flags": 0,
+  "ids": [
+   1362,
+   1381
+  ],
+  "chapter_content_digest": "881af9b86909650c",
+  "id_skill_map_digest": "f3f8f6094133ae1a",
+  "other_tables_textbook_digest": "ed3ac1172722b341f3bbbce81240eb2cae47de1b47e205b54c764e09a735f1b3"
+ },
+ "after": {
+  "rows": 30,
+  "old_rows(<12744)": 0,
+  "labels_unique": true,
+  "anchors_non_null": 30,
+  "anchors_unique": 30,
+  "skills": {
+   "gh_CountingPrinciples": 21,
+   "gh_LogicAndSets": 9
+  },
+  "binding_rows": 2,
+  "math_parse_failed": 0,
+  "asset_rows": [
+   12786,
+   12803
+  ],
+  "visual_missing_flags": 0,
+  "ids": [
+   12774,
+   12803
+  ],
+  "chapter_content_digest": "acf8b7194aae6443",
+  "id_skill_map_digest": "35975a5925187130",
+  "other_tables_textbook_digest": "ed3ac1172722b341f3bbbce81240eb2cae47de1b47e205b54c764e09a735f1b3"
+ },
+ "published_assets": [
+  "uploads\\question_assets\\general\\longteng\\數學2\\ch_unknown_單元3_計數原理\\sec_unknown_3計數原理\\advanced_exercise_3習題_進階題8_source_typeadvanced_exercise_dedupe4a7b7dc528b2a973_general__fig1.png",
+  "uploads\\question_assets\\general\\longteng\\數學2\\ch_unknown_單元3_計數原理\\sec_unknown_3計數原理\\in_class_practice_隨堂練習6_source_typein_class_practice_linked_example例題6_dedupe9a208c96948d35b4_general__fig1.png"
+ ],
+ "formal_db_unchanged": true,
+ "formal_uploads_textbook_import_instance_untouched": true,
+ "formal_files_changed": [],
+ "sources_present": true
+}
