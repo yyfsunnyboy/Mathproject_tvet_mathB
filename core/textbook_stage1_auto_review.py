@@ -10,6 +10,7 @@ import json
 import re
 import shutil
 import zipfile
+from collections import Counter
 from pathlib import Path
 from typing import Any, Callable
 
@@ -74,14 +75,7 @@ def _chinese(text: str) -> str:
     return "".join(re.findall(r"[\u4e00-\u9fff]", text or ""))
 
 
-def _pdf_fidelity(row: Any, notes: dict, pdf_pages: list[str]) -> bool:
-    page = (notes.get("pdf_visual_enrichment") or {}).get("page")
-    if not isinstance(page, int) or page < 1 or page > len(pdf_pages):
-        return False
-    stem = _chinese(str(getattr(row, "problem_text", "") or ""))
-    if len(stem) < 6:
-        return False
-    text = pdf_pages[page - 1]
+def _ordered_chinese_match(stem: str, text: str) -> bool:
     pos = 0
     for char in stem:
         pos = text.find(char, pos)
@@ -89,6 +83,91 @@ def _pdf_fidelity(row: Any, notes: dict, pdf_pages: list[str]) -> bool:
             return False
         pos += 1
     return True
+
+
+def _math_tokens(text: str) -> Counter[str]:
+    formulae = re.findall(r"\\\((.*?)\\\)|\\\[(.*?)\\\]", text, flags=re.S)
+    math = " ".join(inline or display for inline, display in formulae)
+    math = re.sub(r"\\[A-Za-z]+", " ", math)
+    return Counter(re.findall(r"\d+|[A-Za-z]|[+\-=]", math))
+
+
+def _pdf_tokens(text: str) -> Counter[str]:
+    return Counter(re.findall(r"\d+|[A-Za-z]|[+\-=]", text))
+
+
+def _local_math_match(stem: str, required: Counter[str], blocks: list[tuple]) -> bool:
+    # PDF formula glyphs often occupy adjacent text blocks, not the Chinese stem block.
+    lead = stem[:2]
+    for block in blocks:
+        if lead not in _chinese(block[4]):
+            continue
+        y = block[1]
+        nearby = " ".join(b[4] for b in blocks if y - 20 <= b[1] <= y + 50)
+        if not required - _pdf_tokens(nearby):
+            return True
+    return False
+
+
+def _nearby_pdf_pages(row: Any, rows: list[Any], page_count: int) -> list[int]:
+    notes = _notes(row)
+    page = (notes.get("pdf_visual_enrichment") or {}).get("page")
+    if isinstance(page, int) and 1 <= page <= page_count:
+        return [page] + [p for distance in (1, 2) for p in (page - distance, page + distance)
+                         if 1 <= p <= page_count]
+    order = (notes.get("question_anchor") or {}).get("source_order")
+    if not isinstance(order, int):
+        return []
+    neighbors = []
+    for other in rows:
+        if other is row:
+            continue
+        other_notes = _notes(other)
+        other_order = (other_notes.get("question_anchor") or {}).get("source_order")
+        other_page = (other_notes.get("pdf_visual_enrichment") or {}).get("page")
+        if isinstance(other_order, int) and isinstance(other_page, int) and 1 <= other_page <= page_count:
+            neighbors.append((other_order, other_page))
+    previous = max((x for x in neighbors if x[0] < order), default=None)
+    following = min((x for x in neighbors if x[0] > order), default=None)
+    if previous and following:
+        low, high = min(previous[1], following[1]), max(previous[1], following[1])
+    elif previous or following:
+        low = high = (previous or following)[1]
+    else:
+        return []
+    return list(range(max(1, low - 1), min(page_count, high + 1) + 1)) if high - low <= 3 else []
+
+
+def _pdf_fidelity(row: Any, notes: dict, pdf_pages: list[str], raw_pages: list[str],
+                  page_blocks: list[list[tuple]], rows: list[Any]) -> tuple[int, str] | None:
+    stem_text = str(getattr(row, "problem_text", "") or "")
+    stem = _chinese(stem_text)
+    if not stem:
+        return None
+    page = (notes.get("pdf_visual_enrichment") or {}).get("page")
+    if (len(stem) >= 6 and isinstance(page, int) and 1 <= page <= len(pdf_pages)
+            and _ordered_chinese_match(stem, pdf_pages[page - 1])):
+        return page, "ordered_chinese_on_mapped_page"
+    required = _math_tokens(stem_text)
+    if not required or not any(token.isdigit() for token in required) or len(required) < 2:
+        return None
+    matches = []
+    local_matches = []
+    for candidate in _nearby_pdf_pages(row, rows, len(pdf_pages)):
+        if not _ordered_chinese_match(stem, pdf_pages[candidate - 1]):
+            continue
+        if required - _pdf_tokens(raw_pages[candidate - 1]):
+            continue
+        matches.append(candidate)
+        if _local_math_match(stem, required, page_blocks[candidate - 1]):
+            local_matches.append(candidate)
+    if len(local_matches) == 1:
+        return local_matches[0], "localized_chinese_and_math_tokens"
+    if len(stem) < 6:
+        return None
+    if len(matches) != 1:
+        return None
+    return matches[0], "nearby_chinese_and_math_tokens"
 
 
 def _asset_file(asset: dict, roots: list[Path]) -> Path | None:
@@ -197,7 +276,9 @@ def review_and_heal_rows(
         raise ValueError("authoritative_source_provenance_mismatch")
     import fitz
     with fitz.open(pdf) as document:
-        pages = [_chinese(page.get_text()) for page in document]
+        raw_pages = [page.get_text() for page in document]
+        page_blocks = [page.get_text("blocks") for page in document]
+        pages = [_chinese(text) for text in raw_pages]
     pdf_pages = pages
     roots = [Path(r) for r in asset_roots or []] or [Path(__file__).resolve().parents[1]]
     sha_owners: dict[str, int] = {}
@@ -224,9 +305,23 @@ def review_and_heal_rows(
         rid = getattr(row, "id", None)
         stem = str(getattr(row, "problem_text", "") or "")
         solution = str(getattr(row, "detailed_solution", "") or "")
-        faithful = _pdf_fidelity(row, notes, pages)
+        fidelity = _pdf_fidelity(row, notes, pages, raw_pages, page_blocks, rows)
+        faithful = fidelity is not None
         if not faithful:
             issues.append({"id": rid, "reason": "stem_not_verified_against_pdf"})
+        elif fidelity[1] != "ordered_chinese_on_mapped_page":
+            enrichment = notes.get("pdf_visual_enrichment") or {}
+            previous_page = enrichment.get("page")
+            enrichment["page"] = fidelity[0]
+            enrichment["page_source"] = "stage1_pdf_fidelity"
+            notes["pdf_visual_enrichment"] = enrichment
+            notes["pdf_fidelity_verification"] = {
+                "method": fidelity[1], "previous_page": previous_page,
+                "verified_page": fidelity[0], "source_pdf_sha256": pdf_hash,
+            }
+            if previous_page != fidelity[0]:
+                changes.append({"id": rid, "field": "pdf_visual_enrichment.page",
+                                "before": previous_page, "after": fidelity[0], "kind": "source_page_alignment"})
         for field, value in (("problem_text", stem), ("detailed_solution", solution)):
             markers = MARKER.findall(value)
             if markers and all(code in SYMBOLS and code in source_codes for code in markers):
@@ -272,7 +367,7 @@ def review_and_heal_rows(
         if faithful and not MARKER.search(str(getattr(row, "problem_text", "") or "")):
             if notes.get("review_required_by_confidence") and notes.get("pdf_visual_status") == "NO_VISUAL_REQUIRED":
                 before = json.dumps(notes, ensure_ascii=False, sort_keys=True)
-                notes["manual_stem_review"] = {"source_pdf_sha256": pdf_hash, "result": "exact_ordered_chinese_text_match"}
+                notes["manual_stem_review"] = {"source_pdf_sha256": pdf_hash, "result": fidelity[1]}
                 notes.pop("review_required_by_confidence", None)
                 notes.pop("needs_review", None)
                 _record(notes, kind="source_text_match", before=before,
