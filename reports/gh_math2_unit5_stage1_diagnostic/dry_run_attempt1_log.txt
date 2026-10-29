@@ -1,0 +1,8 @@
+elapsed_seconds=0.19
+INFO: optional enrich PDF path provided
+INFO: 正在從 C:\Projects\Mathproject_tvet_mathB\reports\gh_math2_unit5_stage1_diagnostic\sandbox\05-.docx 提取內容...
+ERROR: 提取檔案內容時發生異常 (Exception): [Errno 13] Permission denied: 'C:\\Users\\yehiv\\AppData\\Local\\Packages\\sandbox.{143d7c2b-86f1-454d-a15f-fe8a92a4c2bd}\\AC\\Temp\\v1_mathtype_c043a41o\\converted_Latex.docx'
+ERROR: Failed to extract content from file.
+STDOUT
+
+STDERR

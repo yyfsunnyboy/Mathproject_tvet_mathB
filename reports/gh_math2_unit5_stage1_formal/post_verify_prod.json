@@ -1,0 +1,83 @@
+{
+ "manifest_status": "applied_verified",
+ "backup": "C:\\Projects\\Mathproject_tvet_mathB\\instance\\backups\\math2_unit5_stage1_20261029_220334\\kumon_math_before_math2_unit5_stage1.db",
+ "backup_sha256_ok": true,
+ "prod_integrity": "ok",
+ "backup_integrity": "ok",
+ "unit5_rows": [
+  37,
+  12812,
+  12848
+ ],
+ "backup_unit5_rows": [
+  28,
+  1413,
+  1440
+ ],
+ "skills": {
+  "gh_BinomialTheorem": 14,
+  "gh_Combination": 23
+ },
+ "old_ids_remaining": 0,
+ "registration": [
+  [
+   358,
+   "gh_Combination",
+   50001
+  ],
+  [
+   359,
+   "gh_BinomialTheorem",
+   50002
+  ]
+ ],
+ "comprehensive_exercises_bindings_other_units": 11,
+ "gate": {
+  "status": "READY",
+  "stage1_ready": true,
+  "blocked": 0,
+  "needs_review": 0
+ },
+ "figure_rows": {
+  "12834": {
+   "anchor": "general_2_section_advanced_exercise_012_037",
+   "file_ok": true,
+   "path": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元5_組合/sec_unknown_5組合/advanced_exercise_5習題_進階題12_source_typeadvanced_exercise_dedupe3a304875a7b5ee9d_general__fig1.png"
+  }
+ },
+ "tables_compared": 34,
+ "tables_differing_outside_scope": [],
+ "count_users": [
+  547,
+  547
+ ],
+ "count_practice_attempts": [
+  2752,
+  2752
+ ],
+ "count_progress": [
+  398,
+  398
+ ],
+ "count_mistake_notebook_entries": [
+  126,
+  126
+ ],
+ "count_adaptive_learning_logs": [
+  385,
+  385
+ ],
+ "unit4_identical": true,
+ "unit4_rows": 38,
+ "fixed_entry": {
+  "key": "12834",
+  "anchor_match": true,
+  "stem_sha_match": true,
+  "skill_match": true,
+  "unit5_fixed_keys": [
+   "12834"
+  ],
+  "total_entries": 7
+ },
+ "stray_pending_files": []
+}

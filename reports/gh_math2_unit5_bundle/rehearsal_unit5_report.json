@@ -1,0 +1,773 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_math2u5_rehearsal\\run",
+ "deferred": {
+  "12834": "進階題12（半圓直徑上 4 點、半圓周上 6 點）：圖形本身決定共線關係（直徑上的點共線、圓周上的點任三點不共線），改數字必須重畫圖形；以教材原題保留（FIXED_GRADED，含教師核可的教材裁切圖），答案 40 條直線、116 個三角形已逐組枚舉驗證，已於 Stage 1 綁定正式題 12834",
+  "12838": "例題9 證明 C(n,0)+C(n,1)+…+C(n,n)=2^n：證明題沒有可自動判定的單一答案，比照 Unit 2 的證明題以 ungraded 自評保留（題目、手寫區與逐步參考證明，不產生對錯、連續答對、精熟度或錯題紀錄）",
+  "12845": "隨堂練習10 證明 C(n,0)−C(n,1)+C(n,2)−…+(−1)^n C(n,n)=0：證明題沒有可自動判定的單一答案，比照 Unit 2 的證明題以 ungraded 自評保留（題目、手寫區與逐步參考證明，不產生對錯、連續答對、精熟度或錯題紀錄）"
+ },
+ "promotion": {
+  "domain_key": "discrete.combinations",
+  "registry_revision": "promoted-a895355ea3e4",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12812": {
+   "skill": "gh_Combination",
+   "operation": "combination_evaluate",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "4b5bd78044189cbe245d24840f742fa5014661fedac21a297bd23e55dfef0e11",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12813": {
+   "skill": "gh_Combination",
+   "operation": "select_with_members",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "8c07e3c6cc24819faf7564308c006a3ac226e623658e79458180d1a7b480f38b",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12814": {
+   "skill": "gh_Combination",
+   "operation": "mixed_group_ordered",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "887e572c2bfb9115058ac00fe1367abae644e5988fac70d70ec05f36bcddb89a",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12815": {
+   "skill": "gh_Combination",
+   "operation": "group_partition",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "cdd8ab0589e78ca263cfb3cf8692774dda10b0bf613e9e95b7588ce4ca20a7a5",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12816": {
+   "skill": "gh_Combination",
+   "operation": "group_partition",
+   "variants": 11,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6d386fd6df2fcdb4c17f6db1d329209822d8d2afebbfb5ce502a8126ab9103dc",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 11
+   }
+  },
+  "12817": {
+   "skill": "gh_Combination",
+   "operation": "combination_evaluate",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "97ae44775eab81f03f240544210e92710b1c55ae3eaf05a4a0d445561d28aef6",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12818": {
+   "skill": "gh_Combination",
+   "operation": "select_with_members",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "1e56e60ccb7d89a70c2c50d573bb11d250800131820634df35dbb7bf141057ae",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12819": {
+   "skill": "gh_Combination",
+   "operation": "mixed_group_ordered",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3952b306b87e66543bfd0d7aea3b2a2e7e30991c4d4a0d2b114343473d1fbf04",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12820": {
+   "skill": "gh_Combination",
+   "operation": "group_partition",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "089339a108ad767afa906e5349b5e450485dfb0b86b48b2e90afba090d0fa712",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12821": {
+   "skill": "gh_Combination",
+   "operation": "group_partition",
+   "variants": 12,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "7ca9ea54311ca88ddb363d836f1e558966fdd86d7794b487de3fda31d41a94d1",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 12
+   }
+  },
+  "12822": {
+   "skill": "gh_Combination",
+   "operation": "combination_identity_select",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "411894c82a48f26fdf52a6cb95b7495a6c13ce51098a608d50fd1e7cbae38b40",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12823": {
+   "skill": "gh_Combination",
+   "operation": "combination_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "387f8ab90ddc0ad37b41db029493b0097550836873c0f1ad978d8568cf390d11",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12824": {
+   "skill": "gh_Combination",
+   "operation": "combination_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "683dd2413fd18025ad2da863fc2858809a88e92a75d2ab94fb0f4ce079b6dfd5",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12825": {
+   "skill": "gh_Combination",
+   "operation": "combination_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3f8ecb3fdbe2f9ae48777df915a730760536ae6da4314e709220e71234721e65",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12826": {
+   "skill": "gh_Combination",
+   "operation": "pair_count",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "026afee3317f64a1612bd364c8448def6469e90d54b5584251b3db7a8584d326",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12827": {
+   "skill": "gh_Combination",
+   "operation": "sequential_selection",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "342a70d56df0b1186fd1223ba74e6602721e8efb59d5d556506f647e55f1aa04",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12828": {
+   "skill": "gh_Combination",
+   "operation": "gender_committee",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "0d1a62c016b7f8227feeea1aa1f3548e5ead6a3f416337808f9ff59bdb895383",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12829": {
+   "skill": "gh_Combination",
+   "operation": "paired_group_assignment",
+   "variants": 9,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "74bd728f711fea9df03e00e3ca43ecb216a1e3691917a7b0dd7962bbe7c11013",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 9
+   }
+  },
+  "12830": {
+   "skill": "gh_Combination",
+   "operation": "surjective_distribution",
+   "variants": 11,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "2321dc7e9fb90ae78cc8f9ae0f511022cc9aa8d00117c577bcce8016b1f3cc20",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 11
+   }
+  },
+  "12831": {
+   "skill": "gh_Combination",
+   "operation": "pair_count",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3112f583c565628864d03cf06775eac7a0373e2bea3d3dd1de9a68ae6bca7098",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12832": {
+   "skill": "gh_Combination",
+   "operation": "parity_sum_selection",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3df7dd124486b07bf99acd29ed6f5b4785315e1f5a705773a0b5ca8eb9332619",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12833": {
+   "skill": "gh_Combination",
+   "operation": "multiset_select_arrange",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "61de16bd8d79167af41e62e331cc66ad1ab9729b6b8f29c0925e3eae3513d638",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12835": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "binomial_expansion",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "4a6ce2a6165bdd3d29579b5ff18b543992edc629aa7264cda9d616c1ccc3574c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12836": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "binomial_expansion",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "99fb1b2fe8e421e268397e446c6f0cdc6a872942885725ef4b450c6e5f1d0168",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12837": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "general_term_coefficient",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a50e25271eb4ae55d03c3f796d6b1d2f60eaec8482f3caa195b969c22343ad46",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12839": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "at_least_k_selection",
+   "variants": 11,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "ea6d66fd8e8aaf00aa3a739b13cde6069931e4c98895750bd9b1ddf55360930e",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 11
+   }
+  },
+  "12840": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "combination_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "101d701a652cb0c1f3e0c1205a0b74f6098a9b9a5ddd1c090437fb6b3b2b1bc4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12841": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "binomial_sum_bound",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6fe2af7dd41ef0ae53ba6640bbcefe1ead73ae023ffc13a149ac927e796d569c",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12842": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "binomial_expansion",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "92e5d6175e3f6f57f40b064bebaef372d9d77b086dd525444527da4fed36cd07",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12843": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "radical_binomial_power",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "672450e294173b83e2546c07a8a12ae3c60d424b96afb8add0f3e267b6888b1e",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12844": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "general_term_coefficient",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f248e36e20c67dfb5b542b0954dd7a25a10f8b44b02dc56de749f3f79d2c3676",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12846": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "at_least_k_selection",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b8da24cf47989dc45125f1f62dae6bc43fb9e4baa2de208f4ba83240669b1677",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12847": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "general_term_coefficient",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "fbabed5b494dbf34b06ab028badf06f093cec1ada37429f2aadc664bf777c5b4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12848": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "coefficient_solve_parameter",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "3dc9c21adeaef509c5202f03325a0f16f69840dee72109c0d6ddb97570142aea",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  }
+ },
+ "publish": {
+  "gh_BinomialTheorem": {
+   "status": "production_published",
+   "component_count": 12,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 11,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12835",
+    "src_12836",
+    "src_12837",
+    "src_12839",
+    "src_12840",
+    "src_12841",
+    "src_12842",
+    "src_12843",
+    "src_12844",
+    "src_12846",
+    "src_12847",
+    "src_12848"
+   ]
+  },
+  "gh_Combination": {
+   "status": "production_published",
+   "component_count": 22,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 19,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12812",
+    "src_12813",
+    "src_12814",
+    "src_12815",
+    "src_12816",
+    "src_12817",
+    "src_12818",
+    "src_12819",
+    "src_12820",
+    "src_12821",
+    "src_12822",
+    "src_12823",
+    "src_12824",
+    "src_12825",
+    "src_12826",
+    "src_12827",
+    "src_12828",
+    "src_12829",
+    "src_12830",
+    "src_12831",
+    "src_12832",
+    "src_12833"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_BinomialTheorem": {
+   "served_examples": {
+    "12835": 7,
+    "12836": 6,
+    "12837": 7,
+    "12839": 7,
+    "12840": 6,
+    "12841": 7,
+    "12842": 7,
+    "12843": 6,
+    "12844": 7,
+    "12846": 6,
+    "12847": 7,
+    "12848": 7
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_Combination": {
+   "served_examples": {
+    "12812": 4,
+    "12813": 4,
+    "12814": 3,
+    "12815": 4,
+    "12816": 3,
+    "12817": 4,
+    "12818": 4,
+    "12819": 3,
+    "12820": 4,
+    "12821": 3,
+    "12822": 4,
+    "12823": 3,
+    "12824": 4,
+    "12825": 4,
+    "12826": 4,
+    "12827": 3,
+    "12828": 4,
+    "12829": 3,
+    "12830": 3,
+    "12831": 4,
+    "12832": 4,
+    "12833": 4
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "production_paths_written": []
+}

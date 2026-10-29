@@ -1,0 +1,221 @@
+[
+  {
+    "name": "例題1",
+    "row_id": 12812,
+    "question_anchor": "general_2_section_example_001_001",
+    "source_order": 1,
+    "docx_block_index": 0,
+    "docx_problem_text_after_formula_conversion": "求下列各數：\n(1)\\(C_{ 2 } ^{ 10 }\\)。 (2)\\(C_{ 8 } ^{ 10 }\\)。 (3)\\(C_{ 10 } ^{ 10 }\\)。",
+    "pdf_file": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\e24c72f89309_單元05-組合.pdf",
+    "pdf_page_1_based": 3,
+    "pdf_render": "source_pages/page_03.png",
+    "pdf_candidate_region_points_xyxy": [
+      0,
+      115,
+      610,
+      208
+    ],
+    "pdf_candidate_crop": "pdf_fidelity_candidate_12812.png",
+    "previous_source_page": 3,
+    "previous_pdf_candidate_pages": [
+      3
+    ],
+    "before_reason_code": "stem_not_verified_against_pdf",
+    "before_stage": "stage1_auto_review.pdf_fidelity",
+    "root_cause": "中文題幹只有 5 字；舊判準未比對公式",
+    "after_issue": null,
+    "verification_method": "localized_chinese_and_math_tokens",
+    "formula_and_symbol_evidence": "PDF 頁面中文字順序及數學 token 相符；短題要求局部文字區塊內的數學 token",
+    "evidence_type": "new_isolated_dry_run",
+    "original_evidence_status": "original_evidence_unavailable",
+    "pdf_extracted_text_in_candidate_region": "求下列各數：\n1 C2\n10 。　　　　2 C8\n10 。　　　　3 C10\n10 。\n例題1\n"
+  },
+  {
+    "name": "隨堂練習1",
+    "row_id": 12817,
+    "question_anchor": "general_2_section_in_class_practice_001_002",
+    "source_order": 2,
+    "docx_block_index": 1,
+    "docx_problem_text_after_formula_conversion": "求下列各數：\n(1)\\(C_{ 4 } ^{ 10 }\\)。 (2)\\(C_{ 3 } ^{ 7 }\\)。 (3)\\(\\frac { P_{ 5 } ^{ 12 } } { C_{ 5 } ^{ 12 } }\\)。",
+    "pdf_file": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\e24c72f89309_單元05-組合.pdf",
+    "pdf_page_1_based": 3,
+    "pdf_render": "source_pages/page_03.png",
+    "pdf_candidate_region_points_xyxy": [
+      0,
+      365,
+      610,
+      474
+    ],
+    "pdf_candidate_crop": "pdf_fidelity_candidate_12817.png",
+    "previous_source_page": 3,
+    "previous_pdf_candidate_pages": [
+      3
+    ],
+    "before_reason_code": "stem_not_verified_against_pdf",
+    "before_stage": "stage1_auto_review.pdf_fidelity",
+    "root_cause": "中文題幹只有 5 字；舊判準未比對公式",
+    "after_issue": null,
+    "verification_method": "localized_chinese_and_math_tokens",
+    "formula_and_symbol_evidence": "PDF 頁面中文字順序及數學 token 相符；短題要求局部文字區塊內的數學 token",
+    "evidence_type": "new_isolated_dry_run",
+    "original_evidence_status": "original_evidence_unavailable",
+    "pdf_extracted_text_in_candidate_region": "求下列各數：\n1 C4\n10 。　　　　2 C3\n7 。　　　　3 \nC\nP\n5\n12\n5\n12\n。\n隨堂練習\n"
+  },
+  {
+    "name": "5習題 觀念澄清3",
+    "row_id": 12825,
+    "question_anchor": "general_2_section_exercise_003_024",
+    "source_order": 24,
+    "docx_block_index": 23,
+    "docx_problem_text_after_formula_conversion": "下列敘述對的打「○」，錯的打「×」。\n\\(C_{ 20 } ^{ 100 }=C_{ 80 } ^{ 100 }\\)。",
+    "pdf_file": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\e24c72f89309_單元05-組合.pdf",
+    "pdf_page_1_based": 14,
+    "pdf_render": "source_pages/page_14.png",
+    "pdf_candidate_region_points_xyxy": [
+      0,
+      255,
+      610,
+      284
+    ],
+    "pdf_candidate_crop": "pdf_fidelity_candidate_12825.png",
+    "previous_source_page": null,
+    "previous_pdf_candidate_pages": [
+      14
+    ],
+    "before_reason_code": "stem_not_verified_against_pdf",
+    "before_stage": "stage1_auto_review.pdf_fidelity",
+    "root_cause": "原頁碼缺失；PDF 候選在第 14 頁",
+    "after_issue": null,
+    "verification_method": "nearby_chinese_and_math_tokens",
+    "formula_and_symbol_evidence": "PDF 頁面中文字順序及數學 token 相符；短題要求局部文字區塊內的數學 token",
+    "evidence_type": "new_isolated_dry_run",
+    "original_evidence_status": "original_evidence_unavailable",
+    "pdf_extracted_text_in_candidate_region": " 3 C\nC\n20\n100\n80\n100\n=\n。\n"
+  },
+  {
+    "name": "例題6",
+    "row_id": 12835,
+    "question_anchor": "general_2_section_example_006_012",
+    "source_order": 12,
+    "docx_block_index": 11,
+    "docx_problem_text_after_formula_conversion": "寫出 \\(\\left ( { x+y } \\right ) ^ { 5 }\\) 的展開式。",
+    "pdf_file": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\e24c72f89309_單元05-組合.pdf",
+    "pdf_page_1_based": 10,
+    "pdf_render": "source_pages/page_10.png",
+    "pdf_candidate_region_points_xyxy": [
+      0,
+      435,
+      610,
+      514
+    ],
+    "pdf_candidate_crop": "pdf_fidelity_candidate_12835.png",
+    "previous_source_page": null,
+    "previous_pdf_candidate_pages": [
+      10,
+      11
+    ],
+    "before_reason_code": "stem_not_verified_against_pdf",
+    "before_stage": "stage1_auto_review.pdf_fidelity",
+    "root_cause": "原頁碼缺失；PDF 候選在第 10 頁",
+    "after_issue": null,
+    "verification_method": "localized_chinese_and_math_tokens",
+    "formula_and_symbol_evidence": "PDF 頁面中文字順序及數學 token 相符；短題要求局部文字區塊內的數學 token",
+    "evidence_type": "new_isolated_dry_run",
+    "original_evidence_status": "original_evidence_unavailable",
+    "pdf_extracted_text_in_candidate_region": "寫出x\ny\n5\n+\n_\ni 的展開式。\n例題6\n"
+  },
+  {
+    "name": "例題7",
+    "row_id": 12836,
+    "question_anchor": "general_2_section_example_007_014",
+    "source_order": 14,
+    "docx_block_index": 13,
+    "docx_problem_text_after_formula_conversion": "寫出 \\(\\left ( { 2x-y } \\right ) ^ { 4 }\\) 的展開式。",
+    "pdf_file": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\e24c72f89309_單元05-組合.pdf",
+    "pdf_page_1_based": 11,
+    "pdf_render": "source_pages/page_11.png",
+    "pdf_candidate_region_points_xyxy": [
+      0,
+      109,
+      610,
+      189
+    ],
+    "pdf_candidate_crop": "pdf_fidelity_candidate_12836.png",
+    "previous_source_page": null,
+    "previous_pdf_candidate_pages": [
+      10,
+      11
+    ],
+    "before_reason_code": "stem_not_verified_against_pdf",
+    "before_stage": "stage1_auto_review.pdf_fidelity",
+    "root_cause": "原頁碼缺失；PDF 候選在第 11 頁",
+    "after_issue": null,
+    "verification_method": "localized_chinese_and_math_tokens",
+    "formula_and_symbol_evidence": "PDF 頁面中文字順序及數學 token 相符；短題要求局部文字區塊內的數學 token",
+    "evidence_type": "new_isolated_dry_run",
+    "original_evidence_status": "original_evidence_unavailable",
+    "pdf_extracted_text_in_candidate_region": "寫出\nx\ny\n2\n4\n-\n_\ni 的展開式。\n例題7\n"
+  },
+  {
+    "name": "5習題 觀念澄清4",
+    "row_id": 12840,
+    "question_anchor": "general_2_section_exercise_004_025",
+    "source_order": 25,
+    "docx_block_index": 24,
+    "docx_problem_text_after_formula_conversion": "下列敘述對的打「○」，錯的打「×」。\n在 \\(\\left ( { x+y } \\right ) ^ { 10 }\\) 的展開式中，\\(x ^ { 6 } y ^ { 4 }\\) 項的係數與 \\(x ^ { 4 } y ^ { 6 }\\) 項的係數相等。",
+    "pdf_file": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\e24c72f89309_單元05-組合.pdf",
+    "pdf_page_1_based": 14,
+    "pdf_render": "source_pages/page_14.png",
+    "pdf_candidate_region_points_xyxy": [
+      0,
+      283,
+      610,
+      322
+    ],
+    "pdf_candidate_crop": "pdf_fidelity_candidate_12840.png",
+    "previous_source_page": 16,
+    "previous_pdf_candidate_pages": [
+      14
+    ],
+    "before_reason_code": "stem_not_verified_against_pdf",
+    "before_stage": "stage1_auto_review.pdf_fidelity",
+    "root_cause": "原頁碼誤指第 16 頁；實際在第 14 頁",
+    "after_issue": null,
+    "verification_method": "nearby_chinese_and_math_tokens",
+    "formula_and_symbol_evidence": "PDF 頁面中文字順序及數學 token 相符；短題要求局部文字區塊內的數學 token",
+    "evidence_type": "new_isolated_dry_run",
+    "original_evidence_status": "original_evidence_unavailable",
+    "pdf_extracted_text_in_candidate_region": " 4 在x\ny\n10\n+\n_\ni\n的展開式中，x y\n6\n4 項的係數與x y\n4\n6 項的係數相等。\n"
+  },
+  {
+    "name": "隨堂練習10",
+    "row_id": 12845,
+    "question_anchor": "general_2_section_in_class_practice_010_019",
+    "source_order": 19,
+    "docx_block_index": 18,
+    "docx_problem_text_after_formula_conversion": "設n為正整數，證明：\\(C_{ 0 } ^{ n }-C_{ 1 } ^{ n }+C_{ 2 } ^{ n }-C_{ 3 } ^{ n }+\\cdots +\\left ( { -1 } \\right ) ^ { n } C_{ n } ^{ n }=0\\)。",
+    "pdf_file": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\e24c72f89309_單元05-組合.pdf",
+    "pdf_page_1_based": 12,
+    "pdf_render": "source_pages/page_12.png",
+    "pdf_candidate_region_points_xyxy": [
+      0,
+      577,
+      610,
+      648
+    ],
+    "pdf_candidate_crop": "pdf_fidelity_candidate_12845.png",
+    "previous_source_page": 13,
+    "previous_pdf_candidate_pages": [
+      12
+    ],
+    "before_reason_code": "stem_not_verified_against_pdf",
+    "before_stage": "stage1_auto_review.pdf_fidelity",
+    "root_cause": "原頁碼誤指第 13 頁；實際在第 12 頁",
+    "after_issue": null,
+    "verification_method": "localized_chinese_and_math_tokens",
+    "formula_and_symbol_evidence": "PDF 頁面中文字順序及數學 token 相符；短題要求局部文字區塊內的數學 token",
+    "evidence_type": "new_isolated_dry_run",
+    "original_evidence_status": "original_evidence_unavailable",
+    "pdf_extracted_text_in_candidate_region": "設 n 為正整數，證明：C\nC\nC\nC\nC\n1\n0\nn\nn\nn\nn\nn\nn\nn\n0\n1\n2\n3\ng\n-\n+\n-\n+\n+ -\n=\n^\nh\n。\n隨堂練習\n"
+  }
+]

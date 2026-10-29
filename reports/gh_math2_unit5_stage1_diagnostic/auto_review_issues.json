@@ -1,0 +1,222 @@
+{
+  "evidence_type": "new_isolated_dry_run",
+  "original_evidence_status": "original_evidence_unavailable",
+  "issues": [
+    {
+      "id": 12812,
+      "reason": "stem_not_verified_against_pdf",
+      "stage": "stage1_auto_review.pdf_fidelity",
+      "label": "例題1",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_001_001",
+        "anchor_key": "general|longteng|2|5|section|example|1|1",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "1",
+        "source_order": 1,
+        "block_index": 0,
+        "occurrence_index": 1,
+        "question_label": "例1",
+        "source_type": "textbook_example",
+        "text_fingerprint": "967b7e0eb59bd78b2263440a166d78aa0f08269b58fe6940b109147de8b690e2"
+      },
+      "source_page": 3,
+      "pdf_text_candidate_pages": [
+        3
+      ],
+      "stem_chinese_length": 5
+    },
+    {
+      "id": 12817,
+      "reason": "stem_not_verified_against_pdf",
+      "stage": "stage1_auto_review.pdf_fidelity",
+      "label": "隨堂練習1",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_001_002",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|1|2",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "1",
+        "source_order": 2,
+        "block_index": 1,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習1",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "bc90d3d53681e155225b2df3e01cc7a596002c1224569a3eabe31a4176e9e280"
+      },
+      "source_page": 3,
+      "pdf_text_candidate_pages": [
+        3
+      ],
+      "stem_chinese_length": 5
+    },
+    {
+      "id": 12825,
+      "reason": "stem_not_verified_against_pdf",
+      "stage": "stage1_auto_review.pdf_fidelity",
+      "label": "5習題 觀念澄清3",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_003_024",
+        "anchor_key": "general|longteng|2|5|section|exercise|3|24",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "3",
+        "source_order": 24,
+        "block_index": 23,
+        "occurrence_index": 1,
+        "question_label": "5習題 觀念澄清3",
+        "source_type": "chapter_exercise",
+        "text_fingerprint": "c1c70eaa79be131337991a5a78076ea2d069cb25aca052f4c323252df80d9f4e"
+      },
+      "source_page": null,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "stem_chinese_length": 10
+    },
+    {
+      "id": 12835,
+      "reason": "stem_not_verified_against_pdf",
+      "stage": "stage1_auto_review.pdf_fidelity",
+      "label": "例題6",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_006_012",
+        "anchor_key": "general|longteng|2|5|section|example|6|12",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "6",
+        "source_order": 12,
+        "block_index": 11,
+        "occurrence_index": 1,
+        "question_label": "例6",
+        "source_type": "textbook_example",
+        "text_fingerprint": "a64be224afe12d533b257710e14004ffa9f2106d348a3a74e429b918fda141d9"
+      },
+      "source_page": null,
+      "pdf_text_candidate_pages": [
+        10,
+        11
+      ],
+      "stem_chinese_length": 6
+    },
+    {
+      "id": 12836,
+      "reason": "stem_not_verified_against_pdf",
+      "stage": "stage1_auto_review.pdf_fidelity",
+      "label": "例題7",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_007_014",
+        "anchor_key": "general|longteng|2|5|section|example|7|14",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "7",
+        "source_order": 14,
+        "block_index": 13,
+        "occurrence_index": 1,
+        "question_label": "例7",
+        "source_type": "textbook_example",
+        "text_fingerprint": "621f45d9219385b251c38bf15e16db4e10484c9c7ee4ad1cd78b056b7f310737"
+      },
+      "source_page": null,
+      "pdf_text_candidate_pages": [
+        10,
+        11
+      ],
+      "stem_chinese_length": 6
+    },
+    {
+      "id": 12840,
+      "reason": "stem_not_verified_against_pdf",
+      "stage": "stage1_auto_review.pdf_fidelity",
+      "label": "5習題 觀念澄清4",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_004_025",
+        "anchor_key": "general|longteng|2|5|section|exercise|4|25",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "4",
+        "source_order": 25,
+        "block_index": 24,
+        "occurrence_index": 1,
+        "question_label": "5習題 觀念澄清4",
+        "source_type": "chapter_exercise",
+        "text_fingerprint": "a5b9578aa33a4bd202cfaf28f5d60877ffcd6226def80ed580825be2075bd72b"
+      },
+      "source_page": 16,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "stem_chinese_length": 27
+    },
+    {
+      "id": 12845,
+      "reason": "stem_not_verified_against_pdf",
+      "stage": "stage1_auto_review.pdf_fidelity",
+      "label": "隨堂練習10",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_010_019",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|10|19",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "10",
+        "source_order": 19,
+        "block_index": 18,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習10",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "d7661285c08ddeb3b8ff36809ae157d41394713459ab942221bf380d01d7297a"
+      },
+      "source_page": 13,
+      "pdf_text_candidate_pages": [
+        12
+      ],
+      "stem_chinese_length": 7
+    }
+  ],
+  "changes": [
+    {
+      "id": 12814,
+      "field": "detailed_solution",
+      "kind": "source_symbol"
+    },
+    {
+      "id": 12822,
+      "field": "notes",
+      "kind": "source_text_match"
+    },
+    {
+      "id": 12846,
+      "field": "notes",
+      "kind": "source_text_match"
+    }
+  ],
+  "external_ai_requests_in_replay": 0
+}

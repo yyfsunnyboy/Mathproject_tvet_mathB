@@ -1,0 +1,249 @@
+{
+  "skill_id": "gh_Combination",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 22,
+  "components": [
+    {
+      "component_id": "src_12812",
+      "textbook_example_id": 12812,
+      "status": "verified",
+      "problem_type_id": "combination_evaluate",
+      "domain_operation": "combination_evaluate",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12812/generate.py"
+    },
+    {
+      "component_id": "src_12813",
+      "textbook_example_id": 12813,
+      "status": "verified",
+      "problem_type_id": "select_with_members",
+      "domain_operation": "select_with_members",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12813/generate.py"
+    },
+    {
+      "component_id": "src_12814",
+      "textbook_example_id": 12814,
+      "status": "verified",
+      "problem_type_id": "mixed_group_ordered",
+      "domain_operation": "mixed_group_ordered",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12814/generate.py"
+    },
+    {
+      "component_id": "src_12815",
+      "textbook_example_id": 12815,
+      "status": "verified",
+      "problem_type_id": "group_partition",
+      "domain_operation": "group_partition",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12815/generate.py"
+    },
+    {
+      "component_id": "src_12816",
+      "textbook_example_id": 12816,
+      "status": "verified",
+      "problem_type_id": "group_partition",
+      "domain_operation": "group_partition",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12816/generate.py"
+    },
+    {
+      "component_id": "src_12817",
+      "textbook_example_id": 12817,
+      "status": "verified",
+      "problem_type_id": "combination_evaluate",
+      "domain_operation": "combination_evaluate",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12817/generate.py"
+    },
+    {
+      "component_id": "src_12818",
+      "textbook_example_id": 12818,
+      "status": "verified",
+      "problem_type_id": "select_with_members",
+      "domain_operation": "select_with_members",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12818/generate.py"
+    },
+    {
+      "component_id": "src_12819",
+      "textbook_example_id": 12819,
+      "status": "verified",
+      "problem_type_id": "mixed_group_ordered",
+      "domain_operation": "mixed_group_ordered",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12819/generate.py"
+    },
+    {
+      "component_id": "src_12820",
+      "textbook_example_id": 12820,
+      "status": "verified",
+      "problem_type_id": "group_partition",
+      "domain_operation": "group_partition",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12820/generate.py"
+    },
+    {
+      "component_id": "src_12821",
+      "textbook_example_id": 12821,
+      "status": "verified",
+      "problem_type_id": "group_partition",
+      "domain_operation": "group_partition",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12821/generate.py"
+    },
+    {
+      "component_id": "src_12822",
+      "textbook_example_id": 12822,
+      "status": "verified",
+      "problem_type_id": "combination_identity_select",
+      "domain_operation": "combination_identity_select",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12822/generate.py"
+    },
+    {
+      "component_id": "src_12823",
+      "textbook_example_id": 12823,
+      "status": "verified",
+      "problem_type_id": "combination_claim",
+      "domain_operation": "combination_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12823/generate.py"
+    },
+    {
+      "component_id": "src_12824",
+      "textbook_example_id": 12824,
+      "status": "verified",
+      "problem_type_id": "combination_claim",
+      "domain_operation": "combination_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12824/generate.py"
+    },
+    {
+      "component_id": "src_12825",
+      "textbook_example_id": 12825,
+      "status": "verified",
+      "problem_type_id": "combination_claim",
+      "domain_operation": "combination_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12825/generate.py"
+    },
+    {
+      "component_id": "src_12826",
+      "textbook_example_id": 12826,
+      "status": "verified",
+      "problem_type_id": "pair_count",
+      "domain_operation": "pair_count",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12826/generate.py"
+    },
+    {
+      "component_id": "src_12827",
+      "textbook_example_id": 12827,
+      "status": "verified",
+      "problem_type_id": "sequential_selection",
+      "domain_operation": "sequential_selection",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12827/generate.py"
+    },
+    {
+      "component_id": "src_12828",
+      "textbook_example_id": 12828,
+      "status": "verified",
+      "problem_type_id": "gender_committee",
+      "domain_operation": "gender_committee",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12828/generate.py"
+    },
+    {
+      "component_id": "src_12829",
+      "textbook_example_id": 12829,
+      "status": "verified",
+      "problem_type_id": "paired_group_assignment",
+      "domain_operation": "paired_group_assignment",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12829/generate.py"
+    },
+    {
+      "component_id": "src_12830",
+      "textbook_example_id": 12830,
+      "status": "verified",
+      "problem_type_id": "surjective_distribution",
+      "domain_operation": "surjective_distribution",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12830/generate.py"
+    },
+    {
+      "component_id": "src_12831",
+      "textbook_example_id": 12831,
+      "status": "verified",
+      "problem_type_id": "pair_count",
+      "domain_operation": "pair_count",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12831/generate.py"
+    },
+    {
+      "component_id": "src_12832",
+      "textbook_example_id": 12832,
+      "status": "verified",
+      "problem_type_id": "parity_sum_selection",
+      "domain_operation": "parity_sum_selection",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12832/generate.py"
+    },
+    {
+      "component_id": "src_12833",
+      "textbook_example_id": 12833,
+      "status": "verified",
+      "problem_type_id": "multiset_select_arrange",
+      "domain_operation": "multiset_select_arrange",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12833/generate.py"
+    }
+  ]
+}

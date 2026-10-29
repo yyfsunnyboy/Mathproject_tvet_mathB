@@ -1,0 +1,85 @@
+elapsed_seconds=4.65
+INFO: optional enrich PDF path provided
+INFO: 正在從 C:\Projects\Mathproject_tvet_mathB\reports\gh_math2_unit5_stage1_diagnostic\sandbox\05-.docx 提取內容...
+INFO: [MATHTYPE CONVERT] ole=131 converted=131 failed=0 eq_fields=10 eq_converted=10
+INFO: docx_formula_source_mode=converted_docx_latex
+INFO: formula_assets_extraction_skipped=true
+INFO: ocr_skipped=true
+INFO: pix2tex_skipped=true
+INFO: is_converted_latex_docx=True
+INFO: latex_signal_count=186
+INFO: formula_placeholder_count=0
+INFO: [DOCX BLOCK SCAN] question_blocks=37
+INFO: [DOCX HYDRATE] filled_problem_text=37 scanned_blocks=37
+INFO: [IMPORT INVENTORY GUARD] report_only=true
+INFO: [IMPORT INVENTORY GUARD] expected_titles_count=37
+INFO: [IMPORT INVENTORY GUARD] returned_titles_count=37
+INFO: [IMPORT INVENTORY GUARD] missing_titles_count=0
+INFO: [IMPORT INVENTORY GUARD] report_path=reports\import_debug\數學2_unknown_title_inventory_report.md
+INFO: 正在將解析結果寫入資料庫...
+INFO: [IMPORT SCOPE] scope=section_textbook
+INFO: -> 開始寫入資料庫...
+INFO: [GENERAL REPLACE] old_rows_deleted_in_pending_transaction=28
+INFO: [PRACTICE IMPORT] detected title=隨堂練習1 source_type=in_class_practice linked_example=例題1 skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習1 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習2 source_type=in_class_practice linked_example=例題2 skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習2 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習3 source_type=in_class_practice linked_example=例題3 skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習3 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習4 source_type=in_class_practice linked_example=例題4 skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習4 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習5 source_type=in_class_practice linked_example=例題5 skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習5 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習6 source_type=in_class_practice linked_example=例題5 skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習6 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 觀念澄清1 source_type=chapter_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 觀念澄清1 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 觀念澄清2 source_type=chapter_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 觀念澄清2 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 觀念澄清3 source_type=chapter_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 觀念澄清3 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 基礎題1 source_type=basic_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 基礎題1 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 基礎題2 source_type=basic_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 基礎題2 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 基礎題3 source_type=basic_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 基礎題3 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 基礎題4 source_type=basic_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 基礎題4 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 基礎題5 source_type=basic_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 基礎題5 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 進階題8 source_type=advanced_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 進階題8 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 進階題9 source_type=advanced_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 進階題9 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 進階題10 source_type=advanced_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 進階題10 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 進階題12 source_type=advanced_exercise linked_example=None skill_id=gh_Combination
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 進階題12 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 觀念澄清4 source_type=chapter_exercise linked_example=None skill_id=gh_BinomialTheorem
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 觀念澄清4 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 基礎題7 source_type=basic_exercise linked_example=None skill_id=gh_BinomialTheorem
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 基礎題7 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習7 source_type=in_class_practice linked_example=例題7 skill_id=gh_BinomialTheorem
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習7 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習8 source_type=in_class_practice linked_example=例題8 skill_id=gh_BinomialTheorem
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習8 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習9 source_type=in_class_practice linked_example=例題9 skill_id=gh_BinomialTheorem
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習9 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習10 source_type=in_class_practice linked_example=例題10 skill_id=gh_BinomialTheorem
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習10 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=隨堂練習11 source_type=in_class_practice linked_example=例題10 skill_id=gh_BinomialTheorem
+INFO: [PRACTICE IMPORT] saved independent question title=隨堂練習11 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 基礎題6 source_type=basic_exercise linked_example=None skill_id=gh_BinomialTheorem
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 基礎題6 table=textbook_examples id=pending_commit
+INFO: [PRACTICE IMPORT] detected title=5習題 進階題11 source_type=advanced_exercise linked_example=None skill_id=gh_BinomialTheorem
+INFO: [PRACTICE IMPORT] saved independent question title=5習題 進階題11 table=textbook_examples id=pending_commit
+INFO: [PDF VISUAL] ok=True statuses={'NO_VISUAL_REQUIRED': 36, 'VISUAL_REQUIRED_MISSING': 1} ambiguous=0 unanchored=0 stale_duplicates=0 warnings=[]
+INFO: [AUTO REVIEW] stage=auto_review status=running
+INFO: [AUTO REVIEW] stage=auto_review status=done changes=3
+INFO: [AUTO REVIEW] stage=ai_healing status=done items=0
+INFO: [STAGE1 GATE] status=BLOCKED rows=37 blocked=1 needs_review=0 reasons={"required_figure_missing": 1, "stem_not_verified_against_pdf": 7}
+WARN: [AUTO REVIEW] stage=stage1_gate status=needs_review; staged DB changes rolled back
+STDOUT
+
+STDERR

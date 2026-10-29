@@ -1,0 +1,11 @@
+{
+ "backup_dir": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\math2_unit5_combinations\\20261029_232350",
+ "db_integrity": "ok",
+ "db_sha256": "db2577698bfbbb28742f2567606e7111f48a4dc01d9ed3b53a2e402d782b0b0a",
+ "store_sha256": "50a2544b4802be6494b43e6d5b95b3964b15128b72a775b3b465fb5e5eb99f35",
+ "fixed_config_sha256": "b4eda32a68d7800b2f29b5584fd4804f6b8d7cddcd23c2c0e813bb2bd0f3bcec",
+ "tracker_rows_unit5": 0,
+ "tracker_rows_total": 1117,
+ "files": 127,
+ "binding_mismatches": {}
+}

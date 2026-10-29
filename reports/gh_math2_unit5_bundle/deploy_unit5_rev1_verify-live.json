@@ -1,0 +1,121 @@
+{
+ "facade": {
+  "gh_BinomialTheorem": {
+   "served_examples": {
+    "12835": 7,
+    "12836": 6,
+    "12837": 7,
+    "12839": 7,
+    "12840": 6,
+    "12841": 7,
+    "12842": 7,
+    "12843": 6,
+    "12844": 7,
+    "12846": 6,
+    "12847": 7,
+    "12848": 7
+   },
+   "problems": [],
+   "drawing_served_only": []
+  },
+  "gh_Combination": {
+   "served_examples": {
+    "12812": 4,
+    "12813": 4,
+    "12814": 3,
+    "12815": 4,
+    "12816": 3,
+    "12817": 4,
+    "12818": 4,
+    "12819": 3,
+    "12820": 4,
+    "12821": 3,
+    "12822": 4,
+    "12823": 3,
+    "12824": 4,
+    "12825": 4,
+    "12826": 4,
+    "12827": 3,
+    "12828": 4,
+    "12829": 3,
+    "12830": 3,
+    "12831": 4,
+    "12832": 4,
+    "12833": 4
+   },
+   "problems": [],
+   "drawing_served_only": []
+  }
+ },
+ "db_integrity": "ok",
+ "tracker_duplicates": [],
+ "unit4_tracker": [
+  [
+   "gh_LinearPermutation",
+   "verified",
+   19
+  ],
+  [
+   "gh_PermutationWithIdenticalItems",
+   "verified",
+   10
+  ],
+  [
+   "gh_RepeatedPermutation",
+   "verified",
+   8
+  ]
+ ],
+ "manifest_status": {
+  "gh_BinomialTheorem": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 12,
+   "facade": true
+  },
+  "gh_Combination": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 22,
+   "facade": true
+  }
+ },
+ "manifest_components": {
+  "gh_BinomialTheorem": 12,
+  "gh_Combination": 22
+ },
+ "manifest_matches_specs": true,
+ "fixed_rows_not_in_manifest": true,
+ "store_mentions_domain": true,
+ "promoted_package_files": [
+  "__init__.py",
+  "combinations_adapter.py",
+  "combinations_domain.py"
+ ],
+ "promoted_package_matches_bundle": true,
+ "fixed_entries": [
+  "12719",
+  "12727",
+  "12731",
+  "12735",
+  "12746",
+  "12801",
+  "12834",
+  "12838",
+  "12845"
+ ],
+ "fixed_bound": {
+  "12834": "graded",
+  "12838": "ungraded",
+  "12845": "ungraded"
+ },
+ "unit5_fixed_keys": [
+  "12834",
+  "12838",
+  "12845"
+ ],
+ "tracker_not_verified": {},
+ "tracker_missing": [],
+ "tracker_for_fixed_rows": {},
+ "unit4_files_unchanged": true,
+ "unit4_tracker_unchanged": true,
+ "passed": true
+}

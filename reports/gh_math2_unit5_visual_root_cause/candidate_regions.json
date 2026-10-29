@@ -1,0 +1,116 @@
+{
+  "evidence_type": "new_isolated_readonly_trace",
+  "original_evidence_status": "original_evidence_unavailable",
+  "question_anchor": "general_2_section_advanced_exercise_012_037",
+  "pdf_sha256": "e24c72f893099354886c288daef25eab59cd315facc778f7ffa96d4e242ec166",
+  "page": 16,
+  "confidence_model_note": "The pipeline has no numeric visual confidence. match_score (0.99) is text-to-page confidence only; visual confidence is the categorical acceptance status (accepted / needs_review / rejected) from evaluate_visual_acceptance. _diagram_score is a ranking score among candidates.",
+  "question_region_used_by_pipeline": [
+    36.0,
+    670.2,
+    573.4,
+    757.7
+  ],
+  "candidates": [
+    {
+      "kind": "PIPELINE_CANDIDATE",
+      "rank": 1,
+      "object": "footer_band_path (page furniture)",
+      "raw_bbox": [
+        -618.0,
+        736.6,
+        617.9,
+        802.2
+      ],
+      "final_visual_bbox": [
+        0.0,
+        736.58,
+        609.45,
+        745.7
+      ],
+      "filters": {
+        "w": 1235.9,
+        "h": 65.6,
+        "area": 81105.0,
+        "blended": false,
+        "intersects_question_region": true,
+        "extends_outside_page": true,
+        "draw_hit[intersects,2500<=area<=0.55page]": true,
+        "significant[area>=15000,w>=100,h>=70]": false,
+        "soft_strong_cue[area>=2500,w>=40,h>=40]": true,
+        "band_search[area>=6000,w>=60,h>=50]": true,
+        "right_panel_fallback[area>=1800,x0>=0.42W,w>=25,h>=25]": false,
+        "right_panel_single_min_area[>=3500]": true,
+        "page_furniture_by_prototype_rule": true
+      },
+      "diagram_rank_score": 2.392,
+      "match_score_text": 0.99,
+      "acceptance_status": "needs_review",
+      "acceptance_reasons": [
+        "low_mapping_confidence",
+        "overspan_multi_question"
+      ],
+      "final_classification": "skipped_low_confidence",
+      "asset": "NOT_GENERATED",
+      "why_low": "Candidate is a 609x9pt blank strip of the footer band: vh<40 -> low_mapping_confidence; full-width aspect 67 -> overspan_multi_question."
+    },
+    {
+      "kind": "NOT_A_PIPELINE_CANDIDATE",
+      "object": "semicircle_path (real figure)",
+      "raw_bbox": [
+        435.9,
+        599.2,
+        515.2,
+        638.9
+      ],
+      "filters": {
+        "w": 79.4,
+        "h": 39.7,
+        "area": 3150.0,
+        "blended": false,
+        "intersects_question_region": false,
+        "extends_outside_page": false,
+        "draw_hit[intersects,2500<=area<=0.55page]": false,
+        "significant[area>=15000,w>=100,h>=70]": false,
+        "soft_strong_cue[area>=2500,w>=40,h>=40]": false,
+        "band_search[area>=6000,w>=60,h>=50]": false,
+        "right_panel_fallback[area>=1800,x0>=0.42W,w>=25,h>=25]": true,
+        "right_panel_single_min_area[>=3500]": false,
+        "page_furniture_by_prototype_rule": false
+      },
+      "excluded_because": [
+        "does not intersect the question region (region top 670.2 > figure bottom 652.1)",
+        "even inside the region: h=39.7 < 40 (soft), area 3150 < 6000 (band search), area 3150 < 3500 (right-panel single path)"
+      ]
+    },
+    {
+      "kind": "COUNTERFACTUAL_ONLY (not pipeline output, not verified)",
+      "object": "prototype ink cluster",
+      "bbox": [
+        426.7,
+        588.0,
+        524.4,
+        652.1
+      ],
+      "members": 31,
+      "contains_all_figure_ink": true,
+      "ink_paths_cut_by_crop": 0,
+      "inside_teacher_proposal": true,
+      "acceptance_with_current_gate": "needs_review",
+      "reasons": [
+        "low_mapping_confidence"
+      ]
+    },
+    {
+      "kind": "INVESTIGATOR_PROPOSAL_PENDING_TEACHER (previous round, not system output)",
+      "bbox": [
+        420,
+        575,
+        540,
+        675
+      ],
+      "status": "pending_teacher_confirmation",
+      "verified": false
+    }
+  ]
+}

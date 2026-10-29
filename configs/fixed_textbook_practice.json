@@ -358,6 +358,206 @@
     },
     "script": "reports/gh_math2_unit4_fixed/derive_fixed_oracles.py"
    }
+  },
+  "12834": {
+   "skill_id": "gh_Combination",
+   "label": "習題進階題12（半圓上的點・自動判分）",
+   "mode": "graded",
+   "answer": {
+    "part_1": "③",
+    "part_2": "116"
+   },
+   "answer_contract": {
+    "presentation_mode": "multiple_inputs",
+    "answer_type": "multi_part",
+    "checker": "multi_part_answer_checker",
+    "checker_key": "multi_part_answer_checker",
+    "answer_equivalence": "multi_part_answer",
+    "equivalence": "multi_part_answer",
+    "equivalence_type": "multi_part_answer",
+    "answer_shape": "fixed_textbook_multi_part",
+    "parts": [
+     {
+      "key": "part_1",
+      "label": "(1)",
+      "prompt": "(1) 選項",
+      "checker": "choice_label_checker",
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label",
+      "answer_type": "single_choice",
+      "choices": [
+       {
+        "label": "①",
+        "value": "24"
+       },
+       {
+        "label": "②",
+        "value": "36"
+       },
+       {
+        "label": "③",
+        "value": "40"
+       },
+       {
+        "label": "④",
+        "value": "45"
+       },
+       {
+        "label": "⑤",
+        "value": "48"
+       }
+      ]
+     },
+     {
+      "key": "part_2",
+      "label": "(2)",
+      "prompt": "(2) 三角形個數",
+      "checker": "integer_checker",
+      "checker_key": "integer_checker",
+      "equivalence_type": "numeric_exact",
+      "answer_type": "integer"
+     }
+    ]
+   },
+   "reference_solution": [
+    "圖中共有 $10$ 個點：直徑上的 $A_1,A_2,A_3,A_4$ 共線，半圓弧上的 $B_1,\\dots ,B_6$ 中任三點不共線，且弧上的點都不在直徑所在直線上。",
+    "(1) 任取兩點決定一條直線，共 $C^{10}_{2}=45$ 種取法；但 $A_1,A_2,A_3,A_4$ 中任取兩點都決定同一條直線，這 $C^{4}_{2}=6$ 種取法只算 $1$ 條。所以直線共有 $45-6+1=40$ 條，答案為③。",
+    "(2) 任取三點，共 $C^{10}_{3}=120$ 種取法；三點共線時不能構成三角形，只有從 $A_1,A_2,A_3,A_4$ 中取三點的 $C^{4}_{3}=4$ 種。所以三角形共有 $120-4=116$ 個。"
+   ],
+   "problem_text_sha256": "f9a8343e5583597ce274ada05b885309c35beb517174ed17661aa123c65b5806",
+   "question_anchor": "general_2_section_advanced_exercise_012_037",
+   "provenance": {
+    "curriculum": "general",
+    "volume": "數學2",
+    "chapter": "單元5 組合",
+    "pdf_sha256": "e24c72f893099354886c288daef25eab59cd315facc778f7ffa96d4e242ec166",
+    "pdf_page": 16,
+    "figure_bbox": [
+     425.0,
+     586.5,
+     526.0,
+     653.5
+    ],
+    "figure_region_status": "approved_by_teacher"
+   },
+   "oracle": {
+    "method": "PDF vector dots (page 16) labelled by position; all 45 pairs / 120 triples enumerated; closed forms cross-checked",
+    "page": 16,
+    "pdf_sha256": "e24c72f893099354886c288daef25eab59cd315facc778f7ffa96d4e242ec166",
+    "figure_vector_bounds": [
+     426.7,
+     588.0,
+     524.4,
+     652.1
+    ],
+    "points_pt": {
+     "A1": [
+      451.73,
+      638.92
+     ],
+     "A2": [
+      467.6,
+      638.92
+     ],
+     "A3": [
+      483.48,
+      638.92
+     ],
+     "A4": [
+      499.35,
+      638.92
+     ],
+     "B1": [
+      439.35,
+      622.81
+     ],
+     "B2": [
+      450.06,
+      608.56
+     ],
+     "B3": [
+      465.82,
+      600.35
+     ],
+     "B4": [
+      483.74,
+      600.35
+     ],
+     "B5": [
+      499.9,
+      607.75
+     ],
+     "B6": [
+      511.12,
+      621.57
+     ]
+    },
+    "collinear_triples": [
+     [
+      "A1",
+      "A2",
+      "A3"
+     ],
+     [
+      "A1",
+      "A2",
+      "A4"
+     ],
+     [
+      "A1",
+      "A3",
+      "A4"
+     ],
+     [
+      "A2",
+      "A3",
+      "A4"
+     ]
+    ],
+    "lines": 40,
+    "triangles": 116,
+    "script": "reports/gh_math2_unit5_fixed/derive_fixed_oracles.py"
+   }
+  },
+  "12838": {
+   "skill_id": "gh_BinomialTheorem",
+   "label": "例題9 二項式係數和的證明（自評）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "寫出 (x+y)^n 的展開式",
+    "以 x=1、y=1 代入",
+    "整理得證"
+   ],
+   "reference_solution": [
+    "【寫出展開式】由二項式定理，$\\left(x+y\\right)^{n}=C_{0}^{n}x^{n}+C_{1}^{n}x^{n-1}y+C_{2}^{n}x^{n-2}y^{2}+\\cdots +C_{n}^{n}y^{n}$。",
+    "【以 $x=1$、$y=1$ 代入】$\\left(1+1\\right)^{n}=C_{0}^{n}+C_{1}^{n}+C_{2}^{n}+\\cdots +C_{n}^{n}$。",
+    "【整理得證】左式 $=2^{n}$，所以 $C_{0}^{n}+C_{1}^{n}+C_{2}^{n}+\\cdots +C_{n}^{n}=2^{n}$，故得證。"
+   ],
+   "problem_text_sha256": "0419e5e4847283b1fee11288c76da1473a4f6c6ef13eceb1928d64fefe549e65",
+   "oracle": {
+    "verified": "sympy summation=2^n (symbolic ok) + n=1..39 numeric + substitution into expanded (x+y)^n, n=1..12",
+    "script": "reports/gh_math2_unit5_fixed/build_proof_entries.py"
+   }
+  },
+  "12845": {
+   "skill_id": "gh_BinomialTheorem",
+   "label": "隨堂練習10 二項式係數交錯和的證明（自評）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "寫出 (x+y)^n 的展開式",
+    "以 x=1、y=−1 代入",
+    "整理得證"
+   ],
+   "reference_solution": [
+    "【寫出展開式】由二項式定理，$\\left(x+y\\right)^{n}=C_{0}^{n}x^{n}+C_{1}^{n}x^{n-1}y+C_{2}^{n}x^{n-2}y^{2}+\\cdots +C_{n}^{n}y^{n}$。",
+    "【以 $x=1$、$y=-1$ 代入】$\\left(1-1\\right)^{n}=C_{0}^{n}-C_{1}^{n}+C_{2}^{n}-C_{3}^{n}+\\cdots +\\left(-1\\right)^{n}C_{n}^{n}$。",
+    "【整理得證】因為 $n$ 為正整數，左式 $=0^{n}=0$，所以 $C_{0}^{n}-C_{1}^{n}+C_{2}^{n}-\\cdots +\\left(-1\\right)^{n}C_{n}^{n}=0$，故得證。"
+   ],
+   "problem_text_sha256": "6c584303b87798d08d3a8365dd8238a2f7b58bd0488a82a011dc5e56dca60586",
+   "oracle": {
+    "verified": "sympy summation=0 (symbolic ok) + n=1..39 numeric + substitution into expanded (x+y)^n, n=1..12",
+    "script": "reports/gh_math2_unit5_fixed/build_proof_entries.py"
+   }
   }
  }
 }

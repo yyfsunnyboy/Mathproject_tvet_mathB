@@ -1,0 +1,619 @@
+{
+  "evidence_type": "new_isolated_dry_run",
+  "original_evidence_status": "original_evidence_unavailable",
+  "summary": {
+    "NO_VISUAL_REQUIRED": 36,
+    "VISUAL_REQUIRED_MISSING": 1
+  },
+  "rows": [
+    {
+      "id": 12812,
+      "label": "例題1",
+      "question_anchor": "general_2_section_example_001_001",
+      "source_page": 3,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        3
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12813,
+      "label": "例題2",
+      "question_anchor": "general_2_section_example_002_003",
+      "source_page": 3,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        3
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12814,
+      "label": "例題3",
+      "question_anchor": "general_2_section_example_003_005",
+      "source_page": 5,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        5
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12815,
+      "label": "例題4",
+      "question_anchor": "general_2_section_example_004_007",
+      "source_page": 6,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        6
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12816,
+      "label": "例題5",
+      "question_anchor": "general_2_section_example_005_009",
+      "source_page": 7,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        7
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12817,
+      "label": "隨堂練習1",
+      "question_anchor": "general_2_section_in_class_practice_001_002",
+      "source_page": 3,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        3
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12818,
+      "label": "隨堂練習2",
+      "question_anchor": "general_2_section_in_class_practice_002_004",
+      "source_page": 4,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        4
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12819,
+      "label": "隨堂練習3",
+      "question_anchor": "general_2_section_in_class_practice_003_006",
+      "source_page": 5,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        5
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12820,
+      "label": "隨堂練習4",
+      "question_anchor": "general_2_section_in_class_practice_004_008",
+      "source_page": 6,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        6
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12821,
+      "label": "隨堂練習5",
+      "question_anchor": "general_2_section_in_class_practice_005_010",
+      "source_page": 8,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        8
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12822,
+      "label": "隨堂練習6",
+      "question_anchor": "general_2_section_in_class_practice_006_011",
+      "source_page": 9,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        9
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12823,
+      "label": "5習題 觀念澄清1",
+      "question_anchor": "general_2_section_exercise_001_022",
+      "source_page": 14,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12824,
+      "label": "5習題 觀念澄清2",
+      "question_anchor": "general_2_section_exercise_002_023",
+      "source_page": 14,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12825,
+      "label": "5習題 觀念澄清3",
+      "question_anchor": "general_2_section_exercise_003_024",
+      "source_page": null,
+      "page_source": null,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "unmatched",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12826,
+      "label": "5習題 基礎題1",
+      "question_anchor": "general_2_section_exercise_001_026",
+      "source_page": 14,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12827,
+      "label": "5習題 基礎題2",
+      "question_anchor": "general_2_section_exercise_002_027",
+      "source_page": 14,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "text_and_formula_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12828,
+      "label": "5習題 基礎題3",
+      "question_anchor": "general_2_section_exercise_003_028",
+      "source_page": 14,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12829,
+      "label": "5習題 基礎題4",
+      "question_anchor": "general_2_section_exercise_004_029",
+      "source_page": 15,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        15
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "text_and_formula_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12830,
+      "label": "5習題 基礎題5",
+      "question_anchor": "general_2_section_exercise_005_030",
+      "source_page": 15,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        15
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "text_and_formula_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12831,
+      "label": "5習題 進階題8",
+      "question_anchor": "general_2_section_advanced_exercise_008_033",
+      "source_page": 16,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "text_and_formula_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12832,
+      "label": "5習題 進階題9",
+      "question_anchor": "general_2_section_advanced_exercise_009_034",
+      "source_page": 16,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "text_and_formula_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12833,
+      "label": "5習題 進階題10",
+      "question_anchor": "general_2_section_advanced_exercise_010_035",
+      "source_page": 16,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "text_and_formula_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12834,
+      "label": "5習題 進階題12",
+      "question_anchor": "general_2_section_advanced_exercise_012_037",
+      "source_page": 16,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "figure_keyword_and_compact_visual_in_region|low_mapping_confidence|overspan_multi_question",
+      "pdf_visual_status": "VISUAL_REQUIRED_MISSING",
+      "visual_required_missing": true,
+      "visual_assets": []
+    },
+    {
+      "id": 12835,
+      "label": "例題6",
+      "question_anchor": "general_2_section_example_006_012",
+      "source_page": null,
+      "page_source": null,
+      "pdf_text_candidate_pages": [
+        10,
+        11
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "unmatched",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12836,
+      "label": "例題7",
+      "question_anchor": "general_2_section_example_007_014",
+      "source_page": null,
+      "page_source": null,
+      "pdf_text_candidate_pages": [
+        10,
+        11
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "unmatched",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12837,
+      "label": "例題8",
+      "question_anchor": "general_2_section_example_008_016",
+      "source_page": 11,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        11,
+        15
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12838,
+      "label": "例題9",
+      "question_anchor": "general_2_section_example_009_018",
+      "source_page": 12,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        12
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12839,
+      "label": "例題10",
+      "question_anchor": "general_2_section_example_010_020",
+      "source_page": 13,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        13
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12840,
+      "label": "5習題 觀念澄清4",
+      "question_anchor": "general_2_section_exercise_004_025",
+      "source_page": 16,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12841,
+      "label": "5習題 基礎題7",
+      "question_anchor": "general_2_section_exercise_007_032",
+      "source_page": 15,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        15
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12842,
+      "label": "隨堂練習7",
+      "question_anchor": "general_2_section_in_class_practice_007_013",
+      "source_page": 10,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        10,
+        11
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12843,
+      "label": "隨堂練習8",
+      "question_anchor": "general_2_section_in_class_practice_008_015",
+      "source_page": 11,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        11
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12844,
+      "label": "隨堂練習9",
+      "question_anchor": "general_2_section_in_class_practice_009_017",
+      "source_page": 12,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        12
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12845,
+      "label": "隨堂練習10",
+      "question_anchor": "general_2_section_in_class_practice_010_019",
+      "source_page": 13,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        12
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12846,
+      "label": "隨堂練習11",
+      "question_anchor": "general_2_section_in_class_practice_011_021",
+      "source_page": 13,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        13
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "formula_or_decoration_vectors_only|low_mapping_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12847,
+      "label": "5習題 基礎題6",
+      "question_anchor": "general_2_section_exercise_006_031",
+      "source_page": 15,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        11,
+        15
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    },
+    {
+      "id": 12848,
+      "label": "5習題 進階題11",
+      "question_anchor": "general_2_section_advanced_exercise_011_036",
+      "source_page": 16,
+      "page_source": "pdf_text_match",
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_mapping_result": "skipped_low_confidence",
+      "visual_classification": "skipped_low_confidence",
+      "visual_reason": "low_match_confidence",
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_required_missing": null,
+      "visual_assets": []
+    }
+  ],
+  "candidate_crop": {
+    "label": "5習題 進階題12",
+    "pdf_page": 16,
+    "printed_page": 99,
+    "bbox": [
+      420,
+      575,
+      540,
+      675
+    ],
+    "status": "inspection_only_not_approved"
+  }
+}

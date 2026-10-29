@@ -1,0 +1,946 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_discrete_combinations_5ba1971d",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-29 after teacher acceptance (UNIT5_TEACHER_ACCEPTANCE.md): one-time Promotion and Publish of 數學2 Unit 5 組合 (discrete.combinations; gh_Combination 22 + gh_BinomialTheorem 12 components; ungraded proof self-check entries 12838 / 12845; fixed graded row 12834 kept as is); plain-text formulas in 4 explanations accepted; unsafe_dynamic variation warning of the 4 true/false components accepted as a WARN (four-choice audit rule not applicable), not changed to PASS; no Flask / Cloudflare restart",
+    "approved_revision": 1,
+    "approval_scope": "revision 1: 普高數學2 Unit 5 組合 — domain discrete.combinations (19 operations: at_least_k_selection, binomial_expansion, binomial_sum_bound, coefficient_solve_parameter, combination_claim, combination_evaluate, combination_identity_select, gender_committee, general_term_coefficient, group_partition, mixed_group_ordered, multiset_select_arrange, pair_count, paired_group_assignment, parity_sum_selection, radical_binomial_power, select_with_members, sequential_selection, surjective_distribution); Skills gh_Combination (22 components: 12812, 12813, 12814, 12815, 12816, 12817, 12818, 12819, 12820, 12821, 12822, 12823, 12824, 12825, 12826, 12827, 12828, 12829, 12830, 12831, 12832, 12833); gh_BinomialTheorem (12 components: 12835, 12836, 12837, 12839, 12840, 12841, 12842, 12843, 12844, 12846, 12847, 12848); 34 of the 37 formal rows (ids 12812-12848). Not dynamic: 12834 (進階題12, semicircle figure; FIXED_GRADED textbook original, already live), 12838 / 12845 (proofs of the binomial coefficient sums; ungraded self-check practice staged in reports/gh_math2_unit5_fixed/staged_proof_entries.json, merged only at the authorized release). No dynamic variant carries a figure or a figure cue; expansions are graded by the shared expression checker (algebraic equivalence, expanded form). Format hints never show the answer."
+  },
+  "domain_key": "discrete.combinations",
+  "package_name": "combinations",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "combinations_adapter.py": "3436ba2a5ab1c5a9b5f9617a83614bf4117224239ebebcef255722ca3fe7a348",
+    "combinations_domain.py": "ce6d601b529b6de4cbeb1c1e3bd582b5731ab96a025f9a7f21213e408ba17ed3"
+  },
+  "domain_module": "combinations_domain",
+  "entrypoint": "build_combinations_matrix",
+  "capabilities": [
+    "at_least_k_selection",
+    "binomial_expansion",
+    "binomial_sum_bound",
+    "coefficient_solve_parameter",
+    "combination_claim",
+    "combination_evaluate",
+    "combination_identity_select",
+    "gender_committee",
+    "general_term_coefficient",
+    "group_partition",
+    "mixed_group_ordered",
+    "multiset_select_arrange",
+    "pair_count",
+    "paired_group_assignment",
+    "parity_sum_selection",
+    "radical_binomial_power",
+    "select_with_members",
+    "sequential_selection",
+    "surjective_distribution"
+  ],
+  "operations": {
+    "at_least_k_selection": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_at_least_k_selection_matrix",
+      "provided_capabilities": [
+        "at_least_k_selection"
+      ]
+    },
+    "binomial_expansion": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "expression"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "expression_checker"
+      ],
+      "validator": "validate_binomial_expansion_matrix",
+      "provided_capabilities": [
+        "binomial_expansion"
+      ]
+    },
+    "binomial_sum_bound": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_binomial_sum_bound_matrix",
+      "provided_capabilities": [
+        "binomial_sum_bound"
+      ]
+    },
+    "coefficient_solve_parameter": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_coefficient_solve_parameter_matrix",
+      "provided_capabilities": [
+        "coefficient_solve_parameter"
+      ]
+    },
+    "combination_claim": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_combination_claim_matrix",
+      "provided_capabilities": [
+        "combination_claim"
+      ]
+    },
+    "combination_evaluate": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_combination_evaluate_matrix",
+      "provided_capabilities": [
+        "combination_evaluate"
+      ]
+    },
+    "combination_identity_select": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "solution_set_checker"
+      ],
+      "validator": "validate_combination_identity_select_matrix",
+      "provided_capabilities": [
+        "combination_identity_select"
+      ]
+    },
+    "gender_committee": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_gender_committee_matrix",
+      "provided_capabilities": [
+        "gender_committee"
+      ]
+    },
+    "general_term_coefficient": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_general_term_coefficient_matrix",
+      "provided_capabilities": [
+        "general_term_coefficient"
+      ]
+    },
+    "group_partition": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_group_partition_matrix",
+      "provided_capabilities": [
+        "group_partition"
+      ]
+    },
+    "mixed_group_ordered": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_mixed_group_ordered_matrix",
+      "provided_capabilities": [
+        "mixed_group_ordered"
+      ]
+    },
+    "multiset_select_arrange": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_multiset_select_arrange_matrix",
+      "provided_capabilities": [
+        "multiset_select_arrange"
+      ]
+    },
+    "pair_count": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_pair_count_matrix",
+      "provided_capabilities": [
+        "pair_count"
+      ]
+    },
+    "paired_group_assignment": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_paired_group_assignment_matrix",
+      "provided_capabilities": [
+        "paired_group_assignment"
+      ]
+    },
+    "parity_sum_selection": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_parity_sum_selection_matrix",
+      "provided_capabilities": [
+        "parity_sum_selection"
+      ]
+    },
+    "radical_binomial_power": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_radical_binomial_power_matrix",
+      "provided_capabilities": [
+        "radical_binomial_power"
+      ]
+    },
+    "select_with_members": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_select_with_members_matrix",
+      "provided_capabilities": [
+        "select_with_members"
+      ]
+    },
+    "sequential_selection": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_sequential_selection_matrix",
+      "provided_capabilities": [
+        "sequential_selection"
+      ]
+    },
+    "surjective_distribution": {
+      "handler": "build_combinations_matrix",
+      "payload_adapter": "combinations_adapter.adapt_combinations_matrix",
+      "runtime_contract": "combinations_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_surjective_distribution_matrix",
+      "provided_capabilities": [
+        "surjective_distribution"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_BinomialTheorem": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "at_least_k_selection",
+        "binomial_expansion",
+        "binomial_sum_bound",
+        "coefficient_solve_parameter",
+        "combination_claim",
+        "general_term_coefficient",
+        "radical_binomial_power"
+      ]
+    },
+    "gh_Combination": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "combination_claim",
+        "combination_evaluate",
+        "combination_identity_select",
+        "gender_committee",
+        "group_partition",
+        "mixed_group_ordered",
+        "multiset_select_arrange",
+        "pair_count",
+        "paired_group_assignment",
+        "parity_sum_selection",
+        "select_with_members",
+        "sequential_selection",
+        "surjective_distribution"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "at_least_k_selection": [
+      {
+        "seed": 1,
+        "constraints": {
+          "n": 11,
+          "k": 6
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "n": 11,
+          "k": 2
+        }
+      }
+    ],
+    "binomial_expansion": [
+      {
+        "seed": 1,
+        "constraints": {
+          "a": 1,
+          "b": 1,
+          "n": 5,
+          "vars": [
+            "x",
+            "y"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "a": 2,
+          "b": -1,
+          "n": 4,
+          "vars": [
+            "x",
+            "y"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "a": 1,
+          "b": 1,
+          "n": 4,
+          "vars": [
+            "x",
+            "y"
+          ]
+        }
+      }
+    ],
+    "binomial_sum_bound": [
+      {
+        "seed": 1,
+        "constraints": {
+          "low": 1000,
+          "high": 1200,
+          "start": 1
+        }
+      }
+    ],
+    "coefficient_solve_parameter": [
+      {
+        "seed": 1,
+        "constraints": {
+          "n": 5,
+          "m": 2,
+          "value": 5
+        }
+      }
+    ],
+    "combination_claim": [
+      {
+        "seed": 1,
+        "constraints": {
+          "setting": {
+            "kind": "choose",
+            "n": 5,
+            "k": 3
+          },
+          "claim": {
+            "form": "comb",
+            "n": 5,
+            "k": 3
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "setting": {
+            "kind": "comb_times_factorial",
+            "n": 10,
+            "k": 6,
+            "m": 4
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "setting": {
+            "kind": "comb_equal",
+            "n": 100,
+            "a": 20,
+            "b": 80
+          }
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "setting": {
+            "kind": "binomial_coefficients",
+            "n": 10,
+            "a": 6,
+            "c": 4
+          }
+        }
+      }
+    ],
+    "combination_evaluate": [
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "comb",
+              "n": 10,
+              "k": 2
+            },
+            {
+              "kind": "comb",
+              "n": 10,
+              "k": 8
+            },
+            {
+              "kind": "comb",
+              "n": 10,
+              "k": 10
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "items": [
+            {
+              "kind": "comb",
+              "n": 10,
+              "k": 4
+            },
+            {
+              "kind": "comb",
+              "n": 7,
+              "k": 3
+            },
+            {
+              "kind": "perm_over_comb",
+              "n": 12,
+              "k": 5
+            }
+          ]
+        }
+      }
+    ],
+    "combination_identity_select": [
+      {
+        "seed": 1,
+        "constraints": {
+          "statements": [
+            {
+              "form": "symmetry",
+              "n": 37,
+              "a": 30,
+              "rhs": [
+                37,
+                7
+              ]
+            },
+            {
+              "form": "pascal",
+              "n": 99,
+              "a": 50,
+              "rhs": [
+                100,
+                49
+              ]
+            },
+            {
+              "form": "pascal_diff",
+              "n": 49,
+              "a": 25,
+              "rhs": [
+                49,
+                24
+              ]
+            },
+            {
+              "form": "pascal_chain",
+              "n": 99,
+              "a": 2,
+              "rhs": [
+                101,
+                4
+              ]
+            },
+            {
+              "form": "hockey_stick",
+              "n": 10,
+              "a": 5,
+              "rhs": [
+                16,
+                5
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "gender_committee": [
+      {
+        "seed": 1,
+        "constraints": {
+          "boys": 7,
+          "girls": 5,
+          "pick": 4,
+          "asks": [
+            {
+              "kind": "exact",
+              "boys": 2
+            },
+            {
+              "kind": "at_least_one_girl"
+            },
+            {
+              "kind": "both"
+            }
+          ]
+        }
+      }
+    ],
+    "general_term_coefficient": [
+      {
+        "seed": 1,
+        "constraints": {
+          "c1": 1,
+          "p1": 2,
+          "c2": 2,
+          "p2": -1,
+          "n": 6,
+          "target": 3
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "c1": 1,
+          "p1": 1,
+          "c2": -2,
+          "p2": -2,
+          "n": 6,
+          "target": 0
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "c1": 1,
+          "p1": 3,
+          "c2": 1,
+          "p2": -1,
+          "n": 7,
+          "target": 5
+        }
+      }
+    ],
+    "group_partition": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "rooms",
+          "n": 6,
+          "asks": [
+            {
+              "sizes": [
+                4,
+                2
+              ],
+              "labeled": true
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "books",
+          "n": 6,
+          "asks": [
+            {
+              "sizes": [
+                2,
+                2,
+                2
+              ],
+              "labeled": true
+            },
+            {
+              "sizes": [
+                2,
+                2,
+                2
+              ],
+              "labeled": false
+            },
+            {
+              "sizes": [
+                4,
+                1,
+                1
+              ],
+              "labeled": false
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "classes",
+          "n": 6,
+          "asks": [
+            {
+              "sizes": [
+                2,
+                2,
+                2
+              ],
+              "labeled": true
+            }
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "students",
+          "n": 8,
+          "asks": [
+            {
+              "sizes": [
+                4,
+                4
+              ],
+              "labeled": false
+            },
+            {
+              "sizes": [
+                3,
+                3,
+                2
+              ],
+              "labeled": false
+            }
+          ]
+        }
+      }
+    ],
+    "mixed_group_ordered": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "debate",
+          "groups": [
+            3,
+            2
+          ],
+          "pick": 3,
+          "require": [
+            0,
+            1
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "ranking",
+          "groups": [
+            2,
+            3,
+            4
+          ],
+          "pick": 3,
+          "require": [
+            0,
+            1
+          ]
+        }
+      }
+    ],
+    "multiset_select_arrange": [
+      {
+        "seed": 1,
+        "constraints": {
+          "word": "snoopy",
+          "pick": 3
+        }
+      }
+    ],
+    "pair_count": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "faces",
+          "mode": "count",
+          "n": 60
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "round_robin",
+          "mode": "solve_n",
+          "total": 66
+        }
+      }
+    ],
+    "paired_group_assignment": [
+      {
+        "seed": 1,
+        "constraints": {
+          "teachers": 2,
+          "students": 4
+        }
+      }
+    ],
+    "parity_sum_selection": [
+      {
+        "seed": 1,
+        "constraints": {
+          "top": 9,
+          "pick": 4,
+          "parity": "even"
+        }
+      }
+    ],
+    "radical_binomial_power": [
+      {
+        "seed": 1,
+        "constraints": {
+          "radicand": 2,
+          "constant": -1,
+          "n": 5,
+          "order": "root_first"
+        }
+      }
+    ],
+    "select_with_members": [
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "handball",
+          "n": 10,
+          "k": 7,
+          "asks": [
+            "total",
+            "exactly_one"
+          ]
+        }
+      },
+      {
+        "seed": 1,
+        "constraints": {
+          "style": "basketball",
+          "n": 7,
+          "k": 5,
+          "asks": [
+            "total",
+            "both"
+          ]
+        }
+      }
+    ],
+    "sequential_selection": [
+      {
+        "seed": 1,
+        "constraints": {
+          "n": 7,
+          "ks": [
+            3,
+            2
+          ]
+        }
+      }
+    ],
+    "surjective_distribution": [
+      {
+        "seed": 1,
+        "constraints": {
+          "people": 4,
+          "places": 3
+        }
+      }
+    ]
+  },
+  "deferred_components": {
+    "12834": "進階題12（半圓直徑上 4 點、半圓周上 6 點）：圖形本身決定共線關係（直徑上的點共線、圓周上的點任三點不共線），改數字必須重畫圖形；以教材原題保留（FIXED_GRADED，含教師核可的教材裁切圖），答案 40 條直線、116 個三角形已逐組枚舉驗證，已於 Stage 1 綁定正式題 12834",
+    "12838": "例題9 證明 C(n,0)+C(n,1)+…+C(n,n)=2^n：證明題沒有可自動判定的單一答案，比照 Unit 2 的證明題以 ungraded 自評保留（題目、手寫區與逐步參考證明，不產生對錯、連續答對、精熟度或錯題紀錄）",
+    "12845": "隨堂練習10 證明 C(n,0)−C(n,1)+C(n,2)−…+(−1)^n C(n,n)=0：證明題沒有可自動判定的單一答案，比照 Unit 2 的證明題以 ungraded 自評保留（題目、手寫區與逐步參考證明，不產生對錯、連續答對、精熟度或錯題紀錄）"
+  }
+}

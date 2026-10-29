@@ -1,0 +1,486 @@
+{
+ "failures": {},
+ "deferred": {
+  "12834": "進階題12（半圓直徑上 4 點、半圓周上 6 點）：圖形本身決定共線關係（直徑上的點共線、圓周上的點任三點不共線），改數字必須重畫圖形；以教材原題保留（FIXED_GRADED，含教師核可的教材裁切圖），答案 40 條直線、116 個三角形已逐組枚舉驗證，已於 Stage 1 綁定正式題 12834",
+  "12838": "例題9 證明 C(n,0)+C(n,1)+…+C(n,n)=2^n：證明題沒有可自動判定的單一答案，比照 Unit 2 的證明題以 ungraded 自評保留（題目、手寫區與逐步參考證明，不產生對錯、連續答對、精熟度或錯題紀錄）",
+  "12845": "隨堂練習10 證明 C(n,0)−C(n,1)+C(n,2)−…+(−1)^n C(n,n)=0：證明題沒有可自動判定的單一答案，比照 Unit 2 的證明題以 ungraded 自評保留（題目、手寫區與逐步參考證明，不產生對錯、連續答對、精熟度或錯題紀錄）"
+ },
+ "report": {
+  "12812": {
+   "skill": "gh_Combination",
+   "operation": "combination_evaluate",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12813": {
+   "skill": "gh_Combination",
+   "operation": "select_with_members",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12814": {
+   "skill": "gh_Combination",
+   "operation": "mixed_group_ordered",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12815": {
+   "skill": "gh_Combination",
+   "operation": "group_partition",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12816": {
+   "skill": "gh_Combination",
+   "operation": "group_partition",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 11,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 11,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12817": {
+   "skill": "gh_Combination",
+   "operation": "combination_evaluate",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12818": {
+   "skill": "gh_Combination",
+   "operation": "select_with_members",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12819": {
+   "skill": "gh_Combination",
+   "operation": "mixed_group_ordered",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12820": {
+   "skill": "gh_Combination",
+   "operation": "group_partition",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12821": {
+   "skill": "gh_Combination",
+   "operation": "group_partition",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 12,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 12,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12822": {
+   "skill": "gh_Combination",
+   "operation": "combination_identity_select",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12823": {
+   "skill": "gh_Combination",
+   "operation": "combination_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12824": {
+   "skill": "gh_Combination",
+   "operation": "combination_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12825": {
+   "skill": "gh_Combination",
+   "operation": "combination_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12826": {
+   "skill": "gh_Combination",
+   "operation": "pair_count",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12827": {
+   "skill": "gh_Combination",
+   "operation": "sequential_selection",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12828": {
+   "skill": "gh_Combination",
+   "operation": "gender_committee",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12829": {
+   "skill": "gh_Combination",
+   "operation": "paired_group_assignment",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 9,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 9,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12830": {
+   "skill": "gh_Combination",
+   "operation": "surjective_distribution",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 11,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 11,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12831": {
+   "skill": "gh_Combination",
+   "operation": "pair_count",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12832": {
+   "skill": "gh_Combination",
+   "operation": "parity_sum_selection",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12833": {
+   "skill": "gh_Combination",
+   "operation": "multiset_select_arrange",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Combination",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12835": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "binomial_expansion",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12836": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "binomial_expansion",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12837": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "general_term_coefficient",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12839": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "at_least_k_selection",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 11,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 11,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12840": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "combination_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12841": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "binomial_sum_bound",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12842": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "binomial_expansion",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12843": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "radical_binomial_power",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12844": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "general_term_coefficient",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12846": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "at_least_k_selection",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12847": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "general_term_coefficient",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12848": {
+   "skill": "gh_BinomialTheorem",
+   "operation": "coefficient_solve_parameter",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_BinomialTheorem",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  }
+ }
+}

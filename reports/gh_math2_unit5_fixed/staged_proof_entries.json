@@ -1,0 +1,46 @@
+{
+ "schema": "fixed_textbook_practice.v1",
+ "staged_for": "release of 普高數學2 Unit 5 GenCode (merge into configs/fixed_textbook_practice.json)",
+ "entries": {
+  "12838": {
+   "skill_id": "gh_BinomialTheorem",
+   "label": "例題9 二項式係數和的證明（自評）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "寫出 (x+y)^n 的展開式",
+    "以 x=1、y=1 代入",
+    "整理得證"
+   ],
+   "reference_solution": [
+    "【寫出展開式】由二項式定理，$\\left(x+y\\right)^{n}=C_{0}^{n}x^{n}+C_{1}^{n}x^{n-1}y+C_{2}^{n}x^{n-2}y^{2}+\\cdots +C_{n}^{n}y^{n}$。",
+    "【以 $x=1$、$y=1$ 代入】$\\left(1+1\\right)^{n}=C_{0}^{n}+C_{1}^{n}+C_{2}^{n}+\\cdots +C_{n}^{n}$。",
+    "【整理得證】左式 $=2^{n}$，所以 $C_{0}^{n}+C_{1}^{n}+C_{2}^{n}+\\cdots +C_{n}^{n}=2^{n}$，故得證。"
+   ],
+   "problem_text_sha256": "0419e5e4847283b1fee11288c76da1473a4f6c6ef13eceb1928d64fefe549e65",
+   "oracle": {
+    "verified": "sympy summation=2^n (symbolic ok) + n=1..39 numeric + substitution into expanded (x+y)^n, n=1..12",
+    "script": "reports/gh_math2_unit5_fixed/build_proof_entries.py"
+   }
+  },
+  "12845": {
+   "skill_id": "gh_BinomialTheorem",
+   "label": "隨堂練習10 二項式係數交錯和的證明（自評）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "寫出 (x+y)^n 的展開式",
+    "以 x=1、y=−1 代入",
+    "整理得證"
+   ],
+   "reference_solution": [
+    "【寫出展開式】由二項式定理，$\\left(x+y\\right)^{n}=C_{0}^{n}x^{n}+C_{1}^{n}x^{n-1}y+C_{2}^{n}x^{n-2}y^{2}+\\cdots +C_{n}^{n}y^{n}$。",
+    "【以 $x=1$、$y=-1$ 代入】$\\left(1-1\\right)^{n}=C_{0}^{n}-C_{1}^{n}+C_{2}^{n}-C_{3}^{n}+\\cdots +\\left(-1\\right)^{n}C_{n}^{n}$。",
+    "【整理得證】因為 $n$ 為正整數，左式 $=0^{n}=0$，所以 $C_{0}^{n}-C_{1}^{n}+C_{2}^{n}-\\cdots +\\left(-1\\right)^{n}C_{n}^{n}=0$，故得證。"
+   ],
+   "problem_text_sha256": "6c584303b87798d08d3a8365dd8238a2f7b58bd0488a82a011dc5e56dca60586",
+   "oracle": {
+    "verified": "sympy summation=0 (symbolic ok) + n=1..39 numeric + substitution into expanded (x+y)^n, n=1..12",
+    "script": "reports/gh_math2_unit5_fixed/build_proof_entries.py"
+   }
+  }
+ }
+}

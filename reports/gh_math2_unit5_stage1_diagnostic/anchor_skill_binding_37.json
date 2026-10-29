@@ -1,0 +1,1123 @@
+{
+  "evidence_type": "new_isolated_dry_run",
+  "original_evidence_status": "original_evidence_unavailable",
+  "count": 37,
+  "mapping_limit": "Skill assignments came from reconstructed metadata, not original Gemini JSON",
+  "rows": [
+    {
+      "id": 12812,
+      "label": "例題1",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_001_001",
+        "anchor_key": "general|longteng|2|5|section|example|1|1",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "1",
+        "source_order": 1,
+        "block_index": 0,
+        "occurrence_index": 1,
+        "question_label": "例1",
+        "source_type": "textbook_example",
+        "text_fingerprint": "967b7e0eb59bd78b2263440a166d78aa0f08269b58fe6940b109147de8b690e2"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 3,
+      "pdf_text_candidate_pages": [
+        3
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12813,
+      "label": "例題2",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_002_003",
+        "anchor_key": "general|longteng|2|5|section|example|2|3",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "2",
+        "source_order": 3,
+        "block_index": 2,
+        "occurrence_index": 1,
+        "question_label": "例2",
+        "source_type": "textbook_example",
+        "text_fingerprint": "030091b9e04505f0880703e3c95f8e431c0c741314bdc372c004d2b075a4768b"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 3,
+      "pdf_text_candidate_pages": [
+        3
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12814,
+      "label": "例題3",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_003_005",
+        "anchor_key": "general|longteng|2|5|section|example|3|5",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "3",
+        "source_order": 5,
+        "block_index": 4,
+        "occurrence_index": 1,
+        "question_label": "例3",
+        "source_type": "textbook_example",
+        "text_fingerprint": "fd7a8f5884881d3b768183fbae19d6cffb620fe8af32546634817583a2d4d308"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 5,
+      "pdf_text_candidate_pages": [
+        5
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12815,
+      "label": "例題4",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_004_007",
+        "anchor_key": "general|longteng|2|5|section|example|4|7",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "4",
+        "source_order": 7,
+        "block_index": 6,
+        "occurrence_index": 1,
+        "question_label": "例4",
+        "source_type": "textbook_example",
+        "text_fingerprint": "625854bb1f43e98d7327580da76ef2af19736b5513e7c0e101cbef6265f38e37"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 6,
+      "pdf_text_candidate_pages": [
+        6
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12816,
+      "label": "例題5",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_005_009",
+        "anchor_key": "general|longteng|2|5|section|example|5|9",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "5",
+        "source_order": 9,
+        "block_index": 8,
+        "occurrence_index": 1,
+        "question_label": "例5",
+        "source_type": "textbook_example",
+        "text_fingerprint": "d69b69379a5ab6518ea14bc9e685614e429628254aca899bce6e2186c0da0ca9"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 7,
+      "pdf_text_candidate_pages": [
+        7
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12817,
+      "label": "隨堂練習1",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_001_002",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|1|2",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "1",
+        "source_order": 2,
+        "block_index": 1,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習1",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "bc90d3d53681e155225b2df3e01cc7a596002c1224569a3eabe31a4176e9e280"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 3,
+      "pdf_text_candidate_pages": [
+        3
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12818,
+      "label": "隨堂練習2",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_002_004",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|2|4",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "2",
+        "source_order": 4,
+        "block_index": 3,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習2",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "dfd40dde972886198cd40e5398b2cbf52818d4e0ad8d8851a97ef8259fed2be4"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 4,
+      "pdf_text_candidate_pages": [
+        4
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12819,
+      "label": "隨堂練習3",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_003_006",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|3|6",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "3",
+        "source_order": 6,
+        "block_index": 5,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習3",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "cbd4471b3a887a6e306ea40495e955d4fc69bc0326067fe770e0ebdda401239a"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 5,
+      "pdf_text_candidate_pages": [
+        5
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12820,
+      "label": "隨堂練習4",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_004_008",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|4|8",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "4",
+        "source_order": 8,
+        "block_index": 7,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習4",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "dd4ea9aeb59526dad29d6cefdebee00363bb564344f32f30ca7ed101e36a004e"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 6,
+      "pdf_text_candidate_pages": [
+        6
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12821,
+      "label": "隨堂練習5",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_005_010",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|5|10",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "5",
+        "source_order": 10,
+        "block_index": 9,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習5",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "353bacff8289fc8eb689a5cb8473b7def8814f54c11acfb32b5d1144b3be55a1"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 8,
+      "pdf_text_candidate_pages": [
+        8
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12822,
+      "label": "隨堂練習6",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_006_011",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|6|11",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "6",
+        "source_order": 11,
+        "block_index": 10,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習6",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "aac28572190d65981254b52282af49a6dc4b0167adac5c1b6317b75a9cb589a2"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 9,
+      "pdf_text_candidate_pages": [
+        9
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12823,
+      "label": "5習題 觀念澄清1",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_001_022",
+        "anchor_key": "general|longteng|2|5|section|exercise|1|22",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "1",
+        "source_order": 22,
+        "block_index": 21,
+        "occurrence_index": 1,
+        "question_label": "5習題 觀念澄清1",
+        "source_type": "chapter_exercise",
+        "text_fingerprint": "86a7209dfc9886668757ea97aff68510d360a1277d53e891e849e68743a0c4de"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 14,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12824,
+      "label": "5習題 觀念澄清2",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_002_023",
+        "anchor_key": "general|longteng|2|5|section|exercise|2|23",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "2",
+        "source_order": 23,
+        "block_index": 22,
+        "occurrence_index": 1,
+        "question_label": "5習題 觀念澄清2",
+        "source_type": "chapter_exercise",
+        "text_fingerprint": "33da97afa0e204aab42793c9b91a033e610e4905d43d589d072836ef1f245fad"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 14,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12825,
+      "label": "5習題 觀念澄清3",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_003_024",
+        "anchor_key": "general|longteng|2|5|section|exercise|3|24",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "3",
+        "source_order": 24,
+        "block_index": 23,
+        "occurrence_index": 1,
+        "question_label": "5習題 觀念澄清3",
+        "source_type": "chapter_exercise",
+        "text_fingerprint": "c1c70eaa79be131337991a5a78076ea2d069cb25aca052f4c323252df80d9f4e"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": null,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12826,
+      "label": "5習題 基礎題1",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_001_026",
+        "anchor_key": "general|longteng|2|5|section|exercise|1|26",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "1",
+        "source_order": 26,
+        "block_index": 25,
+        "occurrence_index": 1,
+        "question_label": "5習題 基礎題1",
+        "source_type": "basic_exercise",
+        "text_fingerprint": "b56e1a7eefb555fb7657074949c1f7fa4b426e2bfd75b2c2a94dfd555d5e58d7"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 14,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12827,
+      "label": "5習題 基礎題2",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_002_027",
+        "anchor_key": "general|longteng|2|5|section|exercise|2|27",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "2",
+        "source_order": 27,
+        "block_index": 26,
+        "occurrence_index": 1,
+        "question_label": "5習題 基礎題2",
+        "source_type": "basic_exercise",
+        "text_fingerprint": "38fb2a96930332ad965d978bf438df61f5e3961461c4b2c75f52b0e894b4a261"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 14,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12828,
+      "label": "5習題 基礎題3",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_003_028",
+        "anchor_key": "general|longteng|2|5|section|exercise|3|28",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "3",
+        "source_order": 28,
+        "block_index": 27,
+        "occurrence_index": 1,
+        "question_label": "5習題 基礎題3",
+        "source_type": "basic_exercise",
+        "text_fingerprint": "e6f81e9469ee824a63aa4b5ff3b72f933fc814a66e0cb7b11a1167b3e563176e"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 14,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12829,
+      "label": "5習題 基礎題4",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_004_029",
+        "anchor_key": "general|longteng|2|5|section|exercise|4|29",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "4",
+        "source_order": 29,
+        "block_index": 28,
+        "occurrence_index": 1,
+        "question_label": "5習題 基礎題4",
+        "source_type": "basic_exercise",
+        "text_fingerprint": "ae0ca7b633ae5dfaa4ec31152c0bb1dd6f010b571eee6a5fd3e6ad7a07205906"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 15,
+      "pdf_text_candidate_pages": [
+        15
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12830,
+      "label": "5習題 基礎題5",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_005_030",
+        "anchor_key": "general|longteng|2|5|section|exercise|5|30",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "5",
+        "source_order": 30,
+        "block_index": 29,
+        "occurrence_index": 1,
+        "question_label": "5習題 基礎題5",
+        "source_type": "basic_exercise",
+        "text_fingerprint": "83a792cd8d0cc469e03344092b271c9065eafac284a209cab627dd186921e8f2"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 15,
+      "pdf_text_candidate_pages": [
+        15
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12831,
+      "label": "5習題 進階題8",
+      "question_anchor": {
+        "anchor_id": "general_2_section_advanced_exercise_008_033",
+        "anchor_key": "general|longteng|2|5|section|advanced_exercise|8|33",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "advanced_exercise",
+        "question_number": "8",
+        "source_order": 33,
+        "block_index": 32,
+        "occurrence_index": 1,
+        "question_label": "5習題 進階題8",
+        "source_type": "advanced_exercise",
+        "text_fingerprint": "491bd0f01815a9d006dd31ffe66d28415a6fae259bba5b97c6765fba593e1522"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 16,
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12832,
+      "label": "5習題 進階題9",
+      "question_anchor": {
+        "anchor_id": "general_2_section_advanced_exercise_009_034",
+        "anchor_key": "general|longteng|2|5|section|advanced_exercise|9|34",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "advanced_exercise",
+        "question_number": "9",
+        "source_order": 34,
+        "block_index": 33,
+        "occurrence_index": 1,
+        "question_label": "5習題 進階題9",
+        "source_type": "advanced_exercise",
+        "text_fingerprint": "ba2e8b2474ae47ed58cfc18048c00ae4b91119cdb4593f7d4d1788d191c1900e"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 16,
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12833,
+      "label": "5習題 進階題10",
+      "question_anchor": {
+        "anchor_id": "general_2_section_advanced_exercise_010_035",
+        "anchor_key": "general|longteng|2|5|section|advanced_exercise|10|35",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "advanced_exercise",
+        "question_number": "10",
+        "source_order": 35,
+        "block_index": 34,
+        "occurrence_index": 1,
+        "question_label": "5習題 進階題10",
+        "source_type": "advanced_exercise",
+        "text_fingerprint": "a48ce3b5bf51dfa4c4c43ea6f56d75d0ae0d851d74089568dc52bdc66dcd053d"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 16,
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12834,
+      "label": "5習題 進階題12",
+      "question_anchor": {
+        "anchor_id": "general_2_section_advanced_exercise_012_037",
+        "anchor_key": "general|longteng|2|5|section|advanced_exercise|12|37",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "advanced_exercise",
+        "question_number": "12",
+        "source_order": 37,
+        "block_index": 36,
+        "occurrence_index": 1,
+        "question_label": "5習題 進階題12",
+        "source_type": "advanced_exercise",
+        "text_fingerprint": "712d893c75e32f330525af049dd493ffa31a500f85f0fa82287612131e138f57"
+      },
+      "assigned_skill_id": "gh_Combination",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 16,
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_visual_status": "VISUAL_REQUIRED_MISSING",
+      "visual_assets": []
+    },
+    {
+      "id": 12835,
+      "label": "例題6",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_006_012",
+        "anchor_key": "general|longteng|2|5|section|example|6|12",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "6",
+        "source_order": 12,
+        "block_index": 11,
+        "occurrence_index": 1,
+        "question_label": "例6",
+        "source_type": "textbook_example",
+        "text_fingerprint": "a64be224afe12d533b257710e14004ffa9f2106d348a3a74e429b918fda141d9"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": null,
+      "pdf_text_candidate_pages": [
+        10,
+        11
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12836,
+      "label": "例題7",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_007_014",
+        "anchor_key": "general|longteng|2|5|section|example|7|14",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "7",
+        "source_order": 14,
+        "block_index": 13,
+        "occurrence_index": 1,
+        "question_label": "例7",
+        "source_type": "textbook_example",
+        "text_fingerprint": "621f45d9219385b251c38bf15e16db4e10484c9c7ee4ad1cd78b056b7f310737"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": null,
+      "pdf_text_candidate_pages": [
+        10,
+        11
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12837,
+      "label": "例題8",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_008_016",
+        "anchor_key": "general|longteng|2|5|section|example|8|16",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "8",
+        "source_order": 16,
+        "block_index": 15,
+        "occurrence_index": 1,
+        "question_label": "例8",
+        "source_type": "textbook_example",
+        "text_fingerprint": "91accd848e0ddcce449e35142fcc7fa25d88c10e0112954b071e18b5c5f9a5d8"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 11,
+      "pdf_text_candidate_pages": [
+        11,
+        15
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12838,
+      "label": "例題9",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_009_018",
+        "anchor_key": "general|longteng|2|5|section|example|9|18",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "9",
+        "source_order": 18,
+        "block_index": 17,
+        "occurrence_index": 1,
+        "question_label": "例9",
+        "source_type": "textbook_example",
+        "text_fingerprint": "bd705443698ace5c75a02ebd71fcc95e7ef5dc313761d54302f52aef1d34b2df"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 12,
+      "pdf_text_candidate_pages": [
+        12
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12839,
+      "label": "例題10",
+      "question_anchor": {
+        "anchor_id": "general_2_section_example_010_020",
+        "anchor_key": "general|longteng|2|5|section|example|10|20",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "example",
+        "question_number": "10",
+        "source_order": 20,
+        "block_index": 19,
+        "occurrence_index": 1,
+        "question_label": "例10",
+        "source_type": "textbook_example",
+        "text_fingerprint": "656523cc281a787c199615588435ed1d9542a89c612a2ad66bcb52d0d52a6e12"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 13,
+      "pdf_text_candidate_pages": [
+        13
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12840,
+      "label": "5習題 觀念澄清4",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_004_025",
+        "anchor_key": "general|longteng|2|5|section|exercise|4|25",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "4",
+        "source_order": 25,
+        "block_index": 24,
+        "occurrence_index": 1,
+        "question_label": "5習題 觀念澄清4",
+        "source_type": "chapter_exercise",
+        "text_fingerprint": "a5b9578aa33a4bd202cfaf28f5d60877ffcd6226def80ed580825be2075bd72b"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 16,
+      "pdf_text_candidate_pages": [
+        14
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12841,
+      "label": "5習題 基礎題7",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_007_032",
+        "anchor_key": "general|longteng|2|5|section|exercise|7|32",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "7",
+        "source_order": 32,
+        "block_index": 31,
+        "occurrence_index": 1,
+        "question_label": "5習題 基礎題7",
+        "source_type": "basic_exercise",
+        "text_fingerprint": "3bc929685dc9b442290edb9acca79a4e00bcbe8aaba17f15e9a8ca3f73013ee7"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 15,
+      "pdf_text_candidate_pages": [
+        15
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12842,
+      "label": "隨堂練習7",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_007_013",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|7|13",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "7",
+        "source_order": 13,
+        "block_index": 12,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習7",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "fbf000b654499374e66f90b99f945b23684cb2c78249aaa7b9e586d73868791c"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 10,
+      "pdf_text_candidate_pages": [
+        10,
+        11
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12843,
+      "label": "隨堂練習8",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_008_015",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|8|15",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "8",
+        "source_order": 15,
+        "block_index": 14,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習8",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "ad129ad2bec16bb402f2382853d14f3bbd77243f4669fb5cc70285cc55ffc33f"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 11,
+      "pdf_text_candidate_pages": [
+        11
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12844,
+      "label": "隨堂練習9",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_009_017",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|9|17",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "9",
+        "source_order": 17,
+        "block_index": 16,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習9",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "03f619c5bf56e95f3602965c2a839c2e64050a50bb0bc3baf5285f041b320bff"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 12,
+      "pdf_text_candidate_pages": [
+        12
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12845,
+      "label": "隨堂練習10",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_010_019",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|10|19",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "10",
+        "source_order": 19,
+        "block_index": 18,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習10",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "d7661285c08ddeb3b8ff36809ae157d41394713459ab942221bf380d01d7297a"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 13,
+      "pdf_text_candidate_pages": [
+        12
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12846,
+      "label": "隨堂練習11",
+      "question_anchor": {
+        "anchor_id": "general_2_section_in_class_practice_011_021",
+        "anchor_key": "general|longteng|2|5|section|in_class_practice|11|21",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "in_class_practice",
+        "question_number": "11",
+        "source_order": 21,
+        "block_index": 20,
+        "occurrence_index": 1,
+        "question_label": "隨堂練習11",
+        "source_type": "in_class_practice",
+        "text_fingerprint": "69d3a13b24ad5bde1e7aefaa2db65a3622a5a6ad5d6a8607d2fa78a6638fda50"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 13,
+      "pdf_text_candidate_pages": [
+        13
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12847,
+      "label": "5習題 基礎題6",
+      "question_anchor": {
+        "anchor_id": "general_2_section_exercise_006_031",
+        "anchor_key": "general|longteng|2|5|section|exercise|6|31",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "exercise",
+        "question_number": "6",
+        "source_order": 31,
+        "block_index": 30,
+        "occurrence_index": 1,
+        "question_label": "5習題 基礎題6",
+        "source_type": "basic_exercise",
+        "text_fingerprint": "c06c5108040e34aff05fea986722fe5d18f386b293aaff693303fe40cbbc26c8"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 15,
+      "pdf_text_candidate_pages": [
+        11,
+        15
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    },
+    {
+      "id": 12848,
+      "label": "5習題 進階題11",
+      "question_anchor": {
+        "anchor_id": "general_2_section_advanced_exercise_011_036",
+        "anchor_key": "general|longteng|2|5|section|advanced_exercise|11|36",
+        "curriculum": "general",
+        "publisher": "longteng",
+        "volume": "數學2",
+        "chapter": "5",
+        "section": "",
+        "question_type": "advanced_exercise",
+        "question_number": "11",
+        "source_order": 36,
+        "block_index": 35,
+        "occurrence_index": 1,
+        "question_label": "5習題 進階題11",
+        "source_type": "advanced_exercise",
+        "text_fingerprint": "39b38d4dece6924c7db14b433f94111fa5334ee0f36bd42bb593be30568bbaa6"
+      },
+      "assigned_skill_id": "gh_BinomialTheorem",
+      "skill_binding": null,
+      "binding_evidence": "synthetic_metadata_in_new_dry_run_not_original_Gemini",
+      "source_page": 16,
+      "pdf_text_candidate_pages": [
+        16
+      ],
+      "pdf_visual_status": "NO_VISUAL_REQUIRED",
+      "visual_assets": []
+    }
+  ]
+}

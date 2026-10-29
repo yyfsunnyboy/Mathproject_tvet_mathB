@@ -1,0 +1,32 @@
+{
+  "evidence_type": "new_isolated_dry_run_and_visual_inspection",
+  "original_evidence_status": "original_evidence_unavailable",
+  "status": "pending_teacher_confirmation",
+  "verified": false,
+  "source_docx": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\ae362631e1be_單元05-組合.docx",
+  "source_pdf": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\e24c72f89309_單元05-組合.pdf",
+  "docx_sha256": "ae362631e1be7030b8ac800c2553f9c067e8081c44e886e76cd0cbf0d4328fad",
+  "pdf_sha256": "e24c72f893099354886c288daef25eab59cd315facc778f7ffa96d4e242ec166",
+  "question_anchor": "general_2_section_advanced_exercise_012_037",
+  "docx_block_index": 36,
+  "source_order": 37,
+  "pdf_page_1_based": 16,
+  "printed_page": 99,
+  "page_size_points": [
+    609.4486083984375,
+    793.7006225585938
+  ],
+  "proposed_bbox_pdf_points_xyxy": [
+    420,
+    575,
+    540,
+    675
+  ],
+  "full_question_text_after_formula_conversion": "如圖，\\(A_{ 1 } ,A_{ 2 } ,A_{ 3 } ,A_{ 4 }\\) 為半圓直徑上的 \\(4\\) 個點，\\(B_{ 1 } ,B_{ 2 } ,\\ldots ,B_{ 6 }\\) 為半圓周上的 \\(6\\) 個點。\n(1)這 \\(10\\) 個點共可決定多少條直線？（單選）\n①\\(24\\)　②\\(36\\)　③\\(40\\)　④\\(45\\)　⑤\\(48\\)。\n(2)以這 \\(10\\) 個點中的 \\(3\\) 個點為頂點，共可決定多少個三角形？",
+  "full_page_preview": "teacher_advanced12_page16.png",
+  "crop_preview": "teacher_advanced12_crop.png",
+  "figure_relation": "第 16 頁進階題 12 題幹左上方的半圓圖；A1–A4 在直徑上，B1–B6 在半圓弧上；對應題幹所述 10 點。",
+  "visual_check": "預覽保留半圓、直徑、全部 10 個點及 A1–A4、B1–B6 標記，未混入進階題 11 的圖形。",
+  "gate_reason": "required_figure_missing",
+  "mapping_reason": "skipped_low_confidence"
+}

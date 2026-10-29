@@ -1,0 +1,523 @@
+{
+ "schema": "fixed_textbook_practice.v1",
+ "reviewed": "2026-10-26",
+ "entries": {
+  "12719": {
+   "skill_id": "gh_Series",
+   "label": "隨堂練習6（圖形題・自動判分）",
+   "mode": "graded",
+   "answer": "341/128",
+   "answer_contract": {
+    "presentation_mode": "short_answer",
+    "answer_type": "rational",
+    "checker": "rational_checker",
+    "checker_key": "rational_checker",
+    "answer_equivalence": "rational_equivalent",
+    "equivalence": "rational_equivalent",
+    "equivalence_type": "rational_equivalent",
+    "answer_shape": "fixed_textbook_rational"
+   },
+   "reference_solution": [
+    "正方形 ABCD 的邊長為 2，最大的黑色等腰直角三角形是半個正方形，面積為 $\\frac{1}{2}\\times 2\\times 2=2$。",
+    "其餘黑色三角形沿著對角線的另一側依序縮小，每一個的直角邊長都是前一個的一半，所以面積是前一個的 $\\frac{1}{4}$。",
+    "五個黑色三角形的面積依序為 $2,\\ \\frac{1}{2},\\ \\frac{1}{8},\\ \\frac{1}{32},\\ \\frac{1}{128}$，成首項 $2$、公比 $\\frac{1}{4}$ 的等比數列。",
+    "面積總和 $S_{5}=\\frac{2\\left[1-\\left(\\frac{1}{4}\\right)^{5}\\right]}{1-\\frac{1}{4}}=\\frac{341}{128}$。"
+   ],
+   "problem_text_sha256": "a9d813f688014f470bbf2d39d8ca9ae33e9396dca85c8fcf7f4ec65beb799c34",
+   "oracle": {
+    "method": "areas of the five filled triangles measured from the PDF page-8 vector paths, scaled by square side = 2; no overlap",
+    "areas": [
+     "2",
+     "1/2",
+     "1/8",
+     "1/32",
+     "1/128"
+    ],
+    "page": 8,
+    "bbox": [
+     422,
+     567,
+     511,
+     661
+    ],
+    "script": "reports/gh_math2_unit2_fixed/derive_fixed_oracles.py",
+    "pdf_sha256": "9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964"
+   }
+  },
+  "12727": {
+   "skill_id": "gh_Series",
+   "label": "習題基礎題6（圖形題・自動判分）",
+   "mode": "graded",
+   "answer": "31/2",
+   "answer_contract": {
+    "presentation_mode": "short_answer",
+    "answer_type": "rational",
+    "checker": "rational_checker",
+    "checker_key": "rational_checker",
+    "answer_equivalence": "rational_equivalent",
+    "equivalence": "rational_equivalent",
+    "equivalence_type": "rational_equivalent",
+    "answer_shape": "fixed_textbook_rational"
+   },
+   "reference_solution": [
+    "$T_{1}$ 是腰長 $AB=1$ 的等腰直角三角形，面積 $\\frac{1}{2}$。",
+    "每個三角形的斜邊就是下一個三角形的腰，所以腰長依序是前一個的 $\\sqrt{2}$ 倍，面積是前一個的 $2$ 倍。",
+    "五個三角形的面積依序為 $\\frac{1}{2},\\ 1,\\ 2,\\ 4,\\ 8$，成首項 $\\frac{1}{2}$、公比 $2$ 的等比數列。",
+    "面積總和 $S_{5}=\\frac{\\frac{1}{2}\\left(2^{5}-1\\right)}{2-1}=\\frac{31}{2}$。"
+   ],
+   "problem_text_sha256": "53491644b3c1483df4edd526e3c20959bf56499a4244badedcd657ff300485cd",
+   "oracle": {
+    "method": "areas of the five stroked isosceles right triangles from the PDF page-16 vector paths, scaled by AB = 1 (the shortest leg, T1)",
+    "areas": [
+     "8",
+     "4",
+     "2",
+     "1",
+     "1/2"
+    ],
+    "page": 16,
+    "bbox": [
+     429,
+     445,
+     515,
+     548
+    ],
+    "script": "reports/gh_math2_unit2_fixed/derive_fixed_oracles.py",
+    "pdf_sha256": "9d32c092de7712d26cb4d4076da4c98340c66368c00ecd9094d017b8ced0c964"
+   }
+  },
+  "12731": {
+   "skill_id": "gh_CommonSeriesSummationFormulas",
+   "label": "例題8 平方和公式的歸納法證明（自評）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "驗證 n=1",
+    "假設 n=k 成立",
+    "推導 n=k+1 成立"
+   ],
+   "reference_solution": [
+    "【驗證 $n=1$】左式 $=1^{2}=1$，右式 $=\\frac{1\\times 2\\times 3}{6}=1$，等式成立。",
+    "【假設 $n=k$ 成立】$1^{2}+2^{2}+\\cdots +k^{2}=\\frac{k(k+1)(2k+1)}{6}$。",
+    "【推導 $n=k+1$ 成立】$1^{2}+2^{2}+\\cdots +k^{2}+(k+1)^{2}=\\frac{k(k+1)(2k+1)}{6}+(k+1)^{2}=\\frac{(k+1)\\left[k(2k+1)+6(k+1)\\right]}{6}=\\frac{(k+1)\\left(2k^{2}+7k+6\\right)}{6}=\\frac{(k+1)(k+2)(2k+3)}{6}$。",
+    "這正是 $n=k+1$ 時的右式 $\\frac{(k+1)\\left[(k+1)+1\\right]\\left[2(k+1)+1\\right]}{6}$，所以 $n=k+1$ 也成立。",
+    "由數學歸納法，對所有正整數 $n$，$1^{2}+2^{2}+\\cdots +n^{2}=\\frac{n(n+1)(2n+1)}{6}$ 恆成立。"
+   ],
+   "problem_text_sha256": "cf0fda2776c552bdac3bc65fc8f8031d6cde67ab58642fe96d3af713e57364df",
+   "oracle": {
+    "verified": "induction step (k -> k+1) symbolic + n=1..39 numeric",
+    "script": "reports/gh_math2_unit2_fixed/derive_fixed_oracles.py"
+   }
+  },
+  "12735": {
+   "skill_id": "gh_CommonSeriesSummationFormulas",
+   "label": "隨堂練習8 立方和公式的歸納法證明（自評）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "驗證 n=1",
+    "假設 n=k 成立",
+    "推導 n=k+1 成立"
+   ],
+   "reference_solution": [
+    "【驗證 $n=1$】左式 $=1^{3}=1$，右式 $=\\left(\\frac{1\\times 2}{2}\\right)^{2}=1$，等式成立。",
+    "【假設 $n=k$ 成立】$1^{3}+2^{3}+\\cdots +k^{3}=\\left[\\frac{k(k+1)}{2}\\right]^{2}$。",
+    "【推導 $n=k+1$ 成立】$1^{3}+2^{3}+\\cdots +k^{3}+(k+1)^{3}=\\frac{k^{2}(k+1)^{2}}{4}+(k+1)^{3}=\\frac{(k+1)^{2}\\left[k^{2}+4(k+1)\\right]}{4}=\\frac{(k+1)^{2}(k+2)^{2}}{4}$。",
+    "這正是 $n=k+1$ 時的右式 $\\left[\\frac{(k+1)(k+2)}{2}\\right]^{2}$，所以 $n=k+1$ 也成立。",
+    "由數學歸納法，對所有正整數 $n$，$1^{3}+2^{3}+\\cdots +n^{3}=\\left[\\frac{n(n+1)}{2}\\right]^{2}$ 恆成立。"
+   ],
+   "problem_text_sha256": "0fcd7bb238151e36b59047e0343834c95725e7672dcbc44ad4905fd4f47f84cc",
+   "oracle": {
+    "verified": "induction step (k -> k+1) symbolic + n=1..39 numeric",
+    "script": "reports/gh_math2_unit2_fixed/derive_fixed_oracles.py"
+   }
+  },
+  "12746": {
+   "skill_id": "gh_LogicAndSets",
+   "label": "隨堂練習2 複合命題的否定（自評）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "(1) 先找出兩個簡單命題，再用笛摩根定律否定「且」",
+    "(2) 先找出兩個簡單命題，再用笛摩根定律否定「或」"
+   ],
+   "reference_solution": [
+    "「且」的否定要把「且」改成「或」，並把兩個簡單命題各自否定：$\\sim(P\\land Q)\\equiv(\\sim P)\\lor(\\sim Q)$；「或」的否定則把「或」改成「且」：$\\sim(P\\lor Q)\\equiv(\\sim P)\\land(\\sim Q)$。",
+    "(1) 原命題「2是偶數且 $2$ 是質數」的否定是「$2$ 不是偶數或 $2$ 不是質數」。原命題為真，否定為假。",
+    "(2) 原命題「$\\pi=3$ 或 $\\pi$ 是正數」的否定是「$\\pi\\neq 3$ 且 $\\pi$ 不是正數」，也就是「$\\pi\\neq 3$ 且 $\\pi\\le 0$」。原命題為真，否定為假。"
+   ],
+   "problem_text_sha256": "45cb03507fde0544fa75d425be5423ba2299ff226dc4f7ef586d4e1b00d89a87",
+   "oracle": {
+    "verified": {
+     "de_morgan_truth_table": true,
+     "atoms": {
+      "2是偶數": true,
+      "2是質數": true,
+      "pi=3": false,
+      "pi是正數": true
+     },
+     "part_1": {
+      "original": true,
+      "negation": false
+     },
+     "part_2": {
+      "original": true,
+      "negation": false
+     }
+    },
+    "script": "reports/gh_math2_unit3_fixed/derive_fixed_oracles.py"
+   }
+  },
+  "12801": {
+   "skill_id": "gh_PermutationWithIdenticalItems",
+   "label": "習題基礎題6（街道圖・自動判分）",
+   "mode": "graded",
+   "answer": "62",
+   "answer_contract": {
+    "presentation_mode": "short_answer",
+    "answer_type": "rational",
+    "checker": "rational_checker",
+    "checker_key": "rational_checker",
+    "answer_equivalence": "rational_equivalent",
+    "equivalence": "rational_equivalent",
+    "equivalence_type": "rational_equivalent",
+    "answer_shape": "fixed_textbook_rational"
+   },
+   "reference_solution": [
+    "走捷徑只能向右或向上；缺少的街道不能走。把每個路口標上「從 A 走捷徑到該路口的方法數」：某路口的方法數＝（左邊路口，若有街道相連）的方法數＋（下方路口，若有街道相連）的方法數。",
+    "由下往上，每一排由左至右的方法數依序為：最下排 $1,1,1,1,1,1$；第 2 排 $1,2,3,4,0,1$；第 3 排 $1,3,6,10,10,11$；第 4 排 $1,0,0,10,20,31$；最上排 $1,1,1,11,31,62$。",
+    "所以從 A 取捷徑走到 B 共有 $62$ 種方法。"
+   ],
+   "problem_text_sha256": "8d4cac1d65fc363e02da58f22074518b63e07453de56ebeec294bb799d120da8",
+   "oracle": {
+    "method": "PDF vector street graph (page 16) == PNG pixel graph; routes counted by DP and by explicit listing",
+    "page": 16,
+    "bbox": [
+     261.0,
+     403.0,
+     348.0,
+     480.0
+    ],
+    "pdf_sha256": "bf39d447345e163ab4bab942337cd96ca9460eaf477f89953d284b7ed35025cb",
+    "street_graph": {
+     "width": 5,
+     "height": 4,
+     "horizontal_edges": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       4
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       1,
+       4
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       2,
+       4
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       4,
+       0
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       4,
+       4
+      ]
+     ],
+     "vertical_edges": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       1,
+       0
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       0
+      ],
+      [
+       2,
+       1
+      ],
+      [
+       3,
+       0
+      ],
+      [
+       3,
+       1
+      ],
+      [
+       3,
+       2
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       4,
+       2
+      ],
+      [
+       4,
+       3
+      ],
+      [
+       5,
+       0
+      ],
+      [
+       5,
+       1
+      ],
+      [
+       5,
+       2
+      ],
+      [
+       5,
+       3
+      ]
+     ]
+    },
+    "script": "reports/gh_math2_unit4_fixed/derive_fixed_oracles.py"
+   }
+  },
+  "12834": {
+   "skill_id": "gh_Combination",
+   "label": "習題進階題12（半圓上的點・自動判分）",
+   "mode": "graded",
+   "answer": {
+    "part_1": "③",
+    "part_2": "116"
+   },
+   "answer_contract": {
+    "presentation_mode": "multiple_inputs",
+    "answer_type": "multi_part",
+    "checker": "multi_part_answer_checker",
+    "checker_key": "multi_part_answer_checker",
+    "answer_equivalence": "multi_part_answer",
+    "equivalence": "multi_part_answer",
+    "equivalence_type": "multi_part_answer",
+    "answer_shape": "fixed_textbook_multi_part",
+    "parts": [
+     {
+      "key": "part_1",
+      "label": "(1)",
+      "prompt": "(1) 選項",
+      "checker": "choice_label_checker",
+      "checker_key": "choice_label_checker",
+      "equivalence_type": "choice_label",
+      "answer_type": "single_choice",
+      "choices": [
+       {
+        "label": "①",
+        "value": "24"
+       },
+       {
+        "label": "②",
+        "value": "36"
+       },
+       {
+        "label": "③",
+        "value": "40"
+       },
+       {
+        "label": "④",
+        "value": "45"
+       },
+       {
+        "label": "⑤",
+        "value": "48"
+       }
+      ]
+     },
+     {
+      "key": "part_2",
+      "label": "(2)",
+      "prompt": "(2) 三角形個數",
+      "checker": "integer_checker",
+      "checker_key": "integer_checker",
+      "equivalence_type": "numeric_exact",
+      "answer_type": "integer"
+     }
+    ]
+   },
+   "reference_solution": [
+    "圖中共有 $10$ 個點：直徑上的 $A_1,A_2,A_3,A_4$ 共線，半圓弧上的 $B_1,\\dots ,B_6$ 中任三點不共線，且弧上的點都不在直徑所在直線上。",
+    "(1) 任取兩點決定一條直線，共 $C^{10}_{2}=45$ 種取法；但 $A_1,A_2,A_3,A_4$ 中任取兩點都決定同一條直線，這 $C^{4}_{2}=6$ 種取法只算 $1$ 條。所以直線共有 $45-6+1=40$ 條，答案為③。",
+    "(2) 任取三點，共 $C^{10}_{3}=120$ 種取法；三點共線時不能構成三角形，只有從 $A_1,A_2,A_3,A_4$ 中取三點的 $C^{4}_{3}=4$ 種。所以三角形共有 $120-4=116$ 個。"
+   ],
+   "problem_text_sha256": "f9a8343e5583597ce274ada05b885309c35beb517174ed17661aa123c65b5806",
+   "question_anchor": "general_2_section_advanced_exercise_012_037",
+   "provenance": {
+    "curriculum": "general",
+    "volume": "數學2",
+    "chapter": "單元5 組合",
+    "pdf_sha256": "e24c72f893099354886c288daef25eab59cd315facc778f7ffa96d4e242ec166",
+    "pdf_page": 16,
+    "figure_bbox": [
+     425.0,
+     586.5,
+     526.0,
+     653.5
+    ],
+    "figure_region_status": "pending_teacher_confirmation"
+   },
+   "oracle": {
+    "method": "PDF vector dots (page 16) labelled by position; all 45 pairs / 120 triples enumerated; closed forms cross-checked",
+    "page": 16,
+    "pdf_sha256": "e24c72f893099354886c288daef25eab59cd315facc778f7ffa96d4e242ec166",
+    "figure_vector_bounds": [
+     426.7,
+     588.0,
+     524.4,
+     652.1
+    ],
+    "points_pt": {
+     "A1": [
+      451.73,
+      638.92
+     ],
+     "A2": [
+      467.6,
+      638.92
+     ],
+     "A3": [
+      483.48,
+      638.92
+     ],
+     "A4": [
+      499.35,
+      638.92
+     ],
+     "B1": [
+      439.35,
+      622.81
+     ],
+     "B2": [
+      450.06,
+      608.56
+     ],
+     "B3": [
+      465.82,
+      600.35
+     ],
+     "B4": [
+      483.74,
+      600.35
+     ],
+     "B5": [
+      499.9,
+      607.75
+     ],
+     "B6": [
+      511.12,
+      621.57
+     ]
+    },
+    "collinear_triples": [
+     [
+      "A1",
+      "A2",
+      "A3"
+     ],
+     [
+      "A1",
+      "A2",
+      "A4"
+     ],
+     [
+      "A1",
+      "A3",
+      "A4"
+     ],
+     [
+      "A2",
+      "A3",
+      "A4"
+     ]
+    ],
+    "lines": 40,
+    "triangles": 116,
+    "script": "reports/gh_math2_unit5_fixed/derive_fixed_oracles.py"
+   }
+  }
+ }
+}

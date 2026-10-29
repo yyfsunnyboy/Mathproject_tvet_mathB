@@ -1,0 +1,24 @@
+{
+  "focused_pdf_fidelity_tests": "3 passed",
+  "existing_stage1_auto_review_tests": "12 passed (second run with sandbox temp; initial setup failed due system temp permissions)",
+  "unit4_pdf_fidelity_read_only_comparison": {
+    "rows": 38,
+    "changed_outcomes": [],
+    "old_pass_count": 38,
+    "new_pass_count": 38
+  },
+  "unit5_formula_conversion": "131/131 OLE, 10/10 equation fields; failed=0",
+  "unit5_inventory": "37 expected, 37 returned, 0 missing",
+  "unit5_gate": "BLOCKED",
+  "unit5_visual": {
+    "NO_VISUAL_REQUIRED": 36,
+    "VISUAL_REQUIRED_MISSING": 1
+  },
+  "formal_db_unchanged": {
+    "formal_before_sha256": "21dd90adca424349e430fa620ce70254cdb362b8031973e16c597461763c66ad",
+    "formal_after_sha256": "21dd90adca424349e430fa620ce70254cdb362b8031973e16c597461763c66ad",
+    "formal_db_zero_change_confirmed": true
+  },
+  "evidence_type": "new_isolated_dry_run",
+  "original_evidence_status": "original_evidence_unavailable"
+}

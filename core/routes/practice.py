@@ -513,7 +513,7 @@ def _build_textbook_example_practice_response(
     fixed = entry_for_row(te)  # reviewed fixed practice (graded with an independent oracle, or ungraded with a reference solution)
     fixed_graded = bool(fixed and fixed["mode"] == "graded")
     if fixed_graded:
-        answer = str(fixed["answer"])
+        answer = fixed["answer"] if isinstance(fixed["answer"], dict) else str(fixed["answer"])  # multi_part: per-part keys
         input_type = str((fixed.get("answer_contract") or {}).get("answer_type") or input_type)
     ungraded = bool(fixed and fixed["mode"] == "ungraded") or (skill_id in UNGRADED_SELF_STUDY_SKILLS and not str(answer).strip())
     fixed_extra: dict[str, Any] = {}

@@ -1,0 +1,12 @@
+{
+  "evidence_type": "new_isolated_dry_run",
+  "original_evidence_status": "original_evidence_unavailable",
+  "prior_diagnostic_issue_count": 7,
+  "prior_seven_reason_code": "stem_not_verified_against_pdf",
+  "after_auto_review_issues": [],
+  "seven_resolved": 7,
+  "new_pdf_fidelity_issues": 0,
+  "remaining_gate_reasons": {
+    "required_figure_missing": 1
+  }
+}

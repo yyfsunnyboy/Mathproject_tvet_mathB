@@ -1,0 +1,25 @@
+{
+ "preflight": "PREFLIGHT PASS []",
+ "apply": [
+  0,
+  "APPLY PASS {\"rows\": 37, \"ids\": [12812, 12848], \"skills\": {\"gh_Combination\": 23, \"gh_BinomialTheorem\": 14}, \"old_remaining\": 0, \"gate\": \"READY\", \"blocked\": 0, \"needs_review\": 0, \"figure_rows\": [12834], \"source_order\": \"1-37\", \"curriculum_updates\": [[358, 50001], [359, 50002]], \"curriculum_deleted\": [360], \"private_use_or_parse_failed\": 0} MANIFEST C:\\Projects\\Mathproject_tvet_mathB\\reports\\gh_math2_unit5_stage1_formal\\tmp\\rehearse_apply\\backups\\math2_unit5_stage1_20261029_220326\\apply_manifest.json",
+  ""
+ ],
+ "verify": [
+  0,
+  "12848], \"skills\": {\"gh_Combination\": 23, \"gh_BinomialTheorem\": 14}, \"old_remaining\": 0, \"gate\": \"READY\", \"blocked\": 0, \"needs_review\": 0, \"figure_rows\": [12834], \"source_order\": \"1-37\", \"curriculum_updates\": [[358, 50001], [359, 50002]], \"curriculum_deleted\": [360], \"private_use_or_parse_failed\": 0}"
+ ],
+ "rollback": [
+  0,
+  "ROLLBACK PASS 28 rows restored",
+  ""
+ ],
+ "rollback_exact": true,
+ "rollback_asset_removed": true,
+ "reapply": [
+  0,
+  "], \"private_use_or_parse_failed\": 0} MANIFEST C:\\Projects\\Mathproject_tvet_mathB\\reports\\gh_math2_unit5_stage1_formal\\tmp\\rehearse_apply\\backups2\\math2_unit5_stage1_20261029_220327\\apply_manifest.json",
+  ""
+ ],
+ "integrity": "ok"
+}

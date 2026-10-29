@@ -26,6 +26,17 @@
         "4習題 基礎題6": [{"page": 16, "bbox": [261.0, 403.0, 348.0, 480.0], "why": "Street graph directly below exercise 6 stem; PDF vector bounds x=261.7..347.7 y=403.4..479.7; exercises 5 and 7 excluded"}],
         "4習題 進階題14": [{"page": 18, "bbox": [379.0, 556.0, 436.0, 663.0], "why": "Three balloon strings defining the lowest-balloon order; PDF vector bounds x=379.9..435.1 y=557.0..661.6; decorative person and darts excluded"}]
       }
+    },
+    {
+      "pdf_sha256": "e24c72f893099354886c288daef25eab59cd315facc778f7ffa96d4e242ec166",
+      "curriculum": "general",
+      "volume": "數學2",
+      "chapter": "單元5 組合",
+      "verified_by": "teacher",
+      "verified_on": "2026-10-29",
+      "regions": {
+        "5習題 進階題12": [{"page": 16, "bbox": [425.0, 586.5, 526.0, 653.5], "why": "Semicircle with A1-A4 on the diameter and B1-B6 on the arc, right of the stem; PDF vector bounds x=426.7..524.4 y=588.0..652.1 (31 ink objects incl. all labels and subscripts); exercise 11 above and the page footer excluded"}]
+      }
     }
   ]
 }

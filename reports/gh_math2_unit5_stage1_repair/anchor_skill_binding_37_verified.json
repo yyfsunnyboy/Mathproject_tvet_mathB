@@ -1,0 +1,348 @@
+{
+  "evidence_type": "new_isolated_dry_run",
+  "original_evidence_status": "original_evidence_unavailable",
+  "count": 37,
+  "unique_anchors": 37,
+  "source_orders_complete": true,
+  "binding_deltas_vs_prior_diagnostic": [],
+  "skill_ids": [
+    "gh_BinomialTheorem",
+    "gh_Combination"
+  ],
+  "rows": [
+    {
+      "source_order": 1,
+      "title": "例題1",
+      "anchor": "general_2_section_example_001_001",
+      "docx_block_index": 0,
+      "skill_id": "gh_Combination",
+      "pdf_page": 3,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 2,
+      "title": "隨堂練習1",
+      "anchor": "general_2_section_in_class_practice_001_002",
+      "docx_block_index": 1,
+      "skill_id": "gh_Combination",
+      "pdf_page": 3,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 3,
+      "title": "例題2",
+      "anchor": "general_2_section_example_002_003",
+      "docx_block_index": 2,
+      "skill_id": "gh_Combination",
+      "pdf_page": 3,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 4,
+      "title": "隨堂練習2",
+      "anchor": "general_2_section_in_class_practice_002_004",
+      "docx_block_index": 3,
+      "skill_id": "gh_Combination",
+      "pdf_page": 4,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 5,
+      "title": "例題3",
+      "anchor": "general_2_section_example_003_005",
+      "docx_block_index": 4,
+      "skill_id": "gh_Combination",
+      "pdf_page": 5,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 6,
+      "title": "隨堂練習3",
+      "anchor": "general_2_section_in_class_practice_003_006",
+      "docx_block_index": 5,
+      "skill_id": "gh_Combination",
+      "pdf_page": 5,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 7,
+      "title": "例題4",
+      "anchor": "general_2_section_example_004_007",
+      "docx_block_index": 6,
+      "skill_id": "gh_Combination",
+      "pdf_page": 6,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 8,
+      "title": "隨堂練習4",
+      "anchor": "general_2_section_in_class_practice_004_008",
+      "docx_block_index": 7,
+      "skill_id": "gh_Combination",
+      "pdf_page": 6,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 9,
+      "title": "例題5",
+      "anchor": "general_2_section_example_005_009",
+      "docx_block_index": 8,
+      "skill_id": "gh_Combination",
+      "pdf_page": 7,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 10,
+      "title": "隨堂練習5",
+      "anchor": "general_2_section_in_class_practice_005_010",
+      "docx_block_index": 9,
+      "skill_id": "gh_Combination",
+      "pdf_page": 8,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 11,
+      "title": "隨堂練習6",
+      "anchor": "general_2_section_in_class_practice_006_011",
+      "docx_block_index": 10,
+      "skill_id": "gh_Combination",
+      "pdf_page": 9,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 12,
+      "title": "例題6",
+      "anchor": "general_2_section_example_006_012",
+      "docx_block_index": 11,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 10,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 13,
+      "title": "隨堂練習7",
+      "anchor": "general_2_section_in_class_practice_007_013",
+      "docx_block_index": 12,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 10,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 14,
+      "title": "例題7",
+      "anchor": "general_2_section_example_007_014",
+      "docx_block_index": 13,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 11,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 15,
+      "title": "隨堂練習8",
+      "anchor": "general_2_section_in_class_practice_008_015",
+      "docx_block_index": 14,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 11,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 16,
+      "title": "例題8",
+      "anchor": "general_2_section_example_008_016",
+      "docx_block_index": 15,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 11,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 17,
+      "title": "隨堂練習9",
+      "anchor": "general_2_section_in_class_practice_009_017",
+      "docx_block_index": 16,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 12,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 18,
+      "title": "例題9",
+      "anchor": "general_2_section_example_009_018",
+      "docx_block_index": 17,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 12,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 19,
+      "title": "隨堂練習10",
+      "anchor": "general_2_section_in_class_practice_010_019",
+      "docx_block_index": 18,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 12,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 20,
+      "title": "例題10",
+      "anchor": "general_2_section_example_010_020",
+      "docx_block_index": 19,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 13,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 21,
+      "title": "隨堂練習11",
+      "anchor": "general_2_section_in_class_practice_011_021",
+      "docx_block_index": 20,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 13,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 22,
+      "title": "5習題 觀念澄清1",
+      "anchor": "general_2_section_exercise_001_022",
+      "docx_block_index": 21,
+      "skill_id": "gh_Combination",
+      "pdf_page": 14,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 23,
+      "title": "5習題 觀念澄清2",
+      "anchor": "general_2_section_exercise_002_023",
+      "docx_block_index": 22,
+      "skill_id": "gh_Combination",
+      "pdf_page": 14,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 24,
+      "title": "5習題 觀念澄清3",
+      "anchor": "general_2_section_exercise_003_024",
+      "docx_block_index": 23,
+      "skill_id": "gh_Combination",
+      "pdf_page": 14,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 25,
+      "title": "5習題 觀念澄清4",
+      "anchor": "general_2_section_exercise_004_025",
+      "docx_block_index": 24,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 14,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 26,
+      "title": "5習題 基礎題1",
+      "anchor": "general_2_section_exercise_001_026",
+      "docx_block_index": 25,
+      "skill_id": "gh_Combination",
+      "pdf_page": 14,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 27,
+      "title": "5習題 基礎題2",
+      "anchor": "general_2_section_exercise_002_027",
+      "docx_block_index": 26,
+      "skill_id": "gh_Combination",
+      "pdf_page": 14,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 28,
+      "title": "5習題 基礎題3",
+      "anchor": "general_2_section_exercise_003_028",
+      "docx_block_index": 27,
+      "skill_id": "gh_Combination",
+      "pdf_page": 14,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 29,
+      "title": "5習題 基礎題4",
+      "anchor": "general_2_section_exercise_004_029",
+      "docx_block_index": 28,
+      "skill_id": "gh_Combination",
+      "pdf_page": 15,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 30,
+      "title": "5習題 基礎題5",
+      "anchor": "general_2_section_exercise_005_030",
+      "docx_block_index": 29,
+      "skill_id": "gh_Combination",
+      "pdf_page": 15,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 31,
+      "title": "5習題 基礎題6",
+      "anchor": "general_2_section_exercise_006_031",
+      "docx_block_index": 30,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 15,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 32,
+      "title": "5習題 基礎題7",
+      "anchor": "general_2_section_exercise_007_032",
+      "docx_block_index": 31,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 15,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 33,
+      "title": "5習題 進階題8",
+      "anchor": "general_2_section_advanced_exercise_008_033",
+      "docx_block_index": 32,
+      "skill_id": "gh_Combination",
+      "pdf_page": 16,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 34,
+      "title": "5習題 進階題9",
+      "anchor": "general_2_section_advanced_exercise_009_034",
+      "docx_block_index": 33,
+      "skill_id": "gh_Combination",
+      "pdf_page": 16,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 35,
+      "title": "5習題 進階題10",
+      "anchor": "general_2_section_advanced_exercise_010_035",
+      "docx_block_index": 34,
+      "skill_id": "gh_Combination",
+      "pdf_page": 16,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 36,
+      "title": "5習題 進階題11",
+      "anchor": "general_2_section_advanced_exercise_011_036",
+      "docx_block_index": 35,
+      "skill_id": "gh_BinomialTheorem",
+      "pdf_page": 16,
+      "visual_status": "NO_VISUAL_REQUIRED"
+    },
+    {
+      "source_order": 37,
+      "title": "5習題 進階題12",
+      "anchor": "general_2_section_advanced_exercise_012_037",
+      "docx_block_index": 36,
+      "skill_id": "gh_Combination",
+      "pdf_page": 16,
+      "visual_status": "VISUAL_REQUIRED_MISSING"
+    }
+  ],
+  "limitation": "Reconstructed Gemini metadata was used for this isolated replay; original Gemini response is unavailable."
+}

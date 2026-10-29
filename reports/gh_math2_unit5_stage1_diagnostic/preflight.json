@@ -1,0 +1,48 @@
+{
+  "evidence_type": "new_dry_run_preflight",
+  "original_evidence_status": "original_evidence_unavailable",
+  "source_record": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\12f0850f70a4f4bb1fe149c078a1b9d5f3f9927285122d4c70c09c13eb5a89d6.json",
+  "sources": {
+    "docx": {
+      "original_path": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\ae362631e1be_單元05-組合.docx",
+      "sandbox_path": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gh_math2_unit5_stage1_diagnostic\\sandbox\\05-.docx",
+      "sha256": "ae362631e1be7030b8ac800c2553f9c067e8081c44e886e76cd0cbf0d4328fad",
+      "size_bytes": 622995
+    },
+    "pdf": {
+      "original_path": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\e24c72f89309_單元05-組合.pdf",
+      "sandbox_path": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gh_math2_unit5_stage1_diagnostic\\sandbox\\05-.pdf",
+      "sha256": "e24c72f893099354886c288daef25eab59cd315facc778f7ffa96d4e242ec166",
+      "size_bytes": 1953456
+    }
+  },
+  "formal_db": "C:\\Projects\\Mathproject_tvet_mathB\\instance\\kumon_math.db",
+  "formal_before_snapshot": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gh_math2_unit5_stage1_diagnostic\\sandbox\\formal_before.db",
+  "formal_before_sha256": "21dd90adca424349e430fa620ce70254cdb362b8031973e16c597461763c66ad",
+  "sandbox_db": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gh_math2_unit5_stage1_diagnostic\\sandbox\\unit5.db",
+  "sandbox_root": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gh_math2_unit5_stage1_diagnostic\\sandbox",
+  "formal_counts_before": {
+    "unit5_rows": 28,
+    "unit5_bindings": [
+      [
+        "gh_BinomialTheorem",
+        "乙.二項式定理"
+      ],
+      [
+        "gh_Combination",
+        "甲.組合"
+      ],
+      [
+        "gh_ComprehensiveExercises",
+        "未分類"
+      ]
+    ]
+  },
+  "entrypoint": "core.textbook_processor.process_textbook_file",
+  "scope": {
+    "curriculum": "general",
+    "volume": "數學2",
+    "chapter": "單元5 組合"
+  },
+  "safe_boundary": "copied sources and sqlite backup; app DB URI, root_path, cwd point to sandbox; no web POST, no promotion or publish"
+}

@@ -1,0 +1,46 @@
+{
+ "gh_BinomialTheorem": {
+  "status": "production_published",
+  "component_count": 12,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 11,
+  "static_count": 0,
+  "partially_dynamic_count": 0,
+  "variation_warning": "",
+  "non_dynamic_components": {
+   "src_12840": {
+    "variation_status": "unsafe_dynamic",
+    "error": "Single choice must have 4 choices, got 2"
+   }
+  }
+ },
+ "gh_Combination": {
+  "status": "production_published",
+  "component_count": 22,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 19,
+  "static_count": 0,
+  "partially_dynamic_count": 0,
+  "variation_warning": "",
+  "non_dynamic_components": {
+   "src_12823": {
+    "variation_status": "unsafe_dynamic",
+    "error": "Single choice must have 4 choices, got 2"
+   },
+   "src_12824": {
+    "variation_status": "unsafe_dynamic",
+    "error": "Single choice must have 4 choices, got 2"
+   },
+   "src_12825": {
+    "variation_status": "unsafe_dynamic",
+    "error": "Single choice must have 4 choices, got 2"
+   }
+  }
+ }
+}

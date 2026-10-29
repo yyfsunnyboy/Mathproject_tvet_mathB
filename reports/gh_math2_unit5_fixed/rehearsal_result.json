@@ -1,0 +1,93 @@
+{
+  "evidence_type": "new_isolated_rehearsal_with_staged_region",
+  "original_evidence_status": "original_evidence_unavailable",
+  "metadata_basis": "reconstructed_title_inventory; original_Gemini_response_unavailable",
+  "staged_region_status": "pending_teacher_confirmation (placeholder reviewer used only inside this rehearsal)",
+  "region_hook": {
+    "curriculum": "general",
+    "volume": "數學2",
+    "chapter": "單元5 組合",
+    "matched": true
+  },
+  "manual_region_overrides_applied": [
+    "5習題 進階題12"
+  ],
+  "gate_returned_by_import": {
+    "status": null,
+    "stage1_ready": null,
+    "rows": null,
+    "blocked": null,
+    "needs_review": null,
+    "reasons": null
+  },
+  "gate_log_line": "INFO: [STAGE1 GATE] status=READY rows=37 blocked=0 needs_review=0 reasons={}",
+  "gate": {
+    "status": "READY",
+    "stage1_ready": true,
+    "rows": 37,
+    "blocked": [],
+    "needs_review": [],
+    "reasons": {}
+  },
+  "import_result_type": "dict",
+  "import_result_keys": [
+    "message",
+    "status"
+  ],
+  "import_result_status": "success",
+  "auto_review_issues": null,
+  "rows": 37,
+  "unique_anchors": 37,
+  "target": {
+    "id": 12834,
+    "label": "5習題 進階題12",
+    "skill_id": "gh_Combination",
+    "pdf_visual_status": "VISUAL_ATTACHED",
+    "visual_required_missing": false,
+    "question_anchor": {
+      "anchor_id": "general_2_section_advanced_exercise_012_037",
+      "anchor_key": "general|longteng|2|5|section|advanced_exercise|12|37",
+      "curriculum": "general",
+      "publisher": "longteng",
+      "volume": "數學2",
+      "chapter": "5",
+      "section": "",
+      "question_type": "advanced_exercise",
+      "question_number": "12",
+      "source_order": 37,
+      "block_index": 36,
+      "occurrence_index": 1,
+      "question_label": "5習題 進階題12",
+      "source_type": "advanced_exercise",
+      "text_fingerprint": "712d893c75e32f330525af049dd493ffa31a500f85f0fa82287612131e138f57"
+    },
+    "image_assets": [
+      {
+        "path": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元5_組合/sec_unknown_5組合/advanced_exercise_5習題_進階題12_source_typeadvanced_exercise_dedupe3a304875a7b5ee9d_general__fig1.png",
+        "exists": true,
+        "sha256": "a8390a7a155dc6ab155fc2232b30986012985f0be34e1ca94c1cdbbcbb19e75d",
+        "bbox": [
+          425.0,
+          586.5,
+          526.0,
+          653.5
+        ],
+        "visual_status": "accepted",
+        "question_anchor": "general_2_section_advanced_exercise_012_037",
+        "source_page": 16,
+        "reason": "manual_verified_region: Semicircle with A1-A4 on the diameter and B1-B6 on the arc, right of the stem; PDF vector bounds x=426.7..524.4 y=588.0..652.1 (31 ink objects incl. all labels and subscripts); exercise 11 above and the page footer excluded"
+      }
+    ],
+    "stem_skill_solution_identical_to_previous_replay": true
+  },
+  "other_36_rows": {
+    "content_skill_anchor_diffs": [],
+    "visual_state_diffs": []
+  },
+  "live_config_unchanged": true,
+  "formal_db_zero_change": true,
+  "formal_db_sha256": {
+    "before": "8ce8579afd083f0ec1c342e9f1989bf298d66b670ecd0f03d42cce14fd35876e",
+    "after": "8ce8579afd083f0ec1c342e9f1989bf298d66b670ecd0f03d42cce14fd35876e"
+  }
+}

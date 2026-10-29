@@ -1,0 +1,82 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "discrete.combinations",
+ "registry_revision": "promoted-848b2241bfec",
+ "bundle_sha256": "848b2241bfeccb90f781de5d17549c985db898024889c214bf19d523f2389dab",
+ "allowed_operations": [
+  "at_least_k_selection",
+  "binomial_expansion",
+  "binomial_sum_bound",
+  "coefficient_solve_parameter",
+  "combination_claim",
+  "combination_evaluate",
+  "combination_identity_select",
+  "gender_committee",
+  "general_term_coefficient",
+  "group_partition",
+  "mixed_group_ordered",
+  "multiset_select_arrange",
+  "pair_count",
+  "paired_group_assignment",
+  "parity_sum_selection",
+  "radical_binomial_power",
+  "select_with_members",
+  "sequential_selection",
+  "surjective_distribution"
+ ],
+ "skill_bindings": {
+  "gh_BinomialTheorem": {
+   "fixed_domain_key": "discrete.combinations",
+   "allowed_operations": [
+    "at_least_k_selection",
+    "binomial_expansion",
+    "binomial_sum_bound",
+    "coefficient_solve_parameter",
+    "combination_claim",
+    "general_term_coefficient",
+    "radical_binomial_power"
+   ]
+  },
+  "gh_Combination": {
+   "fixed_domain_key": "discrete.combinations",
+   "allowed_operations": [
+    "combination_claim",
+    "combination_evaluate",
+    "combination_identity_select",
+    "gender_committee",
+    "group_partition",
+    "mixed_group_ordered",
+    "multiset_select_arrange",
+    "pair_count",
+    "paired_group_assignment",
+    "parity_sum_selection",
+    "select_with_members",
+    "sequential_selection",
+    "surjective_distribution"
+   ]
+  }
+ },
+ "operations_executed": {
+  "at_least_k_selection": 2,
+  "binomial_expansion": 3,
+  "binomial_sum_bound": 1,
+  "coefficient_solve_parameter": 1,
+  "combination_claim": 4,
+  "combination_evaluate": 2,
+  "combination_identity_select": 1,
+  "gender_committee": 1,
+  "general_term_coefficient": 3,
+  "group_partition": 4,
+  "mixed_group_ordered": 2,
+  "multiset_select_arrange": 1,
+  "pair_count": 2,
+  "paired_group_assignment": 1,
+  "parity_sum_selection": 1,
+  "radical_binomial_power": 1,
+  "select_with_members": 2,
+  "sequential_selection": 1,
+  "surjective_distribution": 1
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\combinations"
+}

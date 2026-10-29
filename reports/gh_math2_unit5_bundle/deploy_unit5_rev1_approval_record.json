@@ -1,0 +1,13 @@
+{
+ "time": "2026-10-29 23:23:54 +0800",
+ "bundle_file_sha256_before_approval": "bbdc6bad00c4f7f046184553f14b8397c1e97989964883edc947f6201d41cd15",
+ "bundle_canonical_sha256_before": "e8a02e07656e452e185344352df762e0a418487b8bb597cc03f315155322962a",
+ "bundle_file_sha256_after_approval": "256d307a3796382b53e43277cfa93b6dc8504779e041cdbfe4534b4efd62de4e",
+ "package_files": {
+  "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "combinations_adapter.py": "3436ba2a5ab1c5a9b5f9617a83614bf4117224239ebebcef255722ca3fe7a348",
+  "combinations_domain.py": "ce6d601b529b6de4cbeb1c1e3bd582b5731ab96a025f9a7f21213e408ba17ed3"
+ },
+ "approval_scope": "revision 1: 普高數學2 Unit 5 組合 — domain discrete.combinations (19 operations: at_least_k_selection, binomial_expansion, binomial_sum_bound, coefficient_solve_parameter, combination_claim, combination_evaluate, combination_identity_select, gend",
+ "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-29 after teacher acceptance (UNIT5_TEACHER_ACCEPTANCE.md): one-time Promotion and Publish of 數學2 Unit 5 組合 (discrete.combinations; gh_Combination 22 + gh_BinomialTheorem 12 components; ungraded proof self-check entries 12838 / 12845; fixed graded row 12834 kept as is); plain-text formulas in 4 explanations accepted; unsafe_dynamic variation warning of the 4 true/false components accepted as a WARN (four-choice audit rule not applicable), not changed to PASS; no Flask / Cloudflare restart"
+}

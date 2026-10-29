@@ -1,0 +1,9 @@
+{
+  "formal_before_sha256": "21dd90adca424349e430fa620ce70254cdb362b8031973e16c597461763c66ad",
+  "formal_after_sha256": "21dd90adca424349e430fa620ce70254cdb362b8031973e16c597461763c66ad",
+  "byte_equal": true,
+  "integrity_after": "ok",
+  "unit5_rows_after": 28,
+  "unit5_rows_before": 28,
+  "formal_db_zero_change_confirmed": true
+}

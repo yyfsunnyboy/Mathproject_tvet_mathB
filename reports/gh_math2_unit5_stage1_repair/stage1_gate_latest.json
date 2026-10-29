@@ -1,0 +1,30 @@
+{
+  "evidence_type": "new_isolated_dry_run",
+  "original_evidence_status": "original_evidence_unavailable",
+  "source_record": "C:\\Projects\\Mathproject_tvet_mathB\\textbook_import\\uploaded_sources\\general\\數學2\\12f0850f70a4f4bb1fe149c078a1b9d5f3f9927285122d4c70c09c13eb5a89d6.json",
+  "source_sha256": {
+    "docx": "ae362631e1be7030b8ac800c2553f9c067e8081c44e886e76cd0cbf0d4328fad",
+    "pdf": "e24c72f893099354886c288daef25eab59cd315facc778f7ffa96d4e242ec166"
+  },
+  "gate": {
+    "import_complete": true,
+    "stage1_ready": false,
+    "status": "BLOCKED",
+    "rows": 37,
+    "blocked": [
+      {
+        "id": 12834,
+        "label": "5習題 進階題12",
+        "reasons": [
+          "required_figure_missing"
+        ]
+      }
+    ],
+    "needs_review": [],
+    "reasons": {
+      "required_figure_missing": 1
+    }
+  },
+  "auto_review_issues": [],
+  "formal_db_zero_change_confirmed": true
+}

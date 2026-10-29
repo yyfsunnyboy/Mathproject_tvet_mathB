@@ -1,0 +1,209 @@
+{
+ "db_copy": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\math2_unit5_combinations\\20261029_232503\\accept\\kumon_math_accept.db",
+ "student_id": 2,
+ "skills": {
+  "gh_BinomialTheorem": {
+   "practice_page": 200,
+   "served": {
+    "12835": 2,
+    "12836": 2,
+    "12837": 2,
+    "12839": 2,
+    "12840": 2,
+    "12841": 2,
+    "12842": 2,
+    "12843": 2,
+    "12844": 2,
+    "12846": 2,
+    "12847": 2,
+    "12848": 2
+   },
+   "http_errors": [],
+   "grading": [],
+   "figures": 0,
+   "figure_cues": 0,
+   "multi_part": 2
+  },
+  "gh_Combination": {
+   "practice_page": 200,
+   "served": {
+    "12812": 2,
+    "12813": 2,
+    "12814": 2,
+    "12815": 2,
+    "12816": 1,
+    "12817": 1,
+    "12818": 1,
+    "12819": 1,
+    "12820": 1,
+    "12821": 1,
+    "12822": 2,
+    "12823": 2,
+    "12824": 1,
+    "12825": 1,
+    "12826": 2,
+    "12827": 2,
+    "12828": 2,
+    "12829": 2,
+    "12830": 2,
+    "12831": 1,
+    "12832": 2,
+    "12833": 1
+   },
+   "http_errors": [],
+   "grading": [],
+   "figures": 0,
+   "figure_cues": 0,
+   "multi_part": 10
+  }
+ },
+ "fixed_12834": {
+  "served": true,
+  "mode": "graded",
+  "graded_flag": true,
+  "image": true,
+  "answer_not_sent": true,
+  "wrong": false,
+  "right": true
+ },
+ "proofs": {
+  "12838": {
+   "served": true,
+   "mode": "ungraded",
+   "check_mode": "ungraded_self_study",
+   "scaffold": 3,
+   "no_image": true,
+   "verdicts": [
+    [
+     null,
+     false,
+     3
+    ],
+    [
+     null,
+     false,
+     3
+    ],
+    [
+     null,
+     false,
+     3
+    ]
+   ],
+   "records_unchanged": true
+  },
+  "12845": {
+   "served": true,
+   "mode": "ungraded",
+   "check_mode": "ungraded_self_study",
+   "scaffold": 3,
+   "no_image": true,
+   "verdicts": [
+    [
+     null,
+     false,
+     3
+    ],
+    [
+     null,
+     false,
+     3
+    ],
+    [
+     null,
+     false,
+     3
+    ]
+   ],
+   "records_unchanged": true
+  }
+ },
+ "next_sequence": {
+  "gh_BinomialTheorem": [
+   12839,
+   12846,
+   12840,
+   12847,
+   12841,
+   12848,
+   12835,
+   12842,
+   12836,
+   12843,
+   12837,
+   12844,
+   12838,
+   12845,
+   12839,
+   12846,
+   12840,
+   12847,
+   12841,
+   12848,
+   12835,
+   12842,
+   12836,
+   12843,
+   12837,
+   12844,
+   12838,
+   12845,
+   12839,
+   12846,
+   12840,
+   12847,
+   12841,
+   12848,
+   12835,
+   12842,
+   12836,
+   12843,
+   12837,
+   12844
+  ],
+  "gh_Combination": [
+   12812,
+   12817,
+   12813,
+   12818,
+   12814,
+   12819,
+   12815,
+   12820,
+   12816,
+   12821,
+   12822,
+   12823,
+   12824,
+   12825,
+   12826,
+   12827,
+   12828,
+   12829,
+   12830,
+   12831,
+   12832,
+   12833,
+   12834,
+   12812,
+   12817,
+   12813,
+   12818,
+   12814,
+   12819,
+   12815,
+   12820,
+   12816,
+   12821,
+   12822,
+   12823,
+   12824,
+   12825,
+   12826,
+   12827,
+   12828
+  ]
+ },
+ "runtime_errors": [],
+ "passed": true
+}

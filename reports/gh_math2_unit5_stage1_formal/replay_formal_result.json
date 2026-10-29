@@ -1,0 +1,50 @@
+{
+  "metadata_basis": "reconstructed_title_inventory; original_Gemini_response_unavailable",
+  "region_source": "configs/stage1_verified_visual_regions.json (live, verified_by=teacher, 2026-10-29)",
+  "import_status": "success",
+  "gate_from_import": {
+    "status": null,
+    "stage1_ready": null,
+    "reasons": null
+  },
+  "gate": {
+    "status": "READY",
+    "stage1_ready": true,
+    "blocked": 0,
+    "needs_review": 0,
+    "reasons": {}
+  },
+  "rows": 37,
+  "ids": [
+    12812,
+    12848
+  ],
+  "unique_anchors": 37,
+  "skills": {
+    "gh_BinomialTheorem": 14,
+    "gh_Combination": 23
+  },
+  "rows_with_assets": [
+    12834
+  ],
+  "target_id": 12834,
+  "target_pdf_visual_status": "VISUAL_ATTACHED",
+  "target_assets": [
+    {
+      "path": "uploads/question_assets/general/longteng/數學2/ch_unknown_單元5_組合/sec_unknown_5組合/advanced_exercise_5習題_進階題12_source_typeadvanced_exercise_dedupe3a304875a7b5ee9d_general__fig1.png",
+      "sha256": "a8390a7a155dc6ab155fc2232b30986012985f0be34e1ca94c1cdbbcbb19e75d",
+      "exists": true,
+      "file_sha256": "a8390a7a155dc6ab155fc2232b30986012985f0be34e1ca94c1cdbbcbb19e75d",
+      "visual_status": "accepted",
+      "bbox": [
+        425.0,
+        586.5,
+        526.0,
+        653.5
+      ],
+      "source_page": 16
+    }
+  ],
+  "content_diffs_vs_stage1_dry_run": [],
+  "formal_db_unchanged": true
+}

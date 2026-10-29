@@ -1,0 +1,42 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><title>Unit 5 進階題12 視覺對位調查</title>
+<style>body{font-family:system-ui,'Microsoft JhengHei';margin:24px;max-width:1200px}section{border:1px solid #ccc;padding:12px;margin:12px 0}
+h2{font-size:18px}.tag{font-weight:bold;padding:2px 6px;border-radius:4px;color:#fff}.src{background:#2a7}.cand{background:#c22}
+.gen{background:#c22}.cf{background:#749}.na{background:#777}img{max-width:100%;border:1px solid #ddd}td,th{border:1px solid #ccc;padding:4px 8px}table{border-collapse:collapse}</style>
+<h1>Unit 5「組合」進階題12 圖像對位調查</h1>
+<p>證據性質：<b>new_isolated_readonly_trace</b>；原始任務證據：<b>original_evidence_unavailable</b>。本頁不含教師提供之截圖。</p>
+<section><h2><span class="tag src">A. SOURCE_PDF_IMAGE</span> 原始 PDF 第16頁（由權威 PDF 直接 render）</h2><img src="A_source_pdf_page16.png"></section>
+<section><h2><span class="tag cand">B. PIPELINE_CANDIDATE</span> 候選區域疊圖與裁切</h2><img src="B_pipeline_candidate_overlay_page16.png">
+<p>Pipeline bbox 裁切（本調查以 <code>crop_pdf_bbox</code> 依該 bbox 渲染；Pipeline 本身未寫檔）：</p><img src="B_pipeline_candidate_crop_render.png"></section>
+<section><h2><span class="tag gen">C. PIPELINE_GENERATED_ASSET</span></h2><p><b>NOT_GENERATED</b>：分類為 <code>skipped_low_confidence</code> 後於裁切前 <code>continue</code>，無暫存或正式 PNG。</p></section>
+<section><h2>D. 候選與評分</h2><table><tr><th>類別</th><th>物件</th><th>bbox (pt)</th><th>狀態</th></tr><tr><td>PIPELINE_CANDIDATE</td><td>footer_band_path (page furniture)</td><td><code>[0.0, 736.58, 609.45, 745.7]</code></td><td>needs_review</td></tr><tr><td>NOT_A_PIPELINE_CANDIDATE</td><td>semicircle_path (real figure)</td><td><code>[435.9, 599.2, 515.2, 638.9]</code></td><td>—</td></tr><tr><td>COUNTERFACTUAL_ONLY (not pipeline output, not verified)</td><td>prototype ink cluster</td><td><code>[426.7, 588.0, 524.4, 652.1]</code></td><td>needs_review</td></tr><tr><td>INVESTIGATOR_PROPOSAL_PENDING_TEACHER (previous round, not system output)</td><td></td><td><code>[420, 575, 540, 675]</code></td><td>pending_teacher_confirmation</td></tr></table>
+<p>The pipeline has no numeric visual confidence. match_score (0.99) is text-to-page confidence only; visual confidence is the categorical acceptance status (accepted / needs_review / rejected) from evaluate_visual_acceptance. _diagram_score is a ranking score among candidates.</p></section>
+<section><h2>E. Anchor 與 visual asset metadata</h2><pre>{
+  &quot;anchor_id&quot;: &quot;general_2_section_advanced_exercise_012_037&quot;,
+  &quot;source_order&quot;: 37,
+  &quot;page&quot;: 16,
+  &quot;page_verdict&quot;: &quot;CORRECT (page 16)&quot;,
+  &quot;match_method&quot;: &quot;unique_phrase+order&quot;,
+  &quot;match_score&quot;: 0.99,
+  &quot;question_start_y_used&quot;: 678.2,
+  &quot;chosen_phrase(longest hit)&quot;: {
+    &quot;phrase&quot;: &quot;2以這10個點中的3個點為頂點共可決定多少個三角&quot;,
+    &quot;len&quot;: 24,
+    &quot;on_matched_page&quot;: true,
+    &quot;pages_with_phrase&quot;: 1,
+    &quot;y_on_matched_page&quot;: 678.2
+  },
+  &quot;phrase_table&quot;: &quot;見 visual_pipeline_trace.json&quot;,
+  &quot;question_number_glyph_12_y&quot;: 586.9,
+  &quot;earliest_hit_y&quot;: 587.5,
+  &quot;text_layer_first_sentence&quot;: &quot;如圖AAAA1234為半圓直徑上的4個點BBB126f為半圓周上的6個點&quot;,
+  &quot;docx_first_sentence_normalized&quot;: &quot;如圖A1A2A3A4為半圓直徑上的4個點B1B2ldot...&quot;,
+  &quot;y_verdict&quot;: &quot;WRONG: y is taken from the LONGEST hit, which is sub-question (2) at y=678.2. First-sentence phrases miss because the PDF text layer emits base letters then subscripts (AAAA1234) and maps the ellipsis to &#x27;f&#x27;, while DOCX normalizes to A1A2A3A4 / ldot.&quot;
+}</pre>
+<pre>visual_assets = []
+pdf_visual_status = VISUAL_REQUIRED_MISSING
+Stage 1 Gate blocker = required_figure_missing</pre></section>
+<section><h2><span class="tag na">F. ISOLATED_RENDER_PREVIEW</span></h2><p><b>NOT_PERFORMED</b>：本輪未授權隔離關聯。</p></section>
+<section><h2><span class="tag na">PRODUCTION_DB_ASSET</span></h2><p><b>NONE</b>：正式 DB Unit 5 現有 28 列，image_assets 合計 0；本調查前後內容指紋一致。</p></section>
+<section><h2><span class="tag cf">COUNTERFACTUAL_ONLY</span> 原型墨跡聚類（記憶體內實驗，非 Pipeline 輸出、未核准）</h2><img src="X_counterfactual_prototype_cluster_crop.png">
+<p>bbox [426.7, 588.0, 524.4, 652.1]；包含全部圖形墨跡=True；現行 Gate 判定 needs_review ['low_mapping_confidence']。</p></section>
+</html>

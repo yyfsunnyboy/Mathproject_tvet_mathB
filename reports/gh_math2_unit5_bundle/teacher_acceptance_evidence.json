@@ -1,0 +1,527 @@
+{
+ "integrity": {
+  "bundle_sha256": "bbdc6bad00c4f7f046184553f14b8397c1e97989964883edc947f6201d41cd15",
+  "review_status": "ready_for_human_review",
+  "operations": 19,
+  "skill_bindings": {
+   "gh_BinomialTheorem": 7,
+   "gh_Combination": 13
+  },
+  "package_matches_bundle": true,
+  "package_matches_candidate": true,
+  "published_generators_match_rehearsal": true,
+  "rehearsal_tracker_verified": 34,
+  "rehearsal_production_paths_written": []
+ },
+ "representative": {
+  "12813": {
+   "skill": "gh_Combination",
+   "question_text": "從 $10$ 位手球選手中選出 $7$ 人上場比賽。\n(1)共有多少種選法？\n(2)若其中甲、乙兩人定位為守門員，必恰選一人，則共有多少種選法？",
+   "correct_answer": {
+    "part_1": "120",
+    "part_2": "56"
+   },
+   "display_answer": "(1)120；(2)56",
+   "explanation_steps": [
+    "(1) 從 10 人中任選 7 人：$C_{7}^{10}=C_{3}^{10}$ = (10×9×8)/(3×2×1) = 120（種）。",
+    "(2) 先從甲、乙兩人選一人，有 $C_{1}^{2}$ = 2 種；再從其餘 8 人中任選 6 人，有 $C_{6}^{8}=C_{2}^{8}$ = (8×7)/(2×1) = 28 種。乘法原理：2×28 = 56（種）。"
+   ],
+   "answer_type": "multi_part",
+   "checker": "multi_part_answer_checker"
+  },
+  "12822": {
+   "skill": "gh_Combination",
+   "question_text": "選出正確的選項。（多選題，請以逗號分隔選項編號作答）\n(1)$C_{30}^{37}=C_{7}^{37}$\n(2)$C_{50}^{99}+C_{49}^{99}=C_{49}^{100}$\n(3)$C_{25}^{50}-C_{25}^{49}=C_{24}^{49}$\n(4)$C_{2}^{99}+C_{3}^{99}+C_{4}^{100}=C_{4}^{101}$\n(5)$C_{0}^{10}+C_{1}^{11}+C_{2}^{12}+C_{3}^{13}+C_{4}^{14}+C_{5}^{15}=C_{5}^{16}$",
+   "correct_answer": [
+    "1",
+    "3",
+    "4",
+    "5"
+   ],
+   "display_answer": "(1)(3)(4)(5)",
+   "explanation_steps": [
+    "(1) 由 $C_{k}^{n}=C_{n-k}^{n}$，左式 = $C_{7}^{37}$，恰為右式，正確。",
+    "(2) 由巴斯卡公式 $C_{k}^{n}+C_{k-1}^{n}=C_{k}^{n+1}$，左式 = $C_{50}^{100}$，而 $C_{50}^{100}\\neq C_{49}^{100}$，所以錯誤。",
+    "(3) 由巴斯卡公式 $C_{k}^{n}+C_{k-1}^{n}=C_{k}^{n+1}$，移項得左式 = $C_{24}^{49}$，恰為右式，正確。",
+    "(4) 前兩項由巴斯卡公式合併，再與第三項合併，左式 = $C_{4}^{101}$，恰為右式，正確。",
+    "(5) 第一項 $C_{0}^{10}$ 改寫為 $C_{0}^{11}$，再由巴斯卡公式逐項合併，左式 = $C_{5}^{16}$，恰為右式，正確。",
+    "正確的選項為 (1)(3)(4)(5)。"
+   ],
+   "answer_type": "solution_set",
+   "checker": "solution_set_checker"
+  },
+  "12828": {
+   "skill": "gh_Combination",
+   "question_text": "從 $7$ 位男生、$5$ 位女生中選派 $4$ 人參加社區服務，下列情形的選派方法各有多少種？\n(1)恰為 $2$ 男 $2$ 女。\n(2)至少有 $1$ 名女生。\n(3)男女生至少各 $1$ 名。",
+   "correct_answer": {
+    "part_1": "210",
+    "part_2": "460",
+    "part_3": "455"
+   },
+   "display_answer": "(1)210；(2)460；(3)455",
+   "explanation_steps": [
+    "(1) 從男生選 2 人、女生選 2 人：$C_{2}^{7}\\times C_{2}^{5}$ = 21×10 = 210（種）。",
+    "(2) 全部選法 $C_{4}^{12}$ = 495，扣除全為男生 $C_{4}^{7}$ = 35，得 460（種）。",
+    "(3) 全部選法 $C_{4}^{12}$ = 495，扣除全為男生 $C_{4}^{7}$ = 35 與全為女生 $C_{4}^{5}$ = 5，得 455（種）。"
+   ],
+   "answer_type": "multi_part",
+   "checker": "multi_part_answer_checker"
+  },
+  "12833": {
+   "skill": "gh_Combination",
+   "question_text": "從「snoopy」一字共 $6$ 個字母中，任選 $3$ 個字母排成一列，共有多少種排法？",
+   "correct_answer": "72",
+   "display_answer": "72",
+   "explanation_steps": [
+    "字母中o 有 2 個，s, n, p, y 各 1 個，依選出字母的重複情形分類：",
+    "「三個字母皆相異」：選字母有 10 種，每種的排法有 6 種，共 60 種。",
+    "「某字母取 2 個，另 1 個相異字母」：選字母有 4 種，每種的排法有 3 種，共 12 種。",
+    "加法原理：60 + 12 = 72（種）。"
+   ],
+   "answer_type": "rational",
+   "checker": "rational_checker"
+  },
+  "12835": {
+   "skill": "gh_BinomialTheorem",
+   "question_text": "寫出 $\\left(x+y\\right)^{5}$ 的展開式。",
+   "correct_answer": "x^5+5x^4y+10x^3y^2+10x^2y^3+5xy^4+y^5",
+   "display_answer": "$x^{5}+5x^{4}y+10x^{3}y^{2}+10x^{2}y^{3}+5xy^{4}+y^{5}$",
+   "explanation_steps": [
+    "利用二項式定理，展開式的每一項為 $C_{r}^{5}$x^(5−r)y^r，r = 0, 1, …, 5。",
+    "依序代入：r=0：$C_{0}^{5}$×1^5×1^0 = 1、r=1：$C_{1}^{5}$×1^4×1^1 = 5、r=2：$C_{2}^{5}$×1^3×1^2 = 10、r=3：$C_{3}^{5}$×1^2×1^3 = 10、r=4：$C_{4}^{5}$×1^1×1^4 = 5、r=5：$C_{5}^{5}$×1^0×1^5 = 1。",
+    "所以 $\\left(x+y\\right)^{5}=x^{5}+5x^{4}y+10x^{3}y^{2}+10x^{2}y^{3}+5xy^{4}+y^{5}$。"
+   ],
+   "answer_type": "expression",
+   "checker": "expression_checker"
+  },
+  "12836": {
+   "skill": "gh_BinomialTheorem",
+   "question_text": "寫出 $\\left(2x-y\\right)^{4}$ 的展開式。",
+   "correct_answer": "16x^4-32x^3y+24x^2y^2-8xy^3+y^4",
+   "display_answer": "$16x^{4}-32x^{3}y+24x^{2}y^{2}-8xy^{3}+y^{4}$",
+   "explanation_steps": [
+    "利用二項式定理，展開式的每一項為 $C_{r}^{4}$(2x)^(4−r)(-y)^r，r = 0, 1, …, 4。",
+    "依序代入：r=0：$C_{0}^{4}$×2^4×(-1)^0 = 16、r=1：$C_{1}^{4}$×2^3×(-1)^1 = -32、r=2：$C_{2}^{4}$×2^2×(-1)^2 = 24、r=3：$C_{3}^{4}$×2^1×(-1)^3 = -8、r=4：$C_{4}^{4}$×2^0×(-1)^4 = 1。",
+    "所以 $\\left(2x-y\\right)^{4}=16x^{4}-32x^{3}y+24x^{2}y^{2}-8xy^{3}+y^{4}$。"
+   ],
+   "answer_type": "expression",
+   "checker": "expression_checker"
+  },
+  "12837": {
+   "skill": "gh_BinomialTheorem",
+   "question_text": "求 $\\left(x^{2}+\\frac{2}{x}\\right)^{6}$ 展開式中 $x^{3}$ 項的係數。",
+   "correct_answer": "160",
+   "display_answer": "160",
+   "explanation_steps": [
+    "展開式的每一項皆形如 $C_{r}^{6}$($x^{2}$)^(6−r)($\\frac{2}{x}$)^r = $C_{r}^{6}$×(1)^(6−r)×(2)^r×$x^{12-3r}$。",
+    "令 12 − 3r = 3，得 r = 3。",
+    "所以$x^{3}$ 項的係數為 $C_{3}^{6}$×(1)^3×(2)^3 = 20×1×8 = 160。"
+   ],
+   "answer_type": "rational",
+   "checker": "rational_checker"
+  },
+  "12843": {
+   "skill": "gh_BinomialTheorem",
+   "question_text": "已知 $\\left(\\sqrt{2}-1\\right)^{5}=a+b\\sqrt{2}$（其中a, b為整數），求a, b的值。",
+   "correct_answer": {
+    "part_1": "-41",
+    "part_2": "29"
+   },
+   "display_answer": "a = -41，b = 29",
+   "explanation_steps": [
+    "由二項式定理，原式 = $C_{0}^{5}$($\\sqrt{2}$)^5(-1)^0 + $C_{1}^{5}$($\\sqrt{2}$)^4(-1)^1 + $C_{2}^{5}$($\\sqrt{2}$)^3(-1)^2 + $C_{3}^{5}$($\\sqrt{2}$)^2(-1)^3 + $C_{4}^{5}$($\\sqrt{2}$)^1(-1)^4 + $C_{5}^{5}$($\\sqrt{2}$)^0(-1)^5。",
+    "(√2)^k 中 k 為偶數的項是整數，k 為奇數的項是 √2 的整數倍：整數部分 (-20) + (-20) + (-1) = -41；√2 的係數 4 + 20 + 5 = 29。",
+    "所以 a = -41，b = 29。"
+   ],
+   "answer_type": "multi_part",
+   "checker": "multi_part_answer_checker"
+  },
+  "12846": {
+   "skill": "gh_BinomialTheorem",
+   "question_text": "總經理要求宣傳部的 $11$ 名員工，至少派出 $2$ 人到電影街宣傳新產品，共有多少種選派方案？",
+   "correct_answer": "2036",
+   "display_answer": "2036",
+   "explanation_steps": [
+    "派出 0 到 11 人的全部方案數為 $C_{0}^{11}+C_{1}^{11}+\\cdots +C_{11}^{11}=2^{11}$ = 2048。",
+    "扣除派出少於 2 人的方案：$C_{0}^{11}+C_{1}^{11}$ = 1 + 11 = 12。",
+    "所以選派方案共有 2048 − 12 = 2036（種）。"
+   ],
+   "answer_type": "rational",
+   "checker": "rational_checker"
+  },
+  "12848": {
+   "skill": "gh_BinomialTheorem",
+   "question_text": "已知 $\\left(1+ax\\right)\\left(1+x\\right)^{5}$ 的展開式中 $x^{2}$ 項的係數為 $5$，求實數a的值。",
+   "correct_answer": "-1",
+   "display_answer": "-1",
+   "explanation_steps": [
+    "$\\left(1+x\\right)^{5}$ 中 $x^{2}$ 項的係數為 $C_{2}^{5}$ = 10，$x$ 項的係數為 $C_{1}^{5}$ = 5。",
+    "相乘後 $x^{2}$ 項由「1 × $C_{2}^{5}x^{2}$」與「ax × $C_{1}^{5}x$」組成，係數為 10 + 5a。",
+    "由 10 + 5a = 5，得 a = -1。"
+   ],
+   "answer_type": "rational",
+   "checker": "rational_checker"
+  }
+ },
+ "grading": [
+  {
+   "id": 12835,
+   "answer": "y^5+5xy^4+10x^2y^3+10x^3y^2+5x^4y+x^5",
+   "kind": "展開式重排",
+   "want": true,
+   "got": true,
+   "ok": true
+  },
+  {
+   "id": 12835,
+   "answer": "x^5+5*x^4*y+10*x^3*y^2+10*x^2*y^3+5*x*y^4+y^5",
+   "kind": "顯式乘號",
+   "want": true,
+   "got": true,
+   "ok": true
+  },
+  {
+   "id": 12835,
+   "answer": "(x+y)^5",
+   "kind": "未展開",
+   "want": false,
+   "got": false,
+   "ok": true
+  },
+  {
+   "id": 12835,
+   "answer": "x^5+5x^4y+10x^3y^2+10x^2y^3+5xy^4",
+   "kind": "缺項",
+   "want": false,
+   "got": false,
+   "ok": true
+  },
+  {
+   "id": 12836,
+   "answer": "16x^4+32x^3y+24x^2y^2+8xy^3+y^4",
+   "kind": "符號錯",
+   "want": false,
+   "got": false,
+   "ok": true
+  },
+  {
+   "id": 12813,
+   "answer": {
+    "part_1": "120",
+    "part_2": "56"
+   },
+   "kind": "多小題全對",
+   "want": true,
+   "got": true,
+   "ok": true
+  },
+  {
+   "id": 12813,
+   "answer": {
+    "part_1": "120",
+    "part_2": "55"
+   },
+   "kind": "多小題一題錯",
+   "want": false,
+   "got": false,
+   "ok": true
+  },
+  {
+   "id": 12813,
+   "answer": {
+    "part_1": "120",
+    "part_2": ""
+   },
+   "kind": "多小題漏答",
+   "want": false,
+   "got": false,
+   "ok": true
+  },
+  {
+   "id": 12843,
+   "answer": {
+    "part_1": "-41",
+    "part_2": "29"
+   },
+   "kind": "a, b 全對",
+   "want": true,
+   "got": true,
+   "ok": true
+  },
+  {
+   "id": 12843,
+   "answer": {
+    "part_1": "29",
+    "part_2": "-41"
+   },
+   "kind": "a, b 對調",
+   "want": false,
+   "got": false,
+   "ok": true
+  },
+  {
+   "id": 12822,
+   "answer": "1,3,4,5",
+   "kind": "複選全對",
+   "want": true,
+   "got": true,
+   "ok": true
+  },
+  {
+   "id": 12822,
+   "answer": "5, 4, 3, 1",
+   "kind": "複選順序不同",
+   "want": true,
+   "got": true,
+   "ok": true
+  },
+  {
+   "id": 12822,
+   "answer": "1,3,4",
+   "kind": "複選漏選",
+   "want": false,
+   "got": false,
+   "ok": true
+  },
+  {
+   "id": 12822,
+   "answer": "1,2,3,4,5",
+   "kind": "複選多選",
+   "want": false,
+   "got": false,
+   "ok": true
+  },
+  {
+   "id": 12848,
+   "answer": "-1",
+   "kind": "數值",
+   "want": true,
+   "got": true,
+   "ok": true
+  },
+  {
+   "id": 12848,
+   "answer": "-2/2",
+   "kind": "等值分數",
+   "want": true,
+   "got": true,
+   "ok": true
+  },
+  {
+   "id": 12848,
+   "answer": "1",
+   "kind": "數值錯",
+   "want": false,
+   "got": false,
+   "ok": true
+  }
+ ],
+ "true_false": {
+  "12823": {
+   "presentation_mode": "single_choice",
+   "checker": "choice_label_checker",
+   "choices": [
+    {
+     "label": "A",
+     "value": "○"
+    },
+    {
+     "label": "B",
+     "value": "×"
+    }
+   ],
+   "seeds": 20,
+   "distinct_stems": 20,
+   "answers": {
+    "A": 10,
+    "B": 10
+   },
+   "rules_passed_of_20": {
+    "required_keys": 20,
+    "self_check": 20,
+    "four_choices": 0,
+    "distinct_choices": 20,
+    "label_in_choices": 20,
+    "opposite_rejected": 20,
+    "no_answer_in_stem": 20
+   },
+   "problems": [],
+   "samples": [
+    {
+     "seed": 0,
+     "stem": "下列敘述對的打「○」，錯的打「×」。\n從 $5$ 個人中選出 $3$ 人的組合數為 $C_{3}^{5}$。",
+     "answer": "A",
+     "display": "○",
+     "explanation_steps": [
+      "從 5 個人中選出 3 人（不計順序）的組合數為 $C_{3}^{5}$ = 10。",
+      "而 $C_{3}^{5}$ = 10，兩者相等，所以敘述正確（○）。"
+     ]
+    },
+    {
+     "seed": 4,
+     "stem": "下列敘述對的打「○」，錯的打「×」。\n從 $5$ 個人中選出 $3$ 人的組合數為 $C_{4}^{5}$。",
+     "answer": "B",
+     "display": "×",
+     "explanation_steps": [
+      "從 5 個人中選出 3 人（不計順序）的組合數為 $C_{3}^{5}$ = 10。",
+      "而 $C_{4}^{5}$ = 5，兩者不相等，所以敘述錯誤（×）。"
+     ]
+    }
+   ]
+  },
+  "12824": {
+   "presentation_mode": "single_choice",
+   "checker": "choice_label_checker",
+   "choices": [
+    {
+     "label": "A",
+     "value": "○"
+    },
+    {
+     "label": "B",
+     "value": "×"
+    }
+   ],
+   "seeds": 20,
+   "distinct_stems": 20,
+   "answers": {
+    "A": 8,
+    "B": 12
+   },
+   "rules_passed_of_20": {
+    "required_keys": 20,
+    "self_check": 20,
+    "four_choices": 0,
+    "distinct_choices": 20,
+    "label_in_choices": 20,
+    "opposite_rejected": 20,
+    "no_answer_in_stem": 20
+   },
+   "problems": [],
+   "samples": [
+    {
+     "seed": 0,
+     "stem": "下列敘述對的打「○」，錯的打「×」。\n$C_{6}^{10}\\times 4!=P_{6}^{10}$。",
+     "answer": "B",
+     "display": "×",
+     "explanation_steps": [
+      "從 10 個中選 6 個排成一列，可以先選出 6 個（$C_{6}^{10}$ 種），再把這 6 個排列（6! 種），所以 $P_{6}^{10}=C_{6}^{10}\\times 6!$。",
+      "題中乘的是 4!，而 4! = 24 ≠ 6! = 720，所以敘述錯誤（×）。"
+     ]
+    },
+    {
+     "seed": 1,
+     "stem": "下列敘述對的打「○」，錯的打「×」。\n$C_{2}^{8}\\times 2!=P_{2}^{8}$。",
+     "answer": "A",
+     "display": "○",
+     "explanation_steps": [
+      "從 8 個中選 2 個排成一列，可以先選出 2 個（$C_{2}^{8}$ 種），再把這 2 個排列（2! 種），所以 $P_{2}^{8}=C_{2}^{8}\\times 2!$。",
+      "這正是題中的式子，敘述正確（○）。"
+     ]
+    }
+   ]
+  },
+  "12825": {
+   "presentation_mode": "single_choice",
+   "checker": "choice_label_checker",
+   "choices": [
+    {
+     "label": "A",
+     "value": "○"
+    },
+    {
+     "label": "B",
+     "value": "×"
+    }
+   ],
+   "seeds": 20,
+   "distinct_stems": 20,
+   "answers": {
+    "A": 10,
+    "B": 10
+   },
+   "rules_passed_of_20": {
+    "required_keys": 20,
+    "self_check": 20,
+    "four_choices": 0,
+    "distinct_choices": 20,
+    "label_in_choices": 20,
+    "opposite_rejected": 20,
+    "no_answer_in_stem": 20
+   },
+   "problems": [],
+   "samples": [
+    {
+     "seed": 0,
+     "stem": "下列敘述對的打「○」，錯的打「×」。\n$C_{20}^{100}=C_{80}^{100}$。",
+     "answer": "A",
+     "display": "○",
+     "explanation_steps": [
+      "由 $C_{k}^{n}=C_{n-k}^{n}$，$C_{20}^{100}=C_{80}^{100}$，而 100 − 20 = 80，所以敘述正確（○）。"
+     ]
+    },
+    {
+     "seed": 3,
+     "stem": "下列敘述對的打「○」，錯的打「×」。\n$C_{20}^{89}=C_{68}^{89}$。",
+     "answer": "B",
+     "display": "×",
+     "explanation_steps": [
+      "由 $C_{k}^{n}=C_{n-k}^{n}$，$C_{20}^{89}=C_{69}^{89}$；組合數 $C_{k}^{n}$ 只有在下標相等或兩下標的和為 89 時才會相等，而 20 ≠ 68 且 20 + 68 ≠ 89，所以敘述錯誤（×）。"
+     ]
+    }
+   ]
+  },
+  "12840": {
+   "presentation_mode": "single_choice",
+   "checker": "choice_label_checker",
+   "choices": [
+    {
+     "label": "A",
+     "value": "○"
+    },
+    {
+     "label": "B",
+     "value": "×"
+    }
+   ],
+   "seeds": 20,
+   "distinct_stems": 20,
+   "answers": {
+    "A": 11,
+    "B": 9
+   },
+   "rules_passed_of_20": {
+    "required_keys": 20,
+    "self_check": 20,
+    "four_choices": 0,
+    "distinct_choices": 20,
+    "label_in_choices": 20,
+    "opposite_rejected": 20,
+    "no_answer_in_stem": 20
+   },
+   "problems": [],
+   "samples": [
+    {
+     "seed": 0,
+     "stem": "下列敘述對的打「○」，錯的打「×」。\n在 $\\left(x+y\\right)^{10}$ 的展開式中，$x^{6}y^{4}$ 項的係數與 $x^{4}y^{6}$ 項的係數相等。",
+     "answer": "A",
+     "display": "○",
+     "explanation_steps": [
+      "由二項式定理，$x^{6}y^{4}$ 項的係數為 $C_{4}^{10}$ = 210，$x^{4}y^{6}$ 項的係數為 $C_{6}^{10}$ = 210。",
+      "兩者相等，所以敘述正確（○）。"
+     ]
+    },
+    {
+     "seed": 1,
+     "stem": "下列敘述對的打「○」，錯的打「×」。\n在 $\\left(x+y\\right)^{12}$ 的展開式中，$x^{10}y^{2}$ 項的係數與 $x^{3}y^{9}$ 項的係數相等。",
+     "answer": "B",
+     "display": "×",
+     "explanation_steps": [
+      "由二項式定理，$x^{10}y^{2}$ 項的係數為 $C_{2}^{12}$ = 66，$x^{3}y^{9}$ 項的係數為 $C_{9}^{12}$ = 220。",
+      "兩者不相等，所以敘述錯誤（×）。"
+     ]
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "before": {
+  "textbook_examples": {
+   "rows": 5017,
+   "sha256": "9964de61c71095c42d17517b18116746021d984fdc48ad2dba1fffc9b8c92353"
+  },
+  "skills_info": {
+   "rows": 605,
+   "sha256": "a80fbb3b237cb6c0f18e2a9ca969b753340d27de1c9f89f74cb7cbfb328746bb"
+  },
+  "skill_curriculum": {
+   "rows": 611,
+   "sha256": "458337091db154a6740b0001218f16eba437b10a9934b678d7c20f7c1d86946e"
+  },
+  "unit5_rows": 28
+ },
+ "after": {
+  "textbook_examples": {
+   "rows": 5017,
+   "sha256": "9964de61c71095c42d17517b18116746021d984fdc48ad2dba1fffc9b8c92353"
+  },
+  "skills_info": {
+   "rows": 605,
+   "sha256": "a80fbb3b237cb6c0f18e2a9ca969b753340d27de1c9f89f74cb7cbfb328746bb"
+  },
+  "skill_curriculum": {
+   "rows": 611,
+   "sha256": "458337091db154a6740b0001218f16eba437b10a9934b678d7c20f7c1d86946e"
+  },
+  "unit5_rows": 28
+ },
+ "zero_change": true
+}

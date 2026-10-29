@@ -1,0 +1,139 @@
+{
+  "skill_id": "gh_BinomialTheorem",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 12,
+  "components": [
+    {
+      "component_id": "src_12835",
+      "textbook_example_id": 12835,
+      "status": "verified",
+      "problem_type_id": "binomial_expansion",
+      "domain_operation": "binomial_expansion",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12835/generate.py"
+    },
+    {
+      "component_id": "src_12836",
+      "textbook_example_id": 12836,
+      "status": "verified",
+      "problem_type_id": "binomial_expansion",
+      "domain_operation": "binomial_expansion",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12836/generate.py"
+    },
+    {
+      "component_id": "src_12837",
+      "textbook_example_id": 12837,
+      "status": "verified",
+      "problem_type_id": "general_term_coefficient",
+      "domain_operation": "general_term_coefficient",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12837/generate.py"
+    },
+    {
+      "component_id": "src_12839",
+      "textbook_example_id": 12839,
+      "status": "verified",
+      "problem_type_id": "at_least_k_selection",
+      "domain_operation": "at_least_k_selection",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12839/generate.py"
+    },
+    {
+      "component_id": "src_12840",
+      "textbook_example_id": 12840,
+      "status": "verified",
+      "problem_type_id": "combination_claim",
+      "domain_operation": "combination_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12840/generate.py"
+    },
+    {
+      "component_id": "src_12841",
+      "textbook_example_id": 12841,
+      "status": "verified",
+      "problem_type_id": "binomial_sum_bound",
+      "domain_operation": "binomial_sum_bound",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12841/generate.py"
+    },
+    {
+      "component_id": "src_12842",
+      "textbook_example_id": 12842,
+      "status": "verified",
+      "problem_type_id": "binomial_expansion",
+      "domain_operation": "binomial_expansion",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12842/generate.py"
+    },
+    {
+      "component_id": "src_12843",
+      "textbook_example_id": 12843,
+      "status": "verified",
+      "problem_type_id": "radical_binomial_power",
+      "domain_operation": "radical_binomial_power",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12843/generate.py"
+    },
+    {
+      "component_id": "src_12844",
+      "textbook_example_id": 12844,
+      "status": "verified",
+      "problem_type_id": "general_term_coefficient",
+      "domain_operation": "general_term_coefficient",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12844/generate.py"
+    },
+    {
+      "component_id": "src_12846",
+      "textbook_example_id": 12846,
+      "status": "verified",
+      "problem_type_id": "at_least_k_selection",
+      "domain_operation": "at_least_k_selection",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12846/generate.py"
+    },
+    {
+      "component_id": "src_12847",
+      "textbook_example_id": 12847,
+      "status": "verified",
+      "problem_type_id": "general_term_coefficient",
+      "domain_operation": "general_term_coefficient",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12847/generate.py"
+    },
+    {
+      "component_id": "src_12848",
+      "textbook_example_id": 12848,
+      "status": "verified",
+      "problem_type_id": "coefficient_solve_parameter",
+      "domain_operation": "coefficient_solve_parameter",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12848/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "evidence_type": "new_isolated_dry_run",
+  "original_evidence_status": "original_evidence_unavailable",
+  "result": {
+    "status": "error",
+    "message": "Content extraction failed."
+  },
+  "error": null,
+  "capture": {
+    "pre_review_rows": [],
+    "post_review_rows": [],
+    "visual_summary": null,
+    "source_skill_map": null
+  },
+  "elapsed_seconds": 0.19,
+  "log_line_count": 4
+}
