@@ -40,6 +40,29 @@ def test_missing_page_uses_neighbor_bounds_and_disambiguates_formula():
     assert _check(target, [before, target, after], texts, blocks) == (2, "localized_chinese_and_math_tokens")
 
 
+def test_far_wrong_page_recovers_only_from_one_unique_stem():
+    stem = "袋中有5顆大小相同的球取一球後不放回再取一球兩球是1紅球1白球。\\(\\frac{1}{3}\\)。"
+    wrong = "設每球被取出的機會均等求下列各事件的機率"
+    true = "袋中有5顆大小相同的球取一球後不放回再取一球兩球是1紅球1白球 1 3"
+    row = _row(stem, 9, 2)
+    previous = _row("前一題已在別頁。", 8, 1)
+    texts = ["無關", true, "無關", wrong]
+    blocks = [[(0, 10, 10, 20, text)] for text in texts]
+    assert _check(row, [previous, row], texts, blocks) == (2, "unique_stem_across_pdf")
+    texts[1] = true
+    texts.append(true)
+    blocks.append([(0, 10, 10, 20, true)])
+    assert _check(row, [previous, row], texts, blocks) is None
+
+
+def test_shared_phrase_alone_does_not_verify_the_stem():
+    stem = "同時擲三粒公正骰子觀察所出現的點數求三粒點數均不相同。\\(\\frac{2}{9}\\)。"
+    row = _row(stem, 8, 1)
+    texts = ["觀察所出現的點數", "觀察所出現的點數"]
+    blocks = [[(0, 10, 10, 20, text)] for text in texts]
+    assert _check(row, [row], texts, blocks) is None
+
+
 def test_wrong_page_recovers_only_with_chinese_and_math_evidence():
     row = _row("設n為正整數，證明：\\(C_0^n-C_1^n=0\\)。", 3, 1)
     texts = ["設n為正整數，證明：C\n0\nn\n-\nC\n1\nn\n=\n0",

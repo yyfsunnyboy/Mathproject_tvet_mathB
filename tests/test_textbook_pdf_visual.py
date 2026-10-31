@@ -101,6 +101,80 @@ def test_shared_phrase_consumed_by_previous_question_moves_to_next_page():
     assert matched[1]["pdf_match"]["page"] == 3
 
 
+def test_shared_opening_keeps_distinctive_continuation_on_the_same_page():
+    """A later page that only repeats the opening must not beat the real continuation."""
+    opening = "袋中有5顆大小相同的球其中紅球3顆白球2顆設每球被取出的機會均等"
+    example = opening + "。取一球後不放回再取一球兩球都是紅球。"
+    continuation = "取一球後不放回再取一球兩球是1紅球1白球"
+    practice = opening + "。" + continuation + "。"
+    shared_only = "設每球被取出的機會均等求下列各事件的機率"
+    pages = [
+        _text_page(1, example + continuation, 120),
+        _text_page(8, shared_only, 200),
+    ]
+    pages[0]["words"] = [
+        (80.0, 120.0, 400.0, 132.0, normalize_pdf_text(example)),
+        (80.0, 420.0, 400.0, 432.0, normalize_pdf_text(continuation)),
+    ]
+    items = [
+        {"source_description": "例題9", "problem_text": example, "source_order": 1},
+        {"source_description": "隨堂練習9", "problem_text": practice, "source_order": 2},
+    ]
+    matched = match_questions_to_pdf(items, pages)
+    assert matched[0]["pdf_match"]["page"] == 1
+    assert matched[1]["pdf_match"]["page"] == 1
+    assert matched[1]["match_method"] == "unique_phrase+order"
+    assert "1紅球1白球" in matched[1]["pdf_match"]["hits"][0]
+
+
+def test_similar_wording_does_not_jump_to_the_other_question():
+    first = "同時擲兩粒公正骰子觀察所出現的點數和求點數和為七的機率"
+    second = "同時擲三粒公正骰子觀察所出現的點數求三粒點數均不相同的機率"
+    pages = [_text_page(4, first, 180), _text_page(9, second, 200)]
+    items = [
+        {"source_description": "例題8", "problem_text": first, "source_order": 1},
+        {"source_description": "例題10", "problem_text": second, "source_order": 2},
+    ]
+    matched = match_questions_to_pdf(items, pages)
+    assert matched[0]["pdf_match"]["page"] == 4
+    assert matched[1]["pdf_match"]["page"] == 9
+
+
+def test_unique_stem_beats_a_later_shared_phrase_behind_the_previous_page():
+    anchor = "前言題目用來把上一題錨在較後面的頁碼所以題幹要夠長"
+    stem = "甲乙兩人各擲一粒骰子一次設A表示甲出現偶數且乙出現六點求事件A的機率"
+    shared = "甲乙兩人各擲一粒骰子"
+    pages = [_text_page(2, stem, 200), _text_page(6, anchor, 100), _text_page(8, shared, 180)]
+    items = [
+        {"source_description": "例題1", "problem_text": anchor, "source_order": 1},
+        {"source_description": "例題2", "problem_text": stem, "source_order": 2},
+    ]
+    matched = match_questions_to_pdf(items, pages)
+    assert matched[1]["pdf_match"]["page"] == 2
+    assert matched[1]["match_method"] == "unique_phrase+order"
+
+
+def test_latex_stem_matches_the_pdf_text_layer_not_a_short_symbol():
+    stem = r"設A,B為樣本空間的兩個事件，且\(P\left(A\right)=\frac{1}{3}\)。"
+    pages = [
+        _text_page(3, "設AB為樣本空間的兩個事件且PA=13求補事件機率", 160),
+        _text_page(7, "PA", 160),
+    ]
+    items = [{"source_description": "例題11", "problem_text": stem, "source_order": 1}]
+    matched = match_questions_to_pdf(items, pages)
+    assert matched[0]["pdf_match"]["page"] == 3
+    assert matched[0]["match_method"] == "unique_phrase+order"
+
+
+def test_missing_stem_stays_unmatched():
+    pages = [_text_page(1, "完全無關的其他單元內容", 100), _text_page(2, "仍然沒有這一題", 100)]
+    items = [{"source_description": "例題1", "problem_text": "袋中有五顆白球同時取出兩球求同色機率", "source_order": 1}]
+    matched = match_questions_to_pdf(items, pages)
+    assert matched[0]["pdf_match"] is None
+    assert matched[0]["match_method"] == "unmatched"
+    assert matched[0]["needs_review"] is True
+
+
 def test_equal_shared_evidence_prefers_forward_page():
     shared = "解下列各不等式並寫出解集合"
     pages = [_text_page(1, shared, 200), _text_page(2, "林媽媽製作了一個半徑為16公分的圓形披薩", 200),

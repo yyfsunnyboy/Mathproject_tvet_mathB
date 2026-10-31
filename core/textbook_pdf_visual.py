@@ -315,6 +315,60 @@ def _phrase_page_frequency(pages: list[dict[str, Any]], phrase: str) -> int:
     return sum(1 for p in pages if phrase in (p.get("norm_text") or ""))
 
 
+def _score_match_phrase(phrase: str, frequency: int) -> tuple[float, str]:
+    score = 0.82
+    if len(phrase) >= 8:
+        score = 0.90
+    if len(phrase) >= 12:
+        score = 0.94
+    if len(phrase) >= 16:
+        score = 0.97
+    if frequency == 1:
+        return min(0.99, score + 0.02), "unique_phrase+order"
+    return min(score, 0.88), "shared_phrase+order"
+
+
+def _later_phrase_ys(page: dict[str, Any], phrase: str, last_y: float) -> list[float]:
+    return [y for y in find_phrase_ys(page, phrase) if y > last_y + 2]
+
+
+def _select_page_phrase(
+    page: dict[str, Any],
+    hits: list[str],
+    *,
+    last_page: int,
+    last_y: float,
+    last_longest: str,
+) -> tuple[str, float, list[str]] | None:
+    """Longest stem fragment that is not only the previous question's anchor line.
+
+    Different questions often share a long opening. Dropping the whole page when that
+    shared prefix was just used leaves only a repeated phrase on a later page.
+    A distinctive continuation below the previous anchor stays on this page.
+    Identical stems still move to the next occurrence.
+    """
+    ranked = sorted(hits, key=len, reverse=True)
+    same_page = bool(last_page and page["page"] == last_page)
+    for offset, phrase in enumerate(ranked):
+        y = find_phrase_y(page, phrase)
+        if y is None:
+            y = 40.0
+        if same_page and phrase == last_longest and abs(float(y) - last_y) <= 2:
+            later = _later_phrase_ys(page, phrase, last_y)
+            if not later:
+                continue
+            y = later[0]
+        elif same_page and offset > 0:
+            # A shorter fragment of the previous question is not a new stem.
+            later = _later_phrase_ys(page, phrase, last_y)
+            if not later:
+                continue
+            y = later[0]
+        ordered = [phrase] + [other for other in ranked if other != phrase]
+        return phrase, float(y), ordered[:5]
+    return None
+
+
 def match_questions_to_pdf(
     items: list[dict[str, Any]],
     pages: list[dict[str, Any]],
@@ -362,44 +416,23 @@ def match_questions_to_pdf(
         best = None
         for page in pages:
             hits = [ph for ph, _freq in usable if ph in page["norm_text"]]
-            if not hits:
+            selected = _select_page_phrase(
+                page, hits, last_page=last_page, last_y=last_y, last_longest=last_longest,
+            )
+            if selected is None:
                 continue
-            longest = max(hits, key=len)
-            y = find_phrase_y(page, longest)
-            if y is None:
-                y = 40.0
-            score = 0.82
-            if len(longest) >= 8:
-                score = 0.90
-            if len(longest) >= 12:
-                score = 0.94
-            if len(longest) >= 16:
-                score = 0.97
+            longest, y, hit_list = selected
             freq = _phrase_page_frequency(pages, longest)
-            if freq == 1:
-                score = min(0.99, score + 0.02)
-                method = "unique_phrase+order"
-            else:
-                score = min(score, 0.88)
-                method = "shared_phrase+order"
-            if last_page and page["page"] < last_page - 1:
+            score, method = _score_match_phrase(longest, freq)
+            # Source order is auxiliary. A shared phrase must not outrank a unique stem
+            # merely because the unique page is behind the previous assignment.
+            if last_page and page["page"] < last_page - 1 and method != "unique_phrase+order":
                 score -= 0.35
-            elif (
-                longest == last_longest and last_page
-                and page["page"] == last_page and abs(y - last_y) <= 2
-            ):
-                # The previous question already anchored on this occurrence (例題 and
-                # 隨堂練習 often share wording such as "在右圖中分別標出…").
-                later = [yy for yy in find_phrase_ys(page, longest) if yy > last_y + 2]
-                if not later:
-                    continue
-                y = later[0]
-            elif last_page and page["page"] == last_page and y + 6 < last_y:
-                if y < last_y - 20:
-                    score -= 0.12
+            elif last_page and page["page"] == last_page and y + 6 < last_y and y < last_y - 20:
+                score -= 0.12
             if score <= 0:
                 continue
-            cand = (score, page["page"], float(y), hits[:5], method)
+            cand = (score, page["page"], float(y), hit_list, method)
             if best is None or cand[0] > best[0]:
                 best = cand
             elif best is not None and cand[0] == best[0] and last_page:

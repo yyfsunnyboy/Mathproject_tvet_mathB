@@ -138,6 +138,35 @@ def _nearby_pdf_pages(row: Any, rows: list[Any], page_count: int) -> list[int]:
     return list(range(max(1, low - 1), min(page_count, high + 1) + 1)) if high - low <= 3 else []
 
 
+def _unique_full_stem_pages(stem_text: str, stem_chinese: str, pdf_pages: list[str], raw_pages: list[str]) -> list[int]:
+    """Pages whose long stem fragment occurs once in the PDF.
+
+    A repeated phrase is not enough: the fragment must be at least 12 normalized
+    characters, appear on exactly one page, and the full Chinese stem must be in order there.
+    """
+    from core.textbook_pdf_visual import extract_match_phrases, normalize_pdf_text
+
+    phrases = [phrase for phrase in extract_match_phrases(stem_text) if len(phrase) >= 12]
+    if len(stem_chinese) < 6 or not phrases:
+        return []
+    norms = [normalize_pdf_text(text) for text in raw_pages]
+    required = _math_tokens(stem_text)
+    found: list[int] = []
+    for index, (chinese_page, raw, norm) in enumerate(zip(pdf_pages, raw_pages, norms), start=1):
+        if not _ordered_chinese_match(stem_chinese, chinese_page):
+            continue
+        if required - _pdf_tokens(raw):
+            continue
+        hits = [phrase for phrase in phrases if phrase in norm]
+        if not hits:
+            continue
+        longest = max(hits, key=len)
+        if sum(longest in other for other in norms) != 1:
+            continue
+        found.append(index)
+    return found
+
+
 def _pdf_fidelity(row: Any, notes: dict, pdf_pages: list[str], raw_pages: list[str],
                   page_blocks: list[list[tuple]], rows: list[Any]) -> tuple[int, str] | None:
     stem_text = str(getattr(row, "problem_text", "") or "")
@@ -165,9 +194,14 @@ def _pdf_fidelity(row: Any, notes: dict, pdf_pages: list[str], raw_pages: list[s
         return local_matches[0], "localized_chinese_and_math_tokens"
     if len(stem) < 6:
         return None
-    if len(matches) != 1:
-        return None
-    return matches[0], "nearby_chinese_and_math_tokens"
+    if len(matches) == 1:
+        return matches[0], "nearby_chinese_and_math_tokens"
+    # The mapped page and its neighbors lack the stem. A single full-PDF stem
+    # fragment can still verify the page; a repeated phrase cannot.
+    unique_pages = _unique_full_stem_pages(stem_text, stem, pdf_pages, raw_pages)
+    if len(unique_pages) == 1:
+        return unique_pages[0], "unique_stem_across_pdf"
+    return None
 
 
 def _asset_file(asset: dict, roots: list[Path]) -> Path | None:
