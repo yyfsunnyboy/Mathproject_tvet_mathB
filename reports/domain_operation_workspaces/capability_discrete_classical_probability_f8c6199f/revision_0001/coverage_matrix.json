@@ -1,0 +1,422 @@
+[
+  {
+    "textbook_example_id": 12849,
+    "skill_id": "gh_SampleSpace",
+    "family": "coin_sequence_space",
+    "problem_type": "coin_outcome_space",
+    "generator": "src_12849",
+    "domain_function": "coin_outcome_space",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12850,
+    "skill_id": "gh_SampleSpace",
+    "family": "draw_sample_space",
+    "problem_type": "draw_outcome_space",
+    "generator": "src_12850",
+    "domain_function": "draw_outcome_space",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12851,
+    "skill_id": "gh_SampleSpace",
+    "family": "coin_sequence_space",
+    "problem_type": "coin_outcome_space",
+    "generator": "src_12851",
+    "domain_function": "coin_outcome_space",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12852,
+    "skill_id": "gh_SampleSpace",
+    "family": "draw_sample_space",
+    "problem_type": "draw_outcome_space",
+    "generator": "src_12852",
+    "domain_function": "draw_outcome_space",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12853,
+    "skill_id": "gh_SampleSpace",
+    "family": "coded_named_events",
+    "problem_type": "coded_event_sets",
+    "generator": "src_12853",
+    "domain_function": "coded_event_sets",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12854,
+    "skill_id": "gh_SampleSpace",
+    "family": "coded_named_events",
+    "problem_type": "coded_event_sets",
+    "generator": "src_12854",
+    "domain_function": "coded_event_sets",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12855,
+    "skill_id": "gh_Event",
+    "family": "two_dice_event_sets",
+    "problem_type": "dice_event_sets",
+    "generator": "src_12855",
+    "domain_function": "dice_event_sets",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12856,
+    "skill_id": "gh_Event",
+    "family": "event_complement_mutex",
+    "problem_type": "event_relation",
+    "generator": "src_12856",
+    "domain_function": "event_relation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12857,
+    "skill_id": "gh_Event",
+    "family": "two_dice_event_sets",
+    "problem_type": "dice_event_sets",
+    "generator": "src_12857",
+    "domain_function": "dice_event_sets",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12858,
+    "skill_id": "gh_Event",
+    "family": "event_complement_mutex",
+    "problem_type": "event_relation",
+    "generator": "src_12858",
+    "domain_function": "event_relation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12859,
+    "skill_id": "gh_Event",
+    "family": "event_complement_mutex",
+    "problem_type": "event_relation",
+    "generator": "src_12859",
+    "domain_function": "event_relation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12860,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "single_draw",
+    "problem_type": "uniform_draw_probability",
+    "generator": "src_12860",
+    "domain_function": "uniform_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12861,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "coin_count",
+    "problem_type": "coin_count_probability",
+    "generator": "src_12861",
+    "domain_function": "coin_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12862,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "coin_count",
+    "problem_type": "coin_count_probability",
+    "generator": "src_12862",
+    "domain_function": "coin_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12863,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "numbered_dice",
+    "problem_type": "dice_count_probability",
+    "generator": "src_12863",
+    "domain_function": "dice_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12864,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "urn_without_replacement",
+    "problem_type": "urn_draw_probability",
+    "generator": "src_12864",
+    "domain_function": "urn_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12865,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "numbered_dice",
+    "problem_type": "dice_count_probability",
+    "generator": "src_12865",
+    "domain_function": "dice_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12866,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "single_draw",
+    "problem_type": "uniform_draw_probability",
+    "generator": "src_12866",
+    "domain_function": "uniform_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12867,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "with_replacement",
+    "problem_type": "replacement_count_probability",
+    "generator": "src_12867",
+    "domain_function": "replacement_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12868,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "coin_count",
+    "problem_type": "coin_count_probability",
+    "generator": "src_12868",
+    "domain_function": "coin_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12869,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "numbered_dice",
+    "problem_type": "dice_count_probability",
+    "generator": "src_12869",
+    "domain_function": "dice_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12870,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "urn_without_replacement",
+    "problem_type": "urn_draw_probability",
+    "generator": "src_12870",
+    "domain_function": "urn_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12871,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "numbered_dice",
+    "problem_type": "dice_count_probability",
+    "generator": "src_12871",
+    "domain_function": "dice_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12872,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "classical_claim",
+    "problem_type": "classical_claim",
+    "generator": "src_12872",
+    "domain_function": "classical_claim",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12873,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "classical_claim",
+    "problem_type": "classical_claim",
+    "generator": "src_12873",
+    "domain_function": "classical_claim",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12874,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "classical_claim",
+    "problem_type": "classical_claim",
+    "generator": "src_12874",
+    "domain_function": "classical_claim",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12875,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "numbered_dice",
+    "problem_type": "dice_count_probability",
+    "generator": "src_12875",
+    "domain_function": "dice_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12876,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "numbered_dice",
+    "problem_type": "dice_count_probability",
+    "generator": "src_12876",
+    "domain_function": "dice_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12877,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "urn_without_replacement",
+    "problem_type": "urn_draw_probability",
+    "generator": "src_12877",
+    "domain_function": "urn_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12878,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "urn_without_replacement",
+    "problem_type": "urn_draw_probability",
+    "generator": "src_12878",
+    "domain_function": "urn_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12879,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "single_draw",
+    "problem_type": "uniform_draw_probability",
+    "generator": "src_12879",
+    "domain_function": "uniform_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12880,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "urn_without_replacement",
+    "problem_type": "urn_draw_probability",
+    "generator": "src_12880",
+    "domain_function": "urn_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12881,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "numbered_dice",
+    "problem_type": "dice_count_probability",
+    "generator": "src_12881",
+    "domain_function": "dice_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12882,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "urn_without_replacement",
+    "problem_type": "urn_draw_probability",
+    "generator": "src_12882",
+    "domain_function": "urn_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12883,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "password_permutation",
+    "problem_type": "password_guess",
+    "generator": "src_12883",
+    "domain_function": "password_guess",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12884,
+    "skill_id": "gh_DefinitionOfClassicalProbability",
+    "family": "solve_composition",
+    "problem_type": "solve_urn_count",
+    "generator": "src_12884",
+    "domain_function": "solve_urn_count",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12885,
+    "skill_id": "gh_PropertiesOfProbability",
+    "family": "probability_algebra",
+    "problem_type": "probability_algebra",
+    "generator": "src_12885",
+    "domain_function": "probability_algebra",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12886,
+    "skill_id": "gh_PropertiesOfProbability",
+    "family": "urn_without_replacement",
+    "problem_type": "urn_draw_probability",
+    "generator": "src_12886",
+    "domain_function": "urn_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12887,
+    "skill_id": "gh_PropertiesOfProbability",
+    "family": "numbered_dice",
+    "problem_type": "dice_count_probability",
+    "generator": "src_12887",
+    "domain_function": "dice_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12888,
+    "skill_id": "gh_PropertiesOfProbability",
+    "family": "probability_algebra",
+    "problem_type": "probability_algebra",
+    "generator": "src_12888",
+    "domain_function": "probability_algebra",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12889,
+    "skill_id": "gh_PropertiesOfProbability",
+    "family": "urn_without_replacement",
+    "problem_type": "urn_draw_probability",
+    "generator": "src_12889",
+    "domain_function": "urn_draw_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12890,
+    "skill_id": "gh_PropertiesOfProbability",
+    "family": "with_replacement",
+    "problem_type": "replacement_count_probability",
+    "generator": "src_12890",
+    "domain_function": "replacement_count_probability",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  }
+]

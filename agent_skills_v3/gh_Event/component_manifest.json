@@ -1,0 +1,62 @@
+{
+  "skill_id": "gh_Event",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 5,
+  "components": [
+    {
+      "component_id": "src_12855",
+      "textbook_example_id": 12855,
+      "status": "verified",
+      "problem_type_id": "dice_event_sets",
+      "domain_operation": "dice_event_sets",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12855/generate.py"
+    },
+    {
+      "component_id": "src_12856",
+      "textbook_example_id": 12856,
+      "status": "verified",
+      "problem_type_id": "event_relation",
+      "domain_operation": "event_relation",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12856/generate.py"
+    },
+    {
+      "component_id": "src_12857",
+      "textbook_example_id": 12857,
+      "status": "verified",
+      "problem_type_id": "dice_event_sets",
+      "domain_operation": "dice_event_sets",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12857/generate.py"
+    },
+    {
+      "component_id": "src_12858",
+      "textbook_example_id": 12858,
+      "status": "verified",
+      "problem_type_id": "event_relation",
+      "domain_operation": "event_relation",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12858/generate.py"
+    },
+    {
+      "component_id": "src_12859",
+      "textbook_example_id": 12859,
+      "status": "verified",
+      "problem_type_id": "event_relation",
+      "domain_operation": "event_relation",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12859/generate.py"
+    }
+  ]
+}

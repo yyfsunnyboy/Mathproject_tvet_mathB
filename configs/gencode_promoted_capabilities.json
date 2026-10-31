@@ -2486,6 +2486,367 @@
         }
       }
     },
+    "discrete.classical_probability": {
+      "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-31 confirming teacher acceptance of reports/gh_math2_unit6_bundle/acceptance_review.md: one-time Promotion and Publish of 數學2 Unit 6 古典機率 (discrete.classical_probability, 14 operations; gh_SampleSpace 6 + gh_Event 5 + gh_DefinitionOfClassicalProbability 25 + gh_PropertiesOfProbability 6 components; bundle file sha256 b920d03905aa917a85575e55441aaa61a7d65b0c9c6f45c012160bb46e981239); restart of Flask 5001 only (Flask 5000 / Cloudflare untouched)",
+      "bundle_sha256": "118ac6ac1753ebedcd814e654e9bf2a5ebee5a3433a30cc040752fcf05d7a1d9",
+      "capabilities": [
+        "classical_claim",
+        "coded_event_sets",
+        "coin_count_probability",
+        "coin_outcome_space",
+        "dice_count_probability",
+        "dice_event_sets",
+        "draw_outcome_space",
+        "event_relation",
+        "password_guess",
+        "probability_algebra",
+        "replacement_count_probability",
+        "solve_urn_count",
+        "uniform_draw_probability",
+        "urn_draw_probability"
+      ],
+      "domain_module": "core.domain.promoted.classical_probability.classical_probability_domain",
+      "entrypoint": "build_classical_probability_matrix",
+      "operations": {
+        "classical_claim": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "classical_claim"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_classical_claim_matrix"
+        },
+        "coded_event_sets": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "coded_event_sets"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_coded_event_sets_matrix"
+        },
+        "coin_count_probability": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "coin_count_probability"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_coin_count_probability_matrix"
+        },
+        "coin_outcome_space": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "coin_outcome_space"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_coin_outcome_space_matrix"
+        },
+        "dice_count_probability": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "dice_count_probability"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_dice_count_probability_matrix"
+        },
+        "dice_event_sets": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "dice_event_sets"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_dice_event_sets_matrix"
+        },
+        "draw_outcome_space": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "draw_outcome_space"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_draw_outcome_space_matrix"
+        },
+        "event_relation": {
+          "checker_keys": [
+            "choice_label_checker",
+            "multi_part_answer_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "event_relation"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "single_choice",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "single_choice"
+          ],
+          "validator": "validate_event_relation_matrix"
+        },
+        "password_guess": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "password_guess"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_password_guess_matrix"
+        },
+        "probability_algebra": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "probability_algebra"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_probability_algebra_matrix"
+        },
+        "replacement_count_probability": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "replacement_count_probability"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_replacement_count_probability_matrix"
+        },
+        "solve_urn_count": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "solve_urn_count"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_solve_urn_count_matrix"
+        },
+        "uniform_draw_probability": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "uniform_draw_probability"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_uniform_draw_probability_matrix"
+        },
+        "urn_draw_probability": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_classical_probability_matrix",
+          "payload_adapter": "core.domain.promoted.classical_probability.classical_probability_adapter.adapt_classical_probability_matrix",
+          "provided_capabilities": [
+            "urn_draw_probability"
+          ],
+          "runtime_contract": "classical_probability_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_urn_draw_probability_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "classical_probability_adapter.py": "194b94d23699d4712efa136134690f03ff10c53bf1c678a55f96d895b31c0179",
+        "classical_probability_domain.py": "11fef921902765b992906cafe1c0d3d009ed7677565c9d5691628de6b477d21c"
+      },
+      "package_import": "core.domain.promoted.classical_probability",
+      "package_name": "classical_probability",
+      "proposal_id": "capability_discrete_classical_probability_f8c6199f",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-118ac6ac1753",
+      "skill_bindings": {
+        "gh_DefinitionOfClassicalProbability": {
+          "allowed_operations": [
+            "classical_claim",
+            "coin_count_probability",
+            "dice_count_probability",
+            "password_guess",
+            "replacement_count_probability",
+            "solve_urn_count",
+            "uniform_draw_probability",
+            "urn_draw_probability"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_Event": {
+          "allowed_operations": [
+            "dice_event_sets",
+            "event_relation"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_PropertiesOfProbability": {
+          "allowed_operations": [
+            "dice_count_probability",
+            "probability_algebra",
+            "replacement_count_probability",
+            "urn_draw_probability"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_SampleSpace": {
+          "allowed_operations": [
+            "coded_event_sets",
+            "coin_outcome_space",
+            "draw_outcome_space"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
     "discrete.combinations": {
       "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-29 after teacher acceptance (UNIT5_TEACHER_ACCEPTANCE.md): one-time Promotion and Publish of 數學2 Unit 5 組合 (discrete.combinations; gh_Combination 22 + gh_BinomialTheorem 12 components; ungraded proof self-check entries 12838 / 12845; fixed graded row 12834 kept as is); plain-text formulas in 4 explanations accepted; unsafe_dynamic variation warning of the 4 true/false components accepted as a WARN (four-choice audit rule not applicable), not changed to PASS; no Flask / Cloudflare restart",
       "bundle_sha256": "848b2241bfeccb90f781de5d17549c985db898024889c214bf19d523f2389dab",

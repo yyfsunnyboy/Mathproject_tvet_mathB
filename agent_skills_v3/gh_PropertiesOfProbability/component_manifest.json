@@ -1,0 +1,73 @@
+{
+  "skill_id": "gh_PropertiesOfProbability",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 6,
+  "components": [
+    {
+      "component_id": "src_12885",
+      "textbook_example_id": 12885,
+      "status": "verified",
+      "problem_type_id": "probability_algebra",
+      "domain_operation": "probability_algebra",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12885/generate.py"
+    },
+    {
+      "component_id": "src_12886",
+      "textbook_example_id": 12886,
+      "status": "verified",
+      "problem_type_id": "urn_draw_probability",
+      "domain_operation": "urn_draw_probability",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12886/generate.py"
+    },
+    {
+      "component_id": "src_12887",
+      "textbook_example_id": 12887,
+      "status": "verified",
+      "problem_type_id": "dice_count_probability",
+      "domain_operation": "dice_count_probability",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12887/generate.py"
+    },
+    {
+      "component_id": "src_12888",
+      "textbook_example_id": 12888,
+      "status": "verified",
+      "problem_type_id": "probability_algebra",
+      "domain_operation": "probability_algebra",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12888/generate.py"
+    },
+    {
+      "component_id": "src_12889",
+      "textbook_example_id": 12889,
+      "status": "verified",
+      "problem_type_id": "urn_draw_probability",
+      "domain_operation": "urn_draw_probability",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12889/generate.py"
+    },
+    {
+      "component_id": "src_12890",
+      "textbook_example_id": 12890,
+      "status": "verified",
+      "problem_type_id": "replacement_count_probability",
+      "domain_operation": "replacement_count_probability",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12890/generate.py"
+    }
+  ]
+}

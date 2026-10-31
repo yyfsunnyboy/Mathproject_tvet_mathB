@@ -1,0 +1,1194 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_discrete_classical_probability_f8c6199f",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-31 confirming teacher acceptance of reports/gh_math2_unit6_bundle/acceptance_review.md: one-time Promotion and Publish of 數學2 Unit 6 古典機率 (discrete.classical_probability, 14 operations; gh_SampleSpace 6 + gh_Event 5 + gh_DefinitionOfClassicalProbability 25 + gh_PropertiesOfProbability 6 components; bundle file sha256 b920d03905aa917a85575e55441aaa61a7d65b0c9c6f45c012160bb46e981239); restart of Flask 5001 only (Flask 5000 / Cloudflare untouched)",
+    "approved_revision": 1,
+    "approval_scope": "revision 1: 普高數學2 Unit 6 古典機率 — domain discrete.classical_probability (14 operations: classical_claim, coded_event_sets, coin_count_probability, coin_outcome_space, dice_count_probability, dice_event_sets, draw_outcome_space, event_relation, password_guess, probability_algebra, replacement_count_probability, solve_urn_count, uniform_draw_probability, urn_draw_probability); Skills gh_SampleSpace (6 components: 12849, 12850, 12851, 12852, 12853, 12854); gh_Event (5 components: 12855, 12856, 12857, 12858, 12859); gh_DefinitionOfClassicalProbability (25 components: 12860, 12861, 12862, 12863, 12864, 12865, 12866, 12867, 12868, 12869, 12870, 12871, 12872, 12873, 12874, 12875, 12876, 12877, 12878, 12879, 12880, 12881, 12882, 12883, 12884); gh_PropertiesOfProbability (6 components: 12885, 12886, 12887, 12888, 12889, 12890); all 42 formal rows (ids 12849-12890). No component is deferred. Dice are numbered so the sample space stays equiprobable, matching the worked solution of 例題10. Format hints do not carry an answer example. This revision is not approved and is not published."
+  },
+  "domain_key": "discrete.classical_probability",
+  "package_name": "classical_probability",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "classical_probability_adapter.py": "194b94d23699d4712efa136134690f03ff10c53bf1c678a55f96d895b31c0179",
+    "classical_probability_domain.py": "11fef921902765b992906cafe1c0d3d009ed7677565c9d5691628de6b477d21c"
+  },
+  "domain_module": "classical_probability_domain",
+  "entrypoint": "build_classical_probability_matrix",
+  "capabilities": [
+    "classical_claim",
+    "coded_event_sets",
+    "coin_count_probability",
+    "coin_outcome_space",
+    "dice_count_probability",
+    "dice_event_sets",
+    "draw_outcome_space",
+    "event_relation",
+    "password_guess",
+    "probability_algebra",
+    "replacement_count_probability",
+    "solve_urn_count",
+    "uniform_draw_probability",
+    "urn_draw_probability"
+  ],
+  "operations": {
+    "classical_claim": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_classical_claim_matrix",
+      "provided_capabilities": [
+        "classical_claim"
+      ]
+    },
+    "coded_event_sets": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_coded_event_sets_matrix",
+      "provided_capabilities": [
+        "coded_event_sets"
+      ]
+    },
+    "coin_count_probability": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_coin_count_probability_matrix",
+      "provided_capabilities": [
+        "coin_count_probability"
+      ]
+    },
+    "coin_outcome_space": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_coin_outcome_space_matrix",
+      "provided_capabilities": [
+        "coin_outcome_space"
+      ]
+    },
+    "dice_count_probability": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_dice_count_probability_matrix",
+      "provided_capabilities": [
+        "dice_count_probability"
+      ]
+    },
+    "dice_event_sets": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_dice_event_sets_matrix",
+      "provided_capabilities": [
+        "dice_event_sets"
+      ]
+    },
+    "draw_outcome_space": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_draw_outcome_space_matrix",
+      "provided_capabilities": [
+        "draw_outcome_space"
+      ]
+    },
+    "event_relation": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "single_choice",
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker",
+        "solution_set_checker"
+      ],
+      "validator": "validate_event_relation_matrix",
+      "provided_capabilities": [
+        "event_relation"
+      ]
+    },
+    "password_guess": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_password_guess_matrix",
+      "provided_capabilities": [
+        "password_guess"
+      ]
+    },
+    "probability_algebra": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_probability_algebra_matrix",
+      "provided_capabilities": [
+        "probability_algebra"
+      ]
+    },
+    "replacement_count_probability": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_replacement_count_probability_matrix",
+      "provided_capabilities": [
+        "replacement_count_probability"
+      ]
+    },
+    "solve_urn_count": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_solve_urn_count_matrix",
+      "provided_capabilities": [
+        "solve_urn_count"
+      ]
+    },
+    "uniform_draw_probability": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_uniform_draw_probability_matrix",
+      "provided_capabilities": [
+        "uniform_draw_probability"
+      ]
+    },
+    "urn_draw_probability": {
+      "handler": "build_classical_probability_matrix",
+      "payload_adapter": "classical_probability_adapter.adapt_classical_probability_matrix",
+      "runtime_contract": "classical_probability_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_urn_draw_probability_matrix",
+      "provided_capabilities": [
+        "urn_draw_probability"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_DefinitionOfClassicalProbability": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "classical_claim",
+        "coin_count_probability",
+        "dice_count_probability",
+        "password_guess",
+        "replacement_count_probability",
+        "solve_urn_count",
+        "uniform_draw_probability",
+        "urn_draw_probability"
+      ]
+    },
+    "gh_Event": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "dice_event_sets",
+        "event_relation"
+      ]
+    },
+    "gh_PropertiesOfProbability": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "dice_count_probability",
+        "probability_algebra",
+        "replacement_count_probability",
+        "urn_draw_probability"
+      ]
+    },
+    "gh_SampleSpace": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "coded_event_sets",
+        "coin_outcome_space",
+        "draw_outcome_space"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "classical_claim": [
+      {
+        "seed": 0,
+        "constraints": {
+          "style": "urn_half",
+          "red": null
+        },
+        "textbook_example_id": 12872
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "style": "dice_sum",
+          "total": 11,
+          "stated": "1/36"
+        },
+        "textbook_example_id": 12873
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "style": "at_least_one_six",
+          "stated_miss": 25
+        },
+        "textbook_example_id": 12874
+      }
+    ],
+    "coded_event_sets": [
+      {
+        "seed": 0,
+        "constraints": {
+          "n": 2,
+          "story": "gender",
+          "asks": [
+            {
+              "kind": "space"
+            },
+            {
+              "kind": "at_least_symbol",
+              "symbol": 0,
+              "k": 1
+            },
+            {
+              "kind": "exactly_symbol",
+              "symbol": 0,
+              "k": 1
+            }
+          ]
+        },
+        "textbook_example_id": 12853
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "n": 3,
+          "story": "coin",
+          "asks": [
+            {
+              "kind": "and",
+              "left": {
+                "kind": "at_least_symbol",
+                "symbol": 1,
+                "k": 1
+              },
+              "right": {
+                "kind": "bit_is",
+                "index": 1,
+                "value": 0
+              }
+            },
+            {
+              "kind": "complement",
+              "event": {
+                "kind": "at_least_symbol",
+                "symbol": 1,
+                "k": 1
+              }
+            },
+            {
+              "kind": "and",
+              "left": {
+                "kind": "at_least_symbol",
+                "symbol": 1,
+                "k": 1
+              },
+              "right": {
+                "kind": "bit_is",
+                "index": 1,
+                "value": 1
+              }
+            }
+          ]
+        },
+        "textbook_example_id": 12854
+      }
+    ],
+    "coin_count_probability": [
+      {
+        "seed": 0,
+        "constraints": {
+          "asks": [
+            {
+              "n": 2,
+              "k": 1
+            },
+            {
+              "n": 3,
+              "k": 2
+            }
+          ]
+        },
+        "textbook_example_id": 12861
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "simultaneous": true,
+          "asks": [
+            {
+              "n": 2,
+              "k": 1
+            }
+          ]
+        },
+        "textbook_example_id": 12862
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "asks": [
+            {
+              "n": 3,
+              "k": 3
+            },
+            {
+              "n": 3,
+              "k": 1
+            }
+          ]
+        },
+        "textbook_example_id": 12868
+      }
+    ],
+    "coin_outcome_space": [
+      {
+        "seed": 0,
+        "constraints": {
+          "n": 2,
+          "observable": {
+            "kind": "head_count"
+          }
+        },
+        "textbook_example_id": 12849
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "n": 3,
+          "observable": {
+            "kind": "head_count"
+          }
+        },
+        "textbook_example_id": 12851
+      }
+    ],
+    "dice_count_probability": [
+      {
+        "seed": 0,
+        "constraints": {
+          "dice": 2,
+          "faces": 6,
+          "asks": [
+            {
+              "kind": "sum_eq",
+              "n": 9
+            },
+            {
+              "kind": "sum_eq",
+              "n": 7
+            }
+          ]
+        },
+        "textbook_example_id": 12863
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "dice": 3,
+          "faces": 6,
+          "asks": [
+            {
+              "kind": "all_different"
+            },
+            {
+              "kind": "exactly_two_equal"
+            }
+          ]
+        },
+        "textbook_example_id": 12865
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "dice": 2,
+          "faces": 6,
+          "asks": [
+            {
+              "kind": "exactly_face_count",
+              "face": 5,
+              "count": 1
+            },
+            {
+              "kind": "diff_eq",
+              "n": 1
+            }
+          ]
+        },
+        "textbook_example_id": 12869
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "dice": 3,
+          "faces": 6,
+          "asks": [
+            {
+              "kind": "exactly_face_count",
+              "face": 6,
+              "count": 1
+            }
+          ]
+        },
+        "textbook_example_id": 12871
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "dice": 2,
+          "faces": 6,
+          "asks": [
+            {
+              "kind": "faces_equal"
+            },
+            {
+              "kind": "first_gt_second"
+            }
+          ]
+        },
+        "textbook_example_id": 12875
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "dice": 2,
+          "faces": 6,
+          "asks": [
+            {
+              "kind": "both_gt",
+              "n": 3
+            },
+            {
+              "kind": "diff_eq",
+              "n": 3
+            }
+          ]
+        },
+        "textbook_example_id": 12876
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "dice": 3,
+          "faces": 6,
+          "asks": [
+            {
+              "kind": "at_least_face",
+              "face": 6,
+              "count": 1
+            },
+            {
+              "kind": "sum_eq",
+              "n": 9
+            }
+          ]
+        },
+        "textbook_example_id": 12881
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "dice": 3,
+          "faces": 6,
+          "asks": [
+            {
+              "kind": "at_least_two_equal"
+            }
+          ]
+        },
+        "textbook_example_id": 12887
+      }
+    ],
+    "dice_event_sets": [
+      {
+        "seed": 0,
+        "constraints": {
+          "a": {
+            "kind": "sum_gt",
+            "n": 9
+          },
+          "b": {
+            "kind": "faces_equal"
+          }
+        },
+        "textbook_example_id": 12855
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "a": {
+            "kind": "sum_eq",
+            "n": 7
+          },
+          "b": {
+            "kind": "product_eq",
+            "n": 12
+          }
+        },
+        "textbook_example_id": 12857
+      }
+    ],
+    "draw_outcome_space": [
+      {
+        "seed": 0,
+        "constraints": {
+          "n": 4,
+          "asks": [
+            {
+              "mode": "ordered_no_replace",
+              "k": 2
+            },
+            {
+              "mode": "unordered",
+              "k": 2
+            }
+          ]
+        },
+        "textbook_example_id": 12850
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "n": 3,
+          "asks": [
+            {
+              "mode": "ordered_no_replace",
+              "k": 3
+            },
+            {
+              "mode": "ordered_replace",
+              "k": 2
+            },
+            {
+              "mode": "unordered",
+              "k": 2
+            }
+          ]
+        },
+        "textbook_example_id": 12852
+      }
+    ],
+    "event_relation": [
+      {
+        "seed": 0,
+        "constraints": {
+          "model": "coin",
+          "n": 2,
+          "a": {
+            "kind": "exactly_heads",
+            "k": 1
+          },
+          "b": {
+            "kind": "exactly_heads",
+            "k": 0
+          }
+        },
+        "textbook_example_id": 12856
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "model": "coin",
+          "n": 3,
+          "a": {
+            "kind": "at_least_heads",
+            "k": 1
+          },
+          "b": {
+            "kind": "exactly_heads",
+            "k": 3
+          }
+        },
+        "textbook_example_id": 12858
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "model": "dice",
+          "a": {
+            "kind": "first_even"
+          },
+          "b": {
+            "kind": "sum_odd"
+          }
+        },
+        "textbook_example_id": 12859
+      }
+    ],
+    "password_guess": [
+      {
+        "seed": 0,
+        "constraints": {
+          "symbols": 4,
+          "wrong_limit": 3,
+          "alphabet": [
+            1,
+            3,
+            5,
+            7
+          ]
+        },
+        "textbook_example_id": 12883
+      }
+    ],
+    "probability_algebra": [
+      {
+        "seed": 0,
+        "constraints": {
+          "probs": [
+            "1/3",
+            "1/2"
+          ],
+          "asks": [
+            {
+              "kind": "complement",
+              "index": 0
+            },
+            {
+              "kind": "union",
+              "indices": [
+                0,
+                1
+              ],
+              "intersection": "1/6"
+            },
+            {
+              "kind": "intersection",
+              "indices": [
+                0,
+                1
+              ],
+              "union": "5/6"
+            }
+          ]
+        },
+        "textbook_example_id": 12885
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "probs": [
+            "1/2",
+            "3/10",
+            "1/30"
+          ],
+          "pairwise_disjoint": true,
+          "asks": [
+            {
+              "kind": "union",
+              "indices": [
+                0,
+                1
+              ]
+            },
+            {
+              "kind": "union",
+              "indices": [
+                0,
+                1,
+                2
+              ]
+            }
+          ]
+        },
+        "textbook_example_id": 12888
+      }
+    ],
+    "replacement_count_probability": [
+      {
+        "seed": 0,
+        "constraints": {
+          "sides": 3,
+          "labels": [
+            1,
+            2,
+            3
+          ],
+          "asks": [
+            {
+              "n": 2,
+              "kind": "at_least",
+              "k": 1,
+              "target": 3
+            },
+            {
+              "n": 3,
+              "kind": "exactly",
+              "k": 2,
+              "target": 3
+            }
+          ]
+        },
+        "textbook_example_id": 12867
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "sides": 6,
+          "scene": "club",
+          "asks": [
+            {
+              "n": 4,
+              "kind": "not_all_different",
+              "scene_line": "club"
+            }
+          ]
+        },
+        "textbook_example_id": 12890
+      }
+    ],
+    "solve_urn_count": [
+      {
+        "seed": 0,
+        "constraints": {
+          "white": 5,
+          "target": "2/21"
+        },
+        "textbook_example_id": 12884
+      }
+    ],
+    "uniform_draw_probability": [
+      {
+        "seed": 0,
+        "constraints": {
+          "model": "die",
+          "faces": 6,
+          "asks": [
+            {
+              "kind": "face",
+              "face": 6
+            },
+            {
+              "kind": "faces",
+              "values": [
+                2,
+                3,
+                5
+              ]
+            }
+          ]
+        },
+        "textbook_example_id": 12860
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "model": "cards",
+          "deck": 52,
+          "suits": 4,
+          "asks": [
+            {
+              "kind": "ranks",
+              "count": 1,
+              "rank": 6
+            },
+            {
+              "kind": "suit",
+              "suit": "紅心"
+            }
+          ]
+        },
+        "textbook_example_id": 12866
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "model": "numbers",
+          "n": 24,
+          "asks": [
+            {
+              "kind": "divisible_by_any",
+              "divisors": [
+                2,
+                3
+              ]
+            }
+          ]
+        },
+        "textbook_example_id": 12879
+      }
+    ],
+    "urn_draw_probability": [
+      {
+        "seed": 0,
+        "constraints": {
+          "colors": [
+            3,
+            2
+          ],
+          "names": [
+            "紅球",
+            "白球"
+          ],
+          "draw": 2,
+          "asks": [
+            {
+              "kind": "exact",
+              "counts": [
+                2,
+                0
+              ],
+              "ordered": true
+            },
+            {
+              "kind": "exact",
+              "counts": [
+                2,
+                0
+              ],
+              "ordered": false
+            }
+          ]
+        },
+        "textbook_example_id": 12864
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "colors": [
+            3,
+            2
+          ],
+          "names": [
+            "紅球",
+            "白球"
+          ],
+          "draw": 2,
+          "asks": [
+            {
+              "kind": "exact",
+              "counts": [
+                1,
+                1
+              ],
+              "ordered": true
+            },
+            {
+              "kind": "exact",
+              "counts": [
+                1,
+                1
+              ],
+              "ordered": false
+            }
+          ]
+        },
+        "textbook_example_id": 12870
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "colors": [
+            3,
+            3
+          ],
+          "names": [
+            "紅球",
+            "白球"
+          ],
+          "draw": 3,
+          "asks": [
+            {
+              "kind": "exact",
+              "counts": [
+                2,
+                1
+              ],
+              "ordered": true
+            },
+            {
+              "kind": "not_mono",
+              "ordered": true
+            }
+          ]
+        },
+        "textbook_example_id": 12877
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "colors": [
+            4,
+            2
+          ],
+          "names": [
+            "紅球",
+            "白球"
+          ],
+          "draw": 3,
+          "asks": [
+            {
+              "kind": "exact",
+              "counts": [
+                2,
+                1
+              ],
+              "ordered": false
+            },
+            {
+              "kind": "not_mono",
+              "ordered": false
+            }
+          ]
+        },
+        "textbook_example_id": 12878
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "colors": [
+            5,
+            11,
+            4
+          ],
+          "names": [
+            "甲等",
+            "乙等",
+            "丙等"
+          ],
+          "draw": 2,
+          "asks": [
+            {
+              "kind": "not_mono",
+              "ordered": false
+            }
+          ]
+        },
+        "textbook_example_id": 12880
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "colors": [
+            4,
+            3
+          ],
+          "names": [
+            "正數",
+            "負數"
+          ],
+          "draw": 2,
+          "asks": [
+            {
+              "kind": "same_color",
+              "ordered": false
+            }
+          ]
+        },
+        "textbook_example_id": 12882
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "colors": [
+            6,
+            4
+          ],
+          "names": [
+            "豬肉",
+            "牛肉"
+          ],
+          "draw": 3,
+          "asks": [
+            {
+              "kind": "at_most",
+              "index": 1,
+              "count": 1,
+              "ordered": false
+            }
+          ]
+        },
+        "textbook_example_id": 12886
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "colors": [
+            4,
+            2
+          ],
+          "names": [
+            "男生",
+            "女生"
+          ],
+          "draw": 3,
+          "asks": [
+            {
+              "kind": "not_mono",
+              "ordered": false
+            }
+          ]
+        },
+        "textbook_example_id": 12889
+      }
+    ]
+  },
+  "deferred_components": {},
+  "coverage_rows": 42
+}

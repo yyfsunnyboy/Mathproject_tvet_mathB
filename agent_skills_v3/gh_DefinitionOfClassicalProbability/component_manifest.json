@@ -1,0 +1,282 @@
+{
+  "skill_id": "gh_DefinitionOfClassicalProbability",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 25,
+  "components": [
+    {
+      "component_id": "src_12860",
+      "textbook_example_id": 12860,
+      "status": "verified",
+      "problem_type_id": "uniform_draw_probability",
+      "domain_operation": "uniform_draw_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12860/generate.py"
+    },
+    {
+      "component_id": "src_12861",
+      "textbook_example_id": 12861,
+      "status": "verified",
+      "problem_type_id": "coin_count_probability",
+      "domain_operation": "coin_count_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12861/generate.py"
+    },
+    {
+      "component_id": "src_12862",
+      "textbook_example_id": 12862,
+      "status": "verified",
+      "problem_type_id": "coin_count_probability",
+      "domain_operation": "coin_count_probability",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12862/generate.py"
+    },
+    {
+      "component_id": "src_12863",
+      "textbook_example_id": 12863,
+      "status": "verified",
+      "problem_type_id": "dice_count_probability",
+      "domain_operation": "dice_count_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12863/generate.py"
+    },
+    {
+      "component_id": "src_12864",
+      "textbook_example_id": 12864,
+      "status": "verified",
+      "problem_type_id": "urn_draw_probability",
+      "domain_operation": "urn_draw_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12864/generate.py"
+    },
+    {
+      "component_id": "src_12865",
+      "textbook_example_id": 12865,
+      "status": "verified",
+      "problem_type_id": "dice_count_probability",
+      "domain_operation": "dice_count_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12865/generate.py"
+    },
+    {
+      "component_id": "src_12866",
+      "textbook_example_id": 12866,
+      "status": "verified",
+      "problem_type_id": "uniform_draw_probability",
+      "domain_operation": "uniform_draw_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12866/generate.py"
+    },
+    {
+      "component_id": "src_12867",
+      "textbook_example_id": 12867,
+      "status": "verified",
+      "problem_type_id": "replacement_count_probability",
+      "domain_operation": "replacement_count_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12867/generate.py"
+    },
+    {
+      "component_id": "src_12868",
+      "textbook_example_id": 12868,
+      "status": "verified",
+      "problem_type_id": "coin_count_probability",
+      "domain_operation": "coin_count_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12868/generate.py"
+    },
+    {
+      "component_id": "src_12869",
+      "textbook_example_id": 12869,
+      "status": "verified",
+      "problem_type_id": "dice_count_probability",
+      "domain_operation": "dice_count_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12869/generate.py"
+    },
+    {
+      "component_id": "src_12870",
+      "textbook_example_id": 12870,
+      "status": "verified",
+      "problem_type_id": "urn_draw_probability",
+      "domain_operation": "urn_draw_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12870/generate.py"
+    },
+    {
+      "component_id": "src_12871",
+      "textbook_example_id": 12871,
+      "status": "verified",
+      "problem_type_id": "dice_count_probability",
+      "domain_operation": "dice_count_probability",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12871/generate.py"
+    },
+    {
+      "component_id": "src_12872",
+      "textbook_example_id": 12872,
+      "status": "verified",
+      "problem_type_id": "classical_claim",
+      "domain_operation": "classical_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12872/generate.py"
+    },
+    {
+      "component_id": "src_12873",
+      "textbook_example_id": 12873,
+      "status": "verified",
+      "problem_type_id": "classical_claim",
+      "domain_operation": "classical_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12873/generate.py"
+    },
+    {
+      "component_id": "src_12874",
+      "textbook_example_id": 12874,
+      "status": "verified",
+      "problem_type_id": "classical_claim",
+      "domain_operation": "classical_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12874/generate.py"
+    },
+    {
+      "component_id": "src_12875",
+      "textbook_example_id": 12875,
+      "status": "verified",
+      "problem_type_id": "dice_count_probability",
+      "domain_operation": "dice_count_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12875/generate.py"
+    },
+    {
+      "component_id": "src_12876",
+      "textbook_example_id": 12876,
+      "status": "verified",
+      "problem_type_id": "dice_count_probability",
+      "domain_operation": "dice_count_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12876/generate.py"
+    },
+    {
+      "component_id": "src_12877",
+      "textbook_example_id": 12877,
+      "status": "verified",
+      "problem_type_id": "urn_draw_probability",
+      "domain_operation": "urn_draw_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12877/generate.py"
+    },
+    {
+      "component_id": "src_12878",
+      "textbook_example_id": 12878,
+      "status": "verified",
+      "problem_type_id": "urn_draw_probability",
+      "domain_operation": "urn_draw_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12878/generate.py"
+    },
+    {
+      "component_id": "src_12879",
+      "textbook_example_id": 12879,
+      "status": "verified",
+      "problem_type_id": "uniform_draw_probability",
+      "domain_operation": "uniform_draw_probability",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12879/generate.py"
+    },
+    {
+      "component_id": "src_12880",
+      "textbook_example_id": 12880,
+      "status": "verified",
+      "problem_type_id": "urn_draw_probability",
+      "domain_operation": "urn_draw_probability",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12880/generate.py"
+    },
+    {
+      "component_id": "src_12881",
+      "textbook_example_id": 12881,
+      "status": "verified",
+      "problem_type_id": "dice_count_probability",
+      "domain_operation": "dice_count_probability",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12881/generate.py"
+    },
+    {
+      "component_id": "src_12882",
+      "textbook_example_id": 12882,
+      "status": "verified",
+      "problem_type_id": "urn_draw_probability",
+      "domain_operation": "urn_draw_probability",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12882/generate.py"
+    },
+    {
+      "component_id": "src_12883",
+      "textbook_example_id": 12883,
+      "status": "verified",
+      "problem_type_id": "password_guess",
+      "domain_operation": "password_guess",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12883/generate.py"
+    },
+    {
+      "component_id": "src_12884",
+      "textbook_example_id": 12884,
+      "status": "verified",
+      "problem_type_id": "solve_urn_count",
+      "domain_operation": "solve_urn_count",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12884/generate.py"
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "discrete.classical_probability",
+ "registry_revision": "promoted-118ac6ac1753",
+ "bundle_sha256": "118ac6ac1753ebedcd814e654e9bf2a5ebee5a3433a30cc040752fcf05d7a1d9",
+ "allowed_operations": [
+  "classical_claim",
+  "coded_event_sets",
+  "coin_count_probability",
+  "coin_outcome_space",
+  "dice_count_probability",
+  "dice_event_sets",
+  "draw_outcome_space",
+  "event_relation",
+  "password_guess",
+  "probability_algebra",
+  "replacement_count_probability",
+  "solve_urn_count",
+  "uniform_draw_probability",
+  "urn_draw_probability"
+ ],
+ "skill_bindings": {
+  "gh_DefinitionOfClassicalProbability": {
+   "fixed_domain_key": "discrete.classical_probability",
+   "allowed_operations": [
+    "classical_claim",
+    "coin_count_probability",
+    "dice_count_probability",
+    "password_guess",
+    "replacement_count_probability",
+    "solve_urn_count",
+    "uniform_draw_probability",
+    "urn_draw_probability"
+   ]
+  },
+  "gh_Event": {
+   "fixed_domain_key": "discrete.classical_probability",
+   "allowed_operations": [
+    "dice_event_sets",
+    "event_relation"
+   ]
+  },
+  "gh_PropertiesOfProbability": {
+   "fixed_domain_key": "discrete.classical_probability",
+   "allowed_operations": [
+    "dice_count_probability",
+    "probability_algebra",
+    "replacement_count_probability",
+    "urn_draw_probability"
+   ]
+  },
+  "gh_SampleSpace": {
+   "fixed_domain_key": "discrete.classical_probability",
+   "allowed_operations": [
+    "coded_event_sets",
+    "coin_outcome_space",
+    "draw_outcome_space"
+   ]
+  }
+ },
+ "operations_executed": {
+  "classical_claim": 3,
+  "coded_event_sets": 2,
+  "coin_count_probability": 3,
+  "coin_outcome_space": 2,
+  "dice_count_probability": 8,
+  "dice_event_sets": 2,
+  "draw_outcome_space": 2,
+  "event_relation": 3,
+  "password_guess": 1,
+  "probability_algebra": 2,
+  "replacement_count_probability": 2,
+  "solve_urn_count": 1,
+  "uniform_draw_probability": 3,
+  "urn_draw_probability": 8
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\classical_probability"
+}

@@ -1,0 +1,13 @@
+{
+ "time": "2026-10-31 12:11:41 +0800",
+ "bundle_file_sha256_before_approval": "b920d03905aa917a85575e55441aaa61a7d65b0c9c6f45c012160bb46e981239",
+ "bundle_canonical_sha256_before": "ead304b671945bc0efe60148dde08caa9c0036d1e7363147d0f66d11c30db76b",
+ "bundle_file_sha256_after_approval": "13d8dbbd4b433cbc62e1e2fc55762dbb7061b6327ec94bc11a237f68b51367bd",
+ "package_files": {
+  "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "classical_probability_adapter.py": "194b94d23699d4712efa136134690f03ff10c53bf1c678a55f96d895b31c0179",
+  "classical_probability_domain.py": "11fef921902765b992906cafe1c0d3d009ed7677565c9d5691628de6b477d21c"
+ },
+ "approval_scope": "revision 1: 普高數學2 Unit 6 古典機率 — domain discrete.classical_probability (14 operations: classical_claim, coded_event_sets, coin_count_probability, coin_outcome_space, dice_count_probability, dice_event_sets, draw_outcome_space, event_relation",
+ "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-10-31 confirming teacher acceptance of reports/gh_math2_unit6_bundle/acceptance_review.md: one-time Promotion and Publish of 數學2 Unit 6 古典機率 (discrete.classical_probability, 14 operations; gh_SampleSpace 6 + gh_Event 5 + gh_DefinitionOfClassicalProbability 25 + gh_PropertiesOfProbability 6 components; bundle file sha256 b920d03905aa917a85575e55441aaa61a7d65b0c9c6f45c012160bb46e981239); restart of Flask 5001 only (Flask 5000 / Cloudflare untouched)"
+}

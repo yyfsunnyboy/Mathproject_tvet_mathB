@@ -1,0 +1,72 @@
+{
+ "gh_DefinitionOfClassicalProbability": {
+  "status": "production_published",
+  "component_count": 25,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 22,
+  "static_count": 0,
+  "partially_dynamic_count": 0,
+  "variation_warning": "",
+  "non_dynamic_components": {
+   "src_12872": {
+    "variation_status": "unsafe_dynamic",
+    "error": "Single choice must have 4 choices, got 2"
+   },
+   "src_12873": {
+    "variation_status": "unsafe_dynamic",
+    "error": "Single choice must have 4 choices, got 2"
+   },
+   "src_12874": {
+    "variation_status": "unsafe_dynamic",
+    "error": "Single choice must have 4 choices, got 2"
+   }
+  }
+ },
+ "gh_Event": {
+  "status": "production_published",
+  "component_count": 5,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "unsafe_dynamic",
+  "dynamic_count": 4,
+  "static_count": 0,
+  "partially_dynamic_count": 0,
+  "variation_warning": "",
+  "non_dynamic_components": {
+   "src_12859": {
+    "variation_status": "unsafe_dynamic",
+    "error": "Single choice must have 4 choices, got 2"
+   }
+  }
+ },
+ "gh_PropertiesOfProbability": {
+  "status": "production_published",
+  "component_count": 6,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "dynamic",
+  "dynamic_count": 6,
+  "static_count": 0,
+  "partially_dynamic_count": 0,
+  "variation_warning": "",
+  "non_dynamic_components": {}
+ },
+ "gh_SampleSpace": {
+  "status": "production_published",
+  "component_count": 6,
+  "smoke_status": "passed",
+  "staging_smoke_status": "passed",
+  "production_smoke_status": "passed",
+  "variation_status": "dynamic",
+  "dynamic_count": 6,
+  "static_count": 0,
+  "partially_dynamic_count": 0,
+  "variation_warning": "",
+  "non_dynamic_components": {}
+ }
+}

@@ -1,0 +1,2120 @@
+{
+  "statistics": {
+    "questions": 42,
+    "generators": 42,
+    "unique_generators": 42,
+    "problem_types": 14,
+    "families_deduped": 14,
+    "family_memberships_if_counted_inside_each_skill": 17,
+    "domain_operations": 14,
+    "problem_type_equals_domain_operation": true,
+    "families_shared_by_more_than_one_skill": [
+      "numbered_dice",
+      "urn_without_replacement",
+      "with_replacement"
+    ],
+    "per_skill": [
+      {
+        "skill_id": "gh_SampleSpace",
+        "questions": 6,
+        "families_within_skill": [
+          "coded_named_events",
+          "coin_sequence_space",
+          "draw_sample_space"
+        ],
+        "problem_types_within_skill": [
+          "coded_event_sets",
+          "coin_outcome_space",
+          "draw_outcome_space"
+        ],
+        "generators": 6
+      },
+      {
+        "skill_id": "gh_Event",
+        "questions": 5,
+        "families_within_skill": [
+          "event_complement_mutex",
+          "two_dice_event_sets"
+        ],
+        "problem_types_within_skill": [
+          "dice_event_sets",
+          "event_relation"
+        ],
+        "generators": 5
+      },
+      {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "questions": 25,
+        "families_within_skill": [
+          "classical_claim",
+          "coin_count",
+          "numbered_dice",
+          "password_permutation",
+          "single_draw",
+          "solve_composition",
+          "urn_without_replacement",
+          "with_replacement"
+        ],
+        "problem_types_within_skill": [
+          "classical_claim",
+          "coin_count_probability",
+          "dice_count_probability",
+          "password_guess",
+          "replacement_count_probability",
+          "solve_urn_count",
+          "uniform_draw_probability",
+          "urn_draw_probability"
+        ],
+        "generators": 25
+      },
+      {
+        "skill_id": "gh_PropertiesOfProbability",
+        "questions": 6,
+        "families_within_skill": [
+          "numbered_dice",
+          "probability_algebra",
+          "urn_without_replacement",
+          "with_replacement"
+        ],
+        "problem_types_within_skill": [
+          "dice_count_probability",
+          "probability_algebra",
+          "replacement_count_probability",
+          "urn_draw_probability"
+        ],
+        "generators": 6
+      }
+    ],
+    "why_17_and_14": "3+2+8+4 把跨技能共用的 3 個 family 各算了兩次。去重後是 14。Problem Type 與 Domain Operation 在這份矩陣裡是同一個名稱，也是 14。"
+  },
+  "formal_database": {
+    "row_count": 42,
+    "empty_correct_answer": 42,
+    "skill_counts": {
+      "gh_SampleSpace": 6,
+      "gh_Event": 5,
+      "gh_DefinitionOfClassicalProbability": 25,
+      "gh_PropertiesOfProbability": 6
+    },
+    "ids": [
+      12849,
+      12850,
+      12851,
+      12852,
+      12853,
+      12854,
+      12855,
+      12856,
+      12857,
+      12858,
+      12859,
+      12860,
+      12861,
+      12862,
+      12863,
+      12864,
+      12865,
+      12866,
+      12867,
+      12868,
+      12869,
+      12870,
+      12871,
+      12872,
+      12873,
+      12874,
+      12875,
+      12876,
+      12877,
+      12878,
+      12879,
+      12880,
+      12881,
+      12882,
+      12883,
+      12884,
+      12885,
+      12886,
+      12887,
+      12888,
+      12889,
+      12890
+    ],
+    "runtime": "學生端判分讀的是 Generator payload 的 correct_answer 與 answer_contract，不是 textbook_examples.correct_answer。正式庫這 42 格維持空白，不會參與這批候選題的出題或判分。元件尚未發布，所以現在的練習路由還不會載入它們。"
+  },
+  "figures": {
+    "formal_rows": 42,
+    "stem_cue_rows": [],
+    "rows_with_image_assets": [],
+    "pdf_visual_status_counts": {
+      "NO_VISUAL_REQUIRED": 42
+    },
+    "docx_media_by_suffix": {
+      ".wmf": 170,
+      ".emf": 2,
+      ".jpeg": 6
+    },
+    "docx_drawing_markers": 24,
+    "pdf_embedded_image_pages": [
+      {
+        "page": 6,
+        "embedded_images": 1
+      },
+      {
+        "page": 16,
+        "embedded_images": 2
+      },
+      {
+        "page": 18,
+        "embedded_images": 1
+      }
+    ],
+    "pdf_phrase_hits": [
+      {
+        "page": 1,
+        "cues": [
+          "如圖"
+        ]
+      },
+      {
+        "page": 9,
+        "cues": [
+          "如圖"
+        ]
+      },
+      {
+        "page": 12,
+        "cues": [
+          "右圖"
+        ]
+      }
+    ],
+    "conclusion": "42 題入庫題幹都沒有「如圖／下表」，正式列的 image_assets 為 0。DOCX 的 170 個 wmf 與 2 個 emf 是 MathType 方程式，不是題圖。另外 6 張 jpeg（郵票人像、撲克牌、球袋、水餃、慶生）是課文插圖，題幹已經寫出計算所需的數字，解題不必讀圖。PDF 只有第 1、9、12 頁出現「如圖／右圖」，分別在章首灑藍釉缽、課文把白球編號的說明，以及例題9詳解的編號示意，不在 42 題題幹裡。PDF 上大量向量是方程式字形，不是缺漏的數據圖或表格。"
+  },
+  "staging": {
+    "component_generate_py_loaded": 42,
+    "component_generate_py_drift": [],
+    "bundle_review_status": "ready_for_human_review",
+    "browser_mathjax": "尚未驗證。元件未發布，這輪沒有打開練習頁。",
+    "in_memory_dispatch_of_42_sources": true,
+    "published_skill_packages_present": false
+  },
+  "checklist": [
+    {
+      "textbook_example_id": 12849,
+      "source_description": "例題1 [source_type=textbook_example | dedupe=cedb1220b07e91ac]",
+      "skill_id": "gh_SampleSpace",
+      "family": "coin_sequence_space",
+      "problem_type": "coin_outcome_space",
+      "generator": "src_12849",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={0, 1, 2, 3}；part_2=4；part_3={0, 1, 2}；part_4=3",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12850,
+      "source_description": "例題2 [source_type=textbook_example | dedupe=782ac2029dbb864b]",
+      "skill_id": "gh_SampleSpace",
+      "family": "draw_sample_space",
+      "problem_type": "draw_outcome_space",
+      "generator": "src_12850",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={12, 13, 14, 21, 23, 24, 31, 32, 34, 41, 42, 43}；part_2=12；part_3={12, 13, 14, 23, 24, 34}；part_4=6",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12851,
+      "source_description": "隨堂練習1 [source_type=in_class_practice | linked_example=例題1 | dedupe=fa1cb9d710d024a8]",
+      "skill_id": "gh_SampleSpace",
+      "family": "coin_sequence_space",
+      "problem_type": "coin_outcome_space",
+      "generator": "src_12851",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={0, 1, 2, 3, 4, 5, 6, 7}；part_2=8；part_3={0, 1, 2, 3}；part_4=4",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12852,
+      "source_description": "隨堂練習2 [source_type=in_class_practice | linked_example=例題2 | dedupe=b3a586a99eef9437]",
+      "skill_id": "gh_SampleSpace",
+      "family": "draw_sample_space",
+      "problem_type": "draw_outcome_space",
+      "generator": "src_12852",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={123, 132, 213, 231, 312, 321}；part_2=6；part_3={11, 12, 13, 21, 22, 23, 31, 32, 33}；part_4=9；part_5={12, 13, 23}；part_6=3",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12853,
+      "source_description": "6習題 基礎題1 [source_type=basic_exercise | dedupe=d661a8bb3c0e0ca7]",
+      "skill_id": "gh_SampleSpace",
+      "family": "coded_named_events",
+      "problem_type": "coded_event_sets",
+      "generator": "src_12853",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={0, 1, 2, 3}；part_2={0, 1, 2}；part_3={1, 2}",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12854,
+      "source_description": "6習題 基礎題2 [source_type=basic_exercise | dedupe=c15bbd1418d01e60]",
+      "skill_id": "gh_SampleSpace",
+      "family": "coded_named_events",
+      "problem_type": "coded_event_sets",
+      "generator": "src_12854",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={1, 4, 5}；part_2={0}；part_3={2, 3, 6, 7}",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12855,
+      "source_description": "例題3 [source_type=textbook_example | dedupe=0c995c443d979ac7]",
+      "skill_id": "gh_Event",
+      "family": "two_dice_event_sets",
+      "problem_type": "dice_event_sets",
+      "generator": "src_12855",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={46, 55, 56, 64, 65, 66}；part_2={11, 22, 33, 44, 55, 66}；part_3={55, 66}；part_4={11, 22, 33, 44, 46, 55, 56, 64, 65, 66}",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12856,
+      "source_description": "例題4 [source_type=textbook_example | dedupe=c960a5a8ca2d85e3]",
+      "skill_id": "gh_Event",
+      "family": "event_complement_mutex",
+      "problem_type": "event_relation",
+      "generator": "src_12856",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={0, 3}；part_2=A；part_3=A",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12857,
+      "source_description": "隨堂練習3 [source_type=in_class_practice | linked_example=例題3 | dedupe=261a0ff63844a747]",
+      "skill_id": "gh_Event",
+      "family": "two_dice_event_sets",
+      "problem_type": "dice_event_sets",
+      "generator": "src_12857",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={16, 25, 34, 43, 52, 61}；part_2={26, 34, 43, 62}；part_3={34, 43}；part_4={16, 25, 26, 34, 43, 52, 61, 62}",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12858,
+      "source_description": "隨堂練習4 [source_type=in_class_practice | linked_example=例題4 | dedupe=f1cf12e2c6fe0592]",
+      "skill_id": "gh_Event",
+      "family": "event_complement_mutex",
+      "problem_type": "event_relation",
+      "generator": "src_12858",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1={0}；part_2=B；part_3=A",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12859,
+      "source_description": "6習題 基礎題3 [source_type=basic_exercise | dedupe=bc1c6db9b798c858]",
+      "skill_id": "gh_Event",
+      "family": "event_complement_mutex",
+      "problem_type": "event_relation",
+      "generator": "src_12859",
+      "formal_correct_answer_empty": true,
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "checker_key": "choice_label_checker",
+      "seed0_answer": "B",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12860,
+      "source_description": "例題5 [source_type=textbook_example | dedupe=681ec6b42cf29708]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "single_draw",
+      "problem_type": "uniform_draw_probability",
+      "generator": "src_12860",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=1/6；part_2=1/2",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12861,
+      "source_description": "例題6 [source_type=textbook_example | dedupe=98eaabd289c61353]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "coin_count",
+      "problem_type": "coin_count_probability",
+      "generator": "src_12861",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=1/2；part_2=3/8",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12862,
+      "source_description": "例題7 [source_type=textbook_example | dedupe=ae4e8cd83c802adb]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "coin_count",
+      "problem_type": "coin_count_probability",
+      "generator": "src_12862",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "1/2",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12863,
+      "source_description": "例題8 [source_type=textbook_example | dedupe=36a6add01c125360]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "numbered_dice",
+      "problem_type": "dice_count_probability",
+      "generator": "src_12863",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=1/9；part_2=1/6",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12864,
+      "source_description": "例題9 [source_type=textbook_example | dedupe=8818f0146623de13]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "urn_without_replacement",
+      "problem_type": "urn_draw_probability",
+      "generator": "src_12864",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=3/10；part_2=3/10",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12865,
+      "source_description": "例題10 [source_type=textbook_example | dedupe=54ed068dcc5f2f27]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "numbered_dice",
+      "problem_type": "dice_count_probability",
+      "generator": "src_12865",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=5/9；part_2=5/12",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12866,
+      "source_description": "隨堂練習5 [source_type=in_class_practice | linked_example=例題5 | dedupe=b76ba683f6be69c3]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "single_draw",
+      "problem_type": "uniform_draw_probability",
+      "generator": "src_12866",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=1/13；part_2=1/4",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12867,
+      "source_description": "隨堂練習6 [source_type=in_class_practice | linked_example=例題6 | dedupe=162246d63855a258]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "with_replacement",
+      "problem_type": "replacement_count_probability",
+      "generator": "src_12867",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=5/9；part_2=2/9",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12868,
+      "source_description": "隨堂練習7 [source_type=in_class_practice | linked_example=例題7 | dedupe=ac500ecd07668ed9]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "coin_count",
+      "problem_type": "coin_count_probability",
+      "generator": "src_12868",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=1/8；part_2=3/8",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12869,
+      "source_description": "隨堂練習8 [source_type=in_class_practice | linked_example=例題8 | dedupe=c94ae112a2c4bdea]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "numbered_dice",
+      "problem_type": "dice_count_probability",
+      "generator": "src_12869",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=5/18；part_2=5/18",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12870,
+      "source_description": "隨堂練習9 [source_type=in_class_practice | linked_example=例題9 | dedupe=d6908ac6c32e10a2]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "urn_without_replacement",
+      "problem_type": "urn_draw_probability",
+      "generator": "src_12870",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=3/5；part_2=3/5",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12871,
+      "source_description": "隨堂練習10 [source_type=in_class_practice | linked_example=例題10 | dedupe=cd2dc7b44901d72a]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "numbered_dice",
+      "problem_type": "dice_count_probability",
+      "generator": "src_12871",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "25/72",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12872,
+      "source_description": "6習題 觀念澄清1 [source_type=chapter_exercise | dedupe=aa76a8bc26ca38c2]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "classical_claim",
+      "problem_type": "classical_claim",
+      "generator": "src_12872",
+      "formal_correct_answer_empty": true,
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "checker_key": "choice_label_checker",
+      "seed0_answer": "B",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": false,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12873,
+      "source_description": "6習題 觀念澄清2 [source_type=chapter_exercise | dedupe=9ba3f8389b6e049e]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "classical_claim",
+      "problem_type": "classical_claim",
+      "generator": "src_12873",
+      "formal_correct_answer_empty": true,
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "checker_key": "choice_label_checker",
+      "seed0_answer": "B",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": false,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12874,
+      "source_description": "6習題 觀念澄清3 [source_type=chapter_exercise | dedupe=62351a8bda10fa05]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "classical_claim",
+      "problem_type": "classical_claim",
+      "generator": "src_12874",
+      "formal_correct_answer_empty": true,
+      "answer_type": "single_choice",
+      "presentation_mode": "single_choice",
+      "checker_key": "choice_label_checker",
+      "seed0_answer": "A",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12875,
+      "source_description": "6習題 基礎題4 [source_type=basic_exercise | dedupe=478a75dee670ebd5]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "numbered_dice",
+      "problem_type": "dice_count_probability",
+      "generator": "src_12875",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=1/6；part_2=5/12",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12876,
+      "source_description": "6習題 基礎題5 [source_type=basic_exercise | dedupe=2e6b5c8a7ea1c15f]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "numbered_dice",
+      "problem_type": "dice_count_probability",
+      "generator": "src_12876",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=1/4；part_2=1/6",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12877,
+      "source_description": "6習題 基礎題6 [source_type=basic_exercise | dedupe=1153222c43064b44]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "urn_without_replacement",
+      "problem_type": "urn_draw_probability",
+      "generator": "src_12877",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=9/20；part_2=9/10",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12878,
+      "source_description": "6習題 基礎題7 [source_type=basic_exercise | dedupe=74e39c3ac8d18c9f]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "urn_without_replacement",
+      "problem_type": "urn_draw_probability",
+      "generator": "src_12878",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=3/5；part_2=4/5",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12879,
+      "source_description": "6習題 基礎題8 [source_type=basic_exercise | dedupe=395c4184321d6040]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "single_draw",
+      "problem_type": "uniform_draw_probability",
+      "generator": "src_12879",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "2/3",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12880,
+      "source_description": "6習題 基礎題9 [source_type=basic_exercise | dedupe=e4192e6d015144eb]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "urn_without_replacement",
+      "problem_type": "urn_draw_probability",
+      "generator": "src_12880",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "119/190",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12881,
+      "source_description": "6習題 進階題10 [source_type=advanced_exercise | dedupe=8ad45a26b0541e33]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "numbered_dice",
+      "problem_type": "dice_count_probability",
+      "generator": "src_12881",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=91/216；part_2=25/216",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12882,
+      "source_description": "6習題 進階題11 [source_type=advanced_exercise | dedupe=5429abe65bf4f27c]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "urn_without_replacement",
+      "problem_type": "urn_draw_probability",
+      "generator": "src_12882",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "3/7",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12883,
+      "source_description": "6習題 進階題12 [source_type=advanced_exercise | dedupe=34044d5e04cc3cde]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "password_permutation",
+      "problem_type": "password_guess",
+      "generator": "src_12883",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=1/24；part_2=7/8",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12884,
+      "source_description": "6習題 進階題13 [source_type=advanced_exercise | dedupe=07087a9771fddcc2]",
+      "skill_id": "gh_DefinitionOfClassicalProbability",
+      "family": "solve_composition",
+      "problem_type": "solve_urn_count",
+      "generator": "src_12884",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "10",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12885,
+      "source_description": "例題11 [source_type=textbook_example | dedupe=493f92ca99273b12]",
+      "skill_id": "gh_PropertiesOfProbability",
+      "family": "probability_algebra",
+      "problem_type": "probability_algebra",
+      "generator": "src_12885",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=2/3；part_2=2/3；part_3=0",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12886,
+      "source_description": "例題12 [source_type=textbook_example | dedupe=1c995649f3be5238]",
+      "skill_id": "gh_PropertiesOfProbability",
+      "family": "urn_without_replacement",
+      "problem_type": "urn_draw_probability",
+      "generator": "src_12886",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "2/3",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12887,
+      "source_description": "例題13 [source_type=textbook_example | dedupe=c6052083f03071a7]",
+      "skill_id": "gh_PropertiesOfProbability",
+      "family": "numbered_dice",
+      "problem_type": "dice_count_probability",
+      "generator": "src_12887",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "4/9",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12888,
+      "source_description": "隨堂練習11 [source_type=in_class_practice | linked_example=例題11 | dedupe=335e0443046c0b4c]",
+      "skill_id": "gh_PropertiesOfProbability",
+      "family": "probability_algebra",
+      "problem_type": "probability_algebra",
+      "generator": "src_12888",
+      "formal_correct_answer_empty": true,
+      "answer_type": "multi_part",
+      "presentation_mode": "multiple_inputs",
+      "checker_key": "multi_part_answer_checker",
+      "seed0_answer": "part_1=4/5；part_2=5/6",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12889,
+      "source_description": "隨堂練習12 [source_type=in_class_practice | linked_example=例題12 | dedupe=6f8fe606c314cfc5]",
+      "skill_id": "gh_PropertiesOfProbability",
+      "family": "urn_without_replacement",
+      "problem_type": "urn_draw_probability",
+      "generator": "src_12889",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "4/5",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    },
+    {
+      "textbook_example_id": 12890,
+      "source_description": "隨堂練習13 [source_type=in_class_practice | linked_example=例題13 | dedupe=9502a9e3c7c08e19]",
+      "skill_id": "gh_PropertiesOfProbability",
+      "family": "with_replacement",
+      "problem_type": "replacement_count_probability",
+      "generator": "src_12890",
+      "formal_correct_answer_empty": true,
+      "answer_type": "rational",
+      "presentation_mode": "short_answer",
+      "checker_key": "rational_checker",
+      "seed0_answer": "13/18",
+      "verify_payload": [],
+      "canonical_accepted": true,
+      "wrong_rejected": true,
+      "mathjax_inline_balanced": true,
+      "variant_answer_differs": true,
+      "variant_stem_differs": true
+    }
+  ],
+  "family_cards": [
+    {
+      "textbook": {
+        "skill_id": "gh_SampleSpace",
+        "textbook_example_id": 12849,
+        "seed": "0（教材參數）",
+        "family": "coin_sequence_space",
+        "problem_type": "coin_outcome_space",
+        "question_text": "擲一枚公正硬幣 2 次，依序觀察正反面。正面記為 $1$、反面記為 $0$，並把這 2 次的結果寫成整數，最先擲出的是最高位。\n(1) 寫出全部樣本點組成的集合。\n(2) 求這個樣本空間的樣本點個數。\n(3) 若改為只記錄正面出現的次數，寫出此時的樣本空間。\n(4) 求上一小題的樣本點個數。",
+        "correct_answer": "part_1={0, 1, 2, 3}；part_2=4；part_3={0, 1, 2}；part_4=3",
+        "explanation_steps": [
+          "(1) 依序記錄 2 次，樣本點對應 0 到 3，共 4 個，且彼此等可能。",
+          "(2) 樣本點個數為 2^2 = 4。",
+          "(3) 這個觀察所能出現的值組成另一個樣本空間。",
+          "(4) 此樣本空間有 3 個樣本點。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_4 等價寫法 3.0：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "樣本點編成整數：正面為 1、反面為 0，最先擲出的是最高位。學生寫的是編碼後的集合，不是「正正、正反」四個詞。"
+      },
+      "variant": {
+        "skill_id": "gh_SampleSpace",
+        "textbook_example_id": 12849,
+        "seed": "另一個抽樣",
+        "family": "coin_sequence_space",
+        "problem_type": "coin_outcome_space",
+        "question_text": "擲一枚公正硬幣 3 次，依序觀察正反面。正面記為 $1$、反面記為 $0$，並把這 3 次的結果寫成整數，最先擲出的是最高位。\n(1) 寫出全部樣本點組成的集合。\n(2) 求這個樣本空間的樣本點個數。\n(3) 若改為只記錄正面出現的次數，寫出此時的樣本空間。\n(4) 求上一小題的樣本點個數。",
+        "correct_answer": "part_1={0, 1, 2, 3, 4, 5, 6, 7}；part_2=8；part_3={0, 1, 2, 3}；part_4=4",
+        "explanation_steps": [
+          "(1) 依序記錄 3 次，樣本點對應 0 到 7，共 8 個，且彼此等可能。",
+          "(2) 樣本點個數為 2^3 = 8。",
+          "(3) 這個觀察所能出現的值組成另一個樣本空間。",
+          "(4) 此樣本空間有 4 個樣本點。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_4 等價寫法 4.0：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "樣本點編成整數：正面為 1、反面為 0，最先擲出的是最高位。學生寫的是編碼後的集合，不是「正正、正反」四個詞。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_SampleSpace",
+        "textbook_example_id": 12850,
+        "seed": "0（教材參數）",
+        "family": "draw_sample_space",
+        "problem_type": "draw_outcome_space",
+        "question_text": "袋中有標號 $1$、$2$、$3$、$4$ 的球各一顆，每球被取出的機會均等。\n(1) 依序取 2 次、每次取出後不放回。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(2) 求這個樣本空間的樣本點個數。\n(3) 同時取 2 個，不計順序。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(4) 求這個樣本空間的樣本點個數。",
+        "correct_answer": "part_1={12, 13, 14, 21, 23, 24, 31, 32, 34, 41, 42, 43}；part_2=12；part_3={12, 13, 14, 23, 24, 34}；part_4=6",
+        "explanation_steps": [
+          "(1) 依序取 2 次、每次取出後不放回的樣本點寫成十進位碼，共 12 個。",
+          "(2) 個數為 12，與樣本點集合的大小相同。",
+          "(3) 同時取 2 個，不計順序的樣本點寫成十進位碼，共 6 個。",
+          "(4) 個數為 6，與樣本點集合的大小相同。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_4 等價寫法 6.0：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      },
+      "variant": {
+        "skill_id": "gh_SampleSpace",
+        "textbook_example_id": 12850,
+        "seed": "另一個抽樣",
+        "family": "draw_sample_space",
+        "problem_type": "draw_outcome_space",
+        "question_text": "袋中有標號 $2$、$5$、$7$、$8$ 的球各一顆，每球被取出的機會均等。\n(1) 依序取 3 次、每次取出後不放回。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(2) 求這個樣本空間的樣本點個數。\n(3) 同時取 2 個，不計順序。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(4) 求這個樣本空間的樣本點個數。",
+        "correct_answer": "part_1={257, 258, 275, 278, 285, 287, 527, 528, 572, 578, 582, 587, 725, 728, 752, 758, 782, 785, 825, 827, 852, 857, 872, 875}；part_2=24；part_3={25, 27, 28, 57, 58, 78}；part_4=6",
+        "explanation_steps": [
+          "(1) 依序取 3 次、每次取出後不放回的樣本點寫成十進位碼，共 24 個。",
+          "(2) 個數為 24，與樣本點集合的大小相同。",
+          "(3) 同時取 2 個，不計順序的樣本點寫成十進位碼，共 6 個。",
+          "(4) 個數為 6，與樣本點集合的大小相同。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_4 等價寫法 6.0：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_SampleSpace",
+        "textbook_example_id": 12852,
+        "seed": "0（教材參數）",
+        "family": "draw_sample_space",
+        "problem_type": "draw_outcome_space",
+        "question_text": "袋中有標號 $1$、$2$、$3$ 的球各一顆，每球被取出的機會均等。\n(1) 依序取 3 次、每次取出後不放回。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(2) 求這個樣本空間的樣本點個數。\n(3) 取後放回，依序取 2 次。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(4) 求這個樣本空間的樣本點個數。\n(5) 同時取 2 個，不計順序。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(6) 求這個樣本空間的樣本點個數。",
+        "correct_answer": "part_1={123, 132, 213, 231, 312, 321}；part_2=6；part_3={11, 12, 13, 21, 22, 23, 31, 32, 33}；part_4=9；part_5={12, 13, 23}；part_6=3",
+        "explanation_steps": [
+          "(1) 依序取 3 次、每次取出後不放回的樣本點寫成十進位碼，共 6 個。",
+          "(2) 個數為 6，與樣本點集合的大小相同。",
+          "(3) 取後放回，依序取 2 次的樣本點寫成十進位碼，共 9 個。",
+          "(4) 個數為 9，與樣本點集合的大小相同。",
+          "(5) 同時取 2 個，不計順序的樣本點寫成十進位碼，共 3 個。",
+          "(6) 個數為 3，與樣本點集合的大小相同。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_6 等價寫法 3.0：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "三種抽法都編成十進位碼。要確認題幹把不放回、放回、不計順序分開，學生不會把三種樣本空間混成一種。"
+      },
+      "variant": {
+        "skill_id": "gh_SampleSpace",
+        "textbook_example_id": 12852,
+        "seed": "另一個抽樣",
+        "family": "draw_sample_space",
+        "problem_type": "draw_outcome_space",
+        "question_text": "袋中有標號 $1$、$3$、$6$ 的球各一顆，每球被取出的機會均等。\n(1) 依序取 3 次、每次取出後不放回。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(2) 求這個樣本空間的樣本點個數。\n(3) 取後放回，依序取 2 次。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(4) 求這個樣本空間的樣本點個數。\n(5) 同時取 2 個，不計順序。把結果依取出順序（不計順序時由小到大）寫成十進位整數，寫出樣本點集合。\n(6) 求這個樣本空間的樣本點個數。",
+        "correct_answer": "part_1={136, 163, 316, 361, 613, 631}；part_2=6；part_3={11, 13, 16, 31, 33, 36, 61, 63, 66}；part_4=9；part_5={13, 16, 36}；part_6=3",
+        "explanation_steps": [
+          "(1) 依序取 3 次、每次取出後不放回的樣本點寫成十進位碼，共 6 個。",
+          "(2) 個數為 6，與樣本點集合的大小相同。",
+          "(3) 取後放回，依序取 2 次的樣本點寫成十進位碼，共 9 個。",
+          "(4) 個數為 9，與樣本點集合的大小相同。",
+          "(5) 同時取 2 個，不計順序的樣本點寫成十進位碼，共 3 個。",
+          "(6) 個數為 3，與樣本點集合的大小相同。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_6 等價寫法 3.0：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "三種抽法都編成十進位碼。要確認題幹把不放回、放回、不計順序分開，學生不會把三種樣本空間混成一種。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_SampleSpace",
+        "textbook_example_id": 12853,
+        "seed": "0（教材參數）",
+        "family": "coded_named_events",
+        "problem_type": "coded_event_sets",
+        "question_text": "一個家庭有 2 個小孩，以出生順序區別，每個小孩是男生或女生的機會均等。男生記為 $1$、女生記為 $0$，較早出生的是最高位。\n(1) 寫出「全部樣本點」的樣本點集合。\n(2) 寫出「至少有 1 個女生」的樣本點集合。\n(3) 寫出「恰有 1 個女生」的樣本點集合。",
+        "correct_answer": "part_1={0, 1, 2, 3}；part_2={0, 1, 2}；part_3={1, 2}",
+        "explanation_steps": [
+          "(1) 符合條件的樣本點有 4 個。",
+          "(2) 符合條件的樣本點有 3 個。",
+          "(3) 符合條件的樣本點有 2 個。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_3 等價寫法 {2, 1}：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      },
+      "variant": {
+        "skill_id": "gh_SampleSpace",
+        "textbook_example_id": 12853,
+        "seed": "另一個抽樣",
+        "family": "coded_named_events",
+        "problem_type": "coded_event_sets",
+        "question_text": "一個家庭有 3 個小孩，以出生順序區別，每個小孩是男生或女生的機會均等。男生記為 $1$、女生記為 $0$，較早出生的是最高位。\n(1) 寫出「全部樣本點」的樣本點集合。\n(2) 寫出「至少有 1 個女生」的樣本點集合。\n(3) 寫出「恰有 1 個女生」的樣本點集合。",
+        "correct_answer": "part_1={0, 1, 2, 3, 4, 5, 6, 7}；part_2={0, 1, 2, 3, 4, 5, 6}；part_3={3, 5, 6}",
+        "explanation_steps": [
+          "(1) 符合條件的樣本點有 8 個。",
+          "(2) 符合條件的樣本點有 7 個。",
+          "(3) 符合條件的樣本點有 3 個。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_3 等價寫法 {6, 5, 3}：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_Event",
+        "textbook_example_id": 12855,
+        "seed": "0（教材參數）",
+        "family": "two_dice_event_sets",
+        "problem_type": "dice_event_sets",
+        "question_text": "同時擲兩粒公正骰子，將兩粒編號區別。把結果寫成兩位數，十位是第一粒的點數、個位是第二粒的點數。設 A 為「點數和大於 $9$」，B 為「兩粒點數相同」。\n(1) 寫出 A 的樣本點集合。\n(2) 寫出 B 的樣本點集合。\n(3) 寫出 A∩B 的樣本點集合。\n(4) 寫出 A∪B 的樣本點集合。",
+        "correct_answer": "part_1={46, 55, 56, 64, 65, 66}；part_2={11, 22, 33, 44, 55, 66}；part_3={55, 66}；part_4={11, 22, 33, 44, 46, 55, 56, 64, 65, 66}",
+        "explanation_steps": [
+          "(1) 事件 A 有 6 個樣本點。",
+          "(2) 事件 B 有 6 個樣本點。",
+          "(3) A∩B 有 2 個樣本點。",
+          "(4) A∪B 有 10 個樣本點。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_4 等價寫法 {66, 65, 64, 56, 55, 46, 44, 33, 22, 11}：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      },
+      "variant": {
+        "skill_id": "gh_Event",
+        "textbook_example_id": 12855,
+        "seed": "另一個抽樣",
+        "family": "two_dice_event_sets",
+        "problem_type": "dice_event_sets",
+        "question_text": "同時擲兩粒公正骰子，將兩粒編號區別。把結果寫成兩位數，十位是第一粒的點數、個位是第二粒的點數。設 A 為「兩粒點數都大於 $2$」，B 為「點數和大於 $9$」。\n(1) 寫出 A 的樣本點集合。\n(2) 寫出 B 的樣本點集合。\n(3) 寫出 A∩B 的樣本點集合。\n(4) 寫出 A∪B 的樣本點集合。",
+        "correct_answer": "part_1={33, 34, 35, 36, 43, 44, 45, 46, 53, 54, 55, 56, 63, 64, 65, 66}；part_2={46, 55, 56, 64, 65, 66}；part_3={46, 55, 56, 64, 65, 66}；part_4={33, 34, 35, 36, 43, 44, 45, 46, 53, 54, 55, 56, 63, 64, 65, 66}",
+        "explanation_steps": [
+          "(1) 事件 A 有 16 個樣本點。",
+          "(2) 事件 B 有 6 個樣本點。",
+          "(3) A∩B 有 6 個樣本點。",
+          "(4) A∪B 有 16 個樣本點。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_4 等價寫法 {66, 65, 64, 63, 56, 55, 54, 53, 46, 45, 44, 43, 36, 35, 34, 33}：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_Event",
+        "textbook_example_id": 12856,
+        "seed": "0（教材參數）",
+        "family": "event_complement_mutex",
+        "problem_type": "event_relation",
+        "question_text": "擲一枚公正硬幣 2 次，正面記為 $1$、反面記為 $0$，最先擲出的是最高位。設 A 為「恰有 1 個正面」，B 為「恰有 0 個正面」。\n(1) 寫出 A 的補事件 A' 的樣本點集合。\n(2) A 與 B 是否互斥？選擇「是」或「否」。\n(3) A 與 A' 是否互斥？選擇「是」或「否」。",
+        "correct_answer": "part_1={0, 3}；part_2=A；part_3=A",
+        "explanation_steps": [
+          "(1) A' 有 2 個樣本點。",
+          "(2) A 與 B 互斥表示沒有共同樣本點。",
+          "(3) A 與 A' 沒有共同樣本點。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_1 等價寫法 {3, 0}：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      },
+      "variant": {
+        "skill_id": "gh_Event",
+        "textbook_example_id": 12856,
+        "seed": "另一個抽樣",
+        "family": "event_complement_mutex",
+        "problem_type": "event_relation",
+        "question_text": "擲一枚公正硬幣 3 次，正面記為 $1$、反面記為 $0$，最先擲出的是最高位。設 A 為「至少有 1 個正面」，B 為「恰有 1 個正面」。\n(1) 寫出 A 的補事件 A' 的樣本點集合。\n(2) A 與 B 是否互斥？選擇「是」或「否」。\n(3) A 與 A' 是否互斥？選擇「是」或「否」。",
+        "correct_answer": "part_1={0}；part_2=B；part_3=A",
+        "explanation_steps": [
+          "(1) A' 有 1 個樣本點。",
+          "(2) A 與 B 互斥表示沒有共同樣本點。",
+          "(3) A 與 A' 沒有共同樣本點。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_1 等價寫法 {0}：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_Event",
+        "textbook_example_id": 12859,
+        "seed": "0（教材參數）",
+        "family": "event_complement_mutex",
+        "problem_type": "event_relation",
+        "question_text": "同時擲兩粒公正骰子，將兩粒編號區別。設 A 為「第一粒是偶數」，B 為「點數和是奇數」。A 與 B 是否互斥？",
+        "correct_answer": "B",
+        "explanation_steps": [
+          "兩事件互斥表示交集是空集合。"
+        ],
+        "checker": {
+          "key": "choice_label_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "single_choice",
+          "presentation_mode": "single_choice",
+          "equivalence_type": "choice_label"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "互斥以 A＝是、B＝否作答。第一粒是偶數且點數和是奇數可以同時發生，所以答案是 B。"
+      },
+      "variant": {
+        "skill_id": "gh_Event",
+        "textbook_example_id": 12859,
+        "seed": "另一個抽樣",
+        "family": "event_complement_mutex",
+        "problem_type": "event_relation",
+        "question_text": "同時擲兩粒公正骰子，將兩粒編號區別。設 A 為「第一粒是偶數」，B 為「第一粒是奇數」。A 與 B 是否互斥？",
+        "correct_answer": "A",
+        "explanation_steps": [
+          "兩事件互斥表示交集是空集合。"
+        ],
+        "checker": {
+          "key": "choice_label_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "single_choice",
+          "presentation_mode": "single_choice",
+          "equivalence_type": "choice_label"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "互斥以 A＝是、B＝否作答。第一粒是偶數且點數和是奇數可以同時發生，所以答案是 B。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12860,
+        "seed": "0（教材參數）",
+        "family": "single_draw",
+        "problem_type": "uniform_draw_probability",
+        "question_text": "擲一粒公正骰子一次，6 面的點數為 1 到 6，每面等可能。求下列機率。\n(1) 出現 $6$ 點的機率。\n(2) 點數屬於 $2$、$3$、$5$ 的機率。",
+        "correct_answer": "part_1=1/6；part_2=1/2",
+        "explanation_steps": [
+          "(1) 每一個結果等可能，機率為 1/6。",
+          "(2) 每一個結果等可能，機率為 1/2。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_2 等價寫法 0.5：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      },
+      "variant": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12860,
+        "seed": "另一個抽樣",
+        "family": "single_draw",
+        "problem_type": "uniform_draw_probability",
+        "question_text": "擲一粒公正骰子一次，6 面的點數為 1 到 6，每面等可能。求下列機率。\n(1) 出現 $5$ 點的機率。\n(2) 點數屬於 $2$、$3$、$4$、$6$ 的機率。",
+        "correct_answer": "part_1=1/6；part_2=2/3",
+        "explanation_steps": [
+          "(1) 每一個結果等可能，機率為 1/6。",
+          "(2) 每一個結果等可能，機率為 2/3。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12861,
+        "seed": "0（教材參數）",
+        "family": "coin_count",
+        "problem_type": "coin_count_probability",
+        "question_text": "公正硬幣可區別每次的結果（正面與反面等可能）。求下列事件的機率。\n(1) 擲 2 次，恰有 1 個正面的機率。\n(2) 擲 3 次，恰有 2 個正面的機率。",
+        "correct_answer": "part_1=1/2；part_2=3/8",
+        "explanation_steps": [
+          "(1) 恰有 1 個正面的序列有 C(2,1) = 2 種，全部 4 種，機率 1/2。",
+          "(2) 恰有 2 個正面的序列有 C(3,2) = 3 種，全部 8 種，機率 3/8。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_1 等價寫法 0.5：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      },
+      "variant": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12861,
+        "seed": "另一個抽樣",
+        "family": "coin_count",
+        "problem_type": "coin_count_probability",
+        "question_text": "公正硬幣可區別每次的結果（正面與反面等可能）。求下列事件的機率。\n(1) 擲 3 次，恰有 2 個正面的機率。\n(2) 擲 4 次，恰有 3 個正面的機率。",
+        "correct_answer": "part_1=3/8；part_2=1/4",
+        "explanation_steps": [
+          "(1) 恰有 2 個正面的序列有 C(3,2) = 3 種，全部 8 種，機率 3/8。",
+          "(2) 恰有 3 個正面的序列有 C(4,3) = 4 種，全部 16 種，機率 1/4。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_2 等價寫法 0.25：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12863,
+        "seed": "0（教材參數）",
+        "family": "numbered_dice",
+        "problem_type": "dice_count_probability",
+        "question_text": "同時擲 2 粒各有 6 面（點數 1 到 6）的公正骰子，將骰子編號區別，每一種點數序對等可能。求下列機率。\n(1) 點數和等於 $9$ 的機率。\n(2) 點數和等於 $7$ 的機率。",
+        "correct_answer": "part_1=1/9；part_2=1/6",
+        "explanation_steps": [
+          "(1) 已編號、等可能的樣本點 36 個，有利 4 個，機率 4/36 = 1/9。",
+          "(2) 已編號、等可能的樣本點 36 個，有利 6 個，機率 6/36 = 1/6。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      },
+      "variant": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12863,
+        "seed": "另一個抽樣",
+        "family": "numbered_dice",
+        "problem_type": "dice_count_probability",
+        "question_text": "同時擲 2 粒各有 6 面（點數 1 到 6）的公正骰子，將骰子編號區別，每一種點數序對等可能。求下列機率。\n(1) 點數和等於 $10$ 的機率。\n(2) 點數和等於 $2$ 的機率。",
+        "correct_answer": "part_1=1/12；part_2=1/36",
+        "explanation_steps": [
+          "(1) 已編號、等可能的樣本點 36 個，有利 3 個，機率 3/36 = 1/12。",
+          "(2) 已編號、等可能的樣本點 36 個，有利 1 個，機率 1/36。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12864,
+        "seed": "0（教材參數）",
+        "family": "urn_without_replacement",
+        "problem_type": "urn_draw_probability",
+        "question_text": "一批物品有紅球 3 個、白球 2 個，每件被取出的機會均等。從中取出 2 件。求下列機率。\n(1) 依序取出、不放回，其中紅球 2 個的機率。\n(2) 同時取出，其中紅球 2 個的機率。",
+        "correct_answer": "part_1=3/10；part_2=3/10",
+        "explanation_steps": [
+          "(1) 依序取出、不放回的等可能取法 20 個，有利 6 個，機率 6/20 = 3/10。",
+          "(2) 同時取出、不計順序的等可能取法 10 個，有利 3 個，機率 3/10。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "依序不放回是 6/20＝3/10，同時取出是 3/10。兩種數法的分母不同，約分後機率相同。"
+      },
+      "variant": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12864,
+        "seed": "另一個抽樣",
+        "family": "urn_without_replacement",
+        "problem_type": "urn_draw_probability",
+        "question_text": "一批物品有紅球 5 個、白球 2 個，每件被取出的機會均等。從中取出 2 件。求下列機率。\n(1) 依序取出、不放回，其中紅球 2 個的機率。\n(2) 同時取出，其中紅球 2 個的機率。",
+        "correct_answer": "part_1=10/21；part_2=10/21",
+        "explanation_steps": [
+          "(1) 依序取出、不放回的等可能取法 42 個，有利 20 個，機率 20/42 = 10/21。",
+          "(2) 同時取出、不計順序的等可能取法 21 個，有利 10 個，機率 10/21。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "依序不放回是 6/20＝3/10，同時取出是 3/10。兩種數法的分母不同，約分後機率相同。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12867,
+        "seed": "0（教材參數）",
+        "family": "with_replacement",
+        "problem_type": "replacement_count_probability",
+        "question_text": "袋中有標號 1、2、3 的球各一顆。每次取出一球後放回，每球每次被取出的機會均等。求下列機率。\n(1) 重複 2 次，至少有 1 次出現第 3 種結果的機率。\n(2) 重複 3 次，恰有 2 次出現第 3 種結果的機率。",
+        "correct_answer": "part_1=5/9；part_2=2/9",
+        "explanation_steps": [
+          "(1) 放回（或各自選擇）的樣本點有 9 個，有利 5 個，機率 5/9。",
+          "(2) 放回（或各自選擇）的樣本點有 27 個，有利 6 個，機率 6/27 = 2/9。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      },
+      "variant": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12867,
+        "seed": "另一個抽樣",
+        "family": "with_replacement",
+        "problem_type": "replacement_count_probability",
+        "question_text": "袋中有標號 1、2、3、4、5、6 的球各一顆。每次取出一球後放回，每球每次被取出的機會均等。求下列機率。\n(1) 重複 2 次，至少有 2 次出現第 6 種結果的機率。\n(2) 重複 4 次，恰有 0 次出現第 6 種結果的機率。",
+        "correct_answer": "part_1=1/36；part_2=625/1296",
+        "explanation_steps": [
+          "(1) 放回（或各自選擇）的樣本點有 36 個，有利 1 個，機率 1/36。",
+          "(2) 放回（或各自選擇）的樣本點有 1296 個，有利 625 個，機率 625/1296。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "確認題幹的隨機條件與標準答案講的是同一件事，且沒有把教材沒有的機率模型加進去。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12871,
+        "seed": "0（教材參數）",
+        "family": "numbered_dice",
+        "problem_type": "dice_count_probability",
+        "question_text": "同時擲 3 粒各有 6 面（點數 1 到 6）的公正骰子，將骰子編號區別，每一種點數序對等可能。求下列機率。\n恰有 1 粒出現 $6$ 點的機率。",
+        "correct_answer": "25/72",
+        "explanation_steps": [
+          "已編號、等可能的樣本點 216 個，有利 75 個，機率 75/216 = 25/72。"
+        ],
+        "checker": {
+          "key": "rational_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "rational",
+          "presentation_mode": "short_answer",
+          "equivalence_type": "rational_equivalent"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "教材寫「三粒相同的公正骰子」。元件把骰子編號，樣本空間是 216。恰有一粒 6 點的有利結果是 75，機率 75/216＝25/72。若改成不區分骰子，各結果就不再等可能。"
+      },
+      "variant": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12871,
+        "seed": "另一個抽樣",
+        "family": "numbered_dice",
+        "problem_type": "dice_count_probability",
+        "question_text": "同時擲 3 粒各有 9 面（點數 1 到 9）的公正骰子，將骰子編號區別，每一種點數序對等可能。求下列機率。\n恰有 2 粒出現 $7$ 點的機率。",
+        "correct_answer": "8/243",
+        "explanation_steps": [
+          "已編號、等可能的樣本點 729 個，有利 24 個，機率 24/729 = 8/243。"
+        ],
+        "checker": {
+          "key": "rational_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "rational",
+          "presentation_mode": "short_answer",
+          "equivalence_type": "rational_equivalent"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "教材寫「三粒相同的公正骰子」。元件把骰子編號，樣本空間是 216。恰有一粒 6 點的有利結果是 75，機率 75/216＝25/72。若改成不區分骰子，各結果就不再等可能。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12872,
+        "seed": "0（教材參數）",
+        "family": "classical_claim",
+        "problem_type": "classical_claim",
+        "question_text": "下列敘述對的打「○」，錯的打「×」。\n袋中有大小相同的紅球、白球各若干顆。從中取出一球，取到紅球的機率為 $\\frac{1}{2}$。",
+        "correct_answer": "B",
+        "explanation_steps": [
+          "只知道兩色都有、不知道顆數，不能推出機率是 1/2。"
+        ],
+        "checker": {
+          "key": "choice_label_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "single_choice",
+          "presentation_mode": "single_choice",
+          "equivalence_type": "choice_label"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "「各若干顆」沒有給出紅白球的顆數，不能推出機率是 1/2。答案是 ×，選項 B。"
+      },
+      "variant": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12872,
+        "seed": "另一個抽樣",
+        "family": "classical_claim",
+        "problem_type": "classical_claim",
+        "question_text": "下列敘述對的打「○」，錯的打「×」。\n袋中有紅球 7 顆、白球 6 顆，每球被取出的機會均等。從中取出一球，取到紅球的機率為 $\\frac{1}{2}$。",
+        "correct_answer": "B",
+        "explanation_steps": [
+          "紅球 7 顆、白球 6 顆，機率是 7/13。"
+        ],
+        "checker": {
+          "key": "choice_label_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "single_choice",
+          "presentation_mode": "single_choice",
+          "equivalence_type": "choice_label"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "「各若干顆」沒有給出紅白球的顆數，不能推出機率是 1/2。答案是 ×，選項 B。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12883,
+        "seed": "0（教材參數）",
+        "family": "password_permutation",
+        "problem_type": "password_guess",
+        "question_text": "一組密碼密碼是由 1、3、5、7 這 4 個不同數字排成的，而且每一組排列出現的機會均等。\n(1) 一次就猜對的機率是多少？\n(2) 若連續輸入 3 次互不相同的錯誤密碼就會被鎖定，求被鎖定的機率。",
+        "correct_answer": "part_1=1/24；part_2=7/8",
+        "explanation_steps": [
+          "(1) 4 個不同符號的排列有 24 個，有利 1 個，機率 1/24。",
+          "(2) 前 3 次都猜錯才被沒收。等可能排列 24 個，有利 21 個，機率 21/24 = 7/8。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "一次猜中：24 個排列中有利 1 個，機率 1/24。連續三次互不相同的錯誤密碼就鎖定：有利 21 個，機率 21/24＝7/8。"
+      },
+      "variant": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12883,
+        "seed": "另一個抽樣",
+        "family": "password_permutation",
+        "problem_type": "password_guess",
+        "question_text": "一組密碼密碼是由 3 個不同數字排成的，而且每一組排列出現的機會均等。\n(1) 一次就猜對的機率是多少？\n(2) 若連續輸入 2 次互不相同的錯誤密碼就會被鎖定，求被鎖定的機率。",
+        "correct_answer": "part_1=1/6；part_2=2/3",
+        "explanation_steps": [
+          "(1) 3 個不同符號的排列有 6 個，有利 1 個，機率 1/6。",
+          "(2) 前 2 次都猜錯才被沒收。等可能排列 6 個，有利 4 個，機率 4/6 = 2/3。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "一次猜中：24 個排列中有利 1 個，機率 1/24。連續三次互不相同的錯誤密碼就鎖定：有利 21 個，機率 21/24＝7/8。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12884,
+        "seed": "0（教材參數）",
+        "family": "solve_composition",
+        "problem_type": "solve_urn_count",
+        "question_text": "袋中有 5 顆白球和 n 顆黑球。從袋中同時取出兩球，每球被取出的機會均等，已知兩球同為白球的機率是 $\\frac{2}{21}$，求 n 的值。",
+        "correct_answer": "10",
+        "explanation_steps": [
+          "由 C(5,2)/C(5+n,2) = 2/21 解得 n = 10。"
+        ],
+        "checker": {
+          "key": "rational_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "等價寫法 10.0：接受"
+        },
+        "answer_format": {
+          "answer_type": "rational",
+          "presentation_mode": "short_answer",
+          "equivalence_type": "rational_equivalent"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "所求是黑球顆數 n＝10，不是機率。白球 5 顆、兩白球機率 2/21 時，正整數解只有 10。"
+      },
+      "variant": {
+        "skill_id": "gh_DefinitionOfClassicalProbability",
+        "textbook_example_id": 12884,
+        "seed": "另一個抽樣",
+        "family": "solve_composition",
+        "problem_type": "solve_urn_count",
+        "question_text": "袋中有 6 顆白球和 n 顆黑球。從袋中同時取出兩球，每球被取出的機會均等，已知兩球同為白球的機率是 $\\frac{1}{14}$，求 n 的值。",
+        "correct_answer": "15",
+        "explanation_steps": [
+          "由 C(6,2)/C(6+n,2) = 1/14 解得 n = 15。"
+        ],
+        "checker": {
+          "key": "rational_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "等價寫法 15.0：接受"
+        },
+        "answer_format": {
+          "answer_type": "rational",
+          "presentation_mode": "short_answer",
+          "equivalence_type": "rational_equivalent"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "所求是黑球顆數 n＝10，不是機率。白球 5 顆、兩白球機率 2/21 時，正整數解只有 10。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_PropertiesOfProbability",
+        "textbook_example_id": 12885,
+        "seed": "0（教材參數）",
+        "family": "probability_algebra",
+        "problem_type": "probability_algebra",
+        "question_text": "設 A、B 為樣本空間的事件，$P(A)$ = $\\frac{1}{3}$、$P(B)$ = $\\frac{1}{2}$。\n(1) 求 $P(A')$。\n(2) 已知 $P(A\\cap B)$ = $\\frac{1}{6}$，求 $P(A\\cup B)$。\n(3) 已知 $P(A\\cup B)$ = $\\frac{5}{6}$，求 $P(A\\cap B)$。",
+        "correct_answer": "part_1=2/3；part_2=2/3；part_3=0",
+        "explanation_steps": [
+          "(1) 依機率性質得 2/3。",
+          "(2) 依機率性質得 2/3。",
+          "(3) 依機率性質得 0。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_3 等價寫法 0.0：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "第三小題的交集機率是 0。判分接受 0，也接受等價的 0.0。"
+      },
+      "variant": {
+        "skill_id": "gh_PropertiesOfProbability",
+        "textbook_example_id": 12885,
+        "seed": "另一個抽樣",
+        "family": "probability_algebra",
+        "problem_type": "probability_algebra",
+        "question_text": "設 A、B 為樣本空間的事件，$P(A)$ = $\\frac{2}{5}$、$P(B)$ = $\\frac{1}{4}$。\n(1) 求 $P(A')$。\n(2) 已知 $P(A\\cap B)$ = $\\frac{1}{6}$，求 $P(A\\cup B)$。\n(3) 已知 $P(A\\cup B)$ = $\\frac{29}{60}$，求 $P(A\\cap B)$。",
+        "correct_answer": "part_1=3/5；part_2=29/60；part_3=1/6",
+        "explanation_steps": [
+          "(1) 依機率性質得 3/5。",
+          "(2) 依機率性質得 29/60。",
+          "(3) 依機率性質得 1/6。"
+        ],
+        "checker": {
+          "key": "multi_part_answer_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "part_1 等價寫法 0.6：接受"
+        },
+        "answer_format": {
+          "answer_type": "multi_part",
+          "presentation_mode": "multiple_inputs",
+          "equivalence_type": "multi_part_answer"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "第三小題的交集機率是 0。判分接受 0，也接受等價的 0.0。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_PropertiesOfProbability",
+        "textbook_example_id": 12887,
+        "seed": "0（教材參數）",
+        "family": "numbered_dice",
+        "problem_type": "dice_count_probability",
+        "question_text": "同時擲 3 粒各有 6 面（點數 1 到 6）的公正骰子，將骰子編號區別，每一種點數序對等可能。求下列機率。\n至少有兩粒點數相同的機率。",
+        "correct_answer": "4/9",
+        "explanation_steps": [
+          "已編號、等可能的樣本點 216 個，有利 96 個，機率 96/216 = 4/9。"
+        ],
+        "checker": {
+          "key": "rational_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "rational",
+          "presentation_mode": "short_answer",
+          "equivalence_type": "rational_equivalent"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "至少兩粒點數相同：已編號的 216 個樣本點中有 96 個，96/216＝4/9。這與教材補事件 1−5/9 相同。"
+      },
+      "variant": {
+        "skill_id": "gh_PropertiesOfProbability",
+        "textbook_example_id": 12887,
+        "seed": "另一個抽樣",
+        "family": "numbered_dice",
+        "problem_type": "dice_count_probability",
+        "question_text": "同時擲 2 粒各有 4 面（點數 1 到 4）的公正骰子，將骰子編號區別，每一種點數序對等可能。求下列機率。\n每粒點數都不同的機率。",
+        "correct_answer": "3/4",
+        "explanation_steps": [
+          "已編號、等可能的樣本點 16 個，有利 12 個，機率 12/16 = 3/4。"
+        ],
+        "checker": {
+          "key": "rational_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "等價寫法 0.75：接受"
+        },
+        "answer_format": {
+          "answer_type": "rational",
+          "presentation_mode": "short_answer",
+          "equivalence_type": "rational_equivalent"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "至少兩粒點數相同：已編號的 216 個樣本點中有 96 個，96/216＝4/9。這與教材補事件 1−5/9 相同。"
+      }
+    },
+    {
+      "textbook": {
+        "skill_id": "gh_PropertiesOfProbability",
+        "textbook_example_id": 12890,
+        "seed": "0（教材參數）",
+        "family": "with_replacement",
+        "problem_type": "replacement_count_probability",
+        "question_text": "4 人各從 6 個社團中任選一個參加，每人的選擇互不影響，每個社團等可能。求下列機率。\n至少有兩人選擇相同社團的機率。",
+        "correct_answer": "13/18",
+        "explanation_steps": [
+          "放回（或各自選擇）的樣本點有 1296 個，有利 936 個，機率 936/1296 = 13/18。"
+        ],
+        "checker": {
+          "key": "rational_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "rational",
+          "presentation_mode": "short_answer",
+          "equivalence_type": "rational_equivalent"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "四人各自從 6 個社團選一個，樣本點 6^4＝1296。至少兩人相同的有利結果是 936，936/1296＝13/18。"
+      },
+      "variant": {
+        "skill_id": "gh_PropertiesOfProbability",
+        "textbook_example_id": 12890,
+        "seed": "另一個抽樣",
+        "family": "with_replacement",
+        "problem_type": "replacement_count_probability",
+        "question_text": "3 人各從 3 個社團中任選一個參加，每人的選擇互不影響，每個社團等可能。求下列機率。\n至少有兩人選擇相同社團的機率。",
+        "correct_answer": "7/9",
+        "explanation_steps": [
+          "放回（或各自選擇）的樣本點有 27 個，有利 21 個，機率 21/27 = 7/9。"
+        ],
+        "checker": {
+          "key": "rational_checker",
+          "verify_payload": [],
+          "canonical_accepted": true,
+          "wrong_rejected": true,
+          "equivalent": "此答案型別沒有另一種自動等價寫法"
+        },
+        "answer_format": {
+          "answer_type": "rational",
+          "presentation_mode": "short_answer",
+          "equivalence_type": "rational_equivalent"
+        },
+        "mathjax_inline_balanced": true,
+        "figure_cue_in_stem": false,
+        "human_check": "四人各自從 6 個社團選一個，樣本點 6^4＝1296。至少兩人相同的有利結果是 936，936/1296＝13/18。"
+      }
+    }
+  ]
+}

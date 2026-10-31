@@ -1,0 +1,10 @@
+{
+ "backup_dir": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\math2_unit6_classical_probability\\20261031_121140",
+ "db_integrity": "ok",
+ "db_sha256": "e6cd7e23bb076bab5c8d586675a3ca63fc9288bafbfcc52f39c9277eefec16e8",
+ "store_sha256": "d3a9e433260f85cf798091acddceddce65f4ddbb242bf55fab0ac49f3219c797",
+ "fixed_config_sha256": "2289e1c2d7eece57eb306c99c6494f11a4a21165462f7694bcda8b918d7464b7",
+ "tracker_rows_total": 1151,
+ "files": 234,
+ "binding_mismatches": {}
+}

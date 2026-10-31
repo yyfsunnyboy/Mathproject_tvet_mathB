@@ -1,0 +1,73 @@
+{
+  "skill_id": "gh_SampleSpace",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 6,
+  "components": [
+    {
+      "component_id": "src_12849",
+      "textbook_example_id": 12849,
+      "status": "verified",
+      "problem_type_id": "coin_outcome_space",
+      "domain_operation": "coin_outcome_space",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12849/generate.py"
+    },
+    {
+      "component_id": "src_12850",
+      "textbook_example_id": 12850,
+      "status": "verified",
+      "problem_type_id": "draw_outcome_space",
+      "domain_operation": "draw_outcome_space",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12850/generate.py"
+    },
+    {
+      "component_id": "src_12851",
+      "textbook_example_id": 12851,
+      "status": "verified",
+      "problem_type_id": "coin_outcome_space",
+      "domain_operation": "coin_outcome_space",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12851/generate.py"
+    },
+    {
+      "component_id": "src_12852",
+      "textbook_example_id": 12852,
+      "status": "verified",
+      "problem_type_id": "draw_outcome_space",
+      "domain_operation": "draw_outcome_space",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12852/generate.py"
+    },
+    {
+      "component_id": "src_12853",
+      "textbook_example_id": 12853,
+      "status": "verified",
+      "problem_type_id": "coded_event_sets",
+      "domain_operation": "coded_event_sets",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12853/generate.py"
+    },
+    {
+      "component_id": "src_12854",
+      "textbook_example_id": 12854,
+      "status": "verified",
+      "problem_type_id": "coded_event_sets",
+      "domain_operation": "coded_event_sets",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12854/generate.py"
+    }
+  ]
+}
