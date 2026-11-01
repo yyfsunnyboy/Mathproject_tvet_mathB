@@ -402,9 +402,12 @@ def validate_export_workbook(
             except ValueError:
                 report.warnings.append(f"manifest backup_format_version invalid: {raw_version}")
 
-    expected_set = set(expected_tables)
     actual_set = set(actual_data_sheets)
-    report.missing_sheets = sorted(expected_set - actual_set)
+    report.missing_sheets = sorted(
+        name for name in expected_tables
+        if name not in actual_set and safe_sheet_name(name) not in actual_set
+    )
+    expected_set = set(expected_tables) | {safe_sheet_name(name) for name in expected_tables}
     if report.missing_sheets:
         report.valid = False
         report.errors.append(f"缺少 sheet：{', '.join(report.missing_sheets)}")
