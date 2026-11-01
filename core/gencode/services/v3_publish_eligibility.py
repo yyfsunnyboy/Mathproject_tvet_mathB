@@ -25,6 +25,7 @@ from core.gencode.pipeline_orchestrator import _load_v3_taxonomy_mvp_scope
 _ORIGINAL_LOAD_FN = _load_v3_taxonomy_mvp_scope
 
 DEFAULT_TAXONOMY_PATH = "configs/gencode_taxonomy/k12_component_taxonomy.yaml"
+HEALER_REPAIRED_REQUIRES_HUMAN_REVIEW = "HEALER_REPAIRED_REQUIRES_HUMAN_REVIEW"
 
 
 def _table_exists(conn: sqlite3.Connection, table_name: str) -> bool:
@@ -120,6 +121,10 @@ def component_publish_blockers(
 
     if not choice_contract_valid_from_spec(spec):
         return [CHOICE_CONTRACT_INCOMPLETE]
+
+    healer = spec.get("v3_healer")
+    if isinstance(healer, dict) and healer.get("status") == "REPAIRED" and spec.get("v3_healer_human_approved") is not True:
+        return [HEALER_REPAIRED_REQUIRES_HUMAN_REVIEW]
 
     return validate_publish_component_record(
         skill_id=skill_id,
@@ -275,6 +280,17 @@ def evaluate_v3_publish_eligibility(
             reason = "NO_VERIFIED_COMPONENTS"
         elif integrity_blocked_count > 0 and domain_blocked_count < 1:
             reason = "COMPONENT_INTEGRITY_FAILED"
+        elif any(
+            HEALER_REPAIRED_REQUIRES_HUMAN_REVIEW
+            in component_publish_blockers(
+                skill_id=skill_key,
+                component_skill_id=skill_key,
+                component_status="verified",
+                spec=spec,
+            )
+            for spec in verified_specs
+        ):
+            reason = HEALER_REPAIRED_REQUIRES_HUMAN_REVIEW
         elif any(
             str(blocker).startswith(DOMAIN_EVIDENCE_INCOMPLETE)
             for spec in verified_specs

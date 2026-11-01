@@ -4428,6 +4428,71 @@ def admin_skill_v3_build_status(skill_id: str):
             pass
 
 
+def _healer_telemetry_filters() -> dict[str, str]:
+    return {
+        "range_key": request.args.get("range", "all"),
+        "mode": request.args.get("mode", ""),
+        "environment": request.args.get("environment", ""),
+        "data_origin": request.args.get("origin", ""),
+    }
+
+
+@core_bp.route('/admin/gencode/healer-telemetry', methods=['GET'])
+@login_required
+def admin_gencode_healer_telemetry():
+    from core.guest_demo import is_guest_demo
+
+    if not (current_user.is_admin or current_user.role == 'teacher') or is_guest_demo():
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.v3_healer_telemetry import build_dashboard_payload
+
+    raw_conn = db.engine.raw_connection()
+    try:
+        payload = build_dashboard_payload(raw_conn, **_healer_telemetry_filters())
+        return jsonify({"ok": True, **payload}), 200
+    except Exception as exc:
+        current_app.logger.exception("Failed to build healer telemetry dashboard: %s", exc)
+        return jsonify({"ok": False, "error": "healer_telemetry_unavailable"}), 500
+    finally:
+        try:
+            raw_conn.close()
+        except Exception:
+            pass
+
+
+@core_bp.route('/admin/gencode/healer-telemetry/export.csv', methods=['GET'])
+@login_required
+def admin_gencode_healer_telemetry_export():
+    from core.guest_demo import is_guest_demo
+
+    if not current_user.is_admin or is_guest_demo():
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    from core.gencode.v3_healer_telemetry import (
+        export_events_csv,
+        export_summary_csv,
+        load_events,
+        normalize_filters,
+    )
+
+    kind = "events" if request.args.get("kind") == "events" else "summary"
+    filters = normalize_filters(**_healer_telemetry_filters())
+    raw_conn = db.engine.raw_connection()
+    try:
+        events = load_events(raw_conn, **filters)
+    finally:
+        try:
+            raw_conn.close()
+        except Exception:
+            pass
+    body = export_events_csv(events) if kind == "events" else export_summary_csv(events)
+    filename = f"v3_healer_telemetry_{kind}_{filters['range']}.csv"
+    return Response(
+        "\ufeff" + body,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"},
+    )
+
+
 @core_bp.route('/admin/skills/<skill_id>/gencode_v3_dryrun', methods=['POST'])
 @login_required
 def admin_run_skill_v3_dryrun(skill_id: str):

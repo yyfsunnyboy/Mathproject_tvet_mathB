@@ -652,6 +652,147 @@
             </div>
         </div>
 
+        {% if (current_user.is_admin or current_user.role == 'teacher') and session.get('guest_demo') is not true %}
+        <!-- GenCode V3 Healer 修復統計（資料來源：gencode_v3_healer_telemetry_events） -->
+        <details class="card" id="healer-telemetry-card">
+            <summary class="card-header" style="cursor: pointer;">
+                <i class="bi bi-bandaid"></i> Healer 修復統計
+            </summary>
+            <div class="card-body">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px;">
+                    <label>時間範圍
+                        <select id="ht-range" class="form-select">
+                            <option value="all">全部</option>
+                            <option value="30d">最近 30 天</option>
+                            <option value="7d">最近 7 天</option>
+                        </select>
+                    </label>
+                    <label>模式
+                        <select id="ht-mode" class="form-select">
+                            <option value="">全部</option>
+                            <option value="shadow">shadow</option>
+                            <option value="repair">repair</option>
+                        </select>
+                    </label>
+                    <label>環境
+                        <select id="ht-environment" class="form-select">
+                            <option value="">全部</option>
+                            <option value="production">production</option>
+                            <option value="staging">staging</option>
+                            <option value="test">test</option>
+                        </select>
+                    </label>
+                    <label>資料來源
+                        <select id="ht-origin" class="form-select">
+                            <option value="">全部</option>
+                            <option value="real_world">real_world</option>
+                            <option value="synthetic">synthetic</option>
+                        </select>
+                    </label>
+                    <button type="button" class="btn btn-secondary" onclick="loadHealerTelemetry()">重新整理</button>
+                    {% if current_user.is_admin %}
+                    <button type="button" class="btn btn-secondary" onclick="exportHealerTelemetry('summary')">匯出 CSV（彙總）</button>
+                    <button type="button" class="btn btn-secondary" onclick="exportHealerTelemetry('events')">匯出 CSV（原始事件）</button>
+                    {% endif %}
+                </div>
+                <div id="ht-status" class="text-muted" style="margin-bottom: 8px;"></div>
+                <div id="ht-totals" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; margin-bottom: 14px;"></div>
+                <div id="ht-chains" style="margin-bottom: 14px;"></div>
+                <h5>各 Tier</h5>
+                <div style="overflow-x: auto; margin-bottom: 14px;"><table id="ht-tiers" style="width: 100%; font-size: 0.85rem;"></table></div>
+                <h5>各 rule_id</h5>
+                <div style="overflow-x: auto; margin-bottom: 14px;"><table id="ht-rules" style="width: 100%; font-size: 0.85rem;"></table></div>
+                <h5>最近修復事件（可追溯）</h5>
+                <div style="overflow-x: auto;"><table id="ht-recent" style="width: 100%; font-size: 0.8rem;"></table></div>
+                <p class="text-muted" style="font-size: 0.8rem; margin-top: 8px;">
+                    Verified Rescue = repair 模式修復後重新通過全部 V3 Gate 的唯一 (generation run, component)；不代表已發布。
+                    Shadow 潛在救回不計入 Verified。停用規則顯示 DISABLED / NOT ELIGIBLE，不視為失敗。
+                </p>
+            </div>
+        </details>
+        <script>
+            (function () {
+                const TOTAL_LABELS = [
+                    ['invocations', '總呼叫次數'],
+                    ['eligible_attempts', '實際修復嘗試'],
+                    ['shadow_candidates', 'Shadow 潛在救回'],
+                    ['verified_rescues', 'Verified Rescues'],
+                    ['published_rescues', 'Published Rescues'],
+                    ['verified_rescue_rate', '修復成功率'],
+                    ['abstained', 'Abstain'],
+                    ['rejected', 'Rejected'],
+                    ['still_failed', '修復後仍失敗'],
+                    ['gate_pending', 'Gate 結果未知'],
+                    ['multi_tier_verified_rescues', '多層組合救回'],
+                ];
+                function esc(value) {
+                    const div = document.createElement('div');
+                    div.textContent = value === null || value === undefined ? '' : String(value);
+                    return div.innerHTML;
+                }
+                function pct(value) {
+                    return value === null || value === undefined ? '—' : (value * 100).toFixed(1) + '%';
+                }
+                function query() {
+                    const params = new URLSearchParams({
+                        range: document.getElementById('ht-range').value,
+                        mode: document.getElementById('ht-mode').value,
+                        environment: document.getElementById('ht-environment').value,
+                        origin: document.getElementById('ht-origin').value,
+                    });
+                    return params.toString();
+                }
+                function table(el, headers, rows) {
+                    el.replaceChildren();
+                    const headRow = el.createTHead().insertRow();
+                    headers.forEach(h => { const th = document.createElement('th'); th.textContent = h; headRow.appendChild(th); });
+                    const body = el.createTBody();
+                    rows.forEach(r => { const tr = body.insertRow(); r.forEach(c => { tr.insertCell().textContent = c ?? ''; }); });
+                }
+                const COUNT_HEADERS = ['觸發', '套用', '修改成功', 'Rejected', 'Abstain', 'Verified（單層）', 'Verified（參與）', '修復後仍失敗'];
+                function counts(s) {
+                    return [s.triggered, s.applied, s.modified, s.rejected, s.abstained, s.verified_rescues_sole, s.verified_rescues_contributing, s.still_failed_contributing];
+                }
+                window.loadHealerTelemetry = function () {
+                    const status = document.getElementById('ht-status');
+                    status.textContent = '載入中…';
+                    fetch('{{ url_for("core.admin_gencode_healer_telemetry") }}?' + query(), { credentials: 'same-origin' })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (!data.ok) { status.textContent = '無法載入：' + (data.error || ''); return; }
+                            const m = data.metrics;
+                            status.textContent = data.table_present ? ('事件數：' + data.event_count) : '尚無 Healer 事件紀錄';
+                            document.getElementById('ht-totals').innerHTML = TOTAL_LABELS.map(([key, label]) => {
+                                const v = m.totals[key];
+                                const shown = key.endsWith('_rate') ? pct(v) : esc(v);
+                                return '<div style="background:#f8f9fa;border-radius:8px;padding:8px;"><div class="text-muted" style="font-size:0.8rem;">'
+                                    + esc(label) + '</div><div style="font-size:1.3rem;font-weight:600;">' + shown + '</div></div>';
+                            }).join('');
+                            document.getElementById('ht-chains').innerHTML = m.chains.length
+                                ? '<strong>救回層次組合：</strong>' + m.chains.map(c => esc(c.chain) + ' × ' + esc(c.verified_rescues)).join('；')
+                                : '';
+                            table(document.getElementById('ht-tiers'), ['Tier', '狀態', ...COUNT_HEADERS],
+                                m.tiers.map(t => [t.tier, t.status, ...counts(t)]));
+                            table(document.getElementById('ht-rules'), ['rule_id', 'Tier', '狀態', ...COUNT_HEADERS],
+                                m.rules.map(r => [r.rule_id, r.tier, r.status, ...counts(r)]));
+                            table(document.getElementById('ht-recent'),
+                                ['時間', 'component_id', 'skill_id', '模式', '環境', '來源', '結果', '修復鏈', '原始 SHA', '修復 SHA', '最終 Gate', '已發布'],
+                                m.recent.map(a => [a.created_at, a.component_id, a.skill_id, a.mode, a.environment, a.data_origin,
+                                    a.outcome + (a.reason_code ? ' (' + a.reason_code + ')' : ''), a.repair_chain.join(' > '),
+                                    (a.original_sha256 || '').slice(0, 12), (a.repaired_sha256 || '').slice(0, 12),
+                                    a.final_gate + (a.gate_stage ? ':' + a.gate_stage : ''), a.published ? '是' : '否']));
+                        })
+                        .catch(err => { status.textContent = '無法載入：' + err; });
+                };
+                window.exportHealerTelemetry = function (kind) {
+                    window.location.href = '{{ url_for("core.admin_gencode_healer_telemetry_export") }}?kind=' + kind + '&' + query();
+                };
+                const card = document.getElementById('healer-telemetry-card');
+                card.addEventListener('toggle', function () { if (card.open) { window.loadHealerTelemetry(); } });
+            })();
+        </script>
+        {% endif %}
+
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}

@@ -67,6 +67,25 @@ def test_production_entry_missing_secret_fails(monkeypatch):
         runner.build_production_app()
 
 
+@pytest.mark.parametrize("explicit,expected", [(None, "repair"), ("off", "off"), ("shadow", "shadow")])
+def test_production_entry_defaults_gencode_v3_healer_to_repair(monkeypatch, explicit, expected):
+    import sys
+    import types
+
+    runner = importlib.import_module("scripts.run_production")
+    fake_app = types.SimpleNamespace(debug=False, config={})
+    monkeypatch.setitem(sys.modules, "app", types.SimpleNamespace(app=fake_app))
+    monkeypatch.setattr(runner, "load_dotenv", lambda *_args, **_kwargs: False)
+    monkeypatch.setenv("SECRET_KEY", SAFE_TEST_SECRET)
+    monkeypatch.setenv("MATHPROJECT_ENV", "test")
+    if explicit is None:
+        monkeypatch.delenv("GENCODE_V3_HEALER_MODE", raising=False)
+    else:
+        monkeypatch.setenv("GENCODE_V3_HEALER_MODE", explicit)
+    assert runner.build_production_app() is fake_app
+    assert os.environ["GENCODE_V3_HEALER_MODE"] == expected
+
+
 def test_development_secret_fallback_remains_available(monkeypatch):
     monkeypatch.delenv("SECRET_KEY", raising=False)
     assert Config.resolve_secret_key(production=False) == Config.DEV_SECRET_KEY

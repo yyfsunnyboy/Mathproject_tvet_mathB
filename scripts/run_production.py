@@ -17,6 +17,8 @@ if str(PROJECT_ROOT) not in sys.path:
 PRODUCTION_HOST = "127.0.0.1"
 PRODUCTION_PORT = 5000
 DEFAULT_THREADS = 10
+# Production-only default; an explicit environment / .env value (e.g. "off") wins.
+PRODUCTION_GENCODE_V3_HEALER_MODE = "repair"
 
 
 def _thread_count() -> int:
@@ -37,6 +39,7 @@ def build_production_app():
 
     Config.resolve_secret_key(production=True)
     os.environ["MATHPROJECT_ENV"] = "production"
+    os.environ.setdefault("GENCODE_V3_HEALER_MODE", PRODUCTION_GENCODE_V3_HEALER_MODE)
     from app import app
 
     if app.debug or app.config.get("ENV") == "development":
@@ -54,10 +57,11 @@ def main() -> None:
     threads = _thread_count()
     application = build_production_app()
     logging.getLogger("mathproject.production").info(
-        "MathProject production startup host=%s port=%s threads=%s",
+        "MathProject production startup host=%s port=%s threads=%s gencode_v3_healer_mode=%s",
         PRODUCTION_HOST,
         PRODUCTION_PORT,
         threads,
+        os.environ.get("GENCODE_V3_HEALER_MODE"),
     )
     serve(
         application,

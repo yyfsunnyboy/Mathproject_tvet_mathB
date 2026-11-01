@@ -604,6 +604,47 @@ def _write_candidate_files(job_dir: Path, files: list[dict[str, Any]]) -> list[s
     return written
 
 
+def _research_heal_coder_files(
+    conn: sqlite3.Connection,
+    files: list[dict[str, Any]],
+    *,
+    skill_id: str,
+    job_id: str,
+    job_dir: Path,
+    round_no: int,
+) -> tuple[list[dict[str, Any]], list[Any]]:
+    """GenCode V3 Research Healer on coder Python files; ``off`` mode returns ``files`` untouched."""
+    from core.gencode.research_healer.adapter import MODE_OFF, heal_coder_files, resolve_healer_mode
+
+    if resolve_healer_mode() == MODE_OFF:
+        return files, []
+    return heal_coder_files(
+        files, skill_id=skill_id, job_id=job_id, job_dir=job_dir, round_no=round_no, conn=conn
+    )
+
+
+def _settle_research_heal(
+    conn: sqlite3.Connection,
+    job_dir: Path,
+    results: list[Any],
+    validation: dict[str, Any],
+    original_files: list[dict[str, Any]],
+) -> None:
+    """Record the existing validator verdict; a rejected repair restores the original AI output."""
+    if not any(r.applied_to_pipeline for r in results):
+        return
+    from core.gencode.research_healer.adapter import record_coder_gate
+
+    passed = bool(validation.get("passed"))
+    record_coder_gate(conn, results, passed=passed, blockers=validation.get("blockers") or [])
+    if not passed:
+        _write_candidate_files(job_dir, original_files)
+    manifest_path = job_dir / "candidate_manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["research_healer"] = [r.summary() for r in results]
+    _write_json(manifest_path, manifest)
+
+
 def validate_candidate_workspace(
     job_dir: Path,
     spec: dict[str, Any],
@@ -791,6 +832,10 @@ def run_system_ai_capability_fill(
                 "coder output is not a valid candidate contract",
                 details={"blockers": coder_blockers, "round": 1},
             )
+        raw_files1 = files1
+        files1, healer1 = _research_heal_coder_files(
+            conn, files1, skill_id=skill_key, job_id=job_id, job_dir=job_dir, round_no=1
+        )
         written = _write_candidate_files(job_dir, files1)
         _write_json(
             job_dir / "candidate_manifest.json",
@@ -805,12 +850,14 @@ def run_system_ai_capability_fill(
                 "origin": ORIGIN_CODER,
                 "ai_generated": True,
                 "promotion_allowed": False,
+                **({"research_healer": [r.summary() for r in healer1]} if healer1 else {}),
             },
         )
         _update_job(job_dir, candidate_origin=ORIGIN_CODER, status=STATE_VALIDATE_1)
         validation1 = validate_candidate_workspace(
             job_dir, spec, skill_id=skill_key, example_ids=example_ids
         )
+        _settle_research_heal(conn, job_dir, healer1, validation1, raw_files1)
         if validation1.get("passed"):
             _assert_awaiting_allowed(
                 spec=spec,
@@ -864,6 +911,10 @@ def run_system_ai_capability_fill(
                 "coder repair output is not a valid candidate contract",
                 details={"blockers": coder_blockers2, "round": 2},
             )
+        raw_files2 = files2
+        files2, healer2 = _research_heal_coder_files(
+            conn, files2, skill_id=skill_key, job_id=job_id, job_dir=job_dir, round_no=2
+        )
         written2 = _write_candidate_files(job_dir, files2)
         _write_json(
             job_dir / "candidate_manifest.json",
@@ -878,6 +929,7 @@ def run_system_ai_capability_fill(
                 "origin": ORIGIN_CODER,
                 "ai_generated": True,
                 "promotion_allowed": False,
+                **({"research_healer": [r.summary() for r in healer2]} if healer2 else {}),
             },
         )
 
@@ -885,6 +937,7 @@ def run_system_ai_capability_fill(
         validation2 = validate_candidate_workspace(
             job_dir, spec, skill_id=skill_key, example_ids=example_ids
         )
+        _settle_research_heal(conn, job_dir, healer2, validation2, raw_files2)
         if validation2.get("passed"):
             _assert_awaiting_allowed(
                 spec=spec,

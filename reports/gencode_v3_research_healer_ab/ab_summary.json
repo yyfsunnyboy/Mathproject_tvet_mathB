@@ -1,0 +1,170 @@
+{
+  "corpus_cells": 480,
+  "groups": {
+    "A": {
+      "baseline_fail": 99,
+      "baseline_pass": 381,
+      "contract_mismatch": 0,
+      "eligible": 122,
+      "modified": 0,
+      "parse_gain": 0,
+      "pass": 381,
+      "regression": 0,
+      "rescue": 0,
+      "runtime_gain": 0,
+      "total": 480,
+      "unauthorized_control_flow_change": 0,
+      "unauthorized_math_change": 0,
+      "avg_duration_ms": 0.0,
+      "classifier_outcomes": {
+        "passed": 381,
+        "runtime_failure": 52,
+        "parse_minor": 23,
+        "answer_incorrect": 10,
+        "structural_mismatch": 9,
+        "catastrophic_truncation": 4,
+        "missing_entry_point": 1
+      },
+      "failure_layers": {
+        "None": 381,
+        "L4": 31,
+        "L1": 27,
+        "L3": 21,
+        "L5": 19,
+        "L2": 1
+      }
+    },
+    "B": {
+      "baseline_fail": 99,
+      "baseline_pass": 381,
+      "cells_with_llm_semantic_heal_attempt": 100,
+      "contract_mismatch": 0,
+      "eligible": 122,
+      "legacy_rejected": 0,
+      "legacy_triggered": 480,
+      "llm_calls_attempted": 100,
+      "modified": 480,
+      "modified_code_deleted": 480,
+      "modified_constants_changed": 480,
+      "modified_control_flow_changed": 480,
+      "modified_function_names_changed": 477,
+      "modified_math_operator_changed": 480,
+      "parse_gain": 81,
+      "pass": 0,
+      "regression": 381,
+      "rescue": 0,
+      "runtime_gain": 0,
+      "total": 480,
+      "unauthorized_control_flow_change": 480,
+      "unauthorized_math_change": 480,
+      "avg_duration_ms": 5.948,
+      "classifier_outcomes": {
+        "schema_failure": 281,
+        "parse_minor": 100,
+        "runtime_failure": 99
+      },
+      "failure_layers": {
+        "L2": 281,
+        "L1": 100,
+        "L4": 83,
+        "L3": 16
+      }
+    },
+    "C": {
+      "abstained": 27,
+      "baseline_fail": 99,
+      "baseline_pass": 381,
+      "contract_mismatch": 0,
+      "eligible": 122,
+      "modified": 95,
+      "parse_gain": 95,
+      "pass": 381,
+      "probe_would_change:L1_COMMENT_ONLY_IF_INSERT_PASS": 2,
+      "real_model_calls": 0,
+      "regression": 0,
+      "repaired": 95,
+      "rescue": 0,
+      "runtime_gain": 0,
+      "semantic_preservation_proven": 95,
+      "total": 480,
+      "triggered": 122,
+      "unauthorized_control_flow_change": 0,
+      "unauthorized_math_change": 0,
+      "avg_duration_ms": 6.733,
+      "classifier_outcomes": {
+        "passed": 381,
+        "runtime_failure": 52,
+        "parse_minor": 23,
+        "answer_incorrect": 10,
+        "structural_mismatch": 9,
+        "catastrophic_truncation": 4,
+        "missing_entry_point": 1
+      },
+      "failure_layers": {
+        "None": 381,
+        "L4": 31,
+        "L1": 27,
+        "L3": 21,
+        "L5": 19,
+        "L2": 1
+      }
+    }
+  },
+  "v3_ai_samples": [
+    {
+      "sample": "slope_calculator_engine.py",
+      "A": {
+        "parses": true,
+        "modified": false,
+        "diff": {
+          "math_operator_changed": false,
+          "control_flow_changed": false,
+          "function_names_changed": false,
+          "constants_changed": false,
+          "code_deleted": false,
+          "changed": false,
+          "ast_compared": true,
+          "delimiter_only": false
+        }
+      },
+      "B": {
+        "parses": true,
+        "modified": true,
+        "rejected": null,
+        "llm_calls_attempted": 0,
+        "diff": {
+          "math_operator_changed": true,
+          "control_flow_changed": true,
+          "function_names_changed": true,
+          "constants_changed": true,
+          "code_deleted": true,
+          "changed": true,
+          "ast_compared": true,
+          "delimiter_only": false
+        }
+      },
+      "C": {
+        "parses": true,
+        "modified": false,
+        "status": "UNCHANGED",
+        "reason": "source_already_parses",
+        "diff": {
+          "math_operator_changed": false,
+          "control_flow_changed": false,
+          "function_names_changed": false,
+          "constants_changed": false,
+          "code_deleted": false,
+          "changed": false,
+          "ast_compared": true,
+          "delimiter_only": false
+        }
+      }
+    }
+  ],
+  "research_repo_clean_after": true,
+  "corpus": "C:\\Projects\\MathProject_AST_Research_HealerBoundary\\artifacts\\math16_ab2d_menu_vs_full_runtime_contract_v2\\formal",
+  "artifacts": {
+    "produced": "C:\\Users\\yehiv\\MathProject_DB_Archives\\ab_full\\ab_produced.jsonl",
+    "scored": "C:\\Users\\yehiv\\MathProject_DB_Archives\\ab_full\\ab_scored.jsonl"
+  }
+}

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import logging
 import os
 import py_compile
 import shutil
@@ -13,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+logger = logging.getLogger(__name__)
 
 from core.gencode.pipeline_state import utc_timestamp
 from core.gencode.skill_wrapper_compiler import (
@@ -671,6 +673,18 @@ def publish_single_v3_skill_to_production(
             "variation_warning": variation_report.get("variation_warning", ""),
             "variation_status_by_component": variation_report.get("variation_status_by_component", {}),
         }
+
+    try:
+        from core.gencode.v3_healer_telemetry import record_published_rescues
+
+        record_published_rescues(
+            conn,
+            skill_id=skill_key,
+            components=eligible_components,
+            publish_status=overall_status,
+        )
+    except Exception as exc:  # noqa: BLE001 - telemetry must not change the publish outcome
+        logger.warning("v3 healer publish telemetry failed for %s: %s", skill_key, exc)
 
     return {
         "status": overall_status,
