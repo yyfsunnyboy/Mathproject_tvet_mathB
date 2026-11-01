@@ -1,0 +1,10 @@
+{
+ "backup_dir": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\math2_unit7_mathematical_expectation\\20261101_180124",
+ "db_integrity": "ok",
+ "db_sha256": "41d163304783ff1343790fd516db7f9ba386e56506894227dd982d926a8b3924",
+ "store_sha256": "d8aff7a71a231f5f4d770af6d6d5da21f1a020c13d07cea86d2427f7f15948cd",
+ "fixed_config_sha256": "2289e1c2d7eece57eb306c99c6494f11a4a21165462f7694bcda8b918d7464b7",
+ "tracker_rows_total": 1193,
+ "files": 372,
+ "binding_mismatches": {}
+}

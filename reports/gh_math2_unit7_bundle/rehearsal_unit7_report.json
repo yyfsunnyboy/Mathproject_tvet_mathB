@@ -1,0 +1,476 @@
+{
+ "sandbox": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\gh_math2u7_rehearsal\\run",
+ "deferred": {},
+ "promotion": {
+  "domain_key": "discrete.mathematical_expectation",
+  "registry_revision": "promoted-05c1229f0a95",
+  "unchanged": false,
+  "operations_executed": null
+ },
+ "rebuild": {
+  "12891": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "die_payout_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b132d2a867d0ed9c3845868d41895cb0b8e9f217c886a537697e5b1f8ec8f759",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12892": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6e2be5a7a905db1e7091388fadff85fa530577ba33bd4b1fce99159ac4c0dba0",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12893": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "c0a83b5bae39e6c4f8684e3eb3d6f8679a4a08e7216b76008c18bda48b4bdaee",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12894": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "coin_payout_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "2cd25d2f8bb6daaf4ef74f62e1e910446a6ec0ea10943e9de80a69f355c120d6",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12895": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "insurance_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6f10327b1f222cbb8c7623291b8eddb70dbf5d64ceb0187a555984576cf91ebb",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12896": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "coin_payout_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "aff0301b00bd4a3e306e3e061fda5360d1a2d82dcb172be42ad9f020d83936d4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12897": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e05db5972211bf86f5a6edc3860eb467d2b38fbb592bfe33e221c358b2a331c9",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12898": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "9a8240c2d071fd9a70c65864f95972dd83feee5d637bad28d19805f1f1dc8ba7",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12899": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "two_dice_match_game",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5393c1add8fa356abf7bcf4c7017abd042bdb7a600c2d4bbdb1e740efbe31429",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12900": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "decision_by_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "789871d3e233aeed9fe63a3061fb4ab5b9b2a5dbb4091a709de0d36163a16440",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12901": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "expectation_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "e3828bd14827236ff352facfdb0c38b3b0a8ea5b502edccf89b3b1acca874e89",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12902": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "expectation_claim",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "d14aa07b3c28026c781f2298f5563cddac5359d89019b542ef050586bc603856",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12903": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "die_payout_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "83c157a6d80abf690ddd6dcaf0b0d54fb94c5e7756d1693b974d42144356f430",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12904": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "6517cc6b31c695b34709c0294b3e59db18ac4fa194511f56a6d4dc9743da4e97",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12905": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "256ca4886e8c65d1a93b799d202ad88ec97b929ff0408c9b7513983be8fae3bd",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12906": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5e05e7864ed4ffb616752f74be0989054bd0a17c6e8ed51f5762069e4cb83827",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12907": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "single_die_game",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "b0cbeb922ac38256a5b833635b8e55fa501a10baff227ef12331e5cba35ca0ce",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12908": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "insurance_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "f178a00ef1aa99108945aaea67bcd2942d3b8e9b26e34de5d997d76dc2bd89fe",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12909": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "multiple_choice_guess_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "a85619a54b165efc0842872a0d27dda595bbef1d54b36a08c79e5e9564ef8f08",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12910": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "lottery_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "5f1b2bee2975d2083abecabed79e2e1412a7f0383650cf879ebdec74d4e0ffe4",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  },
+  "12911": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "prize_ball_expectation",
+   "variants": 20,
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker_status": "verified",
+   "error_code": null,
+   "error": null,
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "verify": {
+    "generate_sha256": "7cc57b27c7de3c789705f4d089f9d5f1a854e9c0a375386b8759ede1e2e4e744",
+    "checked_seeds": 20,
+    "failures": [],
+    "distinct_surfaces": 20
+   }
+  }
+ },
+ "publish": {
+  "gh_MathematicalExpectation": {
+   "status": "production_published",
+   "component_count": 21,
+   "smoke_status": "passed",
+   "staging_smoke_status": "passed",
+   "production_smoke_status": "passed",
+   "variation_status": "unsafe_dynamic",
+   "dynamic_count": 18,
+   "static_count": 0,
+   "variation_warning": "",
+   "published_components": [
+    "src_12891",
+    "src_12892",
+    "src_12893",
+    "src_12894",
+    "src_12895",
+    "src_12896",
+    "src_12897",
+    "src_12898",
+    "src_12899",
+    "src_12900",
+    "src_12901",
+    "src_12902",
+    "src_12903",
+    "src_12904",
+    "src_12905",
+    "src_12906",
+    "src_12907",
+    "src_12908",
+    "src_12909",
+    "src_12910",
+    "src_12911"
+   ]
+  }
+ },
+ "student_side": {
+  "gh_MathematicalExpectation": {
+   "served_examples": {
+    "12891": 5,
+    "12892": 6,
+    "12893": 6,
+    "12894": 6,
+    "12895": 6,
+    "12896": 6,
+    "12897": 6,
+    "12898": 6,
+    "12899": 5,
+    "12900": 6,
+    "12901": 6,
+    "12902": 5,
+    "12903": 6,
+    "12904": 6,
+    "12905": 5,
+    "12906": 6,
+    "12907": 5,
+    "12908": 6,
+    "12909": 6,
+    "12910": 5,
+    "12911": 6
+   },
+   "problems": []
+  }
+ },
+ "production_paths_written": []
+}

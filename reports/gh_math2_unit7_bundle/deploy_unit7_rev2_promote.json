@@ -1,0 +1,52 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "discrete.mathematical_expectation",
+ "registry_revision": "promoted-a714bd66521e",
+ "bundle_sha256": "a714bd66521eb20c7be0df520883cb57ee01d18c8ee9d1a118f0d40d09f6411e",
+ "allowed_operations": [
+  "coin_payout_expectation",
+  "decision_by_expectation",
+  "die_payout_expectation",
+  "expectation_claim",
+  "insurance_expectation",
+  "lottery_expectation",
+  "multiple_choice_guess_expectation",
+  "prize_ball_expectation",
+  "single_die_game",
+  "two_dice_match_game",
+  "urn_draw_expectation"
+ ],
+ "skill_bindings": {
+  "gh_MathematicalExpectation": {
+   "fixed_domain_key": "discrete.mathematical_expectation",
+   "allowed_operations": [
+    "coin_payout_expectation",
+    "decision_by_expectation",
+    "die_payout_expectation",
+    "expectation_claim",
+    "insurance_expectation",
+    "lottery_expectation",
+    "multiple_choice_guess_expectation",
+    "prize_ball_expectation",
+    "single_die_game",
+    "two_dice_match_game",
+    "urn_draw_expectation"
+   ]
+  }
+ },
+ "operations_executed": {
+  "coin_payout_expectation": 2,
+  "decision_by_expectation": 1,
+  "die_payout_expectation": 2,
+  "expectation_claim": 2,
+  "insurance_expectation": 2,
+  "lottery_expectation": 1,
+  "multiple_choice_guess_expectation": 1,
+  "prize_ball_expectation": 1,
+  "single_die_game": 1,
+  "two_dice_match_game": 1,
+  "urn_draw_expectation": 7
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\mathematical_expectation"
+}

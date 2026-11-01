@@ -1,0 +1,23 @@
+{
+ "time": "2026-11-01 18:01:35 +0800",
+ "bundle_file_sha256_before_approval": "b1f92e17a9604373e4406d80c916b1bef7a431a457a3b9b2ef2ebe339688a3ce",
+ "bundle_canonical_sha256_before": "d819b661d5bbb2e5bf8135307fbdacdf58baae97ab7dec9a42485aba94965365",
+ "bundle_file_sha256_after_approval": "050aaeb04942c901ebd088e8b1e930821d5fa11e9b8802017e5741b88de0289d",
+ "package_files": {
+  "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "mathematical_expectation_adapter.py": "824d3af2efb5bad48aed216f2fc3a7bfd9df5dfeabfcc44c885a61b0c81bd86c",
+  "mathematical_expectation_domain.py": "cd0e0b73b4195604014fe516bf7bee0e642d2601e8489db806712ff456f17c75"
+ },
+ "approval_kind": "project_owner_publish_authorization",
+ "teacher_signoff": false,
+ "pending_teacher_confirmation": {
+  "12909_A2": {
+   "status": "pending_teacher_confirmation",
+   "statement": "each of the guessed options is marked or not with equal chance, independently (uniform over the 2^k markings)",
+   "textbook_explicit": false,
+   "record": "reports/gh_math2_unit7_bundle/UNIT7_FINAL_ACCEPTANCE.md#revision-0002"
+  }
+ },
+ "approval_scope": "revision 2: 普高數學2 Unit 7 數學期望值 — domain discrete.mathematical_expectation (11 operations: coin_payout_expectation, decision_by_expectation, die_payout_expectation, expectation_claim, insurance_expectation, lottery_expectation, multiple_choice_guess_expectation, prize_ball_expectation, single_die_game, two_dice_match_game, urn_draw_expectation); Skills gh_MathematicalExpectation (21 components: 128",
+ "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-11-01: one-time Promotion and Publish of 數學2 Unit 7 數學期望值 revision 0002 (discrete.mathematical_expectation, 11 operations; gh_MathematicalExpectation 21 components 12891-12911; bundle file sha256 b1f92e17a9604373e4406d80c916b1bef7a431a457a3b9b2ef2ebe339688a3ce), publish first and verify on the student practice page afterwards. Accepted: earlier human acceptance PASS of 12899 / 12911 / 12896, existing fraction checker tests, Variation WARN for two-option items 12900 / 12901 / 12902. NOT teacher-confirmed: 12909 modelling assumption A2 (each guessed option marked or not with equal chance, independently) stays PENDING teacher confirmation; see reports/gh_math2_unit7_bundle/UNIT7_FINAL_ACCEPTANCE.md. Flask 5000 / Cloudflare untouched by the agent."
+}

@@ -1,0 +1,238 @@
+{
+  "skill_id": "gh_MathematicalExpectation",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 21,
+  "components": [
+    {
+      "component_id": "src_12891",
+      "textbook_example_id": 12891,
+      "status": "verified",
+      "problem_type_id": "die_payout_expectation",
+      "domain_operation": "die_payout_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12891/generate.py"
+    },
+    {
+      "component_id": "src_12892",
+      "textbook_example_id": 12892,
+      "status": "verified",
+      "problem_type_id": "urn_draw_expectation",
+      "domain_operation": "urn_draw_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12892/generate.py"
+    },
+    {
+      "component_id": "src_12893",
+      "textbook_example_id": 12893,
+      "status": "verified",
+      "problem_type_id": "urn_draw_expectation",
+      "domain_operation": "urn_draw_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12893/generate.py"
+    },
+    {
+      "component_id": "src_12894",
+      "textbook_example_id": 12894,
+      "status": "verified",
+      "problem_type_id": "coin_payout_expectation",
+      "domain_operation": "coin_payout_expectation",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12894/generate.py"
+    },
+    {
+      "component_id": "src_12895",
+      "textbook_example_id": 12895,
+      "status": "verified",
+      "problem_type_id": "insurance_expectation",
+      "domain_operation": "insurance_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12895/generate.py"
+    },
+    {
+      "component_id": "src_12896",
+      "textbook_example_id": 12896,
+      "status": "verified",
+      "problem_type_id": "coin_payout_expectation",
+      "domain_operation": "coin_payout_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12896/generate.py"
+    },
+    {
+      "component_id": "src_12897",
+      "textbook_example_id": 12897,
+      "status": "verified",
+      "problem_type_id": "urn_draw_expectation",
+      "domain_operation": "urn_draw_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12897/generate.py"
+    },
+    {
+      "component_id": "src_12898",
+      "textbook_example_id": 12898,
+      "status": "verified",
+      "problem_type_id": "urn_draw_expectation",
+      "domain_operation": "urn_draw_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12898/generate.py"
+    },
+    {
+      "component_id": "src_12899",
+      "textbook_example_id": 12899,
+      "status": "verified",
+      "problem_type_id": "two_dice_match_game",
+      "domain_operation": "two_dice_match_game",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12899/generate.py"
+    },
+    {
+      "component_id": "src_12900",
+      "textbook_example_id": 12900,
+      "status": "verified",
+      "problem_type_id": "decision_by_expectation",
+      "domain_operation": "decision_by_expectation",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12900/generate.py"
+    },
+    {
+      "component_id": "src_12901",
+      "textbook_example_id": 12901,
+      "status": "verified",
+      "problem_type_id": "expectation_claim",
+      "domain_operation": "expectation_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12901/generate.py"
+    },
+    {
+      "component_id": "src_12902",
+      "textbook_example_id": 12902,
+      "status": "verified",
+      "problem_type_id": "expectation_claim",
+      "domain_operation": "expectation_claim",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12902/generate.py"
+    },
+    {
+      "component_id": "src_12903",
+      "textbook_example_id": 12903,
+      "status": "verified",
+      "problem_type_id": "die_payout_expectation",
+      "domain_operation": "die_payout_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12903/generate.py"
+    },
+    {
+      "component_id": "src_12904",
+      "textbook_example_id": 12904,
+      "status": "verified",
+      "problem_type_id": "urn_draw_expectation",
+      "domain_operation": "urn_draw_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12904/generate.py"
+    },
+    {
+      "component_id": "src_12905",
+      "textbook_example_id": 12905,
+      "status": "verified",
+      "problem_type_id": "urn_draw_expectation",
+      "domain_operation": "urn_draw_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12905/generate.py"
+    },
+    {
+      "component_id": "src_12906",
+      "textbook_example_id": 12906,
+      "status": "verified",
+      "problem_type_id": "urn_draw_expectation",
+      "domain_operation": "urn_draw_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12906/generate.py"
+    },
+    {
+      "component_id": "src_12907",
+      "textbook_example_id": 12907,
+      "status": "verified",
+      "problem_type_id": "single_die_game",
+      "domain_operation": "single_die_game",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12907/generate.py"
+    },
+    {
+      "component_id": "src_12908",
+      "textbook_example_id": 12908,
+      "status": "verified",
+      "problem_type_id": "insurance_expectation",
+      "domain_operation": "insurance_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12908/generate.py"
+    },
+    {
+      "component_id": "src_12909",
+      "textbook_example_id": 12909,
+      "status": "verified",
+      "problem_type_id": "multiple_choice_guess_expectation",
+      "domain_operation": "multiple_choice_guess_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12909/generate.py"
+    },
+    {
+      "component_id": "src_12910",
+      "textbook_example_id": 12910,
+      "status": "verified",
+      "problem_type_id": "lottery_expectation",
+      "domain_operation": "lottery_expectation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12910/generate.py"
+    },
+    {
+      "component_id": "src_12911",
+      "textbook_example_id": 12911,
+      "status": "verified",
+      "problem_type_id": "prize_ball_expectation",
+      "domain_operation": "prize_ball_expectation",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12911/generate.py"
+    }
+  ]
+}

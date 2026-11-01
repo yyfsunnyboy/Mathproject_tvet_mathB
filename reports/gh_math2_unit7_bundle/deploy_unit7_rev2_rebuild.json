@@ -1,0 +1,341 @@
+{
+ "failures": {},
+ "report": {
+  "12891": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "die_payout_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "55d3a2526e232ec0efbc639f0cd9d18ae206f4213c2662f3e87693cbccac3e98",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12892": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "c3f6a1ee0e8a10ec2e5531edecca0c6f6e94fe412826e4d25d161dced92f66d8",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12893": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "2109c564ec4f6d82383376ab1c8a4dd4a4030aeeadc1c6ed609622e5a9dcafb8",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12894": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "coin_payout_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "32893ccdb6e7ca9480cfd0a06fb4a74648eecbaa333b4afc5bf0dfc94f781321",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12895": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "insurance_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "667937a09cc17569815a0bcfbb8e90afb1b4e851648f85b9f1fb2236a636d33a",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12896": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "coin_payout_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "c00dfd6aba557b1b9390fd73ae583325de1dbb0ca63d7ac1324854aaa4f829ff",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12897": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "53c8df36ff78234effd73f5f0feb531c47ef6e3e6dcee77e6bc4069faad95c5e",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12898": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "516f3080392d36df114f86dde2fa6b3c207391266df6045eb3d99932cf3322df",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12899": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "two_dice_match_game",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "9e387fd84144ea651d870573a552f17d38e3e3ee89c96ca86e97f335d793a205",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12900": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "decision_by_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "256d735a379a8ac72bb9e3e3fc66964b9bccd546163593e616e473d836532769",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12901": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "expectation_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "0f8fdce2d5f711467238c020f4fdc775b9e1ffa762e14f76900ae7adb3b39d0c",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12902": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "expectation_claim",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "e4a59eb448cc419cab4a0094d148da7ce9d707b8dac892a84b0f461e26c51691",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12903": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "die_payout_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "421b8f126da9994cbe87aca60f791383b399b2fee1270e503c9facbee61cac9f",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12904": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "404a6612b9f5802c30c2ba72769777e31febddf54612d80e59ab907f3136c449",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12905": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "09a96fd6e1154766ef036b1482fead28a5a59fda0ae97a7870f3be7fd980cb01",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12906": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "urn_draw_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "fb49c960f187abb0e034e5f199b6f3448ec1540442d3ff09fbe850dc087eeee6",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12907": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "single_die_game",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "3dffe1028f0e7ef8e85f2bfeb6e26d50c7047c171cfa82e1ee1bbe2e4842b688",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12908": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "insurance_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "faae83f819a6d563a5b9501e5d104570cfca41f87eb956a8b397f2c669752033",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12909": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "multiple_choice_guess_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "2ef2b52030c985f55522bfbad3b44f6191da3d9b5fdd5a039d13e4a58e36065a",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12910": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "lottery_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "c4a0a8dac4b6924b1aafcca2028344b7aa9bdd611f68207909a1aeeb3963f793",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  },
+  "12911": {
+   "skill": "gh_MathematicalExpectation",
+   "operation": "prize_ball_expectation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MathematicalExpectation",
+    "verified"
+   ],
+   "variants": 20,
+   "same_variants_as_rehearsal": true,
+   "failures": [],
+   "generate_sha256": "4476d446336f7544a0232e4dc87e61118e1110223ff14bda53b4147e7288eeb1",
+   "same_generate_as_rehearsal": false,
+   "distinct_surfaces": 20,
+   "same_surfaces_as_rehearsal": true
+  }
+ }
+}

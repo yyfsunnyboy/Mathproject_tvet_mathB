@@ -1,0 +1,112 @@
+{
+ "facade": {
+  "gh_MathematicalExpectation": {
+   "served_examples": {
+    "12891": 5,
+    "12892": 6,
+    "12893": 6,
+    "12894": 6,
+    "12895": 6,
+    "12896": 6,
+    "12897": 6,
+    "12898": 6,
+    "12899": 5,
+    "12900": 6,
+    "12901": 6,
+    "12902": 5,
+    "12903": 6,
+    "12904": 6,
+    "12905": 5,
+    "12906": 6,
+    "12907": 5,
+    "12908": 6,
+    "12909": 6,
+    "12910": 5,
+    "12911": 6
+   },
+   "problems": []
+  }
+ },
+ "db_integrity": "ok",
+ "tracker_duplicates": [],
+ "protected_tracker": [
+  [
+   "gh_BinomialTheorem",
+   "verified",
+   12
+  ],
+  [
+   "gh_Combination",
+   "verified",
+   22
+  ],
+  [
+   "gh_DefinitionOfClassicalProbability",
+   "verified",
+   25
+  ],
+  [
+   "gh_Event",
+   "verified",
+   5
+  ],
+  [
+   "gh_LinearPermutation",
+   "verified",
+   19
+  ],
+  [
+   "gh_PermutationWithIdenticalItems",
+   "verified",
+   10
+  ],
+  [
+   "gh_PropertiesOfProbability",
+   "verified",
+   6
+  ],
+  [
+   "gh_RepeatedPermutation",
+   "verified",
+   8
+  ],
+  [
+   "gh_SampleSpace",
+   "verified",
+   6
+  ]
+ ],
+ "textbook_digest": "c778fde1c69fa19e484395fe9ecc7ee8a5ed20de3c79390ca5b62f703f368370",
+ "stage1_repairs": {
+  "12900_table": true,
+  "12909_question": true,
+  "repair_notes": true
+ },
+ "manifest_status": {
+  "gh_MathematicalExpectation": {
+   "publish_status": "production_manifest_compiled",
+   "component_count": 21,
+   "facade": true
+  }
+ },
+ "manifest_components": {
+  "gh_MathematicalExpectation": 21
+ },
+ "manifest_total": 21,
+ "manifest_matches_specs": true,
+ "families": 12,
+ "store_mentions_domain": true,
+ "promoted_package_files": [
+  "__init__.py",
+  "mathematical_expectation_adapter.py",
+  "mathematical_expectation_domain.py"
+ ],
+ "promoted_package_matches_bundle": true,
+ "operations_registered": 11,
+ "tracker_not_verified": {},
+ "tracker_missing": [],
+ "protected_files_unchanged": true,
+ "protected_tracker_unchanged": true,
+ "textbook_unchanged": true,
+ "passed": true
+}

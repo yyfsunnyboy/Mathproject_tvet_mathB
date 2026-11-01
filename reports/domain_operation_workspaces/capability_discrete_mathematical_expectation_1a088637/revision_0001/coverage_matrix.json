@@ -1,0 +1,212 @@
+[
+  {
+    "textbook_example_id": 12891,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "die_payout",
+    "problem_type": "die_payout_expectation",
+    "generator": "src_12891",
+    "domain_function": "die_payout_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12892,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "urn_value_sum",
+    "problem_type": "urn_draw_expectation",
+    "generator": "src_12892",
+    "domain_function": "urn_draw_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12893,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "urn_count_expectation",
+    "problem_type": "urn_draw_expectation",
+    "generator": "src_12893",
+    "domain_function": "urn_draw_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12894,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "coin_payout",
+    "problem_type": "coin_payout_expectation",
+    "generator": "src_12894",
+    "domain_function": "coin_payout_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12895,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "insurance_expectation",
+    "problem_type": "insurance_expectation",
+    "generator": "src_12895",
+    "domain_function": "insurance_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12896,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "coin_payout",
+    "problem_type": "coin_payout_expectation",
+    "generator": "src_12896",
+    "domain_function": "coin_payout_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12897,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "urn_value_sum",
+    "problem_type": "urn_draw_expectation",
+    "generator": "src_12897",
+    "domain_function": "urn_draw_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12898,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "urn_count_expectation",
+    "problem_type": "urn_draw_expectation",
+    "generator": "src_12898",
+    "domain_function": "urn_draw_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12899,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "fair_game",
+    "problem_type": "two_dice_match_game",
+    "generator": "src_12899",
+    "domain_function": "two_dice_match_game",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12900,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "expectation_decision",
+    "problem_type": "decision_by_expectation",
+    "generator": "src_12900",
+    "domain_function": "decision_by_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12901,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "expectation_claim",
+    "problem_type": "expectation_claim",
+    "generator": "src_12901",
+    "domain_function": "expectation_claim",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12902,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "expectation_claim",
+    "problem_type": "expectation_claim",
+    "generator": "src_12902",
+    "domain_function": "expectation_claim",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12903,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "die_payout",
+    "problem_type": "die_payout_expectation",
+    "generator": "src_12903",
+    "domain_function": "die_payout_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12904,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "urn_event_payout",
+    "problem_type": "urn_draw_expectation",
+    "generator": "src_12904",
+    "domain_function": "urn_draw_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12905,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "urn_event_payout",
+    "problem_type": "urn_draw_expectation",
+    "generator": "src_12905",
+    "domain_function": "urn_draw_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12906,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "urn_count_expectation",
+    "problem_type": "urn_draw_expectation",
+    "generator": "src_12906",
+    "domain_function": "urn_draw_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12907,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "fair_game",
+    "problem_type": "single_die_game",
+    "generator": "src_12907",
+    "domain_function": "single_die_game",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12908,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "insurance_expectation",
+    "problem_type": "insurance_expectation",
+    "generator": "src_12908",
+    "domain_function": "insurance_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12909,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "guess_score_expectation",
+    "problem_type": "multiple_choice_guess_expectation",
+    "generator": "src_12909",
+    "domain_function": "multiple_choice_guess_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12910,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "lottery_expectation",
+    "problem_type": "lottery_expectation",
+    "generator": "src_12910",
+    "domain_function": "lottery_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  },
+  {
+    "textbook_example_id": 12911,
+    "skill_id": "gh_MathematicalExpectation",
+    "family": "prize_draw_comparison",
+    "problem_type": "prize_ball_expectation",
+    "generator": "src_12911",
+    "domain_function": "prize_ball_expectation",
+    "variants": 20,
+    "oracle": "enumeration_matches_closed_form"
+  }
+]

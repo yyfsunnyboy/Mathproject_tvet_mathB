@@ -1,0 +1,685 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_discrete_mathematical_expectation_1a088637",
+  "proposal_revision": 2,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "Yang-Fu Yeh (project owner), explicit chat authorization 2026-11-01: one-time Promotion and Publish of 數學2 Unit 7 數學期望值 revision 0002 (discrete.mathematical_expectation, 11 operations; gh_MathematicalExpectation 21 components 12891-12911; bundle file sha256 b1f92e17a9604373e4406d80c916b1bef7a431a457a3b9b2ef2ebe339688a3ce), publish first and verify on the student practice page afterwards. Accepted: earlier human acceptance PASS of 12899 / 12911 / 12896, existing fraction checker tests, Variation WARN for two-option items 12900 / 12901 / 12902. NOT teacher-confirmed: 12909 modelling assumption A2 (each guessed option marked or not with equal chance, independently) stays PENDING teacher confirmation; see reports/gh_math2_unit7_bundle/UNIT7_FINAL_ACCEPTANCE.md. Flask 5000 / Cloudflare untouched by the agent.",
+    "approved_revision": 2,
+    "approval_scope": "revision 2: 普高數學2 Unit 7 數學期望值 — domain discrete.mathematical_expectation (11 operations: coin_payout_expectation, decision_by_expectation, die_payout_expectation, expectation_claim, insurance_expectation, lottery_expectation, multiple_choice_guess_expectation, prize_ball_expectation, single_die_game, two_dice_match_game, urn_draw_expectation); Skills gh_MathematicalExpectation (21 components: 12891, 12892, 12893, 12894, 12895, 12896, 12897, 12898, 12899, 12900, 12901, 12902, 12903, 12904, 12905, 12906, 12907, 12908, 12909, 12910, 12911); all 21 formal rows (ids 12891-12911). No component is deferred. Every value is computed by enumeration and by a closed form that must agree. Format hints do not carry an answer example. This revision is not approved and is not published. Change from revision 1: the 12909 stem (multiple_choice_guess_expectation) restores the textbook wording (no added probability statement; option numbers kept inside math); the uniform-marking reading of 隨意猜測 is a modelling assumption awaiting teacher confirmation."
+  },
+  "domain_key": "discrete.mathematical_expectation",
+  "package_name": "mathematical_expectation",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mathematical_expectation_adapter.py": "824d3af2efb5bad48aed216f2fc3a7bfd9df5dfeabfcc44c885a61b0c81bd86c",
+    "mathematical_expectation_domain.py": "cd0e0b73b4195604014fe516bf7bee0e642d2601e8489db806712ff456f17c75"
+  },
+  "domain_module": "mathematical_expectation_domain",
+  "entrypoint": "build_mathematical_expectation_matrix",
+  "capabilities": [
+    "coin_payout_expectation",
+    "decision_by_expectation",
+    "die_payout_expectation",
+    "expectation_claim",
+    "insurance_expectation",
+    "lottery_expectation",
+    "multiple_choice_guess_expectation",
+    "prize_ball_expectation",
+    "single_die_game",
+    "two_dice_match_game",
+    "urn_draw_expectation"
+  ],
+  "operations": {
+    "coin_payout_expectation": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs",
+        "short_answer"
+      ],
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_coin_payout_expectation_matrix",
+      "provided_capabilities": [
+        "coin_payout_expectation"
+      ]
+    },
+    "decision_by_expectation": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_decision_by_expectation_matrix",
+      "provided_capabilities": [
+        "decision_by_expectation"
+      ]
+    },
+    "die_payout_expectation": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_die_payout_expectation_matrix",
+      "provided_capabilities": [
+        "die_payout_expectation"
+      ]
+    },
+    "expectation_claim": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "validator": "validate_expectation_claim_matrix",
+      "provided_capabilities": [
+        "expectation_claim"
+      ]
+    },
+    "insurance_expectation": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_insurance_expectation_matrix",
+      "provided_capabilities": [
+        "insurance_expectation"
+      ]
+    },
+    "lottery_expectation": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_lottery_expectation_matrix",
+      "provided_capabilities": [
+        "lottery_expectation"
+      ]
+    },
+    "multiple_choice_guess_expectation": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_multiple_choice_guess_expectation_matrix",
+      "provided_capabilities": [
+        "multiple_choice_guess_expectation"
+      ]
+    },
+    "prize_ball_expectation": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_prize_ball_expectation_matrix",
+      "provided_capabilities": [
+        "prize_ball_expectation"
+      ]
+    },
+    "single_die_game": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_single_die_game_matrix",
+      "provided_capabilities": [
+        "single_die_game"
+      ]
+    },
+    "two_dice_match_game": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational",
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "checker_keys": [
+        "choice_label_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "validator": "validate_two_dice_match_game_matrix",
+      "provided_capabilities": [
+        "two_dice_match_game"
+      ]
+    },
+    "urn_draw_expectation": {
+      "handler": "build_mathematical_expectation_matrix",
+      "payload_adapter": "mathematical_expectation_adapter.adapt_mathematical_expectation_matrix",
+      "runtime_contract": "mathematical_expectation_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "validator": "validate_urn_draw_expectation_matrix",
+      "provided_capabilities": [
+        "urn_draw_expectation"
+      ]
+    }
+  },
+  "skill_bindings": {
+    "gh_MathematicalExpectation": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "coin_payout_expectation",
+        "decision_by_expectation",
+        "die_payout_expectation",
+        "expectation_claim",
+        "insurance_expectation",
+        "lottery_expectation",
+        "multiple_choice_guess_expectation",
+        "prize_ball_expectation",
+        "single_die_game",
+        "two_dice_match_game",
+        "urn_draw_expectation"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "coin_payout_expectation": [
+      {
+        "seed": 0,
+        "constraints": {
+          "n": 3,
+          "scenarios": [
+            [
+              -100,
+              5,
+              10,
+              15
+            ],
+            [
+              -60,
+              5,
+              10,
+              15
+            ]
+          ]
+        },
+        "textbook_example_id": 12894
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "n": 3,
+          "scenarios": [
+            [
+              0,
+              10,
+              20,
+              30
+            ]
+          ]
+        },
+        "textbook_example_id": 12896
+      }
+    ],
+    "decision_by_expectation": [
+      {
+        "seed": 0,
+        "constraints": {
+          "states": [
+            "成長",
+            "持平",
+            "衰退"
+          ],
+          "probs": [
+            "0.4",
+            "0.5",
+            "0.1"
+          ],
+          "profits": [
+            [
+              40,
+              15,
+              -10
+            ],
+            [
+              55,
+              10,
+              -30
+            ]
+          ]
+        },
+        "textbook_example_id": 12900
+      }
+    ],
+    "die_payout_expectation": [
+      {
+        "seed": 0,
+        "constraints": {
+          "style": "grouped",
+          "payouts": [
+            10,
+            10,
+            10,
+            20,
+            20,
+            50
+          ]
+        },
+        "textbook_example_id": 12891
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "style": "linear",
+          "coef": 10,
+          "payouts": [
+            10,
+            20,
+            30,
+            40,
+            50,
+            60
+          ]
+        },
+        "textbook_example_id": 12903
+      }
+    ],
+    "expectation_claim": [
+      {
+        "seed": 0,
+        "constraints": {
+          "model": "coin",
+          "n": 1,
+          "stated": "1/2"
+        },
+        "textbook_example_id": 12901
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "model": "die",
+          "n": 1,
+          "stated": "3"
+        },
+        "textbook_example_id": 12902
+      }
+    ],
+    "insurance_expectation": [
+      {
+        "seed": 0,
+        "constraints": {
+          "age": 50,
+          "stated_prob": "0.9998",
+          "prob_kind": "survive",
+          "payout": 2000000,
+          "ask": "profit",
+          "premium": 2400
+        },
+        "textbook_example_id": 12895
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "stated_prob": "0.0016",
+          "prob_kind": "event",
+          "payout": 1000000,
+          "ask": "premium",
+          "profit": 400
+        },
+        "textbook_example_id": 12908
+      }
+    ],
+    "lottery_expectation": [
+      {
+        "seed": 0,
+        "constraints": {
+          "total": 1000000,
+          "prizes": [
+            [
+              10000000,
+              1
+            ],
+            [
+              5000000,
+              2
+            ],
+            [
+              1000000,
+              5
+            ],
+            [
+              100000,
+              20
+            ],
+            [
+              10000,
+              100
+            ],
+            [
+              1000,
+              1000
+            ]
+          ]
+        },
+        "textbook_example_id": 12910
+      }
+    ],
+    "multiple_choice_guess_expectation": [
+      {
+        "seed": 0,
+        "constraints": {
+          "options": 5,
+          "known": 2,
+          "scores": [
+            5,
+            3,
+            1
+          ]
+        },
+        "textbook_example_id": 12909
+      }
+    ],
+    "prize_ball_expectation": [
+      {
+        "seed": 0,
+        "constraints": {
+          "values": [
+            1000,
+            2000,
+            3000,
+            7200
+          ],
+          "choice_offsets": [
+            -500,
+            -300,
+            0,
+            200,
+            500
+          ]
+        },
+        "textbook_example_id": 12911
+      }
+    ],
+    "single_die_game": [
+      {
+        "seed": 0,
+        "constraints": {
+          "win_set": "prime",
+          "multiplier": 3,
+          "fee": 4
+        },
+        "textbook_example_id": 12907
+      }
+    ],
+    "two_dice_match_game": [
+      {
+        "seed": 0,
+        "constraints": {
+          "multiplier": 10,
+          "amount": 30
+        },
+        "textbook_example_id": 12899
+      }
+    ],
+    "urn_draw_expectation": [
+      {
+        "seed": 0,
+        "constraints": {
+          "scene": "cards",
+          "groups": [
+            {
+              "name": "商品卡",
+              "count": 3,
+              "value": 200
+            },
+            {
+              "name": "商品卡",
+              "count": 2,
+              "value": 100
+            }
+          ],
+          "draw": 2,
+          "variable": {
+            "kind": "sum_of_values"
+          }
+        },
+        "textbook_example_id": 12892
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "scene": "eggs",
+          "groups": [
+            {
+              "name": "土雞蛋",
+              "count": 2
+            },
+            {
+              "name": "普通雞蛋",
+              "count": 8
+            }
+          ],
+          "draw": 3,
+          "variable": {
+            "kind": "count",
+            "index": 0
+          }
+        },
+        "textbook_example_id": 12893
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "scene": "cards",
+          "groups": [
+            {
+              "name": "商品卡",
+              "count": 3,
+              "value": 200
+            },
+            {
+              "name": "商品卡",
+              "count": 2,
+              "value": 100
+            }
+          ],
+          "draw": 1,
+          "variable": {
+            "kind": "sum_of_values"
+          }
+        },
+        "textbook_example_id": 12897
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "scene": "balls",
+          "groups": [
+            {
+              "name": "白球",
+              "count": 4
+            },
+            {
+              "name": "紅球",
+              "count": 3
+            }
+          ],
+          "draw": 3,
+          "variable": {
+            "kind": "count",
+            "index": 1
+          }
+        },
+        "textbook_example_id": 12898
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "scene": "color_prize",
+          "groups": [
+            {
+              "name": "紅球",
+              "count": 3
+            },
+            {
+              "name": "白球",
+              "count": 3
+            }
+          ],
+          "draw": 2,
+          "variable": {
+            "kind": "payout_by_count",
+            "index": 0,
+            "payouts": [
+              [
+                1,
+                100
+              ]
+            ],
+            "default": 0
+          }
+        },
+        "textbook_example_id": 12904
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "scene": "melon",
+          "groups": [
+            {
+              "name": "黃肉哈密瓜",
+              "count": 4
+            },
+            {
+              "name": "綠肉哈密瓜",
+              "count": 4
+            }
+          ],
+          "draw": 4,
+          "variable": {
+            "kind": "payout_by_count",
+            "index": 0,
+            "payouts": [
+              [
+                4,
+                35000
+              ],
+              [
+                3,
+                28000
+              ]
+            ],
+            "default": 21000
+          }
+        },
+        "textbook_example_id": 12905
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "scene": "tangyuan",
+          "groups": [
+            {
+              "name": "芝麻湯圓",
+              "count": 6
+            },
+            {
+              "name": "花生湯圓",
+              "count": 4
+            }
+          ],
+          "draw": 4,
+          "variable": {
+            "kind": "count",
+            "index": 0
+          }
+        },
+        "textbook_example_id": 12906
+      }
+    ]
+  },
+  "deferred_components": {},
+  "coverage_rows": 21
+}
