@@ -40,6 +40,7 @@ from core.gencode.exponential_logarithmic_capability_adapter import (  # noqa: E
     adapt_exponential_logarithmic_matrix,
 )
 from core.gencode.runtime_skill_wrapper import check_answer  # noqa: E402
+from _practice_served_question import with_stored_answer  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 CHAPTER_IDS = list(range(12127, 12273))
@@ -1021,10 +1022,11 @@ def test_runtime_get_next_and_check(auth_client, example_id):
     assert _multipart_label_violations(question) == []
     assert not question.get("reuse_textbook_image")
     assert not question.get("image_assets")
-    answer = _student_answer(question)
+    assert "correct_answer" not in question and "semantic_answer" not in question
+    answer = _student_answer(with_stored_answer(question))
     assert _post_answer(client, question, answer).get("correct") is True
     question = _get_question(client, example_id, 5)
-    answer = _student_answer(question)
+    answer = _student_answer(with_stored_answer(question))
     if isinstance(answer, dict):
         wrong = dict(answer)
         wrong[next(iter(wrong))] = "12345"

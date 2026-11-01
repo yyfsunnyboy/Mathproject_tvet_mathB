@@ -124,7 +124,7 @@ def test_12801_is_the_textbook_original_graded_by_the_shared_checker(client_and_
     assert q["fixed_textbook_practice"] == "graded" and q.get("graded") is not False and q.get("check_mode") != "ungraded_self_study"
     assert q["answer_contract"]["checker_key"] == "rational_checker"
     assert len(q["image_assets"]) == 1 and (ROOT / q["image_assets"][0]["path"]).is_file()  # the reviewed crop, never redrawn
-    assert q["correct_answer"] == "" and q["answer"] == "" and not q.get("reference_solution")
+    assert not q.get("correct_answer") and not q.get("answer") and not q.get("reference_solution")
     assert "62" not in json.dumps({k: v for k, v in q.items() if k not in ("question_uid", "image_assets")}, ensure_ascii=False)
     for good in ("62", " 62 "):
         assert _check(client, skill, _serve(client, skill, 12801), good)["correct"] is True, good

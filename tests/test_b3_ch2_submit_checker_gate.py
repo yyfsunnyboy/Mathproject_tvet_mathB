@@ -25,6 +25,8 @@ from pathlib import Path
 
 import pytest
 
+from _practice_served_question import with_stored_answer
+
 os.environ.setdefault("ADV_RAG_EAGER_INIT", "0")
 
 
@@ -125,7 +127,8 @@ def fetch_question(client, *, skill: str, component_id: str, seed: int = 3) -> d
     question = response.get_json()
     assert question.get("question_uid"), question
     assert question.get("component_id") == component_id, question.get("component_id")
-    return question
+    assert "correct_answer" not in question and "answer" not in question
+    return with_stored_answer(question)
 
 
 def submit_answer(client, question: dict, answer):

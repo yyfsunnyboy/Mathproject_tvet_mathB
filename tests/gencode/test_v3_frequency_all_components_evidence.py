@@ -7,6 +7,7 @@ from urllib.parse import quote
 
 from app import create_app
 from core.gencode.services.v3_question_integrity_validator import validate_component_payload
+from _practice_served_question import stored_answer
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -166,6 +167,8 @@ def test_flask_get_next_question_all_four_components() -> None:
         payload = response.get_json()
         assert payload["component_id"] == expected_id
         assert payload["route_source"] == "gencode_wrapper"
+        assert "correct_answer" not in payload
+        answer = int(stored_answer(payload))
         
         # Verify the student visible info is sufficient to determine the answer uniquely
         if expected_id == "src_3822":
@@ -176,7 +179,7 @@ def test_flask_get_next_question_all_four_components() -> None:
             match_interval = re.search(r"其中一組為(\d+)～(\d+)分", payload["question_text"])
             assert match_interval
             lo, hi = int(match_interval.group(1)), int(match_interval.group(2))
-            assert int(payload["correct_answer"]) == sum(1 for s in scores if lo <= s <= hi)
+            assert answer == sum(1 for s in scores if lo <= s <= hi)
             
         elif expected_id == "src_3823":
             match_total = re.search(r"會計科三年甲班(\d+)人", payload["question_text"])
@@ -185,14 +188,14 @@ def test_flask_get_next_question_all_four_components() -> None:
             match_table = re.search(r"已知前四組次數為：([^。]+)。", payload["question_text"])
             assert match_table
             known_freqs = [int(re.search(r"：(\d+)人", part).group(1)) for part in match_table.group(1).split("、")]
-            assert int(payload["correct_answer"]) == total - sum(known_freqs)
+            assert answer == total - sum(known_freqs)
             
         elif expected_id == "src_3824":
             match = re.search(r"有一組數值資料為 ([^。]+)。", payload["question_text"])
             assert match
             values = [int(x) for x in match.group(1).split("、")]
             assert len(values) == 8
-            assert int(payload["correct_answer"]) == max(values) - min(values)
+            assert answer == max(values) - min(values)
             
         elif expected_id == "src_3825":
             match = re.search(r"20位員工年齡資料如下：\s*([^。]+)。", payload["question_text"])
@@ -203,4 +206,4 @@ def test_flask_get_next_question_all_four_components() -> None:
             match_interval = re.search(r"請問(\d+)～(\d+)歲這一組的次數是多少？", payload["question_text"])
             assert match_interval
             lo, hi = int(match_interval.group(1)), int(match_interval.group(2))
-            assert int(payload["correct_answer"]) == sum(1 for a in ages if lo <= a <= hi)
+            assert answer == sum(1 for a in ages if lo <= a <= hi)

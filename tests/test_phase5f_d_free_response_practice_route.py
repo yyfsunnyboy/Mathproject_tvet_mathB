@@ -11,6 +11,7 @@ from core.vocational_math_b4.adaptive.b4_chapter1_deterministic_allowlist import
     B4_EXCLUDED_DETERMINISTIC_ADAPTIVE_PROBLEM_TYPES,
 )
 from models import User, db
+from _practice_served_question import stored_question
 
 
 def _login(client, user_id: int) -> None:
@@ -194,8 +195,8 @@ def test_tree_diagram_get_next_question_uses_handwriting_payload_without_skill_m
     assert body["problem_type_id"] == "tree_diagram_listing"
     assert body["grading_mode"] == "ai_judged_free_response"
     assert body["variant"] == "early_stopping_game"
-    assert body["expected_count"] == 6
-    assert body["path_labels"] in (["甲", "乙"], ["A", "B"])
+    assert "expected_count" not in body and "path_labels" not in body
+    assert stored_question(body)["expected_count"] == 6
     assert body["requires_listing_or_tree"] is True
     assert "expected_paths" not in body
     assert "No module named" not in str(body)
@@ -238,9 +239,8 @@ def test_tree_diagram_get_next_question_changes_within_same_variant_by_index() -
     assert body0["variant"] == "early_stopping_game"
     assert body2["variant"] == "early_stopping_game"
     assert body0["new_question_text"] != body2["new_question_text"]
-    assert body0["path_labels"] != body2["path_labels"]
-    assert body0["expected_count"] == 6
-    assert body2["expected_count"] == 6
+    assert stored_question(body0)["expected_count"] == 6
+    assert stored_question(body2)["expected_count"] == 6
 
 
 def test_tree_diagram_stays_out_of_deterministic_allowlist() -> None:

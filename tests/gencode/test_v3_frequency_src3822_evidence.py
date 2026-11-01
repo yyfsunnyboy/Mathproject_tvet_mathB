@@ -7,6 +7,7 @@ from urllib.parse import quote
 
 from app import create_app
 from core.gencode.services.v3_question_integrity_validator import validate_component_payload
+from _practice_served_question import stored_answer
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -120,6 +121,6 @@ def test_flask_get_next_question_src3822_renders_all_scores() -> None:
 
     question_scores = _scores_from_question(payload["question_text"])
     assert len(question_scores) == 40
-    assert question_scores == payload["metadata"]["raw_scores"]
+    assert "raw_scores" not in payload["metadata"] and "correct_answer" not in payload
     lower, upper = _interval_from_question(payload["question_text"])
-    assert int(payload["correct_answer"]) == sum(1 for score in question_scores if lower <= score <= upper)
+    assert int(stored_answer(payload)) == sum(1 for score in question_scores if lower <= score <= upper)

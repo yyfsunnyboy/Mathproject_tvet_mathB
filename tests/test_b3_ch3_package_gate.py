@@ -22,6 +22,7 @@ from core.gencode.linear_inequality_planning_capability_adapter import (  # noqa
     adapt_linear_inequality_planning_matrix,
 )
 from core.gencode.runtime_skill_wrapper import check_answer  # noqa: E402
+from _practice_served_question import with_stored_answer  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 BANNED_STEM = ("隨堂", "基礎題", "進階題", "自我評量", "習題")
@@ -263,7 +264,8 @@ def test_runtime_get_next_and_check(auth_client, skill_id, component_id):
     assert question.get("component_id") == component_id
     stem = question.get("question_text") or ""
     assert not any(token in stem for token in BANNED_STEM)
-    answer = _student_answer(question)
+    assert "correct_answer" not in question and "semantic_answer" not in question
+    answer = _student_answer(with_stored_answer(question))
     body = {
         "skill_id": question.get("skill_id"),
         "question_uid": question.get("question_uid"),

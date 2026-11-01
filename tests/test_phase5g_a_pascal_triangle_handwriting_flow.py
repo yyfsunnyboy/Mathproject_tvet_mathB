@@ -12,6 +12,7 @@ from core.vocational_math_b4.free_response.pascal_triangle_judge import (
     pascal_row,
 )
 from models import User, db
+from _practice_served_question import stored_question
 
 
 def _login(client, user_id: int) -> None:
@@ -125,7 +126,8 @@ def test_pascal_analyze_handwriting_branch_no_500(monkeypatch) -> None:
     assert body["success"] is True
     assert body["handwriting_status"] in {"needs_review", "partial", "incorrect", "correct"}
     assert issued["new_question_text"] in prompts[0]
-    assert str(issued["expected_row"]) in prompts[0]
+    assert "expected_row" not in issued
+    assert str(stored_question(issued)["expected_row"]) in prompts[0]
     assert "偽造題目" not in prompts[0]
     assert "tampered" not in prompts[0]
     assert "999" not in prompts[0]

@@ -114,7 +114,7 @@ def test_12746_is_self_check_practice_without_any_record(client_and_db):
     q = client.get("/get_next_question?skill=gh_LogicAndSets&level=1&mode=type_rotation&textbook_example_id=12746").get_json()
     assert int(q["textbook_example_id"]) == 12746 and q["fixed_textbook_practice"] == "ungraded"
     assert q["check_mode"] == "ungraded_self_study" and q["graded"] is False and len(q["practice_scaffold"]) == 2
-    assert "否定" in q["question_text"] and q["correct_answer"] == "" and not q.get("reference_solution")
+    assert "否定" in q["question_text"] and not q.get("correct_answer") and not q.get("reference_solution")
     blob = json.dumps(q, ensure_ascii=False)
     assert "不是偶數或" not in blob and "不是正數" not in blob and "\\le" not in blob  # the reference arrives only after a submit
     before = _counts(db)

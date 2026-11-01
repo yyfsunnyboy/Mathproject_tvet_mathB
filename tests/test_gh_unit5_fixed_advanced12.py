@@ -149,7 +149,7 @@ def test_served_as_the_textbook_original_with_the_semicircle_and_no_answer(clien
     assert len(q["image_assets"]) == 1
     asset = q["image_assets"][0]
     assert (HERE / "sandbox" / asset["path"]).is_file() and "進階題12" in asset["path"]
-    assert q["correct_answer"] == "" and q["answer"] == "" and not q.get("reference_solution")
+    assert not q.get("correct_answer") and not q.get("answer") and not q.get("reference_solution")
     blob = json.dumps({k: v for k, v in q.items() if k not in ("question_uid", "image_assets", "question_text", "new_question_text",
                                                                  "question_text_hash")}, ensure_ascii=False)
     for secret in ("116", "expected_answer", "canonical_answer"):

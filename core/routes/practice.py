@@ -47,6 +47,7 @@ from core.practice_question_store import (
     resolve_check_context,
     preview_question_text,
 )
+from core.practice_student_payload import student_question_payload
 from core.adaptive_engine import recommend_question, update_student_ability, apply_error_penalty, get_all_prerequisites
 from core.ai_analyzer import diagnose_error
 from core.irt_engine import update_node_competencies
@@ -591,7 +592,7 @@ def _build_textbook_example_practice_response(
         len(assets),
     )
     _log_get_next_question_response(payload)
-    return jsonify(payload)
+    return jsonify(student_question_payload(payload))
 
 
 def _v3_runtime_contract_api_fields(data: dict[str, Any]) -> dict[str, Any]:
@@ -2531,7 +2532,7 @@ def next_question():
             "此題型目前屬於 AI 手寫判分 / 教師審閱候選題型，尚未開放一般自動判分練習。<br>"
             "未來可透過手寫作答、OCR / Vision、AI 助教判斷 correct / partially_correct / needs_review。"
         )
-        return jsonify(_finalize_practice_question_api_fields({
+        return jsonify(student_question_payload(_finalize_practice_question_api_fields({
             "manual_review_unavailable": True,
             "new_question_text": review_stem,
             "context_string": "",
@@ -2543,7 +2544,7 @@ def next_question():
             "answer_type": "unavailable",
             "reason": manual_review_info["reason"],
             "future_path": manual_review_info["future_path"],
-        }, skill_id=skill_id))
+        }, skill_id=skill_id)))
 
     # Phase 6C-1R2: gated Chap2 skills ??clear gate error instead of importing missing skills.<id>
     if is_b4_chapter2_skill_not_enabled_in_phase6c1(skill_id):
@@ -3178,7 +3179,7 @@ def next_question():
             skill_id,
             response_payload.get("question_uid", ""),
         )
-        return jsonify(response_payload)
+        return jsonify(student_question_payload(response_payload))
     except Exception as e:
         import traceback
         current_app.logger.error(f"[RUNTIME ERROR] skill_id={skill_id} exception={str(e)}\ntraceback={traceback.format_exc()}")

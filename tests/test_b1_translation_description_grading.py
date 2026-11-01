@@ -13,6 +13,8 @@ from urllib.parse import quote
 import pytest
 from werkzeug.security import generate_password_hash
 
+from _practice_served_question import stored_answer
+
 ROOT = Path(__file__).resolve().parents[1]
 QFG = "vh_數學B1_QuadraticFunctionGraph"
 VERTEX = "vh_數學B1_VertexFormOfQuadraticFunction"
@@ -187,7 +189,8 @@ def student_client():
 
 def _route_check(client, answer: str) -> dict:
     question = client.get(f"/get_next_question?skill={quote(QFG)}&level=1&gen_seed={REPORTED_SEED}").get_json()
-    assert question["correct_answer"] == "向左 2、向下 4"
+    assert "correct_answer" not in question
+    assert stored_answer(question) == "向左 2、向下 4"
     resp = client.post("/check_answer", json={
         "answer": answer, "skill_id": QFG, "question_uid": question["question_uid"],
     })

@@ -10,6 +10,7 @@ import pytest
 
 from app import create_app
 from models import User
+from _practice_served_question import stored_answer
 from core.gencode.answer_grading import attach_correct_answer_feedback
 from core.gencode.b2_14_component_specs import SPECS, VIS
 from core.gencode.services.gencode_status_query_service import (
@@ -112,7 +113,8 @@ def test_practice_and_question_http_contract(client: Any, skill_id: str) -> None
     response = client.get(f"/get_next_question?skill={encoded}&gen_seed=17&level=1")
     assert response.status_code == 200
     payload = response.get_json()
-    assert payload["answer_contract"] and payload["correct_answer"] not in (None, "", {}, [])
+    assert "correct_answer" not in payload
+    assert payload["answer_contract"] and stored_answer(payload) not in (None, "", {}, [])
     if (payload.get("visual_spec") or {}).get("required"):
         assert payload["visual_spec"]["asset_path"]
 

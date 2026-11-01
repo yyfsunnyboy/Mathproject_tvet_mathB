@@ -17,6 +17,7 @@ from core.practice_question_store import (
 )
 from core.session import set_current
 from models import User, db
+from _practice_served_question import stored_answer
 
 SKILL_DISTANCE = "vh_數學B1_DistanceBetweenTwoPointsInPlane"
 SKILL_DIVISION = "vh_數學B1_DivisionPointCoordinates"
@@ -230,7 +231,7 @@ def test_incorrect_standard_submission_can_be_retried_as_new_attempt(logged_clie
     assert first["consecutive_correct"] == 0
     second = logged_client.post(
         "/check_answer",
-        json=_check_payload(q, q["correct_answer"]),
+        json=_check_payload(q, stored_answer(q)),
     ).get_json() or {}
     assert second.get("duplicate_submission") is not True
     assert second["correct"] is True
@@ -275,7 +276,7 @@ def test_distance_solution_set_still_or_join(logged_client) -> None:
             f"/get_next_question?skill={quote(SKILL_DISTANCE)}&problem_type={PT_DISTANCE}&gen_seed={seed}&level=1"
         ).get_json() or {}
         checker = str(cand.get("checker") or cand.get("checker_type") or "")
-        ca = cand.get("correct_answer")
+        ca = stored_answer(cand)
         if "solution_set" in checker or isinstance(ca, list):
             q = cand
             break

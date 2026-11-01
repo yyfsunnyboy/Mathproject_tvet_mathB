@@ -158,7 +158,7 @@ def test_graded_fixed_rows_do_not_send_the_answer_or_any_reference_before_submit
     for rid, skill in ((12719, "gh_Series"), (12727, "gh_Series"), (12731, "gh_CommonSeriesSummationFormulas"), (12735, "gh_CommonSeriesSummationFormulas")):
         question = _serve(client, skill, rid)
         blob = json.dumps(question, ensure_ascii=False)
-        assert question["correct_answer"] == "" and question["answer"] == "", rid
+        assert not question.get("correct_answer") and not question.get("answer"), rid
         for secret in secrets.get(rid, ()):
             assert secret not in blob, (rid, secret)
         assert not question.get("reference_solution") and "【驗證" not in blob and "【推導" not in blob, rid  # the reference proof / steps arrive only after a submit

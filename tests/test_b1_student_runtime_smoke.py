@@ -8,6 +8,8 @@ from urllib.parse import quote
 import pytest
 from werkzeug.security import generate_password_hash
 
+from _practice_served_question import stored_answer
+
 
 SKILL_ID = "vh_數學B1_PolynomialArithmeticOperations"
 
@@ -108,14 +110,15 @@ def test_b1_student_login_generate_submit_feedback_and_next_question(b1_student_
     assert first.get("wrapper_loaded") is True
     assert first.get("legacy_fallback_used") is False
     assert first.get("question_uid")
-    assert first.get("correct_answer") not in (None, "")
+    assert "correct_answer" not in first
+    assert stored_answer(first) not in (None, "")
 
     correct = client.post(
         "/check_answer",
         json={
             "skill_id": SKILL_ID,
             "question_uid": first["question_uid"],
-            "answer": first["correct_answer"],
+            "answer": stored_answer(first),
         },
     ).get_json() or {}
     assert correct.get("correct") is True
@@ -149,7 +152,7 @@ def test_b1_student_login_generate_submit_feedback_and_next_question(b1_student_
 def _wrong_answer(question: dict):
     contract = question.get("answer_contract") or {}
     answer_type = str(contract.get("answer_type") or question.get("answer_type") or "")
-    correct = question.get("correct_answer", question.get("answer"))
+    correct = stored_answer(question)
     if "choice" in answer_type:
         return "A" if str(correct) != "A" else "B"
     if answer_type == "multi_part" or contract.get("parts"):
@@ -204,7 +207,7 @@ def test_every_b1_online_skill_http_checker_feedback_and_next_question(b1_studen
             json={
                 "skill_id": skill_id,
                 "question_uid": second["question_uid"],
-                "answer": second.get("correct_answer", second.get("answer")),
+                "answer": stored_answer(second),
             },
         )
         assert correct_response.status_code == 200

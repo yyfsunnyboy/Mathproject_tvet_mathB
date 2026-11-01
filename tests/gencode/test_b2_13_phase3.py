@@ -14,6 +14,7 @@ import pytest
 from core.gencode.b2_13_component_specs import SPECS
 from app import create_app
 from models import User
+from _practice_served_question import stored_answer
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -92,7 +93,8 @@ def test_practice_and_question_http_200(logged_client: Any, skill_id: str) -> No
     response = logged_client.get(f"/get_next_question?skill={encoded}&gen_seed=17&level=1")
     assert response.status_code == 200
     payload = response.get_json()
-    assert payload["correct_answer"] not in (None, "", {}, [])
+    assert "correct_answer" not in payload
+    assert stored_answer(payload) not in (None, "", {}, [])
     assert isinstance(payload["answer_contract"], dict)
 
 
