@@ -116,14 +116,91 @@ def _sync_skill_family_bridge(conn, *, force: bool = False):
     if not force and skill_count == 0:
         print("[BRIDGE SOURCE] skip bridge auto-seed: skills_info is empty (force=False)")
         conn.commit()
-        return
+        return {"status": "skipped_empty_skills_info", "inserted": 0}
+
+    if not force:
+        return _startup_sync_skill_family_bridge(conn)
 
     c.execute("DELETE FROM skill_family_bridge WHERE source = 'skill_breakpoint_catalog.csv'")
 
+    desired = _desired_catalog_bridge_rows(c)
+    for values in desired.values():
+        c.execute(f"""
+            INSERT INTO skill_family_bridge (
+                {", ".join(_BRIDGE_SYNC_COLUMNS)}, created_at, updated_at
+            ) VALUES (
+                {", ".join("?" for _ in _BRIDGE_SYNC_COLUMNS)}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+            )
+            ON CONFLICT(skill_id, family_id) DO UPDATE SET
+                {", ".join(f"{col} = excluded.{col}" for col in _BRIDGE_SYNC_COLUMNS[2:])},
+                updated_at = CURRENT_TIMESTAMP
+        """, values)
+
+    conn.commit()
+    return {"status": "force_reseeded", "inserted": len(desired)}
+
+
+_BRIDGE_SYNC_COLUMNS = (
+    "skill_id", "family_id", "skill_name", "skill_ch_name", "skill_en_name",
+    "family_name", "theme", "subskill_nodes", "notes",
+    "curriculum", "grade", "volume", "chapter", "section", "paragraph",
+    "hint_scope", "version", "source",
+)
+
+
+def _startup_sync_skill_family_bridge(conn):
+    """
+    Normal startup must never rewrite existing bridge rows (IDs, timestamps,
+    sqlite_sequence). Seed an empty table, insert only catalog rows that are
+    missing, and leave the table untouched when existing rows disagree with the
+    catalog; explicit admin init (force=True) is the only re-seed path.
+    """
+    c = conn.cursor()
+    desired = _desired_catalog_bridge_rows(c)
+    existing = {
+        (row[0], row[1]): tuple(row)
+        for row in c.execute(
+            f"SELECT {', '.join(_BRIDGE_SYNC_COLUMNS)} FROM skill_family_bridge"
+        ).fetchall()
+    }
+    changed = sorted(k for k, v in desired.items() if k in existing and existing[k] != v)
+    stale = sorted(
+        k for k, v in existing.items()
+        if v[-1] == "skill_breakpoint_catalog.csv" and k not in desired
+    )
+    missing = [k for k in desired if k not in existing]
+
+    if changed or stale:
+        print(
+            "[BRIDGE SOURCE] WARNING startup sync fail-closed: skill_family_bridge differs from catalog "
+            f"(changed={len(changed)} stale={len(stale)} missing={len(missing)}); no rows written. "
+            f"changed_sample={changed[:5]} stale_sample={stale[:5]} "
+            "Run explicit admin DB init to re-seed after review."
+        )
+        return {"status": "fail_closed_mismatch", "inserted": 0, "changed": changed, "stale": stale, "missing": missing}
+
+    if not missing:
+        return {"status": "unchanged", "inserted": 0}
+
+    for key in missing:
+        c.execute(f"""
+            INSERT INTO skill_family_bridge (
+                {", ".join(_BRIDGE_SYNC_COLUMNS)}, created_at, updated_at
+            ) VALUES (
+                {", ".join("?" for _ in _BRIDGE_SYNC_COLUMNS)}, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+            )
+        """, desired[key])
+    conn.commit()
+    print(f"[BRIDGE SOURCE] startup sync inserted {len(missing)} missing bridge row(s); existing rows untouched")
+    return {"status": "inserted_missing", "inserted": len(missing), "missing": missing}
+
+
+def _desired_catalog_bridge_rows(c) -> dict[tuple[str, str], tuple]:
+    """Catalog bridge rows for skills present in skills_info, keyed by (skill_id, family_id)."""
+    desired: dict[tuple[str, str], tuple] = {}
     rows = _read_bridge_catalog_rows()
     if not rows:
-        conn.commit()
-        return
+        return desired
 
     curriculum_rows = c.execute("""
         SELECT skill_id, curriculum, grade, volume, chapter, section, paragraph
@@ -165,44 +242,14 @@ def _sync_skill_family_bridge(conn, *, force: bool = False):
         skill_ch_name = skill_row[0] if skill_row and skill_row[0] else skill_name
         skill_en_name = skill_row[1] if skill_row and skill_row[1] else None
 
-        c.execute("""
-            INSERT INTO skill_family_bridge (
-                skill_id, family_id, skill_name, skill_ch_name, skill_en_name,
-                family_name, theme, subskill_nodes, notes,
-                curriculum, grade, volume, chapter, section, paragraph,
-                hint_scope, version, source, created_at, updated_at
-            ) VALUES (
-                ?, ?, ?, ?, ?,
-                ?, ?, ?, ?,
-                ?, ?, ?, ?, ?, ?,
-                ?, 1, 'skill_breakpoint_catalog.csv', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
-            )
-            ON CONFLICT(skill_id, family_id) DO UPDATE SET
-                skill_name = excluded.skill_name,
-                skill_ch_name = excluded.skill_ch_name,
-                skill_en_name = excluded.skill_en_name,
-                family_name = excluded.family_name,
-                theme = excluded.theme,
-                subskill_nodes = excluded.subskill_nodes,
-                notes = excluded.notes,
-                curriculum = excluded.curriculum,
-                grade = excluded.grade,
-                volume = excluded.volume,
-                chapter = excluded.chapter,
-                section = excluded.section,
-                paragraph = excluded.paragraph,
-                hint_scope = excluded.hint_scope,
-                version = excluded.version,
-                source = excluded.source,
-                updated_at = CURRENT_TIMESTAMP
-        """, (
+        desired[(skill_id, family_id)] = (
             skill_id, family_id, skill_name, skill_ch_name, skill_en_name,
             family_name, theme, json.dumps(subskill_nodes, ensure_ascii=False), notes,
             curriculum, grade, volume, chapter, section, paragraph,
-            ";".join(subskill_nodes)
-        ))
+            ";".join(subskill_nodes), 1, "skill_breakpoint_catalog.csv",
+        )
 
-    conn.commit()
+    return desired
 
 
 def init_db(engine, *, seed_bridges: bool = False):
