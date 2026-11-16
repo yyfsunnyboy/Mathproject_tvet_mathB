@@ -119,6 +119,116 @@ def ensure_multipart_item_line_breaks(text: Any) -> str:
     return re.sub(r"(?<!\n)([\(（]\s*[2-9]\d*\s*[\)）])", r"\n\1", source)
 
 
+_ASCII_SQRT_FALLBACK_RE = re.compile(r"(?<![\\\w])sqrt\(([^()]+)\)")
+_UNICODE_SQRT_RE = re.compile(r"√\s*(?:\(([^()]+)\)|\{([^{}]+)\}|(\d+))")
+_TEX_SQRT_TO_ASCII_RE = re.compile(r"\\sqrt\s*\{([^{}]+)\}")
+_SIMPLE_ASSIGNMENT_RE = re.compile(
+    r"^([A-Za-z](?:_[A-Za-z0-9]+)?)\s*=\s*(.+)$"
+)
+# Ascii multiply between math atoms already partly upgraded to TeX.
+_ASCII_MUL_IN_TEX_RE = re.compile(
+    r"([0-9.\)\}]|\\(?:pi|circ))"
+    r"\s*\*\s*"
+    r"(\\sqrt|\\frac|\\left\(|\(|[0-9.\\])"
+)
+
+
+def _normalize_radicals_for_arithmetic_parse(expr: str) -> str:
+    """Map unicode / TeX radicals to ``sqrt(...)`` so the numeric parser can run."""
+    text = str(expr or "").replace("−", "-")
+    text = _UNICODE_SQRT_RE.sub(
+        lambda m: f"sqrt({m.group(1) or m.group(2) or m.group(3)})",
+        text,
+    )
+    text = _TEX_SQRT_TO_ASCII_RE.sub(r"sqrt(\1)", text)
+    text = text.replace(r"\left(", "(").replace(r"\right)", ")")
+    return text
+
+
+def _try_arithmetic_latex_fragment(expr: str) -> str | None:
+    """Return LaTeX for a bounded numeric fragment, or None when unsafe to convert."""
+    raw = _normalize_radicals_for_arithmetic_parse(expr).strip()
+    if not raw:
+        return None
+    # Only convert when an ascii multiply or radical is present; leave plain TeX alone.
+    if not re.search(r"(?:\*|sqrt\()", raw):
+        return None
+    if not re.fullmatch(r"[0-9.sqrt()+*/\-\s]+", raw):
+        return None
+    try:
+        from core.gencode.choice_math_display import _arithmetic_latex
+
+        return _arithmetic_latex(raw)
+    except Exception:
+        return None
+
+
+def _suppress_residual_ascii_multiply_in_tex(expr: str) -> str:
+    """Remove leftover ascii ``*`` between already-TeX atoms (display only)."""
+
+    def _repl(match: re.Match[str]) -> str:
+        left, right = match.group(1), match.group(2)
+        if right.startswith((r"\sqrt", r"\frac", r"\left(", "(", r"\pi")):
+            return f"{left}{right}"
+        if re.match(r"[0-9.]", right):
+            return f"{left} \\times {right}"
+        return f"{left}{right}"
+
+    return _ASCII_MUL_IN_TEX_RE.sub(_repl, expr)
+
+
+def upgrade_ascii_sqrt_inside_math_delimiters(text: Any) -> str:
+    """Convert checker-friendly ascii math inside ``$...$`` / ``\\(...\\)`` to LaTeX.
+
+    Handles ``sqrt(...)``, unicode ``√``, and ascii ``*`` multiplication such as
+    ``3*sqrt(3)/2`` → ``\\frac{3\\sqrt{3}}{2}``. Assignment forms like
+    ``a=3*sqrt(2)`` only convert the RHS. Canonical checker answers are not
+    routed through this helper, and prose outside math delimiters is untouched.
+    """
+    source = str(text or "")
+    if not re.search(r"(?:\*|sqrt\(|√)", source):
+        return source
+
+    def _upgrade_inner(inner: str) -> str:
+        original = str(inner or "")
+        raw = original.strip().replace("−", "-")
+        if not re.search(r"(?:\*|sqrt\(|√|\\sqrt)", raw):
+            return original
+
+        assignment = _SIMPLE_ASSIGNMENT_RE.fullmatch(raw)
+        if assignment:
+            lhs, rhs = assignment.group(1), assignment.group(2)
+            converted = _try_arithmetic_latex_fragment(rhs)
+            if converted is not None:
+                return f"{lhs}={converted}"
+            rhs_fallback = _ASCII_SQRT_FALLBACK_RE.sub(
+                r"\\sqrt{\1}",
+                _normalize_radicals_for_arithmetic_parse(rhs),
+            )
+            rhs_fallback = _suppress_residual_ascii_multiply_in_tex(rhs_fallback)
+            return f"{lhs}={rhs_fallback}"
+
+        converted = _try_arithmetic_latex_fragment(raw)
+        if converted is not None:
+            return converted
+
+        fallback = _ASCII_SQRT_FALLBACK_RE.sub(
+            r"\\sqrt{\1}",
+            _normalize_radicals_for_arithmetic_parse(raw),
+        )
+        return _suppress_residual_ascii_multiply_in_tex(fallback)
+
+    def _dollar(match: re.Match[str]) -> str:
+        return f"${_upgrade_inner(match.group(1))}$"
+
+    def _paren(match: re.Match[str]) -> str:
+        return rf"\({_upgrade_inner(match.group(1))}\)"
+
+    upgraded = re.sub(r"(?<!\$)\$(?!\$)([^$]+)\$", _dollar, source)
+    upgraded = re.sub(r"\\\((.+?)\\\)", _paren, upgraded)
+    return upgraded
+
+
 def sanitize_student_math_display_text(text: Any, *, break_multipart_items: bool = True) -> str:
     """Shared student-facing cleanup for numeric float noise and trivial vec coeffs.
 
@@ -126,6 +236,7 @@ def sanitize_student_math_display_text(text: Any, *, break_multipart_items: bool
     browser, and the marker regex cannot tell ``(2)`` items from ``f(2)`` inside math.
     """
     cleaned = sanitize_trivial_vector_coefficients(sanitize_float_noise_in_text(text))
+    cleaned = upgrade_ascii_sqrt_inside_math_delimiters(cleaned)
     return ensure_multipart_item_line_breaks(cleaned) if break_multipart_items else cleaned
 
 

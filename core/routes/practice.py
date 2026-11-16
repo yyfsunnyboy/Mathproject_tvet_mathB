@@ -3204,6 +3204,12 @@ def check_answer():
     body = dict(request.json) if isinstance(request.json, dict) else {}
     has_structured_answers = "answers" in body
     user_ans = body.get("answers", body.get("answer", ""))
+    # Blank multi-part textboxes must not override a non-empty OCR/handwriting answer.
+    if isinstance(user_ans, dict) and not any(str(v or "").strip() for v in user_ans.values()):
+        fallback_ans = body.get("answer", body.get("user_answer", ""))
+        if fallback_ans not in (None, "", user_ans):
+            user_ans = fallback_ans
+            has_structured_answers = isinstance(user_ans, (dict, list))
     if isinstance(user_ans, str):
         user_ans = user_ans.strip()
         # Only the explicit plural ``answers`` field carries JSON-encoded
@@ -3268,6 +3274,31 @@ def check_answer():
         from core.gencode.table_question_contract import normalize_table_student_answer
 
         user_ans = normalize_table_student_answer(user_ans, current)
+    elif isinstance(user_ans, str) and user_ans:
+        # Vision OCR may return numbered text or a JSON object string for multi_part.
+        contract = current.get("answer_contract") if isinstance(current.get("answer_contract"), dict) else {}
+        answer_type = str(
+            current.get("answer_type") or contract.get("answer_type") or ""
+        ).strip().lower()
+        if answer_type == "multi_part" or (
+            isinstance(contract.get("parts"), list) and contract.get("parts")
+        ):
+            from core.handwriting_ai_check import (
+                HandwritingCheckContext,
+                normalize_multi_part_handwriting_answer,
+            )
+
+            mapped = normalize_multi_part_handwriting_answer(
+                user_ans,
+                HandwritingCheckContext(
+                    skill_id=skill_id,
+                    answer_type=answer_type or "multi_part",
+                    correct_answer=current.get("correct_answer", current.get("answer")),
+                    answer_contract=contract,
+                ),
+            )
+            if isinstance(mapped, dict) and any(str(v or "").strip() for v in mapped.values()):
+                user_ans = mapped
     if not isinstance(user_ans, (list, tuple, dict)):
         user_ans = _normalize_choice_alias_answer(user_ans, current)
     attempt_ctx = _build_attempt_context(user_ans, current, body)

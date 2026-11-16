@@ -20,6 +20,12 @@ def test_practice_page_links_shared_typography_css():
     assert "cdn.jsdelivr.net/npm/katex" not in INDEX.lower()
 
 
+def test_practice_title_hides_technical_skill_id_when_chinese_name_exists():
+    # Keep classroom title as skill_ch_name; only fall back to mangled skill_id.
+    assert "skill_ch_name or skill_id" in INDEX
+    assert "not skill_ch_name or skill_ch_name == skill_id" in INDEX
+
+
 def test_practice_surfaces_use_canonical_wrapper_class():
     for element_id in ("question-text", "question-choices", "subquestions-container", "result-display"):
         anchor = INDEX.find(f'id="{element_id}"')
@@ -62,6 +68,49 @@ def test_numeric_display_cleanup_still_works():
     assert latex_coeff_times_symbol(1, r"\vec{a}") == r"\vec{a}"
     assert (ROOT / "static" / "js" / "math_display_normalizer.js").is_file()
     assert (ROOT / "static" / "js" / "choice_math.js").is_file()
+
+
+def test_stem_ascii_sqrt_inside_math_delimiters_becomes_latex():
+    from core.gencode.resources.rational_display import (
+        sanitize_student_math_display_text,
+        upgrade_ascii_sqrt_inside_math_delimiters,
+    )
+
+    stem = r"在△ABC中，已知兩邊長分別為 $sqrt(3)$、6，夾角為 $120^\circ$，試求△ABC的面積。"
+    cleaned = sanitize_student_math_display_text(stem, break_multipart_items=False)
+    assert "sqrt(" not in cleaned
+    assert r"$\sqrt{3}$" in cleaned
+    assert r"$120^\circ$" in cleaned
+    assert upgrade_ascii_sqrt_inside_math_delimiters(r"已是 $\sqrt{5}$") == r"已是 $\sqrt{5}$"
+
+
+def test_stem_ascii_multiply_inside_math_delimiters_becomes_latex():
+    from core.gencode.resources.rational_display import (
+        sanitize_student_math_display_text,
+        upgrade_ascii_sqrt_inside_math_delimiters,
+    )
+
+    cleaned = sanitize_student_math_display_text(
+        r"△ABC中，已知$a=3*sqrt(2)$，$b=3$，試求$\angle B$。",
+        break_multipart_items=False,
+    )
+    assert "*" not in cleaned
+    assert "sqrt(" not in cleaned
+    assert r"$a=3\sqrt{2}$" in cleaned
+    assert r"$\angle B$" in cleaned
+
+    frac = upgrade_ascii_sqrt_inside_math_delimiters(r"面積為 $3*sqrt(3)/2$")
+    assert "*" not in frac
+    assert r"$\frac{3\sqrt{3}}{2}$" in frac
+
+    unicode_mul = upgrade_ascii_sqrt_inside_math_delimiters(r"$3 * √3/2$")
+    assert "*" not in unicode_mul
+    assert "√" not in unicode_mul
+    assert r"$\frac{3\sqrt{3}}{2}$" in unicode_mul
+
+    # Prose asterisks outside math delimiters must stay untouched.
+    prose = upgrade_ascii_sqrt_inside_math_delimiters("請注意 * 號僅供參考，答案為 4")
+    assert " * " in prose
 
 
 def test_audit_script_reports_clean_chapter():

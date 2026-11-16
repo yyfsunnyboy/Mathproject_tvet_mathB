@@ -410,6 +410,162 @@ def test_numbered_multi_part_handwriting_maps_fresh_parts_for_shared_checker():
     assert result["is_correct"] is True
 
 
+def test_intercept_form_json_ocr_maps_to_equation_and_area_keys():
+    """Vision may return a JSON string with '(1)'/'(2)' keys instead of numbered text."""
+    from core.gencode.runtime_skill_wrapper import check_answer
+
+    expected = {"equation": "x - 7y - 7 = 0", "area": "7/2"}
+    contract = {
+        "answer_type": "multi_part",
+        "checker": "multi_part_answer_checker",
+        "answer_equivalence": "multi_part_answer",
+        "parts": [
+            {
+                "key": "equation",
+                "checker": "linear_equation_equivalent_checker",
+                "equivalence_type": "linear_equation_equivalent",
+                "expected_answer": "x - 7y - 7 = 0",
+            },
+            {
+                "key": "area",
+                "checker": "rational_checker",
+                "equivalence_type": "rational_equivalent",
+                "expected_answer": "7/2",
+            },
+        ],
+    }
+    payload = {
+        "skill_id": "vh_數學B1_InterceptForm",
+        "problem_type_id": "intercept_form_equation_and_triangle_area",
+        "answer_type": "multi_part",
+        "checker": "multi_part_answer_checker",
+        "equivalence": "multi_part_answer",
+        "answer_contract": contract,
+    }
+    # Single backslash before frac, as emitted by vision OCR (not valid strict JSON).
+    raw_json = '{"(1)": "\\frac{x}{7} - \\frac{y}{1} = 1", "(2)": "\\frac{7}{2}"}'
+    result = build_handwriting_check_response(
+        image_base64="data:image/png;base64,intercept-ink",
+        ctx=_ctx(
+            expected,
+            skill_id="vh_數學B1_InterceptForm",
+            answer_type="multi_part",
+            answer_contract=contract,
+            checker=contract["checker"],
+            equivalence=contract["answer_equivalence"],
+        ),
+        ai_result={
+            "mode": "final_answer_only",
+            "recognized_answer": raw_json,
+            "confidence": 0.99,
+        },
+        checker=lambda user_answer, correct_answer, **kwargs: check_answer(
+            user_answer,
+            correct_answer,
+            payload=payload,
+            answer_contract=contract,
+            skill_id="vh_數學B1_InterceptForm",
+        ),
+    )
+
+    assert result["normalized_answer"]["equation"] == r"\frac{x}{7} - \frac{y}{1} = 1"
+    assert result["normalized_answer"]["area"] == r"\frac{7}{2}"
+    assert result["is_correct"] is True
+
+    assert check_answer(
+        {"equation": "x/7 - y = 1", "area": "3.5"},
+        expected,
+        payload=payload,
+        answer_contract=contract,
+        skill_id="vh_數學B1_InterceptForm",
+    )
+    assert check_answer(
+        {"equation": "x/7 + y/(-1) = 1", "area": "7/2"},
+        expected,
+        payload=payload,
+        answer_contract=contract,
+        skill_id="vh_數學B1_InterceptForm",
+    )
+    assert not check_answer(
+        {"equation": "x/7 + y = 1", "area": "7/2"},
+        expected,
+        payload=payload,
+        answer_contract=contract,
+        skill_id="vh_數學B1_InterceptForm",
+    )
+    assert not check_answer(
+        {"equation": "x/7 - y/1 = 1", "area": "9"},
+        expected,
+        payload=payload,
+        answer_contract=contract,
+        skill_id="vh_數學B1_InterceptForm",
+    )
+
+
+def test_single_field_multi_part_scalar_handwriting_maps_to_area_key():
+    expected = {"area": "9/2"}
+    contract = {
+        "answer_type": "multi_part",
+        "checker": "multi_part_answer_checker",
+        "answer_equivalence": "multi_part_answer",
+        "parts": [
+            {
+                "key": "area",
+                "label": "面積",
+                "display_label": "面積",
+                "checker": "rational_checker",
+                "equivalence_type": "numeric_exact",
+                "expected_answer": "9/2",
+            }
+        ],
+    }
+
+    def checker(user_answer, correct_answer, **kwargs):
+        if isinstance(user_answer, dict) and isinstance(correct_answer, dict):
+            return str(user_answer.get("area", "")).strip() in {"9/2", "4.5"}
+        return False
+
+    result = build_handwriting_check_response(
+        image_base64="data:image/png;base64,area-ink",
+        ctx=_ctx(
+            expected,
+            answer_type="multi_part",
+            answer_contract=contract,
+            checker=contract["checker"],
+            equivalence=contract["answer_equivalence"],
+        ),
+        ai_result={
+            "mode": "final_answer_only",
+            "recognized_answer": "9/2",
+            "confidence": 0.99,
+        },
+        checker=checker,
+    )
+
+    assert result["normalized_answer"] == {"area": "9/2"}
+    assert result["completion_state"] == "completed"
+    assert result["is_correct"] is True
+
+    wrong = build_handwriting_check_response(
+        image_base64="data:image/png;base64,area-ink-wrong",
+        ctx=_ctx(
+            expected,
+            answer_type="multi_part",
+            answer_contract=contract,
+            checker=contract["checker"],
+            equivalence=contract["answer_equivalence"],
+        ),
+        ai_result={
+            "mode": "final_answer_only",
+            "recognized_answer": "7",
+            "confidence": 0.99,
+        },
+        checker=checker,
+    )
+    assert wrong["normalized_answer"] == {"area": "7"}
+    assert wrong["is_correct"] is False
+
+
 def test_handwriting_prompts_do_not_turn_format_or_missing_steps_into_failure():
     recognition = DEFAULT_PROMPT_TEMPLATES["handwriting_recognition_prompt"]["content"]
     feedback = DEFAULT_PROMPT_TEMPLATES["handwriting_feedback_prompt"]["content"]

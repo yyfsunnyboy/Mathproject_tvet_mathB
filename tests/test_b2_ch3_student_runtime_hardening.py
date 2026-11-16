@@ -56,6 +56,71 @@ def test_section_coeff_minimum_diagram_and_geometry():
     assert abs((my - ay) - (alpha * (ey - ay) + beta * (fy - ay))) < 1e-6
 
 
+def test_law_of_sines_angle_field_uses_chinese_label():
+    from core.domain.trigonometry_law_of_sines_domain import build_trigonometry_law_of_sines_matrix
+    from core.gencode.b2_21_law_of_sines_capability_adapter import adapt_b2_21_law_of_sines_matrix
+
+    matrix = build_trigonometry_law_of_sines_matrix(
+        operation="solve_angle_by_law_of_sines",
+        seed=7,
+    )
+    payload = adapt_b2_21_law_of_sines_matrix(
+        matrix,
+        domain_operation="solve_angle_by_law_of_sines",
+    )
+    parts = (payload.get("answer_contract") or {}).get("parts") or []
+    assert parts
+    angle_part = next(p for p in parts if p.get("key") == "angle")
+    assert angle_part["key"] == "angle"
+    assert angle_part["label"] == "∠B（角度）"
+    assert angle_part["display_label"] == "∠B（角度）"
+    assert "angle" not in str(angle_part["display_label"]).casefold() or "∠" in angle_part["display_label"]
+    assert "*" not in str(payload.get("question") or payload.get("question_text") or "")
+    assert angle_part["expected_answer"] == matrix["answer"]["parts"]["angle"]
+
+
+def test_b1_intercept_form_line_equation_path_uses_chinese_labels():
+    """B1 InterceptForm uses convert_line_equation_matrix_to_question_payload (not V3 matrix)."""
+    from agent_skills_v3.vh_數學B1_InterceptForm.components.src_4547.generate import (
+        generate,
+    )
+    from core.domain.trigonometry_law_of_sines_domain import build_trigonometry_law_of_sines_matrix
+    from core.gencode.b2_21_law_of_sines_capability_adapter import adapt_b2_21_law_of_sines_matrix
+    from core.gencode.domain_matrix_adapter import _student_facing_part_label
+
+    payload = generate(level=1, seed=1)
+    parts = {
+        p["key"]: (p.get("display_label") or p.get("label"))
+        for p in ((payload.get("answer_contract") or {}).get("parts") or [])
+    }
+    assert parts["equation"] == "截距式"
+    assert parts["area"] == "三角形面積"
+    # Internal keys unchanged for checker / answer map.
+    assert set((payload.get("answer") or {}).keys()) == {"equation", "area"}
+
+    # B2 SAS area stays generic 「面積」 via the domain-matrix path.
+    area_matrix = build_trigonometry_law_of_sines_matrix(
+        operation="compute_triangle_area_sas",
+        seed=7,
+    )
+    area_payload = adapt_b2_21_law_of_sines_matrix(
+        area_matrix,
+        domain_operation="compute_triangle_area_sas",
+    )
+    area_part = (area_payload.get("answer_contract") or {}).get("parts")[0]
+    assert area_part["key"] == "area"
+    assert area_part["display_label"] == "面積"
+
+    assert _student_facing_part_label("equation") == "方程式"
+    assert (
+        _student_facing_part_label(
+            "equation",
+            domain_operation="intercept_form_equation_and_triangle_area",
+        )
+        == "截距式"
+    )
+
+
 def test_internal_multipart_keys_get_student_labels():
     from core.gencode.domain_matrix_adapter import _student_facing_part_label, _looks_like_internal_part_key
 
@@ -63,6 +128,15 @@ def test_internal_multipart_keys_get_student_labels():
     assert _student_facing_part_label("a_dot_b") == r"$\vec{a}\cdot\vec{b}$"
     assert _student_facing_part_label("mag_2a_3b") == r"$\left|2\vec{a}-3\vec{b}\right|$"
     assert "周長" == _student_facing_part_label("perimeter")
+    assert _student_facing_part_label("area") == "面積"
+    assert _student_facing_part_label("angle") == "角度"
+    assert _student_facing_part_label("angle", label_context={"find": "B"}) == "∠B（角度）"
+    assert _student_facing_part_label("side") == "邊長"
+    assert _student_facing_part_label("sinA") == r"$\sin A$"
+    assert _looks_like_internal_part_key("area", "area")
+    assert not _looks_like_internal_part_key("area", "面積")
+    assert _looks_like_internal_part_key("angle", "angle")
+    assert not _looks_like_internal_part_key("angle", "∠B（角度）")
     assert _student_facing_part_label("dot1").startswith("第")
     assert "$k_{1}$" in _student_facing_part_label("k1")
     assert r"$\alpha$" == _student_facing_part_label("alpha")

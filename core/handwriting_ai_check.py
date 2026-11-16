@@ -312,6 +312,69 @@ def _multi_part_keys(ctx: HandwritingCheckContext) -> list[str]:
     return keys
 
 
+def _extract_jsonlike_numbered_parts(text: str) -> dict[str, str] | None:
+    """Extract '(1)'/'part_1' string values without json.loads.
+
+    Vision OCR often emits JSON-shaped text containing LaTeX such as ``\\frac``.
+    Standard JSON parsing treats ``\\f`` as a form-feed escape and corrupts math.
+    """
+    pairs: dict[str, str] = {}
+    patterns = (
+        re.compile(r'"\((\d+)\)"\s*:\s*"([^"]*)"'),
+        re.compile(r'"part[_\s-]*(\d+)"\s*:\s*"([^"]*)"', flags=re.IGNORECASE),
+        re.compile(r'"(\d+)"\s*:\s*"([^"]*)"'),
+    )
+    for pattern in patterns:
+        for match in pattern.finditer(text):
+            number = match.group(1)
+            key = f"({number})" if pattern is patterns[0] else (
+                f"part_{number}" if pattern is patterns[1] else number
+            )
+            if key not in pairs:
+                pairs[key] = match.group(2)
+    return pairs or None
+
+
+def _coerce_multipart_ocr_value(value: Any) -> Any:
+    """Preserve structured OCR; parse JSON-like object/array strings from vision models."""
+    if isinstance(value, (dict, list, tuple)):
+        return value
+    text = _clean_text(value)
+    if not text:
+        return text
+    if text.startswith("{") and text.endswith("}"):
+        extracted = _extract_jsonlike_numbered_parts(text)
+        if extracted:
+            return extracted
+        try:
+            import json
+
+            parsed = json.loads(text)
+        except Exception:
+            return text
+        return parsed if isinstance(parsed, dict) else text
+    if text.startswith("[") and text.endswith("]"):
+        try:
+            import json
+
+            parsed = json.loads(text)
+        except Exception:
+            return text
+        return parsed if isinstance(parsed, list) else text
+    return text
+
+
+def _multipart_dict_candidates(index: int, key: str) -> tuple[str, ...]:
+    return (
+        key,
+        str(index),
+        f"part_{index}",
+        f"part{index}",
+        f"({index})",
+        f"（{index}）",
+    )
+
+
 def normalize_multi_part_handwriting_answer(value: Any, ctx: HandwritingCheckContext) -> Any:
     """Map a fresh numbered transcription onto the current contract's part keys."""
     keys = _multi_part_keys(ctx)
@@ -324,10 +387,11 @@ def normalize_multi_part_handwriting_answer(value: Any, ctx: HandwritingCheckCon
     if not is_multi_part or not keys:
         return value
 
+    value = _coerce_multipart_ocr_value(value)
     mapped: dict[str, Any] = {key: "" for key in keys}
     if isinstance(value, dict):
         for index, key in enumerate(keys, start=1):
-            for candidate in (key, str(index), f"part_{index}", f"part{index}"):
+            for candidate in _multipart_dict_candidates(index, key):
                 if candidate in value:
                     mapped[key] = value[candidate]
                     break
@@ -347,6 +411,10 @@ def normalize_multi_part_handwriting_answer(value: Any, ctx: HandwritingCheckCon
     )
     matches = list(marker.finditer(text))
     if not matches:
+        # Single-field multi_part (e.g. area) often arrives as a bare scalar from OCR.
+        if len(keys) == 1:
+            mapped[keys[0]] = text
+            return mapped
         return value
     for pos, match in enumerate(matches):
         number_text = next((group for group in match.groups() if group), "")

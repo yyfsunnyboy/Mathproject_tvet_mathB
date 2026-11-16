@@ -3445,13 +3445,11 @@ span[style*="粗細"],
                 </div>
             {% else %}
                 <h1 id="skill-title"> {{
-                    skill_ch_name
-                    }}
-                    {% if not is_similar_practice %}
+                    skill_ch_name or skill_id
+                    }}{% if not is_similar_practice and (not skill_ch_name or skill_ch_name == skill_id) %}
                     ({{
                     skill_id|replace('_', ' ')|title
-                    }})
-                    {% endif %}
+                    }}){% endif %}
                     <span id="level-indicator"
                         style="background: #1abc9c; color: white; padding: 4px 10px; font-size: 0.7em; border-radius: 12px; vertical-align: middle;">等級：1</span><span
                         id="streak-counter"{% if is_similar_practice %} style="display:none;"{% endif %}>{% if streak_without_target %}🔥 連續答對 {{ (consecutive_correct or 0) | int }} 題{% elif (pass_target or 0) | int > 0 %}🔥 連續答對 {{ (consecutive_correct or 0) | int }} / {{ (pass_target or 0) | int }} 題{% else %}🔥 連續答對：暫無門檻{% endif %}</span></h1>
@@ -8194,10 +8192,116 @@ span[style*="粗細"],
             const handwritingPayload = buildCheckAnswerPayload(normalizedAnswer);
             handwritingPayload.handwriting_submission_id = submission.submissionId;
             handwritingPayload.handwriting_image_sha256 = submission.imageSha256;
-            if (normalizedAnswer && typeof normalizedAnswer === 'object') {
-                handwritingPayload.answer = normalizedAnswer;
-                handwritingPayload.answers = normalizedAnswer;
-                handwritingPayload.user_answer = normalizedAnswer;
+            // Prefer the recognized answer over empty multi-part form fields so AI check
+            // can complete the same formal /check_answer → MsgBox path as typed submit.
+            let handwritingAnswer = mapHandwritingAnswerToMultiPart(normalizedAnswer, cq);
+            if (handwritingAnswer && typeof handwritingAnswer === 'object' && !Array.isArray(handwritingAnswer)) {
+                handwritingPayload.answer = handwritingAnswer;
+                handwritingPayload.answers = handwritingAnswer;
+                handwritingPayload.user_answer = handwritingAnswer;
+            } else if (handwritingAnswer != null && handwritingAnswer !== '') {
+                handwritingPayload.answer = handwritingAnswer;
+                handwritingPayload.user_answer = handwritingAnswer;
+                // Do not let blank textboxes win via body.answers when OCR produced a scalar.
+                if (
+                    handwritingPayload.answers
+                    && typeof handwritingPayload.answers === 'object'
+                    && !Object.values(handwritingPayload.answers).some((value) => String(value || '').trim())
+                ) {
+                    delete handwritingPayload.answers;
+                }
+            }
+
+            function multiPartFieldKeys(question) {
+                return ((((question || {}).answer_contract || {}).parts) || [])
+                    .map((part) => String((part && (part.key || part.id || part.name)) || '').trim())
+                    .filter(Boolean);
+            }
+
+            function mapHandwritingAnswerToMultiPart(rawAnswer, question) {
+                if (!isMultiPartQuestion(question) || isTableFillQuestion(question)) {
+                    return rawAnswer;
+                }
+                const partKeys = multiPartFieldKeys(question);
+                if (!partKeys.length) {
+                    return rawAnswer;
+                }
+                if (rawAnswer && typeof rawAnswer === 'object' && !Array.isArray(rawAnswer)) {
+                    const mapped = {};
+                    partKeys.forEach((key, index) => {
+                        const n = index + 1;
+                        const candidates = [key, String(n), `part_${n}`, `part${n}`, `(${n})`, `（${n}）`];
+                        let chosen = '';
+                        for (const candidate of candidates) {
+                            if (Object.prototype.hasOwnProperty.call(rawAnswer, candidate)
+                                && rawAnswer[candidate] != null
+                                && String(rawAnswer[candidate]).trim() !== '') {
+                                chosen = rawAnswer[candidate];
+                                break;
+                            }
+                        }
+                        mapped[key] = chosen;
+                    });
+                    if (Object.values(mapped).some((value) => String(value || '').trim())) {
+                        return mapped;
+                    }
+                    return rawAnswer;
+                }
+                if (typeof rawAnswer !== 'string') {
+                    return rawAnswer;
+                }
+                const text = String(rawAnswer || '').trim();
+                if (!text) {
+                    return rawAnswer;
+                }
+                if (partKeys.length === 1) {
+                    return { [partKeys[0]]: text };
+                }
+                if (text.startsWith('{') && text.endsWith('}')) {
+                    // Do not JSON.parse: LaTeX \frac is corrupted because \f is a JSON escape.
+                    const extracted = {};
+                    const patterns = [
+                        [/"\((\d+)\)"\s*:\s*"([^"]*)"/g, (n) => `(${n})`],
+                        [/"part[_\s-]*(\d+)"\s*:\s*"([^"]*)"/gi, (n) => `part_${n}`],
+                        [/"(\d+)"\s*:\s*"([^"]*)"/g, (n) => String(n)],
+                    ];
+                    patterns.forEach(([regex, keyFor]) => {
+                        let item;
+                        while ((item = regex.exec(text)) !== null) {
+                            const key = keyFor(item[1]);
+                            if (!Object.prototype.hasOwnProperty.call(extracted, key)) {
+                                extracted[key] = item[2];
+                            }
+                        }
+                    });
+                    if (Object.keys(extracted).length) {
+                        return mapHandwritingAnswerToMultiPart(extracted, question);
+                    }
+                }
+                const marker = /(?:^|[\s;；])(?:\(\s*(\d+)\s*\)|part[_\s-]*(\d+)|(\d+)[.、:：)])\s*/gi;
+                const matches = [];
+                let match;
+                while ((match = marker.exec(text)) !== null) {
+                    matches.push(match);
+                }
+                if (!matches.length) {
+                    return rawAnswer;
+                }
+                const mapped = {};
+                partKeys.forEach((key) => { mapped[key] = ''; });
+                matches.forEach((item, pos) => {
+                    const numberText = item[1] || item[2] || item[3] || '';
+                    const partIndex = Number.parseInt(numberText, 10) - 1;
+                    if (!(partIndex >= 0 && partIndex < partKeys.length)) {
+                        return;
+                    }
+                    const end = pos + 1 < matches.length ? matches[pos + 1].index : text.length;
+                    mapped[partKeys[partIndex]] = text.slice(item.index + item[0].length, end).replace(/^[\s;；,]+|[\s;；,]+$/g, '');
+                });
+                if (Object.values(mapped).some((value) => String(value || '').trim())) {
+                    return mapped;
+                }
+                return rawAnswer;
             }
             const { response: gradeResponse, body: grade } = await postJsonWithTimeout('/check_answer', handwritingPayload);
             if (isStaleHandwritingSubmission()) {

@@ -95,11 +95,29 @@ def _subquestions_from_multi_field_contract(
     return subquestions
 
 
+def _infer_angle_vertex_label(label_context: dict[str, Any] | None) -> str:
+    """Best-effort triangle vertex letter for angle answer fields (display only)."""
+    ctx = label_context if isinstance(label_context, dict) else {}
+    for key in ("find", "target_angle", "angle_name", "angle_vertex", "vertex"):
+        raw = str(ctx.get(key) or "").strip()
+        if re.fullmatch(r"[A-Za-z]", raw):
+            return raw.upper()
+    stem = str(ctx.get("question_text") or ctx.get("question") or ctx.get("stem") or "")
+    match = re.search(
+        r"(?:試求|求)\s*\$\\angle\s*([A-Za-z])\$|(?:試求|求)\s*∠\s*([A-Za-z])",
+        stem,
+    )
+    if match:
+        return str(match.group(1) or match.group(2)).upper()
+    return ""
+
+
 def _student_facing_part_label(
     key: str,
     *,
     explicit: str | None = None,
     domain_operation: str | None = None,
+    label_context: dict[str, Any] | None = None,
 ) -> str:
     """Map internal part keys to student-visible labels (generic, not chapter-hardcoded)."""
     if explicit is not None and str(explicit).strip():
@@ -165,7 +183,8 @@ def _student_facing_part_label(
     if re.fullmatch(r"[A-Z]", text):
         # Point coordinates / named point answers are student-visible as-is.
         return text
-    if re.fullmatch(r"[xy]", text, flags=re.IGNORECASE):
+    if re.fullmatch(r"[abkxy]", text, flags=re.IGNORECASE):
+        # Keep classroom math variables; do not translate symbol letters.
         return rf"${text.lower()}$"
     if re.fullmatch(r"vec:[A-Za-z]", text, flags=re.IGNORECASE):
         return rf"$\vec{{{text.split(':', 1)[1]}}}$"
@@ -182,11 +201,56 @@ def _student_facing_part_label(
     dot_n = re.fullmatch(r"dot(\d+)", text, flags=re.IGNORECASE)
     if dot_n:
         return f"第{dot_n.group(1)}組內積"
+    trig_named = re.fullmatch(r"(sin|cos|tan)([A-Za-z])", text, flags=re.IGNORECASE)
+    if trig_named:
+        fn = trig_named.group(1).lower()
+        vertex = trig_named.group(2).upper()
+        return rf"$\{fn} {vertex}$"
     if text in {"x_component", "y_component"}:
         return r"$x$ 分量" if text.startswith("x") else r"$y$ 分量"
+    op = str(domain_operation or "").casefold()
+    ctx = label_context if isinstance(label_context, dict) else {}
+    stem = str(ctx.get("question_text") or ctx.get("question") or ctx.get("stem") or "")
+    # Operation / stem aware classroom wording (display only).
+    if text == "equation":
+        if "intercept_form" in op or "截距式" in stem:
+            return "截距式"
+        if "slope_intercept" in op or "斜截式" in stem:
+            return "斜截式"
+        if "point_slope" in op or "點斜式" in stem:
+            return "點斜式"
+        return "方程式"
+    if text == "area":
+        # Prefer the more specific classroom wording only for intercept-form /
+        # axis-triangle stems; keep generic 「面積」 for trig/SAS area tasks.
+        if (
+            "intercept_form" in op
+            or "三角形面積" in stem
+            or "與兩坐標軸所圍成的三角形" in stem
+        ):
+            return "三角形面積"
+        return "面積"
     vocab = {
         "magnitude": "大小",
         "perimeter": "周長",
+        "area": "面積",
+        "equation": "方程式",
+        "angle": "角度",
+        "side": "邊長",
+        "ratio": "比值",
+        "height": "高",
+        "distance": "距離",
+        "opposite": "對邊",
+        "horizontal": "水平距離",
+        "shift": "位移",
+        "building_height": "建築物高度",
+        "original_height": "原高度",
+        "chord_length": "弦長",
+        "arc_length": "弧長",
+        "cofunction": "餘函數",
+        "complement_degrees": "餘角（度）",
+        "extra": "其餘",
+        "radius": "半徑",
         "simplified": "化簡結果",
         "vector": "向量",
         "value": "值",
@@ -195,11 +259,26 @@ def _student_facing_part_label(
         "unit": "單位向量",
         "angle_degrees": "夾角（度）",
         "turn_degrees": "左轉角度（度）",
+        "slope": "斜率",
+        "intercept": "截距",
+        "x_intercept": "$x$ 截距",
+        "y_intercept": "$y$ 截距",
         "切線一": "切線一",
         "切線二": "切線二",
     }
+    if text == "angle":
+        vertex = _infer_angle_vertex_label(label_context)
+        if vertex:
+            return f"∠{vertex}（角度）"
+        return vocab["angle"]
     if text in vocab:
         return vocab[text]
+    # Unknown snake_case / camel identifiers → Chinese classroom fallback, never raw key.
+    if "_" in text or re.fullmatch(r"[a-z][a-z0-9]*", text):
+        parts = [p for p in re.split(r"[_\s]+", text) if p]
+        translated = [vocab.get(p, vocab.get(p.lower(), "")) for p in parts]
+        if translated and all(translated):
+            return "".join(translated)
     return text
 
 
@@ -275,6 +354,17 @@ def _looks_like_internal_part_key(key: str, label: str) -> bool:
     # snake_case / digit-suffixed internal identifiers must not leak.
     if "_" in key_text or re.search(r"\d", key_text) or key_text in {
         "perimeter",
+        "area",
+        "equation",
+        "angle",
+        "side",
+        "ratio",
+        "height",
+        "distance",
+        "opposite",
+        "horizontal",
+        "shift",
+        "radius",
         "magnitude",
         "vector",
         "value",
@@ -282,9 +372,53 @@ def _looks_like_internal_part_key(key: str, label: str) -> bool:
         "unit",
         "cosine",
         "dot",
+        "extra",
+        "cofunction",
+        "slope",
+        "intercept",
     }:
         return True
     return False
+
+
+def _humanize_answer_contract_parts(
+    parts: Any,
+    *,
+    domain_operation: str | None = None,
+    label_context: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Ensure multipart rows expose Chinese display labels without changing keys."""
+    if not isinstance(parts, list):
+        return []
+    humanized: list[dict[str, Any]] = []
+    for index, raw in enumerate(parts):
+        if not isinstance(raw, dict):
+            continue
+        row = dict(raw)
+        key_text = str(row.get("key") or row.get("field_key") or "").strip()
+        explicit = row.get("display_label") or row.get("label") or row.get("prompt")
+        # Identity labels equal to the internal key must be re-mapped.
+        explicit_text = str(explicit or "").strip()
+        if explicit_text and key_text and explicit_text == key_text:
+            explicit = None
+        elif explicit_text and not _looks_like_internal_part_key(key_text, explicit_text):
+            # Keep strong classroom labels already present.
+            row["label"] = explicit_text
+            row["display_label"] = explicit_text
+            humanized.append(row)
+            continue
+        label = _student_facing_part_label(
+            key_text or f"part_{index + 1}",
+            explicit=str(explicit).strip() if explicit is not None and str(explicit).strip() else None,
+            domain_operation=domain_operation,
+            label_context=label_context,
+        )
+        if _looks_like_internal_part_key(key_text, label):
+            label = f"小題 {index + 1}"
+        row["label"] = label
+        row["display_label"] = label
+        humanized.append(row)
+    return humanized
 
 
 def _normalize_part_labels_map(
@@ -454,6 +588,7 @@ def _multi_part_contract_parts(
     *,
     part_labels: dict[str, Any] | None = None,
     domain_operation: str | None = None,
+    label_context: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Build per-part checker rows from a dict answer. Duplicate values are kept."""
     if not isinstance(semantic_answer, dict):
@@ -475,6 +610,7 @@ def _multi_part_contract_parts(
             key_text,
             explicit=labels.get(key_text),
             domain_operation=domain_operation,
+            label_context=label_context,
         )
         group_label = ""
         field_label = label
@@ -490,13 +626,10 @@ def _multi_part_contract_parts(
                 field_label = label
                 group_label = split[0]
         if _looks_like_internal_part_key(key_text, label):
-            # Last-resort humanization for unknown snake_case keys.
-            label = key_text.replace("_", " ").strip() or key_text
+            # Last-resort classroom label; never expose the raw internal key.
+            label = f"小題 {len(parts) + 1}"
             field_label = label
-            if _looks_like_internal_part_key(key_text, label):
-                label = f"小题 {len(parts) + 1}"
-                field_label = label
-                group_label = ""
+            group_label = ""
         part_row: dict[str, Any] = {
             "key": key_text,
             "label": field_label if group_label else label,
@@ -518,7 +651,18 @@ def _multi_part_contract_parts(
             if key_text.lower() in {"vector", "unit", "ab", "ac", "bc"} or not numeric:
                 # Named basis / symbolic vector parts only (skip pure magnitudes when clearly numeric radical).
                 if key_text.lower() in {"vector", "unit", "simplified"} or any(ch.isalpha() for ch in text):
-                    if key_text.lower() not in {"magnitude", "perimeter", "value", "dot", "cosine", "angle_degrees"}:
+                    if key_text.lower() not in {
+                        "magnitude",
+                        "perimeter",
+                        "value",
+                        "dot",
+                        "cosine",
+                        "angle_degrees",
+                        "angle",
+                        "side",
+                        "area",
+                        "ratio",
+                    }:
                         part_row["answer_shape"] = "vector_expression"
         parts.append(part_row)
     return parts
@@ -753,6 +897,16 @@ def _build_line_equation_answer_contract(
             "semantic_answer": semantic_answer,
         }
     if task_type == "intercept_form_equation_and_triangle_area":
+        equation_expected = semantic_answer.get("equation") if isinstance(semantic_answer, dict) else ""
+        area_expected = semantic_answer.get("area") if isinstance(semantic_answer, dict) else ""
+        equation_label = _student_facing_part_label(
+            "equation",
+            domain_operation=task_type,
+        )
+        area_label = _student_facing_part_label(
+            "area",
+            domain_operation=task_type,
+        )
         return {
             "presentation_mode": "short_answer",
             "answer_type": "multi_part",
@@ -766,24 +920,28 @@ def _build_line_equation_answer_contract(
             "parts": [
                 {
                     "key": "equation",
-                    "label": "equation",
+                    "label": equation_label,
+                    "display_label": equation_label,
+                    "field_key": "equation",
                     "checker": "linear_equation_equivalent_checker",
                     "equivalence_type": "linear_equation_equivalent",
-                    "expected_answer": semantic_answer.get("equation") if isinstance(semantic_answer, dict) else "",
+                    "expected_answer": equation_expected,
                     "display_answer": canonicalize_part_display_answer({
                         "checker": "linear_equation_equivalent_checker",
-                        "expected_answer": semantic_answer.get("equation") if isinstance(semantic_answer, dict) else "",
+                        "expected_answer": equation_expected,
                     }),
                 },
                 {
                     "key": "area",
-                    "label": "area",
+                    "label": area_label,
+                    "display_label": area_label,
+                    "field_key": "area",
                     "checker": "rational_checker",
                     "equivalence_type": "rational_equivalent",
-                    "expected_answer": semantic_answer.get("area") if isinstance(semantic_answer, dict) else "",
+                    "expected_answer": area_expected,
                     "display_answer": canonicalize_part_display_answer({
                         "checker": "rational_checker",
-                        "expected_answer": semantic_answer.get("area") if isinstance(semantic_answer, dict) else "",
+                        "expected_answer": area_expected,
                     }),
                 },
             ],
@@ -812,10 +970,13 @@ def _build_line_equation_answer_contract(
             else:
                 group_label = ""
                 choices = []
+            fig_label = _figure_slot_display_label(key_text)
             part_rows.append(
                 {
                     "key": key,
-                    "label": _figure_slot_display_label(key_text),
+                    "label": fig_label,
+                    "display_label": fig_label,
+                    "field_key": key_text,
                     "group_label": group_label,
                     "input_type": "select" if choices else "text",
                     "choices": choices,
@@ -1219,6 +1380,13 @@ def convert_line_equation_matrix_to_question_payload(
             answer_type=resolved_answer_type,
             semantic_answer=semantic_answer,
             task_type=task_type,
+        )
+
+    if isinstance(answer_contract.get("parts"), list):
+        answer_contract["parts"] = _humanize_answer_contract_parts(
+            answer_contract.get("parts"),
+            domain_operation=str(domain_operation or task_type or ""),
+            label_context={"question_text": question_text, "question": question_text},
         )
 
     # Merge comparison-specific fields into the contract for compare_point_to_line_distances.
@@ -4034,10 +4202,23 @@ def convert_domain_matrix_to_question_payload(
             answer.get("part_labels"),
             part_map if isinstance(part_map, dict) else {},
         )
+        domain_result = matrix.get("domain_result") if isinstance(matrix.get("domain_result"), dict) else {}
+        label_context = {
+            "find": givens.get("find") or domain_result.get("find"),
+            "target_angle": givens.get("target_angle")
+            or givens.get("target_angle_degrees")
+            or domain_result.get("target_angle"),
+            "angle_name": givens.get("angle_name") or domain_result.get("angle_name"),
+            "angle_vertex": givens.get("angle_vertex") or domain_result.get("angle_vertex"),
+            "vertex": givens.get("vertex") or domain_result.get("vertex"),
+            "question_text": question_text,
+            "question": question_text,
+        }
         answer_contract["parts"] = _multi_part_contract_parts(
             part_map,
             part_labels=part_labels or None,
             domain_operation=str(op or problem_type_id or ""),
+            label_context=label_context,
         )
         from core.gencode.multipart_stem_contract import extract_stem_structure as _extract_stem
 
@@ -4170,6 +4351,17 @@ def convert_domain_matrix_to_question_payload(
         "validation_facts": validation_facts,
         "generator_key": generator_key or component_id,
     }
+    if isinstance(answer_contract.get("parts"), list):
+        answer_contract["parts"] = _humanize_answer_contract_parts(
+            answer_contract.get("parts"),
+            domain_operation=str(op or problem_type_id or ""),
+            label_context={
+                "question_text": question_text,
+                "question": question_text,
+                "find": (givens.get("find") if isinstance(givens, dict) else None),
+            },
+        )
+        payload_out["answer_contract"] = answer_contract
     if stem_structure and stem_structure.get("items"):
         payload_out["stem_structure"] = stem_structure
         meta = payload_out.get("metadata")

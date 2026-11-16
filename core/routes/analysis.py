@@ -251,11 +251,23 @@ def _handwriting_pick_final_expression(expr):
     parts = [p.strip() for p in re.split(r"[;\n\r]+", raw) if p.strip()]
     if not parts:
         return raw
-    last = parts[-1]
+    # Vision OCR sometimes appends a JSON object dump; never treat that as the final math.
+    usable = [
+        part
+        for part in parts
+        if not (
+            (part.startswith("{") and part.endswith("}"))
+            or (part.startswith("[") and part.endswith("]"))
+        )
+    ]
+    last = (usable or parts)[-1]
     if "=" in last:
         rhs = last.split("=")[-1].strip()
-        if rhs:
+        if rhs and not (rhs.startswith('"') and ":" in last):
             return rhs
+        # Equation answers keep the full line; JSON fragments do not.
+        if usable:
+            return last
     return last
 
 

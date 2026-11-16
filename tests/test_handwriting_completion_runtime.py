@@ -626,6 +626,8 @@ def test_standard_frontend_resets_transient_handwriting_state_per_click():
     assert body.index("beginFreshHandwritingSubmission(cq)") < body.index("captureHandwritingImageForRecognition()")
     assert "handwriting_submission_id: submission.submissionId" in body
     assert "handwritingPayload.handwriting_image_sha256 = submission.imageSha256" in body
+    assert "mapHandwritingAnswerToMultiPart(normalizedAnswer, cq)" in body
+    assert "delete handwritingPayload.answers;" in body
     assert "feedback.handwriting_submission_id !== submission.submissionId" in body
     assert "await handleCorrectAnswer()" in body
 
