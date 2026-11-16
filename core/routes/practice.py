@@ -109,8 +109,15 @@ from core.vocational_math_b4.domain.b4_validators import (
 
 # A textbook example without a reference answer is served for self-study only (see _build_textbook_example_practice_response).
 UNGRADED_SELF_STUDY_MODE = "ungraded_self_study"
+# Opted-in skills whose textbook rows have no verified reference answer yet (no published generator); they are not proofs, so the
+# self-study notice must not call them proof / figure-pattern questions.
+UNGRADED_NO_VERIFIED_ANSWER_SKILLS = frozenset({
+    "gh_Mean", "gh_MedianAndPercentiles", "gh_VarianceAndStandardDeviation", "gh_DataScalingAndShifting",
+})
 # Explicit opt-in per skill (proof / figure-pattern units with no checker); other legacy skills keep their existing behaviour.
-UNGRADED_SELF_STUDY_SKILLS = frozenset({"gh_MathematicalInduction"})
+UNGRADED_SELF_STUDY_SKILLS = frozenset({"gh_MathematicalInduction"}) | UNGRADED_NO_VERIFIED_ANSWER_SKILLS
+_UNGRADED_PROOF_NOTICE = "本題為證明／圖形規律題，系統不自動判定對錯，也不會計入答題紀錄。請對照下方參考解法自行檢查，再按「下一題」。"
+_UNGRADED_NO_ANSWER_NOTICE = "本題目前沒有經驗證的標準答案，系統不自動判定對錯，也不會計入答題紀錄。請自行檢查作答後，再按「下一題」。"
 
 # Phase 6G-0: Chap2 skill / problem-type gates ??user-facing messages (SOP 禮8.1).
 # JSON `error` must not expose internal phase codes, legacy import traces, or URL-encoded skill_id.
@@ -3279,11 +3286,12 @@ def check_answer():
             reference_steps = [str(x) for x in (entry or {}).get("reference_solution") or []]
         except Exception:  # noqa: BLE001 - the notice below is still correct without the steps
             reference_steps = []
+        no_answer = skill_id in UNGRADED_NO_VERIFIED_ANSWER_SKILLS and not reference_steps
         return jsonify(
             {
                 "correct": None,
                 "graded": False,
-                "result": "本題為證明／圖形規律題，系統不自動判定對錯，也不會計入答題紀錄。請對照下方參考解法自行檢查，再按「下一題」。",
+                "result": _UNGRADED_NO_ANSWER_NOTICE if no_answer else _UNGRADED_PROOF_NOTICE,
                 "check_mode": check_mode,
                 "reference_solution": reference_steps,
             }

@@ -5679,6 +5679,505 @@
           "default_curriculum_profile": "general_high"
         }
       }
+    },
+    "statistics.univariate_descriptive": {
+      "approved_by": "同意第二冊 Unit 8「一維數據分析」revision_0004 的 35 個 Component、4 個 Skill 依正式 SOP 進行 Promotion／Publish。 | teacher checklist reviewer: admin at 2026/11/06 | approved components: 35/35 | excluded (teacher rejected, not published): none",
+      "bundle_sha256": "0a33ae94fd3a4c960e31149bc64453766a435a5650767389664e2857c4ff634e",
+      "capabilities": [
+        "arithmetic_mean",
+        "compare_standard_deviation",
+        "geometric_growth_mean",
+        "geometric_growth_unknown",
+        "grade_distribution_read",
+        "linear_find_scale_sd",
+        "linear_mean_sd",
+        "list_summary_stats",
+        "mean_variance_sd",
+        "median_consecutive",
+        "median_lists",
+        "monthly_mean_sd",
+        "percentile_frequency",
+        "quartile_frequency",
+        "standard_deviation",
+        "standardize_scores",
+        "statement_selection",
+        "true_false_stat",
+        "unknown_given_sd",
+        "weighted_mean",
+        "weighted_mean_unknown"
+      ],
+      "domain_module": "core.domain.promoted.univariate_statistics.univariate_statistics_domain",
+      "entrypoint": "build_univariate_statistics_matrix",
+      "operations": {
+        "arithmetic_mean": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "arithmetic_mean"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_arithmetic_mean_matrix"
+        },
+        "compare_standard_deviation": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "compare_standard_deviation"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_compare_standard_deviation_matrix"
+        },
+        "geometric_growth_mean": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "geometric_growth_mean"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_geometric_growth_mean_matrix"
+        },
+        "geometric_growth_unknown": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "geometric_growth_unknown"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_geometric_growth_unknown_matrix"
+        },
+        "grade_distribution_read": {
+          "checker_keys": [
+            "choice_label_checker",
+            "multi_part_answer_checker",
+            "solution_set_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "grade_distribution_read"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "single_choice",
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "single_choice"
+          ],
+          "validator": "validate_grade_distribution_read_matrix"
+        },
+        "linear_find_scale_sd": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "linear_find_scale_sd"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_linear_find_scale_sd_matrix"
+        },
+        "linear_mean_sd": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "linear_mean_sd"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_linear_mean_sd_matrix"
+        },
+        "list_summary_stats": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "list_summary_stats"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_list_summary_stats_matrix"
+        },
+        "mean_variance_sd": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "mean_variance_sd"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_mean_variance_sd_matrix"
+        },
+        "median_consecutive": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "median_consecutive"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_median_consecutive_matrix"
+        },
+        "median_lists": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "median_lists"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_median_lists_matrix"
+        },
+        "monthly_mean_sd": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "monthly_mean_sd"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_monthly_mean_sd_matrix"
+        },
+        "percentile_frequency": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "percentile_frequency"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_percentile_frequency_matrix"
+        },
+        "quartile_frequency": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "quartile_frequency"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_quartile_frequency_matrix"
+        },
+        "standard_deviation": {
+          "checker_keys": [
+            "expression_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "standard_deviation"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "expression",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs",
+            "short_answer"
+          ],
+          "validator": "validate_standard_deviation_matrix"
+        },
+        "standardize_scores": {
+          "checker_keys": [
+            "choice_label_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "standardize_scores"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational",
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_standardize_scores_matrix"
+        },
+        "statement_selection": {
+          "checker_keys": [
+            "solution_set_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "statement_selection"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_statement_selection_matrix"
+        },
+        "true_false_stat": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "true_false_stat"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_true_false_stat_matrix"
+        },
+        "unknown_given_sd": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "unknown_given_sd"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_unknown_given_sd_matrix"
+        },
+        "weighted_mean": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "weighted_mean"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_weighted_mean_matrix"
+        },
+        "weighted_mean_unknown": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_univariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.univariate_statistics.univariate_statistics_adapter.adapt_univariate_statistics_matrix",
+          "provided_capabilities": [
+            "weighted_mean_unknown"
+          ],
+          "runtime_contract": "univariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_weighted_mean_unknown_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "98c06e9f02353b9c01ae8a5feaf66283fde7d4358ca2af2a663eac7b442cb2d3",
+        "univariate_statistics_adapter.py": "7c42836891d164d796445d3be74ba0efff118abec97cbe66959f54852d5db313",
+        "univariate_statistics_chart.py": "644f77b8a51d0143166cdcf798cb5da745efbe931174e0a827025ac6ae4c23df",
+        "univariate_statistics_domain.py": "60b85e39c657f5c2853a5baca5d57457caf81125325872294784b4f6cfc3f5fd"
+      },
+      "package_import": "core.domain.promoted.univariate_statistics",
+      "package_name": "univariate_statistics",
+      "proposal_id": "capability_statistics_univariate_descriptive_3b91cfbb",
+      "proposal_revision": 4,
+      "registry_revision": "promoted-0a33ae94fd3a",
+      "skill_bindings": {
+        "gh_DataScalingAndShifting": {
+          "allowed_operations": [
+            "linear_find_scale_sd",
+            "linear_mean_sd",
+            "monthly_mean_sd",
+            "standardize_scores",
+            "statement_selection",
+            "true_false_stat"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_Mean": {
+          "allowed_operations": [
+            "arithmetic_mean",
+            "geometric_growth_mean",
+            "geometric_growth_unknown",
+            "true_false_stat",
+            "weighted_mean",
+            "weighted_mean_unknown"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_MedianAndPercentiles": {
+          "allowed_operations": [
+            "list_summary_stats",
+            "median_consecutive",
+            "median_lists",
+            "percentile_frequency",
+            "quartile_frequency",
+            "statement_selection",
+            "true_false_stat"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_VarianceAndStandardDeviation": {
+          "allowed_operations": [
+            "compare_standard_deviation",
+            "grade_distribution_read",
+            "mean_variance_sd",
+            "standard_deviation",
+            "true_false_stat",
+            "unknown_given_sd"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
     }
   },
   "schema": "promoted_capability_store.v1"

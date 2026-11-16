@@ -1,0 +1,113 @@
+{
+ "db_copy": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\math2_unit8_univariate_statistics\\20261106_081657\\accept_20261106_205736\\kumon_math_accept.db",
+ "student_id": 2,
+ "excluded_components": [],
+ "skills": {
+  "gh_DataScalingAndShifting": {
+   "practice_page": 200,
+   "served": {
+    "12933": 3,
+    "12939": 3,
+    "12941": 2,
+    "12942": 3,
+    "12943": 3,
+    "12944": 3,
+    "12945": 2
+   },
+   "http_errors": [],
+   "grading": [],
+   "load_errors": 0,
+   "route_modes": {
+    "v3": 19
+   },
+   "answer_leaks": [],
+   "charts": {}
+  },
+  "gh_Mean": {
+   "practice_page": 200,
+   "served": {
+    "12912": 3,
+    "12913": 3,
+    "12914": 3,
+    "12915": 2,
+    "12916": 2,
+    "12917": 2,
+    "12931": 2,
+    "12936": 2,
+    "12937": 2
+   },
+   "http_errors": [],
+   "grading": [],
+   "load_errors": 0,
+   "route_modes": {
+    "v3": 21
+   },
+   "answer_leaks": [],
+   "charts": {}
+  },
+  "gh_MedianAndPercentiles": {
+   "practice_page": 200,
+   "served": {
+    "12918": 3,
+    "12919": 3,
+    "12920": 2,
+    "12921": 3,
+    "12922": 2,
+    "12923": 2,
+    "12934": 2,
+    "12935": 2,
+    "12946": 2
+   },
+   "http_errors": [],
+   "grading": [],
+   "load_errors": 0,
+   "route_modes": {
+    "v3": 21
+   },
+   "answer_leaks": [],
+   "charts": {}
+  },
+  "gh_VarianceAndStandardDeviation": {
+   "practice_page": 200,
+   "served": {
+    "12924": 3,
+    "12925": 3,
+    "12926": 2,
+    "12927": 2,
+    "12928": 2,
+    "12929": 2,
+    "12930": 2,
+    "12932": 2,
+    "12938": 2,
+    "12940": 2
+   },
+   "http_errors": [],
+   "grading": [],
+   "load_errors": 0,
+   "route_modes": {
+    "v3": 22
+   },
+   "answer_leaks": [],
+   "charts": {
+    "12926": 2,
+    "12930": 2
+   }
+  }
+ },
+ "other_skill_smoke": {
+  "gh_MathematicalExpectation": [
+   200,
+   true,
+   "v3"
+  ],
+  "gh_Event": [
+   200,
+   true,
+   "v3"
+  ]
+ },
+ "runtime_errors": [],
+ "components_served": 35,
+ "excluded_served": [],
+ "passed": true
+}

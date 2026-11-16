@@ -533,7 +533,7 @@ def audit_pdf_visuals(
     # QUESTION_REQUIRED. Helpful/explanatory imagery is never mount-required.
     for row in matched:
         classification = str(row.get("visual_classification") or "none")
-        explicit_dependency = _text_has_strong_figure_cue(str(row.get("problem_text") or ""))
+        explicit_dependency = _text_has_strong_figure_cue(str(row.get("problem_text") or ""), row.get("notes"))
         if explicit_dependency:
             row["source_visual_class"] = "QUESTION_REQUIRED"
             # This flag expresses policy need, not successful matching. The
@@ -624,9 +624,25 @@ def assign_question_regions(
     return matches
 
 
-def _text_has_strong_figure_cue(problem_text: str) -> bool:
+def _notes_expect_stem_picture(notes: dict[str, Any] | None) -> bool:
+    """DOCX evidence that the student-facing stem contains a required picture."""
+    if not isinstance(notes, dict):
+        return False
+    from core.docx_data_tables import expected_stem_pictures
+
+    return bool(expected_stem_pictures(notes.get("source_evidence")))
+
+
+def _text_has_strong_figure_cue(problem_text: str, notes: dict[str, Any] | None = None) -> bool:
+    """A figure is required from an explicit stem cue *or* DOCX stem-picture evidence.
+
+    The bare character 圖 (作圖 / 分布圖 as a word) is not enough; those cases are
+    decided by source evidence, not this keyword list.
+    """
     t = str(problem_text or "")
-    return any(k in t for k in _STRONG_FIGURE_KEYS)
+    if any(k in t for k in _STRONG_FIGURE_KEYS):
+        return True
+    return _notes_expect_stem_picture(notes)
 
 
 def _next_question_boundary_y(matches: list[dict[str, Any]], index: int) -> float | None:
@@ -815,7 +831,7 @@ def classify_and_detect_visuals(
         regions = row.get("regions") or []
         problem_text = str(row.get("problem_text") or "")
         text_flag = question_needs_image(problem_text)
-        strong_cue = _text_has_strong_figure_cue(problem_text)
+        strong_cue = _text_has_strong_figure_cue(problem_text, row.get("notes"))
         next_q_y = _next_question_boundary_y(matches, idx)
         row["next_question_y"] = next_q_y
 
@@ -1587,7 +1603,7 @@ def enrich_textbook_examples_with_pdf_visuals(
 
         classification = str(row.get("visual_classification") or "none").strip().lower()
         is_question_required = classification in {"required", "question_required"}
-        strong_cue = _text_has_strong_figure_cue(str(row.get("problem_text") or ""))
+        strong_cue = _text_has_strong_figure_cue(str(row.get("problem_text") or ""), row.get("notes"))
         min_score = LOW_CONFIDENCE if strong_cue else HIGH_CONFIDENCE
         source_fidelity_pass = bool(
             is_question_required

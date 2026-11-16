@@ -1,4 +1,4 @@
-# Codex / Cursor 專案指引（v1.17-Lean）
+# Codex / Cursor 專案指引（v1.18-Lean）
 
 ## 1. 預設工作模式
 - **最小必要執行**：先讀本檔，再按任務選讀相關 SOP 章節；禁止起手全文讀取所有 SOP。
@@ -9,6 +9,7 @@
 ## 2. 路徑與選讀入口
 - 專案根目錄以 `git rev-parse --show-toplevel` 確認，不依賴固定磁碟路徑。
 - 日常 Gencode V3 唯一主要 SOP：`docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_V3_Lean.md`。
+- **任何新單元導入前必讀 Lean §0.2**（教材與 Generator 分離、Generator 優先＋原題 Fallback、不強制 100%、審核不依賴正式發布、停止條件、結案六項）；§0.2.1 標為 IMPLEMENTATION_GAP 者不得宣稱完成，§0.2.2 預設決策不逐單元重議。
 - 欄位、Answer Contract、Checker、Gate：同目錄 `SOP_Gencode_AgentSkillV3_Specification.md` 對應章節，為規範權威。
 - 時序、狀態與 publish/recovery：同目錄 `SOP_Gencode_AgentSkillV3_PipelineFlow.md` 對應章節，為流程權威。
 - 數學等價與 required form：`docs/系統SOP/數學答案檢核原則_v1.12_20260908.md`。
@@ -79,4 +80,4 @@
 5. 以增量驗收（Lean §5.2）收尾；不重啟 Flask，結案時回報是否需要重啟。
 6. 預設以完整 Unit 為執行單位（流程見 Lean §0.1），不逐 Skill、逐 Gate 要求人工確認；已授權範圍內自動完成 Generator、Bundle 與隔離驗證，保留所有必要 Gate。
 7. 只有真正的 Blocker 或正式寫入、Promotion、Publish 授權需求才中斷；每個 Unit 集中一次人工發布核可。
-8. 最終一次回報 PASS／DEFERRED／Blocker、是否需要發布授權及是否需要重啟 Flask；驗收完成即停止，不自動進入下一 Unit。
+8. 最終一次回報 PASS／DEFERRED／Blocker、是否需要發布授權及是否需要重啟 Flask，並依 Lean §7 第 13 點的六項結案報告；驗收完成即停止，不自動進入下一 Unit。

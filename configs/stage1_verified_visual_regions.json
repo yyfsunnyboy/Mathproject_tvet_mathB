@@ -37,6 +37,17 @@
       "regions": {
         "5習題 進階題12": [{"page": 16, "bbox": [425.0, 586.5, 526.0, 653.5], "why": "Semicircle with A1-A4 on the diameter and B1-B6 on the arc, right of the stem; PDF vector bounds x=426.7..524.4 y=588.0..652.1 (31 ink objects incl. all labels and subscripts); exercise 11 above and the page footer excluded"}]
       }
+    },
+    {
+      "pdf_sha256": "0b8f5defbfe31df24aca3bf90c5566c8431527a7bb49ae2ff3fd5aad8b301d8f",
+      "curriculum": "general",
+      "volume": "數學2",
+      "chapter": "單元8 一維數據分析",
+      "verified_by": "user_authorized_unit8_stage1_2026-11-02",
+      "verified_on": "2026-11-02",
+      "regions": {
+        "例題9": [{"page": 17, "bbox": [110.0, 179.0, 515.0, 282.0], "why": "Two 109-學測 grade-distribution bar charts (Chinese / Math) that the stem calls 分布圖; PDF vector ink x=113.7..510.5 y=183.5..278.1 including axis labels and bar values; sub-question (1) at y=287.8 and the worked solution below excluded"}]
+      }
     }
   ]
 }

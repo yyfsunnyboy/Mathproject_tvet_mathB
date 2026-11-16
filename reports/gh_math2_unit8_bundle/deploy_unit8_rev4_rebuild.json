@@ -1,0 +1,532 @@
+{
+ "failures": {},
+ "report": {
+  "excluded_components": [],
+  "12912": {
+   "skill": "gh_Mean",
+   "operation": "arithmetic_mean",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Mean",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "7302abc8dfd6f194a6707535c1a2bc42c0326cdd631c375e6822fa1be5282025",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12913": {
+   "skill": "gh_Mean",
+   "operation": "weighted_mean",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Mean",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "b32a1c86a9c6f7a7ac3db1ecab87cfb7ea39d971e3983e0b34dcdaa7c2add722",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12914": {
+   "skill": "gh_Mean",
+   "operation": "geometric_growth_mean",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Mean",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "9991621fb92e6db922ca45f424f9fd6f27b64407dccf4d629e53625993d2ca37",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12915": {
+   "skill": "gh_Mean",
+   "operation": "arithmetic_mean",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Mean",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "029b7f1a855a703c23c1fe566ec566e9dfef441054aa3041de22449429c6e599",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12916": {
+   "skill": "gh_Mean",
+   "operation": "weighted_mean",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Mean",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "6c3b17add2a47cf15ee218a7bb1dc98425fbd7158b6db710431564b3e4038cb8",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12917": {
+   "skill": "gh_Mean",
+   "operation": "geometric_growth_unknown",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Mean",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "6a76005eb16d4f444e2399696f2b9ccc7e9543f53a3314143f56dd40170c9d43",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12918": {
+   "skill": "gh_MedianAndPercentiles",
+   "operation": "median_lists",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MedianAndPercentiles",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "b7730b778a6b8092bd11cc51659751489235df5151bbee2340beaf687643de94",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12919": {
+   "skill": "gh_MedianAndPercentiles",
+   "operation": "percentile_frequency",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MedianAndPercentiles",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "037cfff3821b45bba59e16014961a867caf7fc4f93f2f42d300eaeb245ddc30f",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12920": {
+   "skill": "gh_MedianAndPercentiles",
+   "operation": "quartile_frequency",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MedianAndPercentiles",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "69b355b9e6626f60a1ef680353e5af671f0530eb2b07710bebe184d69c1965f0",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12921": {
+   "skill": "gh_MedianAndPercentiles",
+   "operation": "median_consecutive",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MedianAndPercentiles",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "d7920e455fee5eebe7f9fa4df0b42d15bd72cb0be47dff81a1ff84ed6bcc149b",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12922": {
+   "skill": "gh_MedianAndPercentiles",
+   "operation": "percentile_frequency",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MedianAndPercentiles",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "b7fcd5f940051aff698adead60f9e90d5fdf6e81528818134af77900f71d09a4",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12923": {
+   "skill": "gh_MedianAndPercentiles",
+   "operation": "statement_selection",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MedianAndPercentiles",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "2073f299d8605e3c4a65c8eca938278bdeebc518e2a0979f65400f2c8dbda7bd",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12924": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "mean_variance_sd",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "daab3f3b484606e63d90a2dd3b6bd827fb7387e4c15a22b896874183d5edd014",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12925": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "standard_deviation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "b83de5ebcf06177ccda8587e6642145f9589048cfedf254fc672f7e2be2da72d",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12926": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "grade_distribution_read",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "5db483adfb6b70a2d74933e7817839b8e64147d675aa5753bae3d43897f69802",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12927": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "mean_variance_sd",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "639edbd9fd7fca3e5e86adc84857ff07bd7d625dc81ae60433ecdba06d7a56e0",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12928": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "compare_standard_deviation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "bbe74e6ba56a0ddff1e42621f0ca432d9bdddccf4343a36a596890c8f3ff8a18",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12929": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "standard_deviation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "6e6400fcccda5c708b00596c2a13b0153f7c62f7d2937b8a5c41d8cdc9f23d9d",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12930": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "grade_distribution_read",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "f050cfa0c12a5cdb798104a7bd799b701dc80d2c5e8b9aa048f5be5ede40eb43",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12931": {
+   "skill": "gh_Mean",
+   "operation": "true_false_stat",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Mean",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "a242ebe38ad858ffb99e37542475b2527465d82264b09b61861d37a7ff1c3f06",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12932": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "true_false_stat",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "39a68dcfea04ce29c2544ec5231755ffd3a112785e967d65c844f47da1cd3de0",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12933": {
+   "skill": "gh_DataScalingAndShifting",
+   "operation": "true_false_stat",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_DataScalingAndShifting",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "67dc831223ba15361c2b5a9631a74df0fef265d9d418eef521faa2f4cca004f5",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12934": {
+   "skill": "gh_MedianAndPercentiles",
+   "operation": "true_false_stat",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MedianAndPercentiles",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "aa753739690ac3c94fa1ece5e60100d19e6347c4f2e79c094eda501af2c7133f",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12935": {
+   "skill": "gh_MedianAndPercentiles",
+   "operation": "list_summary_stats",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MedianAndPercentiles",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "08cb843573501f96919e1671a58d19e5cbc76b7de710c512e460c74767c77a45",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12936": {
+   "skill": "gh_Mean",
+   "operation": "weighted_mean_unknown",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Mean",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "0121869023641b3025c6880fcaa00a6280c87db44b13afadb6917ec7cd3b8e1b",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12937": {
+   "skill": "gh_Mean",
+   "operation": "geometric_growth_mean",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_Mean",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "beeab345548b0240e5afd9e88f25a28dcc9b5c3e8555afd092dca5e484719dbf",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12938": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "standard_deviation",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "c3c92a5c5e449c456ea7f4e426465c604836147a5c9d1034c880eed560c2847a",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12939": {
+   "skill": "gh_DataScalingAndShifting",
+   "operation": "linear_find_scale_sd",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_DataScalingAndShifting",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "b38d227ab2b6139ac5ffe476ecf9fe7de08951bf5531a74a5a0445eec34c5a5d",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12940": {
+   "skill": "gh_VarianceAndStandardDeviation",
+   "operation": "unknown_given_sd",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_VarianceAndStandardDeviation",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "1080aab947f82e94a51b2348fe1753b5c67ac2f72faa30d923fd6e09eb797692",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12941": {
+   "skill": "gh_DataScalingAndShifting",
+   "operation": "statement_selection",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_DataScalingAndShifting",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "bdf3a074e3718caf36e831d447b74873f52eb23f12fd5881fbba68ec6fe4dd65",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12942": {
+   "skill": "gh_DataScalingAndShifting",
+   "operation": "linear_mean_sd",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_DataScalingAndShifting",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "9b2fce0aa9061897e05391fc7b51c421d181abf6987fa7471f23f9268407c072",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12943": {
+   "skill": "gh_DataScalingAndShifting",
+   "operation": "standardize_scores",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_DataScalingAndShifting",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "44f01d8d1e7fe57cb8c9599af4cd20ff9bdb78ec166164c492a0424022c4edfc",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12944": {
+   "skill": "gh_DataScalingAndShifting",
+   "operation": "monthly_mean_sd",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_DataScalingAndShifting",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "1ac1716dce1dad96c3e46bc682ac34021b70bb41dc106bd81d6b5acbc200ecd7",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12945": {
+   "skill": "gh_DataScalingAndShifting",
+   "operation": "linear_mean_sd",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_DataScalingAndShifting",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "02544016d0147a1d23f683dd9239571d7e84c7958d504c5ec7864348be5ef9aa",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12946": {
+   "skill": "gh_MedianAndPercentiles",
+   "operation": "statement_selection",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_MedianAndPercentiles",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "5be9c87ecb1ffbf180075737c4b0e0694dcaaf50ba70027a90a427579f64a7d5",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  }
+ },
+ "passed": true
+}

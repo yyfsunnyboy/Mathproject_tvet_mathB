@@ -1,0 +1,84 @@
+{
+  "skill_id": "gh_DataScalingAndShifting",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 7,
+  "components": [
+    {
+      "component_id": "src_12933",
+      "textbook_example_id": 12933,
+      "status": "verified",
+      "problem_type_id": "true_false_stat",
+      "domain_operation": "true_false_stat",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12933/generate.py"
+    },
+    {
+      "component_id": "src_12939",
+      "textbook_example_id": 12939,
+      "status": "verified",
+      "problem_type_id": "linear_find_scale_sd",
+      "domain_operation": "linear_find_scale_sd",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12939/generate.py"
+    },
+    {
+      "component_id": "src_12941",
+      "textbook_example_id": 12941,
+      "status": "verified",
+      "problem_type_id": "statement_selection",
+      "domain_operation": "statement_selection",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12941/generate.py"
+    },
+    {
+      "component_id": "src_12942",
+      "textbook_example_id": 12942,
+      "status": "verified",
+      "problem_type_id": "linear_mean_sd",
+      "domain_operation": "linear_mean_sd",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12942/generate.py"
+    },
+    {
+      "component_id": "src_12943",
+      "textbook_example_id": 12943,
+      "status": "verified",
+      "problem_type_id": "standardize_scores",
+      "domain_operation": "standardize_scores",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12943/generate.py"
+    },
+    {
+      "component_id": "src_12944",
+      "textbook_example_id": 12944,
+      "status": "verified",
+      "problem_type_id": "monthly_mean_sd",
+      "domain_operation": "monthly_mean_sd",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12944/generate.py"
+    },
+    {
+      "component_id": "src_12945",
+      "textbook_example_id": 12945,
+      "status": "verified",
+      "problem_type_id": "linear_mean_sd",
+      "domain_operation": "linear_mean_sd",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12945/generate.py"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Gencode × AgentSkillV3 Pipeline 系統流程與狀態轉移說明
 
-> **文件版本**：v1.13  
+> **文件版本**：v1.14
 > **文件定位**：本文件為 Gencode × AgentSkillV3 **唯一流程權威**（流程、時序、狀態轉移、階段責任、錯誤分流、正常路徑與 repair 路徑、package/publish/runtime 邊界）。具體欄位 schema、Gate 定義、狀態名稱與規格規則見 [SOP_Gencode_AgentSkillV3_Specification.md](./SOP_Gencode_AgentSkillV3_Specification.md)（唯一規範權威）。
 
 ---
@@ -22,6 +22,7 @@
 | PACKAGING_FAILED | 5. Phase 3 流程與 Package/Publish |
 | partial publish | 5. Phase 3 流程與 Package/Publish |
 | runtime generation | 6. Runtime 邊界與出題 |
+| 原題 Fallback／無可用 Generator | 6.2；Lean SOP §0.2、§6.1 |
 | 一題一 generator | Specification §2；本文件 §4.1 |
 | source fidelity | 本文件 §4.0；Specification §10.4 |
 | answer oracle | 本文件 §4.0；Specification §10.5 |
@@ -241,6 +242,7 @@ graph TD
 | 前段自動化 | proposal 建立／去重、auto triage、draft、isolated implementation、full validation 等前段可規則化自動執行 |
 | 禁止過度審核 | **不得**在每一小步都要求人工批准 |
 | 失敗隔離 | 失敗 capability 應隔離並記錄 `failure_stage`，不得阻斷其他 capability |
+| 審核入口 | 人工審核不得以正式發布為前提，也不得把未核准 Generator 部署給正式學生以供審閱；沿用既有預覽入口，能力不足時回報最小缺口（Lean SOP §0.2 規則 4、§0.2.1） |
 
 Phase 1 的 `SKILL_ONBOARDING_NEEDS_REVIEW`（skill 未登錄）屬 onboarding 行政路徑，與 capability promotion 前的 human review 不同責任層，兩者不得混用為「每步都要人審」。
 
@@ -303,6 +305,14 @@ def build_phase3_skill_module_code(skill_id: str, generator_specs: list[dict[str
     drawing 成功後必須保持 processing lock，直到下一題完成渲染及 UI contract 套用後才解除；AI 判錯或 system error 則保留 Canvas、解除鎖定並允許學生重試。
 * **AI 限制**：學生端出題與驗證期，**嚴禁**使用 LLM 生成或動態計算數學內容。
 
+### 6.2 出題來源優先序與教材原題 Fallback
+
+* **(Current) Generator 優先**：Skill 有已發布且可載入的 runtime facade 時，走 GenCode V3 動態生成。
+* **(Current) 原題保底**：沒有已發布 facade 時，`/get_next_question` 回傳 Stage 1 教材原題（`route_mode=textbook_example`），保留 `problem_text` 與已驗收的 `notes.image_assets`。評分、未評分自學與 fixed 登錄規則見 Lean SOP §6.1。
+* **(Current) 隔離**：未 verified 的 component 不封裝；未 Promotion 的候選 Domain 不在 promoted store、不註冊，學生端不會載入。
+* **[Gap] 尚未支援**：Generator 執行失敗退回原題（目前重試用盡即回傳明確失敗）、Fallback 檢查 required visual／Stage 1 封板、學生層級單次練習重複控制、未登錄原題標記不可用。現況與缺口以 Lean SOP §0.2.1 及 KnownIssues 為準，不得宣稱已完成。
+* 教材原題 Fallback 與 §10 已廢除的「全域 Generic Domain Fallback」是不同機制：前者提供原題，後者跨 Domain 借用 Generator，仍禁止。
+
 ---
 
 ## 7. Lifecycle 分層與狀態轉移 (Current)
@@ -310,7 +320,7 @@ def build_phase3_skill_module_code(skill_id: str, generator_specs: list[dict[str
 ### 7.1 Domain 狀態機 (Domain Lifecycle)
 ```text
 draft (隔離區，不可發布)
-  → candidate (自動測試通過，可教師端預覽，非正式 provider)
+  → candidate (自動測試通過，非正式 provider；教師端預覽 [Gap]：目前僅自動 Bootstrap gap 有 JSON 樣本預覽，見 Lean SOP §0.2.1)
   → verified (人工/管理員確認，進入正式路由 resolver)
 ```
 
@@ -394,7 +404,7 @@ proposed
 ---
 
 ## 10. Deprecated
-* **全域 Generic Domain Fallback** (已廢除，禁止跨 Domain fallback 或 Nearest Template 映射)
+* **全域 Generic Domain Fallback** (已廢除，禁止跨 Domain fallback 或 Nearest Template 映射；不含 §6.2 的教材原題 Fallback)
 * **一題一獨立 Domain Function** (已廢除，禁止為單一題目新增專屬 domain，能力必須收斂至可共用的 Domain operation)
 * **以 `fixed_domain_key` 存在推斷 capability ready** (已廢除，必須通過 Exact Readiness Gate)
 * **多題合併單一 generator** (已廢除，必須遵守 Specification §2)
@@ -408,6 +418,7 @@ proposed
 
 | 版本 | 核心變更 |
 | --- | --- |
+| v1.14 | 新增 §6.2 出題來源優先序與教材原題 Fallback（Current／Gap 分列）；§4.6 人工審核不得以正式發布為前提；§7.1 candidate 教師預覽標為 Gap；釐清已廢除的 Generic Domain Fallback 不含原題 Fallback |
 | v1.13 | Phase 2 改為 Source Fidelity → Answer Oracle Resolution → build／validate／VERIFIED；學生版無答案不得自動禁止 VERIFIED；20 seeds 明定為 implementation consistency |
 | v1.12 | 新增 Capability 自動生長閉環、Recovery Orchestrator、人工審核位置、Capability 狀態機；一題一 generator 改為引用 Specification §2；Readiness／Executable Gate 引用 Specification §10；禁止 partial_capability rebuild |
 | v1.11 | M2 正式封板，補充五套餐 runtime dispatch、drawing 狀態閉環與 answer_contract Current 權威 |

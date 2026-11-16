@@ -204,6 +204,39 @@ def test_gate_blocks_missing_figure_cut_stem_and_symbol_gap():
     assert "stem_lost_symbol_gap" in evaluate_row(_row("已知a, 2, b  1三數成等差數列，求a的值。"))["blockers"]
 
 
+def test_gate_blocks_missing_source_table_and_passes_retained_array():
+    from core.docx_data_tables import grid_fingerprint, grid_to_latex
+
+    rows = [["平常成績", "83"], ["比重", "30%"]]
+    fp = grid_fingerprint(rows)
+    evidence = {"tables": [{"fingerprint": fp, "expected": True, "location": "stem", "representable": True}], "pictures": []}
+    cut = _row("甲生成績如下表。\n試以比重為權數，計算學期成績。", {"source_evidence": evidence})
+    assert "required_table_missing" in evaluate_row(cut)["blockers"]
+    kept = _row("甲生成績如下表。\n" + grid_to_latex(rows) + "\n試以比重為權數，計算學期成績。", {"source_evidence": evidence})
+    assert evaluate_row(kept)["blockers"] == []
+    # Solution tables and unrepresentable grids must not be forced into a wrong array.
+    sol = _row("求x的值。", {"source_evidence": {"tables": [{"fingerprint": fp, "expected": True, "location": "solution", "representable": True}]}})
+    assert "required_table_missing" not in evaluate_row(sol)["blockers"]
+    unre = _row("如下表。求x的值。", {"source_evidence": {"tables": [{"expected": True, "location": "stem", "representable": False}]}})
+    assert "required_table_missing" not in evaluate_row(unre)["blockers"]
+    assert "source_table_unrepresentable" in evaluate_row(unre)["reviews"]
+
+
+def test_gate_uses_docx_picture_evidence_not_the_character_tu():
+    # 「分布圖」/「作圖」 alone is not a missing-figure blocker (student may have to draw).
+    assert "required_figure_missing" not in evaluate_row(_row("以下為人數百分比分布圖。求標準差。"))["blockers"]
+    assert "required_figure_missing" not in evaluate_row(_row("試畫出這組數據的直方圖。"))["blockers"]
+    empty = {"source_evidence": {"tables": [], "pictures": []}}
+    assert "required_figure_missing" not in evaluate_row(_row("以下為人數百分比分布圖。求標準差。", empty))["blockers"]
+    missing = {"source_evidence": {"tables": [], "pictures": [{"expected": True, "location": "stem", "sha256": "abc"}]}}
+    assert "required_figure_missing" in evaluate_row(_row("以下為人數百分比分布圖。求標準差。", missing))["blockers"]
+    ok = {
+        "source_evidence": {"tables": [], "pictures": [{"expected": True, "location": "stem", "sha256": "abc"}]},
+        "image_assets": [{"path": "uploads/q.png", "visual_status": "accepted"}],
+    }
+    assert evaluate_row(_row("以下為人數百分比分布圖。求標準差。", ok))["blockers"] == []
+
+
 def test_gate_sends_uncertain_visual_to_review_and_passes_clean_rows():
     uncertain = {"image_assets": [{"path": "p.png", "visual_status": "needs_review", "needs_crop_review": True}]}
     assert evaluate_row(_row("如下圖所示，求\\(a\\)的值。", uncertain))["reviews"] == ["visual_uncertain"]

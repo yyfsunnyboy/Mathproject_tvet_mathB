@@ -262,6 +262,36 @@ def test_photo_and_diagram_mounts_diagram_as_helpful():
     assert matched[0]["visual_classification"] == "helpful"
 
 
+def test_docx_stem_picture_evidence_is_a_strong_cue_without_figure_keyword():
+    """A stem that only says 分布圖 still mounts when DOCX evidence marks a stem picture."""
+    pages = [
+        {
+            "page": 1,
+            "width": 500,
+            "height": 700,
+            "norm_text": normalize_pdf_text("以下為人數百分比分布圖求標準差"),
+            "words": [],
+            "images": [],
+            "drawings": [{"bbox": [80, 220, 280, 420], "area": 40000}],
+            "char_count": 40,
+        }
+    ]
+    items = [
+        {
+            "source_description": "例題9",
+            "problem_text": "以下為人數百分比分布圖。求標準差。",
+            "source_order": 1,
+            "notes": {"source_evidence": {"tables": [], "pictures": [{"expected": True, "location": "stem", "sha256": "x"}]}},
+        }
+    ]
+    matched = match_questions_to_pdf(items, pages)
+    matched = assign_question_regions(matched, pages)
+    matched = classify_and_detect_visuals(matched, pages)
+    assert matched[0]["should_mount"] is True
+    assert matched[0]["visual_classification"] == "required"
+    assert matched[0]["visual_bbox"] is not None
+
+
 def test_required_vector_with_figure_keyword():
     pages = [
         {

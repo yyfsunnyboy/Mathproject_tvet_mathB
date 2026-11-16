@@ -1,0 +1,117 @@
+{
+  "skill_id": "gh_VarianceAndStandardDeviation",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 10,
+  "components": [
+    {
+      "component_id": "src_12924",
+      "textbook_example_id": 12924,
+      "status": "verified",
+      "problem_type_id": "mean_variance_sd",
+      "domain_operation": "mean_variance_sd",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12924/generate.py"
+    },
+    {
+      "component_id": "src_12925",
+      "textbook_example_id": 12925,
+      "status": "verified",
+      "problem_type_id": "standard_deviation",
+      "domain_operation": "standard_deviation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12925/generate.py"
+    },
+    {
+      "component_id": "src_12926",
+      "textbook_example_id": 12926,
+      "status": "verified",
+      "problem_type_id": "grade_distribution_read",
+      "domain_operation": "grade_distribution_read",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12926/generate.py"
+    },
+    {
+      "component_id": "src_12927",
+      "textbook_example_id": 12927,
+      "status": "verified",
+      "problem_type_id": "mean_variance_sd",
+      "domain_operation": "mean_variance_sd",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12927/generate.py"
+    },
+    {
+      "component_id": "src_12928",
+      "textbook_example_id": 12928,
+      "status": "verified",
+      "problem_type_id": "compare_standard_deviation",
+      "domain_operation": "compare_standard_deviation",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12928/generate.py"
+    },
+    {
+      "component_id": "src_12929",
+      "textbook_example_id": 12929,
+      "status": "verified",
+      "problem_type_id": "standard_deviation",
+      "domain_operation": "standard_deviation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12929/generate.py"
+    },
+    {
+      "component_id": "src_12930",
+      "textbook_example_id": 12930,
+      "status": "verified",
+      "problem_type_id": "grade_distribution_read",
+      "domain_operation": "grade_distribution_read",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12930/generate.py"
+    },
+    {
+      "component_id": "src_12932",
+      "textbook_example_id": 12932,
+      "status": "verified",
+      "problem_type_id": "true_false_stat",
+      "domain_operation": "true_false_stat",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12932/generate.py"
+    },
+    {
+      "component_id": "src_12938",
+      "textbook_example_id": 12938,
+      "status": "verified",
+      "problem_type_id": "standard_deviation",
+      "domain_operation": "standard_deviation",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12938/generate.py"
+    },
+    {
+      "component_id": "src_12940",
+      "textbook_example_id": 12940,
+      "status": "verified",
+      "problem_type_id": "unknown_given_sd",
+      "domain_operation": "unknown_given_sd",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12940/generate.py"
+    }
+  ]
+}

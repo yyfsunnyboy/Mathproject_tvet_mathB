@@ -1,0 +1,29 @@
+{
+ "time": "2026-11-06 08:17:00 +0800",
+ "rehearsal_only": false,
+ "bundle_file_sha256_before_approval": "c4d73c1ce449adda16c7f6edaba34c5f5a9817f9af6f0556d11cba29689819e1",
+ "bundle_canonical_sha256_before": "d6b6310c279d5b7dfcf131d3695948db0647b50b186e86c766a656cef274ee3a",
+ "bundle_file_sha256_after_approval": "63d294040b86023f8a279cd11438d6aae22c789eb12d4f42f32c332c42b34b61",
+ "bundle_canonical_sha256_after": "0a33ae94fd3a4c960e31149bc64453766a435a5650767389664e2857c4ff634e",
+ "package_files": {
+  "__init__.py": "98c06e9f02353b9c01ae8a5feaf66283fde7d4358ca2af2a663eac7b442cb2d3",
+  "univariate_statistics_adapter.py": "7c42836891d164d796445d3be74ba0efff118abec97cbe66959f54852d5db313",
+  "univariate_statistics_chart.py": "644f77b8a51d0143166cdcf798cb5da745efbe931174e0a827025ac6ae4c23df",
+  "univariate_statistics_domain.py": "60b85e39c657f5c2853a5baca5d57457caf81125325872294784b4f6cfc3f5fd"
+ },
+ "checklist": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gh_math2_unit8_bundle\\revision_0004_teacher_review.json",
+ "checklist_sha256": "e787c874496ab8fad2f8a2367a6c5b74d99fb7ef63df21c441aa0e9ad2dc738b",
+ "reviewer": "admin",
+ "reviewed_at": "2026/11/06",
+ "key_item_decisions": {
+  "12934": "approved",
+  "12932": "approved",
+  "12923": "approved",
+  "12941": "approved",
+  "12946": "approved",
+  "12926": "approved",
+  "12930": "approved"
+ },
+ "excluded_components": [],
+ "approved_by": "同意第二冊 Unit 8「一維數據分析」revision_0004 的 35 個 Component、4 個 Skill 依正式 SOP 進行 Promotion／Publish。 | teacher checklist reviewer: admin at 2026/11/06 | approved components: 35/35 | excluded (teacher rejected, not published): none"
+}

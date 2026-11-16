@@ -1,0 +1,70 @@
+{
+ "expected_components": {
+  "gh_DataScalingAndShifting": 7,
+  "gh_Mean": 9,
+  "gh_MedianAndPercentiles": 9,
+  "gh_VarianceAndStandardDeviation": 10
+ },
+ "excluded_components": [],
+ "tracker_duplicates": 0,
+ "tracker_matches_expected": true,
+ "dryrun_components": {
+  "gh_DataScalingAndShifting": [
+   12933,
+   12939,
+   12941,
+   12942,
+   12943,
+   12944,
+   12945
+  ],
+  "gh_Mean": [
+   12912,
+   12913,
+   12914,
+   12915,
+   12916,
+   12917,
+   12931,
+   12936,
+   12937
+  ],
+  "gh_MedianAndPercentiles": [
+   12918,
+   12919,
+   12920,
+   12921,
+   12922,
+   12923,
+   12934,
+   12935,
+   12946
+  ],
+  "gh_VarianceAndStandardDeviation": [
+   12924,
+   12925,
+   12926,
+   12927,
+   12928,
+   12929,
+   12930,
+   12932,
+   12938,
+   12940
+  ]
+ },
+ "dryrun_matches_expected": true,
+ "staging_leftovers": [],
+ "store_bundle_sha256": "0a33ae94fd3a4c960e31149bc64453766a435a5650767389664e2857c4ff634e",
+ "store_matches_approval": true,
+ "promoted_package_matches_bundle": true,
+ "operations_registered": 21,
+ "unit8_published_paths": {
+  "gh_DataScalingAndShifting": [],
+  "gh_Mean": [],
+  "gh_MedianAndPercentiles": [],
+  "gh_VarianceAndStandardDeviation": []
+ },
+ "passed": true,
+ "nothing_published_yet": true
+}

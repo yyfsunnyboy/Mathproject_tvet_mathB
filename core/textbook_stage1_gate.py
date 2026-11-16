@@ -109,6 +109,17 @@ def evaluate_row(row: Any) -> dict[str, list[str]]:
 
     assets = [a for a in (notes.get("image_assets") or []) if isinstance(a, dict) and a.get("path")]
     accepted = [a for a in assets if str(a.get("visual_status") or "accepted").lower() == "accepted" and not a.get("needs_crop_review")]
+    from core.docx_data_tables import expected_stem_pictures, expected_stem_tables, stem_retains_table
+
+    evidence = notes.get("source_evidence") if isinstance(notes.get("source_evidence"), dict) else None
+    if evidence is not None:
+        for table in expected_stem_tables(evidence):
+            if table.get("representable") is False:
+                reviews.append("source_table_unrepresentable")
+            elif not stem_retains_table(stem, table):
+                blockers.append("required_table_missing")
+        if expected_stem_pictures(evidence) and not accepted:
+            blockers.append("required_figure_missing")
     needs_figure = bool(_STRONG_FIGURE_RE.search(stem)) and notes.get("pdf_visual_status") != "NO_VISUAL_REQUIRED"
     if notes.get("visual_required_missing") or notes.get("pdf_visual_status") == "VISUAL_REQUIRED_MISSING" \
             or (needs_figure and not assets):

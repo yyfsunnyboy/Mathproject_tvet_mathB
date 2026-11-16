@@ -1,0 +1,802 @@
+{
+ "started": "2026-11-05 22:23:41",
+ "copy": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review",
+ "approved_bundle_digest": "d6b6310c279d5b7dfcf131d3695948db0647b50b186e86c766a656cef274ee3a",
+ "mirror_robocopy_codes": {
+  "core": 0,
+  "configs": 0,
+  "skills": 0,
+  "agent_skills_v3": 0,
+  "agent_domains_candidate": 0,
+  "templates": 0,
+  "reports/gencode_v3_dryrun": 0,
+  "runtime/v3_publish_staging": 2,
+  "reports/domain_operation_workspaces/capability_statistics_univariate_descriptive_3b91cfbb/revision_0004": 1,
+  "reports/gh_math2_unit8_bundle": 3,
+  "tmp/gh_math2_unit8_sandbox_dryrun_r4": 0
+ },
+ "copy_equals_formal_after_reset": true,
+ "scenario_full": {
+  "steps": [
+   {
+    "step": "deploy_unit8.py precheck --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.7,
+    "passed": true,
+    "tail": [
+     " \"protected_file_count\": 5785,",
+     " \"passed\": true",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py backup --confirm --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.3,
+    "passed": true,
+    "tail": [
+     " \"passed\": true,",
+     " \"note\": \"kumon_math.db here is forensic only; rollback never restores the whole DB\"",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py promote --confirm --teacher-approved --isolated-rehearsal",
+    "rc": 1,
+    "seconds": 0.1,
+    "passed": null,
+    "tail": [
+     "approval record missing; the owner must run record_approval_unit8.py first"
+    ]
+   },
+   {
+    "step": "record_approval_unit8.py  --approved-by isolated rehearsal of deploy_unit8.py --checklist C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\tmp\\rehearsal_checklist_all.json --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.1,
+    "passed": null,
+    "tail": [
+     " },",
+     " \"excluded_components\": []",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py promote --confirm --teacher-approved",
+    "rc": 1,
+    "seconds": 0.1,
+    "passed": null,
+    "tail": [
+     "approval record is rehearsal-only; not valid for the formal release"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py promote --confirm --teacher-approved --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 1.4,
+    "passed": null,
+    "tail": [
+     "  \"gh_VarianceAndStandardDeviation\": []",
+     " }",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py quarantine --confirm --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.1,
+    "passed": null,
+    "tail": [
+     " \"quarantine_dir\": \"C:\\\\Projects\\\\_u8_teacher_review\\\\Mathproject_tvet_mathB_review\\\\backups\\\\math2_unit8_univariate_statistics\\\\20261105_222343\\\\quarantine_20261105_222345\",",
+     " \"moved\": []",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py rebuild --confirm --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 14.6,
+    "passed": true,
+    "tail": [
+     "https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md",
+     "",
+     "  import google.generativeai as old_genai"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py verify-build --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.5,
+    "passed": true,
+    "tail": [
+     " \"passed\": true,",
+     " \"nothing_published_yet\": true",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py publish --confirm --maintenance-window",
+    "rc": 1,
+    "seconds": 0.9,
+    "passed": null,
+    "tail": [
+     "publish refused: production Flask still running or unknown Python processes: {\"listening\": [{\"LocalPort\": 5001, \"OwningProcess\": 45020}, {\"LocalPort\": 5000, \"OwningProcess\": 33876}], \"server_processes\": [{\"ProcessId\": 7332, \"CommandLine\": \"\\\"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\.venv\\\\Scripts\\\\python.exe\\\" -m flask --app app:app run --debug --host 127.0.0.1 --port 5001 --no-reload \"}, {\"ProcessId\": 38556, \"CommandLine\": \"\\\"C:\\\\Users\\\\yehiv\\\\AppData\\\\Roaming\\\\uv\\\\python\\\\cpython-3.11-windows-x86_64-none\\\\python.exe\\\"  -m flask --app app:app run --debug --host 127.0.0.1 --port 5001 --no-reload \"}, {\"ProcessId\": 37632, \"CommandLine\": \"\\\"C:\\\\Projects\\\\Mathproject_tvet_mathB\\\\.venv/Scripts\\\\python.exe\\\" -m flask --app app:app run --debug --host 127.0.0.1 --port 5001 --no-reload\"}, {\"ProcessId\": 45020, \"CommandLine\": \"\\\"C:\\\\Users\\\\yehiv\\\\AppData\\\\Roaming\\\\uv\\\\python\\\\cp"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py publish --confirm --isolated-rehearsal",
+    "rc": 1,
+    "seconds": 0.1,
+    "passed": null,
+    "tail": [
+     "publish: add --maintenance-window after 5000 and 5001 were stopped completely"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py publish --confirm --maintenance-window --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 27.5,
+    "passed": true,
+    "tail": [
+     "https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md",
+     "",
+     "  import google.generativeai as old_genai"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py verify-consistency --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 5.5,
+    "passed": true,
+    "tail": [
+     " \"textbook_unchanged\": true,",
+     " \"db_integrity\": \"ok\"",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py verify-consistency --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 5.4,
+    "passed": true,
+    "tail": [
+     " \"textbook_unchanged\": true,",
+     " \"db_integrity\": \"ok\"",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py accept --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 5.4,
+    "passed": true,
+    "tail": [
+     "  warnings.warn(f\"[Curriculum Ordering Warning] textbook_examples does not contain curriculum_order or display_order. Falling back to primary key 'id' for ordering.\")",
+     "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\core\\gencode\\services\\v3_curriculum_ordering_service.py:94: UserWarning: [Curriculum Ordering Warning] textbook_examples does not contain curriculum_order or display_order. Falling back to primary key 'id' for ordering.",
+     "  warnings.warn(f\"[Curriculum Ordering Warning] textbook_examples does not contain curriculum_order or display_order. Falling back to primary key 'id' for ordering.\")"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py rollback-publish --confirm --maintenance-window --restore-config --restore-tracker --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 1.5,
+    "passed": true,
+    "tail": [
+     " \"passed\": true,",
+     " \"next\": \"restart Flask 5000 (owner, original admin window) and 5001 so no process keeps the removed wrappers in memory\"",
+     "}"
+    ]
+   }
+  ],
+  "publish": {
+   "gh_DataScalingAndShifting": {
+    "status": "production_published",
+    "component_count": 7,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "unsafe_dynamic",
+    "dynamic_count": 6,
+    "static_count": 0,
+    "published_components": [
+     12933,
+     12939,
+     12941,
+     12942,
+     12943,
+     12944,
+     12945
+    ]
+   },
+   "gh_Mean": {
+    "status": "production_published",
+    "component_count": 9,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "unsafe_dynamic",
+    "dynamic_count": 8,
+    "static_count": 0,
+    "published_components": [
+     12912,
+     12913,
+     12914,
+     12915,
+     12916,
+     12917,
+     12931,
+     12936,
+     12937
+    ]
+   },
+   "gh_MedianAndPercentiles": {
+    "status": "production_published",
+    "component_count": 9,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "unsafe_dynamic",
+    "dynamic_count": 8,
+    "static_count": 0,
+    "published_components": [
+     12918,
+     12919,
+     12920,
+     12921,
+     12922,
+     12923,
+     12934,
+     12935,
+     12946
+    ]
+   },
+   "gh_VarianceAndStandardDeviation": {
+    "status": "production_published",
+    "component_count": 10,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "unsafe_dynamic",
+    "dynamic_count": 7,
+    "static_count": 0,
+    "published_components": [
+     12924,
+     12925,
+     12926,
+     12927,
+     12928,
+     12929,
+     12930,
+     12932,
+     12938,
+     12940
+    ]
+   }
+  },
+  "accept_served": {
+   "gh_DataScalingAndShifting": {
+    "12933": 3,
+    "12939": 3,
+    "12941": 2,
+    "12942": 3,
+    "12943": 3,
+    "12944": 3,
+    "12945": 2
+   },
+   "gh_Mean": {
+    "12912": 3,
+    "12913": 3,
+    "12914": 3,
+    "12915": 2,
+    "12916": 2,
+    "12917": 2,
+    "12931": 2,
+    "12936": 2,
+    "12937": 2
+   },
+   "gh_MedianAndPercentiles": {
+    "12918": 3,
+    "12919": 3,
+    "12920": 2,
+    "12921": 3,
+    "12922": 2,
+    "12923": 2,
+    "12934": 2,
+    "12935": 2,
+    "12946": 2
+   },
+   "gh_VarianceAndStandardDeviation": {
+    "12924": 3,
+    "12925": 3,
+    "12926": 2,
+    "12927": 2,
+    "12928": 2,
+    "12929": 2,
+    "12930": 2,
+    "12932": 2,
+    "12938": 2,
+    "12940": 2
+   }
+  },
+  "published_vs_baseline": {
+   "files_added": [
+    "agent_skills_v3/gh_DataScalingAndShifting/__init__.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/component_manifest.json",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12933/generate.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12933/get_hint.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12933/metadata.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12939/generate.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12939/get_hint.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12939/metadata.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12941/generate.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12941/get_hint.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12941/metadata.py",
+    "agent_skills_v3/gh_DataScalingAndShifting/components/src_12942/generate.py"
+   ],
+   "files_removed": [],
+   "files_changed": [
+    "configs/gencode_promoted_capabilities.json"
+   ],
+   "table_count_changes": {
+    "gencode_component_tracker": [
+     1214,
+     1249
+    ]
+   },
+   "unit8_tracker_rows": [
+    0,
+    35
+   ],
+   "textbook_same": true
+  },
+  "after_rollback_vs_baseline": {
+   "files_added": [],
+   "files_removed": [],
+   "files_changed": [],
+   "table_count_changes": {},
+   "unit8_tracker_rows": [
+    0,
+    0
+   ],
+   "textbook_same": true
+  }
+ },
+ "scenario_injected_failure": {
+  "steps": [
+   {
+    "step": "deploy_unit8.py promote --confirm --teacher-approved --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 1.4,
+    "passed": null,
+    "tail": [
+     "  \"gh_VarianceAndStandardDeviation\": []",
+     " }",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py quarantine --confirm --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.1,
+    "passed": null,
+    "tail": [
+     " \"quarantine_dir\": \"C:\\\\Projects\\\\_u8_teacher_review\\\\Mathproject_tvet_mathB_review\\\\backups\\\\math2_unit8_univariate_statistics\\\\20261105_222343\\\\quarantine_20261105_222451\",",
+     " \"moved\": []",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py rebuild --confirm --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 14.3,
+    "passed": true,
+    "tail": [
+     "https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md",
+     "",
+     "  import google.generativeai as old_genai"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py verify-build --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.5,
+    "passed": true,
+    "tail": [
+     " \"passed\": true,",
+     " \"nothing_published_yet\": true",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py publish --confirm --maintenance-window --isolated-rehearsal",
+    "rc": 1,
+    "seconds": 6.0,
+    "passed": false,
+    "tail": [
+     "",
+     "  import google.generativeai as old_genai",
+     "publish failed at gh_MedianAndPercentiles; every Unit 8 wrapper written in this run was moved out (remaining: {'gh_DataScalingAndShifting': [], 'gh_Mean': [], 'gh_MedianAndPercentiles': [], 'gh_VarianceAndStandardDeviation': []}); services may be restarted on the previous version"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py rollback-publish --confirm --maintenance-window --restore-config --restore-tracker --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 1.5,
+    "passed": true,
+    "tail": [
+     " \"passed\": true,",
+     " \"next\": \"restart Flask 5000 (owner, original admin window) and 5001 so no process keeps the removed wrappers in memory\"",
+     "}"
+    ]
+   }
+  ],
+  "publish_skills": {
+   "gh_DataScalingAndShifting": {
+    "status": "production_published",
+    "component_count": 7,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "unsafe_dynamic",
+    "dynamic_count": 6,
+    "static_count": 0,
+    "published_components": [
+     12933,
+     12939,
+     12941,
+     12942,
+     12943,
+     12944,
+     12945
+    ]
+   },
+   "gh_Mean": {
+    "status": "production_published",
+    "component_count": 9,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "unsafe_dynamic",
+    "dynamic_count": 8,
+    "static_count": 0,
+    "published_components": [
+     12912,
+     12913,
+     12914,
+     12915,
+     12916,
+     12917,
+     12931,
+     12936,
+     12937
+    ]
+   },
+   "gh_MedianAndPercentiles": {
+    "exception": "RuntimeError: injected failure (isolated rehearsal)"
+   }
+  },
+  "auto_rollback": {
+   "moved": [
+    {
+     "from": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\skills\\gh_DataScalingAndShifting.py",
+     "to": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\backups\\math2_unit8_univariate_statistics\\20261105_222343\\publish_failed_20261105_222506\\skills\\gh_DataScalingAndShifting.py"
+    },
+    {
+     "from": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\agent_skills_v3\\gh_DataScalingAndShifting",
+     "to": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\backups\\math2_unit8_univariate_statistics\\20261105_222343\\publish_failed_20261105_222506\\agent_skills_v3\\gh_DataScalingAndShifting"
+    },
+    {
+     "from": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\runtime\\v3_publish_staging\\agent_skills_v3\\gh_DataScalingAndShifting",
+     "to": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\backups\\math2_unit8_univariate_statistics\\20261105_222343\\publish_failed_20261105_222506\\runtime\\v3_publish_staging\\agent_skills_v3\\gh_DataScalingAndShifting"
+    },
+    {
+     "from": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\runtime\\v3_publish_staging\\skills\\gh_DataScalingAndShifting.py",
+     "to": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\backups\\math2_unit8_univariate_statistics\\20261105_222343\\publish_failed_20261105_222506\\runtime\\v3_publish_staging\\skills\\gh_DataScalingAndShifting.py"
+    },
+    {
+     "from": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\skills\\gh_Mean.py",
+     "to": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\backups\\math2_unit8_univariate_statistics\\20261105_222343\\publish_failed_20261105_222506\\skills\\gh_Mean.py"
+    },
+    {
+     "from": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\agent_skills_v3\\gh_Mean",
+     "to": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\backups\\math2_unit8_univariate_statistics\\20261105_222343\\publish_failed_20261105_222506\\agent_skills_v3\\gh_Mean"
+    },
+    {
+     "from": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\runtime\\v3_publish_staging\\agent_skills_v3\\gh_Mean",
+     "to": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\backups\\math2_unit8_univariate_statistics\\20261105_222343\\publish_failed_20261105_222506\\runtime\\v3_publish_staging\\agent_skills_v3\\gh_Mean"
+    },
+    {
+     "from": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\runtime\\v3_publish_staging\\skills\\gh_Mean.py",
+     "to": "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\backups\\math2_unit8_univariate_statistics\\20261105_222343\\publish_failed_20261105_222506\\runtime\\v3_publish_staging\\skills\\gh_Mean.py"
+    }
+   ],
+   "remaining": {
+    "gh_DataScalingAndShifting": [],
+    "gh_Mean": [],
+    "gh_MedianAndPercentiles": [],
+    "gh_VarianceAndStandardDeviation": []
+   }
+  },
+  "no_partial_skill_left": true,
+  "after_rollback_vs_baseline": {
+   "files_added": [],
+   "files_removed": [],
+   "files_changed": [],
+   "table_count_changes": {},
+   "unit8_tracker_rows": [
+    0,
+    0
+   ],
+   "textbook_same": true
+  }
+ },
+ "scenario_exclude_12934": {
+  "steps": [
+   {
+    "step": "deploy_unit8.py precheck --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.6,
+    "passed": true,
+    "tail": [
+     " \"protected_file_count\": 5785,",
+     " \"passed\": true",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py backup --confirm --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.3,
+    "passed": true,
+    "tail": [
+     " \"passed\": true,",
+     " \"note\": \"kumon_math.db here is forensic only; rollback never restores the whole DB\"",
+     "}"
+    ]
+   },
+   {
+    "step": "record_approval_unit8.py  --approved-by isolated rehearsal of deploy_unit8.py --checklist C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\tmp\\rehearsal_checklist_12934.json --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.1,
+    "passed": null,
+    "tail": [
+     "  12934",
+     " ]",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py promote --confirm --teacher-approved --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 1.4,
+    "passed": null,
+    "tail": [
+     "  \"gh_VarianceAndStandardDeviation\": []",
+     " }",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py quarantine --confirm --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.1,
+    "passed": null,
+    "tail": [
+     " \"quarantine_dir\": \"C:\\\\Projects\\\\_u8_teacher_review\\\\Mathproject_tvet_mathB_review\\\\backups\\\\math2_unit8_univariate_statistics\\\\20261105_222515\\\\quarantine_20261105_222516\",",
+     " \"moved\": []",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py rebuild --confirm --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 14.4,
+    "passed": true,
+    "tail": [
+     "https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md",
+     "",
+     "  import google.generativeai as old_genai"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py verify-build --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 0.5,
+    "passed": true,
+    "tail": [
+     " \"passed\": true,",
+     " \"nothing_published_yet\": true",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py publish --confirm --maintenance-window --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 27.1,
+    "passed": true,
+    "tail": [
+     "https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md",
+     "",
+     "  import google.generativeai as old_genai"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py verify-consistency --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 5.7,
+    "passed": true,
+    "tail": [
+     " \"textbook_unchanged\": true,",
+     " \"db_integrity\": \"ok\"",
+     "}"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py accept --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 5.3,
+    "passed": true,
+    "tail": [
+     "  warnings.warn(f\"[Curriculum Ordering Warning] textbook_examples does not contain curriculum_order or display_order. Falling back to primary key 'id' for ordering.\")",
+     "C:\\Projects\\_u8_teacher_review\\Mathproject_tvet_mathB_review\\core\\gencode\\services\\v3_curriculum_ordering_service.py:94: UserWarning: [Curriculum Ordering Warning] textbook_examples does not contain curriculum_order or display_order. Falling back to primary key 'id' for ordering.",
+     "  warnings.warn(f\"[Curriculum Ordering Warning] textbook_examples does not contain curriculum_order or display_order. Falling back to primary key 'id' for ordering.\")"
+    ]
+   },
+   {
+    "step": "deploy_unit8.py rollback-publish --confirm --maintenance-window --restore-config --restore-tracker --isolated-rehearsal",
+    "rc": 0,
+    "seconds": 1.5,
+    "passed": true,
+    "tail": [
+     " \"passed\": true,",
+     " \"next\": \"restart Flask 5000 (owner, original admin window) and 5001 so no process keeps the removed wrappers in memory\"",
+     "}"
+    ]
+   }
+  ],
+  "publish": {
+   "gh_DataScalingAndShifting": {
+    "status": "production_published",
+    "component_count": 7,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "unsafe_dynamic",
+    "dynamic_count": 6,
+    "static_count": 0,
+    "published_components": [
+     12933,
+     12939,
+     12941,
+     12942,
+     12943,
+     12944,
+     12945
+    ]
+   },
+   "gh_Mean": {
+    "status": "production_published",
+    "component_count": 9,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "unsafe_dynamic",
+    "dynamic_count": 8,
+    "static_count": 0,
+    "published_components": [
+     12912,
+     12913,
+     12914,
+     12915,
+     12916,
+     12917,
+     12931,
+     12936,
+     12937
+    ]
+   },
+   "gh_MedianAndPercentiles": {
+    "status": "partial_published",
+    "component_count": 8,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "dynamic",
+    "dynamic_count": 8,
+    "static_count": 0,
+    "published_components": [
+     12918,
+     12919,
+     12920,
+     12921,
+     12922,
+     12923,
+     12935,
+     12946
+    ]
+   },
+   "gh_VarianceAndStandardDeviation": {
+    "status": "production_published",
+    "component_count": 10,
+    "smoke_status": "passed",
+    "production_smoke_status": "passed",
+    "variation_status": "unsafe_dynamic",
+    "dynamic_count": 7,
+    "static_count": 0,
+    "published_components": [
+     12924,
+     12925,
+     12926,
+     12927,
+     12928,
+     12929,
+     12930,
+     12932,
+     12938,
+     12940
+    ]
+   }
+  },
+  "accept_served": {
+   "gh_DataScalingAndShifting": {
+    "12933": 3,
+    "12939": 3,
+    "12941": 2,
+    "12942": 3,
+    "12943": 3,
+    "12944": 3,
+    "12945": 2
+   },
+   "gh_Mean": {
+    "12912": 3,
+    "12913": 3,
+    "12914": 3,
+    "12915": 2,
+    "12916": 2,
+    "12917": 2,
+    "12931": 2,
+    "12936": 2,
+    "12937": 2
+   },
+   "gh_MedianAndPercentiles": {
+    "12918": 3,
+    "12919": 3,
+    "12920": 3,
+    "12921": 3,
+    "12922": 2,
+    "12923": 2,
+    "12935": 2,
+    "12946": 2
+   },
+   "gh_VarianceAndStandardDeviation": {
+    "12924": 3,
+    "12925": 3,
+    "12926": 2,
+    "12927": 2,
+    "12928": 2,
+    "12929": 2,
+    "12930": 2,
+    "12932": 2,
+    "12938": 2,
+    "12940": 2
+   }
+  },
+  "after_rollback_vs_baseline": {
+   "files_added": [],
+   "files_removed": [],
+   "files_changed": [],
+   "table_count_changes": {},
+   "unit8_tracker_rows": [
+    0,
+    0
+   ],
+   "textbook_same": true
+  }
+ },
+ "formal_table_count_changes_during_rehearsal": {},
+ "checks": {
+  "promote_refused_without_approval": true,
+  "formal_promote_refuses_rehearsal_record": true,
+  "publish_refused_while_5000_5001_running": true,
+  "publish_requires_maintenance_flag": true,
+  "full_release_steps_passed": true,
+  "full_release_rollback_restores_baseline": true,
+  "injected_failure_leaves_no_partial_skill": true,
+  "injected_failure_rollback_restores_baseline": true,
+  "exclusion_partial_publish": true,
+  "exclusion_rollback_restores_baseline": true,
+  "formal_project_untouched": true
+ },
+ "passed": true,
+ "finished": "2026-11-05 22:26:12"
+}

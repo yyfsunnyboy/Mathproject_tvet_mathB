@@ -324,6 +324,36 @@ _GH_UNFINISHED_TAIL_RE = re.compile(r"(?:[，、：；,:;]|\\\)|\\\])\s*$")
 _GH_ASK_RE = re.compile(r"[？?]|求|試|證明|寫出|判斷|說明|化簡|計算|選出|何者|哪|比較|驗證|填|作圖|畫出|標出|算出|解[下二一不方聯]|是否|下列")
 _GH_CONTENT_CUE_RE = re.compile(r"[0-9A-Za-z]|\\\(|\\\[")
 _GH_HEADING_LIKE_RE = re.compile(r"^[^，。；！？：:\\\d]{1,14}$")
+# An ask is a clause that opens with an instruction ("求…", "試以…，計算…") or a question form; the bare character
+# 試 inside "考試" or 求 inside "要求" does not make a sentence an ask.
+_GH_ASK_CLAUSE_RE = re.compile(
+    r"[？?]|何者|哪|是否|下列"
+    r"|(?:^|[，、；：:（(\s])(?:試|求|請|問|證明|寫出|判斷|說明|化簡|計算|選出|驗證|填|作圖|畫出|標出|算出|比較|解)"
+)
+# Last sentence promises data that is not there yet ("…如下表。", "…分別為", "…依序如下：").
+_GH_DATA_LEAD_IN_RE = re.compile(r"(?:如下[表圖]?|如[表圖]所示|如[表圖]|分別為|依序為|依序如下|所示)[：:，,。]?\s*$")
+_GH_MATH_SPAN_RE = re.compile(r"\\\(.*?\\\)|\\\[.*?\\\]", re.S)
+
+
+def _gh_strip_math(text: str) -> str:
+    return _GH_MATH_SPAN_RE.sub("", str(text or ""))
+
+
+def _gh_stem_is_complete(stem_lines: list[str]) -> bool:
+    """A stem is complete once a prose clause asks something, unless it still ends on a data lead-in.
+
+    Data rows are not prose.  A last sentence such as "…如下表。" / "…分別為" promises data or a question that
+    has not been given yet, so such a stem stays open even if an earlier sentence mentions 求 (e.g. "來求平均利潤").
+    """
+    prose = [_gh_strip_math(s).strip() for s in stem_lines if s.strip() and not is_numeric_data_row(s)]
+    prose = [s for s in prose if re.sub(r"[。，、；：:,.\s]", "", s)]  # a formula-only line leaves just punctuation
+    if not prose:
+        return False
+    pieces = [p for p in re.split(r"(?<=[。？！?!])", prose[-1]) if p.strip()]
+    last = pieces[-1] if pieces else prose[-1]
+    if _GH_DATA_LEAD_IN_RE.search(last):
+        return False
+    return any(_GH_ASK_CLAUSE_RE.search(s) for s in prose)
 
 
 def _gh_stem_continues(current: dict[str, Any], line: str, body_set: set[str]) -> bool:
@@ -341,6 +371,9 @@ def _gh_stem_continues(current: dict[str, Any], line: str, body_set: set[str]) -
         return True
     if any(_GH_SUBITEM_START_RE.match(s) for s in stem):
         return False
+    if stem and is_numeric_data_row(line):
+        # The data of a question ("186, 188, 189, 191, 226，") is part of it, never a heading or exposition.
+        return True
     if current["kind"] == "example":
         # An example's solution follows its stem; only a visibly unfinished stem line may continue.
         return bool(stem) and bool(_GH_UNFINISHED_TAIL_RE.search(stem[-1]))
@@ -348,11 +381,13 @@ def _gh_stem_continues(current: dict[str, Any], line: str, body_set: set[str]) -
         return False
     if stem and _GH_UNFINISHED_TAIL_RE.search(stem[-1]):
         return True
-    # A stem that already asks something is complete; what follows is exposition.  An ask-less stem
-    # ("…如下圖所示。", "…依序數數字：") is still open and continues with numbers, variables or formulas.
-    if _GH_ASK_RE.search("\n".join(stem)):
+    # A stem is complete once any of its prose clauses asks (a data row after the ask still belongs to the stem,
+    # but a prose line does not reopen it), unless its last sentence is a data lead-in ("…如下表。", "…分別為").
+    # An ask-less or lead-in stem stays open and continues with numbers, variables, formulas or the question
+    # sentence that follows.
+    if _gh_stem_is_complete(stem):
         return False
-    return bool(_GH_CONTENT_CUE_RE.search(line))
+    return bool(_GH_CONTENT_CUE_RE.search(line)) or bool(_GH_ASK_CLAUSE_RE.search(_gh_strip_math(line)))
 
 
 _GH_EXERCISE_NUM_RE = re.compile(r"^\s*(\d{1,2})\s*(?:[\.、．\t]|\s+)\s*(.*)$")
@@ -368,9 +403,25 @@ _GH_CONTINUATION_RE = re.compile(r"^\s*(?:[\(（]\s*(?:\d{1,2}|[A-Ea-e])\s*[\)�
 _GH_SENTENCE_PUNCT_RE = re.compile(r"[，。；！？]")
 
 
+def _gh_question_cells(table_cells: list[list[str]] | None) -> dict[str, list[list[str]]]:
+    """Table cells that open with an example / practice title, keyed by that title paragraph.
+
+    A question laid out in a table cell is bounded by the cell itself: its paragraphs are the stem (and the
+    cell ends where the question ends), whatever words the stem contains.
+    """
+    index: dict[str, list[list[str]]] = {}
+    for cell in table_cells or []:
+        paras = [ln.strip() for p in cell for ln in str(p or "").splitlines() if ln.strip()]
+        if len(paras) >= 2 and (_GH_EXAMPLE_START_RE.match(paras[0]) or _GH_PRACTICE_START_RE.match(paras[0])):
+            index.setdefault(paras[0], []).append(paras[1:])
+    return index
+
+
 def scan_general_high_layout(
     extracted_text: str,
     body_paragraphs: list[str] | None = None,
+    table_cells: list[list[str]] | None = None,
+    source_marks: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Deterministic scan of a 普高 unit DOCX (converted LaTeX text).
 
@@ -382,6 +433,10 @@ def scan_general_high_layout(
     ``body_paragraphs`` are DOCX running-text paragraphs (see
     ``_is_body_prose_paragraph``); one appearing after an example's solution
     marker means the exposition has resumed and ends that example.
+
+    ``table_cells`` are the paragraph texts of each top-level DOCX table cell (see
+    ``extract_converted_latex_docx``); an example / practice laid out in a cell takes exactly the cell's
+    paragraphs as its stem.
     """
     from core.textbook_solution_boundary import (
         split_student_stem_at_solution_marker,
@@ -390,6 +445,7 @@ def scan_general_high_layout(
 
     body_set = {str(p or "").strip() for p in (body_paragraphs or []) if str(p or "").strip()}
     lines = [str(ln or "").strip() for ln in str(extracted_text or "").splitlines()]
+    question_cells = _gh_question_cells(table_cells)
     items: list[dict[str, Any]] = []
     blocks: dict[str, str] = {}
     solutions: dict[str, str] = {}
@@ -450,7 +506,15 @@ def scan_general_high_layout(
             "stem_open": True,
             "kind": kind,
             "solution_started": bool(first) and student_stem_has_solution_residue(first),
+            "cell_rest": None,
+            "cell_pos": 0,
         }
+        if kind in ("example", "in_class_practice"):
+            following = [ln for ln in lines[line_index + 1:] if ln]
+            for rest in question_cells.get(lines[line_index], []):
+                if following[:len(rest)] == rest:
+                    current["cell_rest"] = rest
+                    break
 
     for idx, line in enumerate(lines):
         if not line:
@@ -547,12 +611,21 @@ def scan_general_high_layout(
             leads_into_subitems = bool(_GH_SUBITEM_START_RE.match(next_line)) and not any(
                 _GH_SUBITEM_START_RE.match(s) for s in current["stem_lines"]
             )
-            if (
-                not current["stem_lines"]
-                or _GH_CONTINUATION_RE.match(line)
-                or leads_into_subitems
-                or _gh_stem_continues(current, line, body_set)
-            ):
+            cell_rest = current.get("cell_rest")
+            if cell_rest is not None:
+                # Table-cell question: the cell's own paragraphs, in order, are the stem.
+                pos = current["cell_pos"]
+                continues = pos < len(cell_rest) and line == cell_rest[pos]
+                if continues:
+                    current["cell_pos"] = pos + 1
+            else:
+                continues = bool(
+                    not current["stem_lines"]
+                    or _GH_CONTINUATION_RE.match(line)
+                    or leads_into_subitems
+                    or _gh_stem_continues(current, line, body_set)
+                )
+            if continues:
                 current["stem_lines"].append(line)
             else:
                 current["stem_open"] = False
@@ -567,7 +640,72 @@ def scan_general_high_layout(
         "items": items,
         "blocks": blocks,
         "solutions": solutions,
+        "source_evidence": _gh_attach_source_marks(lines, items, blocks, solutions, source_marks),
     }
+
+
+def general_high_source_evidence(docx_path: str) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    """Per-question DOCX data-table / picture evidence, re-derived from the authoritative DOCX alone."""
+    pages, meta, _report = _extract_docx_with_mathtype_conversion(str(docx_path))
+    text = "\n".join(str(v or "") for _k, v in sorted(pages.items()))
+    return scan_general_high_layout(
+        text,
+        body_paragraphs=meta.get("body_paragraphs"),
+        table_cells=meta.get("table_cell_paragraphs"),
+        source_marks=meta.get("source_marks"),
+    )["source_evidence"]
+
+
+def _gh_attach_source_marks(
+    lines: list[str],
+    items: list[dict[str, Any]],
+    blocks: dict[str, str],
+    solutions: dict[str, str],
+    marks: list[dict[str, Any]] | None,
+) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    """Give each DOCX data table / picture to the question that contains it, with stem-or-solution location.
+
+    ``expected`` says the question must carry it: anything inside the example's own frame table, and anything that
+    directly follows a paragraph of the question (``prev_text``).  Exposition tables and figures that follow
+    neither stay unassigned-to-requirement.  Evidence is traceable (picture SHA-256, table cell fingerprint).
+    """
+    from core.textbook_solution_boundary import student_stem_has_solution_residue
+
+    def _norm(text: str) -> str:
+        return re.sub(r"\s+", "", str(text or ""))
+
+    starts = sorted((int(it["line_index"]), str(it["canonical_title"]), str(it.get("kind") or "")) for it in items)
+    out: dict[str, dict[str, list[dict[str, Any]]]] = {}
+    for mark in marks or []:
+        li = int(mark.get("line_index", -1))
+        owner = None
+        for start, title, kind in starts:
+            if start <= li:
+                owner = (start, title, kind)
+            else:
+                break
+        if owner is None:
+            continue
+        start, title, kind = owner
+        end = li if mark["kind"] == "table" else li + 1
+        if kind in ("example", "in_class_practice"):
+            # The frame table holds exactly the question; whatever follows it is the worked solution or exposition.
+            location = "stem" if mark.get("container") else "solution"
+        else:
+            location = "solution" if any(
+                student_stem_has_solution_residue(x) for x in lines[start + 1:end] if x
+            ) else "stem"
+        if mark.get("container"):
+            expected = True
+        else:
+            # The tail of the preceding paragraph (its own "2." numbering prefix is not part of the stem).
+            prev = _norm(mark.get("prev_text"))[-12:]
+            expected = len(prev) >= 4 and prev in _norm(blocks.get(title, "") + solutions.get(title, ""))
+        entry = {k: v for k, v in mark.items() if k not in ("line_index", "prev_text", "container", "kind")}
+        entry.update({"location": location, "expected": expected})
+        bucket = out.setdefault(title, {"tables": [], "pictures": []})
+        bucket["tables" if mark["kind"] == "table" else "pictures"].append(entry)
+    return out
 
 
 _GH_CHAPTER_TITLE_NORMALIZE_RE = re.compile(
@@ -647,7 +785,7 @@ def classify_general_high_visual_status(notes: dict[str, Any], problem_text: str
         return GH_VISUAL_ATTACHED
     if assets:
         return GH_VISUAL_UNCERTAIN
-    if _text_has_strong_figure_cue(problem_text):
+    if _text_has_strong_figure_cue(problem_text, notes):
         return GH_VISUAL_REQUIRED_MISSING
     if notes.get("visual_required_missing") or question_needs_image(problem_text):
         return GH_VISUAL_UNCERTAIN
@@ -695,6 +833,51 @@ def find_general_high_source_skill_map(
         ):
             return entry
     return None
+
+
+def attach_general_high_source_evidence(
+    *,
+    scan: dict[str, Any],
+    curriculum_info: dict,
+    defer_commit: bool = False,
+) -> dict[str, Any]:
+    """Copy per-question DOCX table/picture evidence onto imported rows (notes only).
+
+    Empty ``tables`` / ``pictures`` lists mean the scan ran and this question has none; Gate then
+    does not invent a table/figure requirement from keywords alone.
+    """
+    summary: dict[str, Any] = {"attached": 0}
+    if str(curriculum_info.get("curriculum") or "") != "general":
+        return summary
+    volume = str(curriculum_info.get("volume") or "")
+    unit = scan.get("chapter") or {}
+    chapter = ""
+    if unit.get("unit"):
+        chapter = normalize_general_high_chapter_section(f"{unit.get('unit')} {unit.get('title')}")[0]
+    if not chapter:
+        return summary
+    evidence = scan.get("source_evidence") or {}
+    rows = TextbookExample.query.filter(
+        TextbookExample.source_curriculum == "general",
+        TextbookExample.source_volume == volume,
+        TextbookExample.source_chapter == chapter,
+    ).all()
+    for row in rows:
+        title = _GH_ROW_TITLE_SUFFIX_RE.sub("", str(row.source_description or "")).strip()
+        try:
+            notes = json.loads(row.notes) if row.notes else {}
+        except (TypeError, ValueError):
+            notes = {}
+        if not isinstance(notes, dict):
+            notes = {}
+        notes["source_evidence"] = evidence.get(title) or {"tables": [], "pictures": []}
+        row.notes = json.dumps(notes, ensure_ascii=False)
+        summary["attached"] += 1
+    if defer_commit:
+        db.session.flush()
+    else:
+        db.session.commit()
+    return summary
 
 
 def apply_general_high_source_skill_map(
@@ -1199,10 +1382,18 @@ def scan_converted_docx_question_blocks(
     *,
     source_scope: str = "",
     layout: str = "",
+    table_cells: list[list[str]] | None = None,
+    body_paragraphs: list[str] | None = None,
+    source_marks: list[dict[str, Any]] | None = None,
 ) -> dict[str, str]:
     """Deterministic per-title question blocks from converted LaTeX DOCX plain text."""
     if layout == GENERAL_HIGH_LAYOUT:
-        return scan_general_high_layout(extracted_text)["blocks"]
+        return scan_general_high_layout(
+            extracted_text,
+            body_paragraphs=body_paragraphs,
+            table_cells=table_cells,
+            source_marks=source_marks,
+        )["blocks"]
     paragraph_blocks = [
         {"type": "paragraph", "text": str(ln or "").strip()}
         for ln in str(extracted_text or "").splitlines()
@@ -2569,36 +2760,133 @@ def extract_converted_latex_docx(file_path: str) -> tuple[dict[int, str], dict[s
     from docx.table import Table
     from docx.text.paragraph import Paragraph
 
+    from core.docx_data_tables import analyze_table, grid_fingerprint, grid_to_latex, is_layout_container
+
     doc = Document(file_path)
     ordered_chunks: list[str] = []
     body_paragraphs: list[str] = []
+    table_cell_paragraphs: list[list[str]] = []
+    source_marks: list[dict[str, Any]] = []
     paragraph_count = 0
     table_count = 0
+
+    def _text_of(p_el) -> str:
+        return docx_paragraph_text_faithful(Paragraph(p_el, doc))
+
+    def _next_line() -> int:
+        return len("\n".join(ordered_chunks).splitlines()) if ordered_chunks else 0
+
+    def _prev_text() -> str:
+        return ordered_chunks[-1] if ordered_chunks else ""
+
+    def _mark_pictures(p_el, *, container: bool) -> None:
+        for pic in _docx_picture_marks(p_el, doc):
+            source_marks.append({
+                "kind": "picture", "line_index": _next_line() - 1, "prev_text": _prev_text(),
+                "container": container, **pic,
+            })
+
+    def _emit_table(tbl_el, *, container: bool, cell_texts: list[str] | None) -> bool:
+        """Data table -> one ``array`` line at its place in the flow; returns True when it was emitted."""
+        analysis = analyze_table(tbl_el, _text_of)
+        if analysis["kind"] == "data":
+            ordered_chunks_text = grid_to_latex(analysis["rows"])
+            source_marks.append({
+                "kind": "table", "line_index": _next_line(), "prev_text": _prev_text(), "container": container,
+                "representable": True, "fingerprint": grid_fingerprint(analysis["rows"]),
+                "n_rows": len(analysis["rows"]), "n_cols": len(analysis["rows"][0]),
+            })
+            ordered_chunks.append(ordered_chunks_text)
+            if cell_texts is not None:
+                cell_texts.append(ordered_chunks_text)
+            return True
+        if analysis["kind"] == "unrepresentable":
+            source_marks.append({
+                "kind": "table", "line_index": _next_line() - 1, "prev_text": _prev_text(), "container": container,
+                "representable": False, "reason": analysis["reason"], "fingerprint": grid_fingerprint(analysis["rows"]),
+                "n_rows": len(analysis["rows"]), "n_cols": max(len(r) for r in analysis["rows"]),
+            })
+        _mark_pictures(tbl_el, container=container)
+        return False
 
     for block in doc.element.body.iterchildren():
         if block.tag.endswith("}p"):
             para = Paragraph(block, doc)
             text = docx_paragraph_text_faithful(para).strip()
             paragraph_count += 1
+            _mark_pictures(block, container=False)
             if text:
                 ordered_chunks.append(text)
                 if _is_body_prose_paragraph(block):
                     body_paragraphs.append(text)
         elif block.tag.endswith("}tbl"):
             table_count += 1
+            if is_layout_container(block):
+                # The frame of one example / practice: its paragraphs are the question, a table inside is data.
+                tc = block.find(f"{_W_NS}tr").find(f"{_W_NS}tc")
+                cell_texts: list[str] = []
+                for child in tc.iterchildren():
+                    if child.tag == f"{_W_NS}p":
+                        text = _text_of(child).strip()
+                        _mark_pictures(child, container=True)
+                        if text:
+                            ordered_chunks.append(text)
+                            cell_texts.append(text)
+                    elif child.tag == f"{_W_NS}tbl":
+                        _emit_table(child, container=True, cell_texts=cell_texts)
+                if cell_texts:
+                    table_cell_paragraphs.append(cell_texts)
+                continue
+            if _emit_table(block, container=False, cell_texts=None):
+                continue
             tbl = Table(block, doc)
             for row in tbl.rows:
                 for cell in row.cells:
+                    cell_texts = []
                     for p in cell.paragraphs:
                         text = docx_paragraph_text_faithful(p).strip()
                         if text:
                             ordered_chunks.append(text)
+                            cell_texts.append(text)
+                    if cell_texts:
+                        table_cell_paragraphs.append(cell_texts)
     merged = "\n".join(ordered_chunks).strip()
     return {1: merged} if merged else {}, {
         "paragraph_count": paragraph_count,
         "table_count": table_count,
         "body_paragraphs": body_paragraphs,
+        "table_cell_paragraphs": table_cell_paragraphs,
+        "source_marks": source_marks,
     }
+
+
+_W_NS = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+
+
+def _docx_picture_marks(p_el, doc) -> list[dict[str, Any]]:
+    """Real pictures inside a paragraph (not the preview image of an equation object), with SHA-256 evidence."""
+    import hashlib
+
+    marks: list[dict[str, Any]] = []
+    object_nodes = {id(n) for obj in p_el.iter(f"{_W_NS}object") for n in obj.iter()}
+    a_ns = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
+    r_ns = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}"
+    pic_ns = "{http://schemas.openxmlformats.org/drawingml/2006/picture}"
+    for drawing in p_el.iter(f"{_W_NS}drawing"):
+        if id(drawing) in object_nodes:
+            continue
+        for blip in drawing.iter(f"{a_ns}blip"):
+            rid = blip.get(f"{r_ns}embed") or blip.get(f"{r_ns}link")
+            name = ""
+            for nv in drawing.iter(f"{pic_ns}cNvPr"):
+                name = nv.get("name") or name
+            digest = ""
+            try:
+                digest = hashlib.sha256(doc.part.related_parts[rid].blob).hexdigest()
+            except Exception:
+                digest = ""
+            marks.append({"rid": rid, "name": name, "sha256": digest})
+    return marks
 
 
 def _is_body_prose_paragraph(p_element) -> bool:
@@ -2777,9 +3065,25 @@ _STRUCTURAL_BOUNDARY_PATTERNS = [
 ]
 
 
+# A data row is a list of numbers / formulas separated by commas ("186, 188, 189", "3.8%, 3.5%,\(-4.4%\)", "1, 2, 3,…, 9").
+# It carries no words, so it can never be a heading ("8一維數據分析", "2 三角函數"); at least two items are required so a lone
+# "9." or "10" numbering marker is not treated as data.
+_DATA_ROW_ITEM = r"(?:[-\u2212+]?\d+(?:\.\d+)?\s*%?|\\\(.*?\\\)|\u2026+|\u22ef+|\.{3})"
+_NUMERIC_DATA_ROW_RE = re.compile(
+    rf"^\s*{_DATA_ROW_ITEM}(?:\s*[,\uff0c\u3001]\s*{_DATA_ROW_ITEM})+\s*[,\uff0c;\uff1b\u3002.]?\s*$"
+)
+
+
+def is_numeric_data_row(line: str) -> bool:
+    """True for a line that only lists numbers/formulas (the data of a question), never a heading or a sentence."""
+    return bool(_NUMERIC_DATA_ROW_RE.match(str(line or "")))
+
+
 def is_structural_boundary_line(line: str) -> bool:
     t = str(line or "").strip()
     if not t:
+        return False
+    if is_numeric_data_row(t):
         return False
     return any(re.search(p, t) for p in _STRUCTURAL_BOUNDARY_PATTERNS)
 
@@ -4146,6 +4450,8 @@ def process_textbook_file(
                 general_high_scan = scan_general_high_layout(
                     extracted_text,
                     body_paragraphs=((_DOCX_IMPORT_CONTEXT or {}).get("doc_meta") or {}).get("body_paragraphs"),
+                    table_cells=((_DOCX_IMPORT_CONTEXT or {}).get("doc_meta") or {}).get("table_cell_paragraphs"),
+                    source_marks=((_DOCX_IMPORT_CONTEXT or {}).get("doc_meta") or {}).get("source_marks"),
                 )
             solution_blocks = general_high_scan["solutions"] if general_high_scan else None
             if isinstance(_DOCX_IMPORT_CONTEXT, dict):
@@ -4155,6 +4461,9 @@ def process_textbook_file(
                     extracted_text,
                     source_scope=import_scope,
                     layout=docx_layout,
+                    table_cells=(_DOCX_IMPORT_CONTEXT.get("doc_meta") or {}).get("table_cell_paragraphs"),
+                    body_paragraphs=(_DOCX_IMPORT_CONTEXT.get("doc_meta") or {}).get("body_paragraphs"),
+                    source_marks=(_DOCX_IMPORT_CONTEXT.get("doc_meta") or {}).get("source_marks"),
                 )
                 _DOCX_IMPORT_CONTEXT["question_formula_blocks"] = rescanned
             ctx_blocks = (_DOCX_IMPORT_CONTEXT or {}).get("question_formula_blocks", {}) if isinstance(_DOCX_IMPORT_CONTEXT, dict) else {}
@@ -4247,6 +4556,11 @@ def process_textbook_file(
             if actual != preview["question_count"]:
                 raise ValueError(f"general_replacement_new_count_mismatch:{actual}")
         if general_high_scan and not outline_only and isinstance(result, dict) and result.get("status") != "error":
+            result["source_evidence"] = attach_general_high_source_evidence(
+                scan=general_high_scan,
+                curriculum_info=curriculum_info,
+                defer_commit=bool(import_policy.get("general_replacement") or auto_stage1),
+            )
             result["source_skill_map"] = apply_general_high_source_skill_map(
                 parsed_data=parsed_data,
                 scan=general_high_scan,
@@ -4432,6 +4746,9 @@ def extract_content_from_file(file_path, queue, max_pages=None, import_policy=No
             extracted_text,
             source_scope=source_scope,
             layout=docx_layout,
+            table_cells=(doc_meta or {}).get("table_cell_paragraphs"),
+            body_paragraphs=(doc_meta or {}).get("body_paragraphs"),
+            source_marks=(doc_meta or {}).get("source_marks"),
         )
         _DOCX_IMPORT_CONTEXT = {
             "docx_formula_source_mode": "converted_docx_latex",

@@ -1,0 +1,109 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "statistics.univariate_descriptive",
+ "registry_revision": "promoted-0a33ae94fd3a",
+ "bundle_sha256": "0a33ae94fd3a4c960e31149bc64453766a435a5650767389664e2857c4ff634e",
+ "allowed_operations": [
+  "arithmetic_mean",
+  "compare_standard_deviation",
+  "geometric_growth_mean",
+  "geometric_growth_unknown",
+  "grade_distribution_read",
+  "linear_find_scale_sd",
+  "linear_mean_sd",
+  "list_summary_stats",
+  "mean_variance_sd",
+  "median_consecutive",
+  "median_lists",
+  "monthly_mean_sd",
+  "percentile_frequency",
+  "quartile_frequency",
+  "standard_deviation",
+  "standardize_scores",
+  "statement_selection",
+  "true_false_stat",
+  "unknown_given_sd",
+  "weighted_mean",
+  "weighted_mean_unknown"
+ ],
+ "skill_bindings": {
+  "gh_Mean": {
+   "fixed_domain_key": "statistics.univariate_descriptive",
+   "allowed_operations": [
+    "arithmetic_mean",
+    "geometric_growth_mean",
+    "geometric_growth_unknown",
+    "true_false_stat",
+    "weighted_mean",
+    "weighted_mean_unknown"
+   ]
+  },
+  "gh_MedianAndPercentiles": {
+   "fixed_domain_key": "statistics.univariate_descriptive",
+   "allowed_operations": [
+    "list_summary_stats",
+    "median_consecutive",
+    "median_lists",
+    "percentile_frequency",
+    "quartile_frequency",
+    "statement_selection",
+    "true_false_stat"
+   ]
+  },
+  "gh_DataScalingAndShifting": {
+   "fixed_domain_key": "statistics.univariate_descriptive",
+   "allowed_operations": [
+    "linear_find_scale_sd",
+    "linear_mean_sd",
+    "monthly_mean_sd",
+    "standardize_scores",
+    "statement_selection",
+    "true_false_stat"
+   ]
+  },
+  "gh_VarianceAndStandardDeviation": {
+   "fixed_domain_key": "statistics.univariate_descriptive",
+   "allowed_operations": [
+    "compare_standard_deviation",
+    "grade_distribution_read",
+    "mean_variance_sd",
+    "standard_deviation",
+    "true_false_stat",
+    "unknown_given_sd"
+   ]
+  }
+ },
+ "operations_executed": {
+  "arithmetic_mean": 2,
+  "compare_standard_deviation": 1,
+  "geometric_growth_mean": 2,
+  "geometric_growth_unknown": 1,
+  "grade_distribution_read": 2,
+  "linear_find_scale_sd": 1,
+  "linear_mean_sd": 2,
+  "list_summary_stats": 1,
+  "mean_variance_sd": 2,
+  "median_consecutive": 1,
+  "median_lists": 1,
+  "monthly_mean_sd": 1,
+  "percentile_frequency": 2,
+  "quartile_frequency": 1,
+  "standard_deviation": 3,
+  "standardize_scores": 1,
+  "statement_selection": 3,
+  "true_false_stat": 4,
+  "unknown_given_sd": 1,
+  "weighted_mean": 2,
+  "weighted_mean_unknown": 1
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\univariate_statistics",
+ "store_sha256_after": "6d5e17e626a69195d3681996528ae752fdf2733026cb2d9173d4dd45d2c6926b",
+ "promoted_package_matches_bundle": true,
+ "unit8_published_paths": {
+  "gh_DataScalingAndShifting": [],
+  "gh_Mean": [],
+  "gh_MedianAndPercentiles": [],
+  "gh_VarianceAndStandardDeviation": []
+ }
+}

@@ -1,4 +1,4 @@
-# Gencode V3 日常執行 SOP（v1.17-Lean）
+# Gencode V3 日常執行 SOP（v1.18-Lean）
 
 > 本文件是唯一日常主要 SOP，涵蓋教材 Stage 1 到學生端驗收。
 > 欄位、Answer Type、Checker、Gate 定義以 [Specification](./SOP_Gencode_AgentSkillV3_Specification.md) 為準。
@@ -17,12 +17,13 @@
 | canonical answer 錯或缺 | Source Oracle / verified Domain operation | Oracle Gate 未過即 FAIL VERIFIED |
 | 等價答案誤判 | Answer Contract / Shared Checker | 修相應 checker；不可用答案顯示反推評分 |
 | staging 或學生端失敗 | Phase 3 / runtime | Publish Gate 未過即 STOP；已發布按既有回滾流程 |
+| 無可用 Generator，題目仍需練習 | 原題 Fallback（§0.2、§6.1） | 原題完整即作單次練習；缺圖、缺答案或 Checker 標記不可用，不阻擋其他已驗證題 |
 
 詳細 PASS 條件和狀態名稱只查 Specification、PipelineFlow 相應章節。
 
 ## 0. 開工與停止
 
-1. 先讀 Repository 根目錄 `AGENTS.md`；依任務只讀本 SOP 的相關節。
+1. 先讀 Repository 根目錄 `AGENTS.md`；依任務只讀本 SOP 的相關節。新單元導入必先讀 §0.2。
 2. 確認工作樹、現有成果、教材來源、Skill、DB tracker 與發布狀態。
 3. 將項目分為 complete、partial、missing；保留有效成果，只處理缺口。
 4. 根因已明時修正責任層；不得逐題補丁、無限重試或重跑已通過 Gate。
@@ -36,9 +37,51 @@
 1. 工作單位是整個 Unit，驗證單位仍是 Component；不逐 Skill、逐 Gate 要求人工確認。
 2. 已授權範圍內自動依序完成 Domain 盤點、Generator、Bundle（`ready_for_human_review`）與隔離演練；原有所有必要 Gate 一個都不省略。
 3. 只在真正的 Blocker（來源不可信、Gate 失敗、需要正式寫入）或 Promotion／Publish 授權時中斷；每個 Unit 集中進行一次人工發布核可。
-4. 不追求 100% 覆蓋率：已 verified 的 Component 依 §6 Partial Publish，其餘保留 DEFERRED 與理由。
+4. 不追求 100% 覆蓋率：已 verified 的 Component 依 §6 Partial Publish，其餘保留 DEFERRED 與理由；Generator 覆蓋率與教材可用率依 §0.2 分開報告。
 5. 已驗證且未受影響的成果不重跑、不重建；只處理缺口與受影響元件。
 6. 最終一次回報 PASS／DEFERRED／Blocker 與是否需要發布授權、是否需要重啟 Flask。
+
+### 0.2 單元導入核心原則：教材可用性與 Generator 分離（MUST）
+
+適用於普高（`gh_`）單元的教材匯入、GenCode V3 與學生端出題；技高練習仍依 [VOCATIONAL_PRACTICE_RUNTIME_CONTRACT](../../VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md)，本節不取代。每個新單元開工前必讀本節，以下決策視為已定案，不逐單元重新討論。
+
+1. **教材匯入與 Generator 發布是兩個獨立階段**：Stage 1 READY（§2.3 封板）證明教材完整，文字、公式、表格、圖形與 Skill 綁定均已保留。Generator 未完成不得阻止已封板教材的原題練習；Generator 成功也不能掩蓋 Stage 1 缺陷（§5.1）。
+2. **Generator 優先，原題 Fallback 保底**：每次學生取題時——
+   - A. 有正式發布且 Runtime 可用的 Generator：以 GenCode V3 動態生成，可重複練習。
+   - B. 沒有 Generator、未通過驗證、尚未發布或執行失敗：依 §6.1 Fallback 契約提供正式教材原題，作單次練習。
+   - Fallback 必須保留完整題幹、公式、原始表格及圖片；缺必要資訊的題目（例如「承例題 N」卻沒有該圖）不得出題。
+   - 單次練習的重複控制沿用既有紀錄機制，避免同一學生無限制重複取得完全相同的原題。
+   - 原題、圖片、答案或 Checker 不完整時，明確標記不可用，或依 §6.1 走未評分自學；不得假裝出題或評分成功。
+   - 此「原題 Fallback」不是 PipelineFlow §10 已廢除的「全域 Generic Domain Fallback」；跨 Domain 借用 Generator 仍禁止。
+3. **不強制 100% Generator**：Generator 覆蓋率與教材可用率分開報告。允許部分題型使用 V3、部分使用原題 Fallback，無法安全生成者列為待改善（§6 DEFERRED）。不得為了覆蓋率犧牲原始數學語意、表格、圖形或答案正確性。
+4. **人工審核不依賴正式發布**：優先沿用既有 Candidate Preview、Sandbox Preview 或教師審核入口，讓教師檢視生成題目、圖形、答案及 Checker 結果後再決定核准。不得為了讓教師看到題目，把未核准 Generator 部署給正式學生；也不以複製整個專案或新增 Flask port 作為例行審核方式。現有預覽能力不足時，先回報最小缺口並停止，不自建第二套系統。
+5. **停止條件**：同一 Generator 經既有 V3 修復與驗證流程後仍有必要能力缺口時，記錄失敗原因與責任層、保留已通過成果、將不合格題型標為 DEFERRED，並確認可否安全退回原題 Fallback；不為完成當前單元無限增加 revision。只有影響學生作答正確性、系統安全或正式契約的問題，才阻擋**對應功能**的發布，其餘已驗證部分照 §6 Partial Publish 處理。
+6. **固定結案報告**：依 §7 第 13 點的六項回報。Generator 覆蓋率未達 100% 不等於整個單元不能使用。
+
+#### 0.2.1 Runtime 支援現況
+
+依 2026-11-03 第二冊 Unit 8 唯讀查核。EXISTING＝已實作；DOCUMENTATION_GAP＝已實作、由本節補上 SOP；IMPLEMENTATION_GAP＝本節要求但程式尚未支援，詳見 [KnownIssues](./KnownIssues_TechnicalDebt.md)。非 EXISTING 項目不得在報告中寫成已完成。
+
+| 原則 | 狀態 | 證據或缺口 |
+| --- | --- | --- |
+| 無 Generator 時仍可取得原題 | EXISTING | 無已發布 facade 時，`/get_next_question` 回傳 `route_mode=textbook_example`（`core/routes/practice.py`） |
+| 已發布 V3 Generator 優先 | EXISTING | `core/generator_route_resolver.py` 以已發布 facade 為先 |
+| 未驗證、未發布、未 Promotion 的成果不進學生端 | EXISTING | Phase 3 只封裝 verified；候選 Domain 未 Promotion 時不在 store、不註冊 |
+| 原題保留題幹、公式、LaTeX 表格與已驗收圖片 | DOCUMENTATION_GAP | `problem_text` 原樣送出；圖片只取 `notes.image_assets` 中已驗收者 |
+| 缺必要圖片或資訊的原題標記不可用 | IMPLEMENTATION_GAP | Fallback 不檢查 Stage 1 封板與 required visual。個案：Unit 8 id 12930 已於 2026-11-03 在正式 DB 單筆補綁 12926 長條圖（P0-A，`reports/gh_math2_unit8_fallback_repair/link_12930_visual.py`），重新匯入會遺失 |
+| 無答案或 Checker 時明確不可用或未評分 | 部分 EXISTING | 已實作：`configs/fixed_textbook_practice.json`（graded／ungraded）與 `UNGRADED_SELF_STUDY_SKILLS`；Unit 8 四個 Skill 已列入 `UNGRADED_NO_VERIFIED_ANSWER_SKILLS`（P0-B，5001 已驗收，5000 待重啟載入）。缺口：其他未登錄原題仍以空答案出題，送出顯示「模組載入錯誤」 |
+| Generator 執行失敗時退回原題 | IMPLEMENTATION_GAP | 重試用盡後回傳明確出題失敗，不退回原題 |
+| 單次練習的重複控制 | IMPLEMENTATION_GAP | 只有 session 內依 id 循環並避免連續同題；沒有學生層級持久紀錄，一輪後或重新登入會重複 |
+| 同一 Skill 混合 V3 與原題 | 部分 EXISTING | `core/textbook_order_practice.py`：Skill 有 fixed 登錄列時依 Stage 1 閱讀順序混合；否則已發布 Skill 只出 Generator 元件 |
+| 覆蓋率與可用率分開、停止條件、結案六項 | DOCUMENTATION_GAP | 本節、§6 與 §7 第 13 點 |
+| 未發布即可供教師預覽 | IMPLEMENTATION_GAP | `/admin/textbook-examples/<id>/v3-preview` 僅限 admin，且需 tracker `verified`、`reports/gencode_v3_dryrun` 產物與已註冊 Domain（等同已 Promotion）；`/admin/domain-bootstrap/gaps/<gap_id>/preview` 只服務自動 Bootstrap gap，回傳最多 5 筆 JSON 樣本，無學生頁呈現、圖形或 Checker 試答 |
+
+#### 0.2.2 開工預設決策
+
+1. Stage 1 封板後，未發布 Generator 的題目預設由原題 Fallback 提供，不等 Generator。開工時先檢查 §0.2.1 的 IMPLEMENTATION_GAP 對本單元的影響（缺圖、無答案、無 fixed 登錄），列入結案報告。
+2. 教師審核沒有符合規則 4 的入口時，回報缺口並停止；不主動提議複製專案、新增 port 或為審核而正式發布。
+3. Generator 達停止條件即列為 DEFERRED，不再新增 revision。
+4. 正式發布只含已 verified 且經人工核准的部分，其餘題目維持原題 Fallback 或明確標記不可用。
 
 ## 1. 權威與作業邊界
 
@@ -216,11 +259,15 @@ Stage 1 封板、Capability Promotion、正式 Publish 仍執行所有必要 Gat
 7. 回滾後核對 runtime selectable、manifest 與服務狀態，保存失敗證據。
 8. 不因回滾或 DEFERRED 降低 Gate，也不將未驗證 component 偷放進 wrapper。
 
-### 6.1 無 Generator 的固定教材練習
+### 6.1 無可用 Generator 的教材原題 Fallback
 
-1. 尚未發布 Generator 的 Skill，可依既有正式教材備援流程（`db_textbook_example`）依序輪流提供固定教材題；輪替進度不得只靠會被 session 精簡的欄位，並避免連續重複同一題。
-2. 教材題沒有可靠參考答案或判分契約時，只能提供未評分練習：不判對錯、不用自由文字或 AI 回饋當正式判定，也不得寫入答題紀錄、連續答對、學習進度或掌握度。
-3. 未評分模式以 Skill 明確列入（opt-in），目前已驗證僅 `gh_MathematicalInduction`；不得宣稱其他 Legacy Skill 已支援，擴大須另行驗證其影響。
+原則見 §0.2 規則 2；現況與缺口見 §0.2.1。
+
+1. 觸發：Skill 沒有已發布且可載入的 runtime facade。`/get_next_question` 回傳 `route_mode=textbook_example`（`route_reason=no_generator_serve_textbook_example`），送出該 Skill 綁定之 `TextbookExample` 的 `problem_text`（含 LaTeX 公式與 `array` 表格），以及 `notes.image_assets` 中已驗收的圖片；送出前不曝露答案。
+2. 順序：一般情況依題目 id 在 session 內循環，以 `current_textbook_example_id` 接續，不只靠會被 session 精簡的欄位，並避免連續重複同一題。Skill 若有 `configs/fixed_textbook_practice.json` 登錄列，改依 Stage 1 閱讀順序（`question_anchor.source_order`）混合已發布元件與登錄原題，未登錄列不出題（`core/textbook_order_practice.py`）。
+3. 評分：原題只有在 `fixed_textbook_practice.json` 以 `graded` 登錄時才評分（需獨立推導的參考答案與 answer contract，並以題幹 SHA-256 綁定）。以 `ungraded` 登錄，或 Skill 列入 `UNGRADED_SELF_STUDY_SKILLS`（目前為 `gh_MathematicalInduction`，以及經 `UNGRADED_NO_VERIFIED_ANSWER_SKILLS` 列入、顯示「沒有經驗證的標準答案」提示的 Unit 8 四個 Skill）時，為未評分自學：不判對錯、不用自由文字或 AI 回饋當正式判定，也不寫入答題紀錄、連續答對、學習進度或掌握度。
+4. 新增 fixed 登錄或 opt-in 須有可稽核的答案／解法依據並驗證影響；不得宣稱未登錄的原題已可評分，也不得宣稱其他 Legacy Skill 已支援未評分模式。
+5. 已知缺口（§0.2.1 IMPLEMENTATION_GAP）：未登錄原題以空答案出題、送出顯示錯誤（Unit 8 已個案處理）；未檢查 required visual（Unit 8 id 12930 已個案補綁）；沒有學生層級的重複控制；Generator 執行失敗不退回原題。結案報告須逐項列出受影響題目，不得寫成可用。
 
 ## 7. 學生端驗收與結案
 
@@ -236,6 +283,15 @@ Stage 1 封板、Capability Promotion、正式 Publish 仍執行所有必要 Gat
 10. 結案狀態分三級並分別回報：Published（manifest／wrapper 已寫入）、Runtime Verified（`verify-live`／`accept` 通過）、Live Accepted（正式服務重啟後確認載入）。
 11. 正式 Flask 的 Skill 綁定與路由程式於啟動時載入；發布或修改路由後必須明確回報「需要重啟」，未經授權不得自行重啟。
 12. 已通過的單元不因非阻斷性 DEFERRED 題目持續延長開發；DEFERRED 另案排期。
+13. 每個單元的固定結案報告只需確認六項（§0.2 規則 6）：
+    1. 教材 Stage 1 狀態。
+    2. 原題完整性與 Fallback 可用性，逐題列出 §0.2.1 缺口的影響。
+    3. GenCode V3 已核准的覆蓋範圍。
+    4. 未通過題型及原因。
+    5. 教師人工審核狀態。
+    6. 正式發布及學生端狀態（第 10 點三級）。
+
+    Generator 覆蓋率與教材可用率分開表示；覆蓋率未達 100% 不得直接等同單元不可用。
 
 ## 8. 依需求查閱的詳細契約
 

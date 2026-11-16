@@ -1,0 +1,41 @@
+{
+ "revision": 4,
+ "root": "C:\\Projects\\Mathproject_tvet_mathB",
+ "bundle_file_sha256": "c4d73c1ce449adda16c7f6edaba34c5f5a9817f9af6f0556d11cba29689819e1",
+ "bundle_sha_matches_reviewed": true,
+ "bundle_digest_matches_reviewed": true,
+ "bundle_review_status": "ready_for_human_review",
+ "bundle_package_intact": true,
+ "bundle_package_matches_source": true,
+ "bundle_coverage_rows": 35,
+ "sandbox_reference_components": 35,
+ "isolated_rehearsal_passed": true,
+ "db_integrity": "ok",
+ "stage1_gate": {
+  "status": "READY",
+  "blocked": 0,
+  "needs_review": 0
+ },
+ "unit8_rows": 35,
+ "unit8_ids_match_specs": true,
+ "binding_mismatches": {},
+ "textbook_digest": "fd24f9c2ed02cde0cb441f450788a5edec53dd68aff012b234c38ba43bbd847a",
+ "unit8_tracker_rows_before": 0,
+ "skill_tracker_rows_before": 0,
+ "active_orchestrator_jobs": [],
+ "journal_mode": "wal",
+ "hot_rollback_journal": false,
+ "write_lock_free": true,
+ "unit8_already_published": {
+  "gh_DataScalingAndShifting": [],
+  "gh_Mean": [],
+  "gh_MedianAndPercentiles": [],
+  "gh_VarianceAndStandardDeviation": []
+ },
+ "unit8_leftover_build_dirs": [],
+ "promoted_package_exists": false,
+ "domain_in_store": false,
+ "unit8_fixed_entries": [],
+ "protected_file_count": 5785,
+ "passed": true
+}

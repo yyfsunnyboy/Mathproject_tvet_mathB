@@ -1,0 +1,106 @@
+{
+  "skill_id": "gh_Mean",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_12912",
+      "textbook_example_id": 12912,
+      "status": "verified",
+      "problem_type_id": "arithmetic_mean",
+      "domain_operation": "arithmetic_mean",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12912/generate.py"
+    },
+    {
+      "component_id": "src_12913",
+      "textbook_example_id": 12913,
+      "status": "verified",
+      "problem_type_id": "weighted_mean",
+      "domain_operation": "weighted_mean",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12913/generate.py"
+    },
+    {
+      "component_id": "src_12914",
+      "textbook_example_id": 12914,
+      "status": "verified",
+      "problem_type_id": "geometric_growth_mean",
+      "domain_operation": "geometric_growth_mean",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12914/generate.py"
+    },
+    {
+      "component_id": "src_12915",
+      "textbook_example_id": 12915,
+      "status": "verified",
+      "problem_type_id": "arithmetic_mean",
+      "domain_operation": "arithmetic_mean",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12915/generate.py"
+    },
+    {
+      "component_id": "src_12916",
+      "textbook_example_id": 12916,
+      "status": "verified",
+      "problem_type_id": "weighted_mean",
+      "domain_operation": "weighted_mean",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12916/generate.py"
+    },
+    {
+      "component_id": "src_12917",
+      "textbook_example_id": 12917,
+      "status": "verified",
+      "problem_type_id": "geometric_growth_unknown",
+      "domain_operation": "geometric_growth_unknown",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12917/generate.py"
+    },
+    {
+      "component_id": "src_12931",
+      "textbook_example_id": 12931,
+      "status": "verified",
+      "problem_type_id": "true_false_stat",
+      "domain_operation": "true_false_stat",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12931/generate.py"
+    },
+    {
+      "component_id": "src_12936",
+      "textbook_example_id": 12936,
+      "status": "verified",
+      "problem_type_id": "weighted_mean_unknown",
+      "domain_operation": "weighted_mean_unknown",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12936/generate.py"
+    },
+    {
+      "component_id": "src_12937",
+      "textbook_example_id": 12937,
+      "status": "verified",
+      "problem_type_id": "geometric_growth_mean",
+      "domain_operation": "geometric_growth_mean",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12937/generate.py"
+    }
+  ]
+}

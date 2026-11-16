@@ -1,0 +1,106 @@
+{
+  "skill_id": "gh_MedianAndPercentiles",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 9,
+  "components": [
+    {
+      "component_id": "src_12918",
+      "textbook_example_id": 12918,
+      "status": "verified",
+      "problem_type_id": "median_lists",
+      "domain_operation": "median_lists",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12918/generate.py"
+    },
+    {
+      "component_id": "src_12919",
+      "textbook_example_id": 12919,
+      "status": "verified",
+      "problem_type_id": "percentile_frequency",
+      "domain_operation": "percentile_frequency",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12919/generate.py"
+    },
+    {
+      "component_id": "src_12920",
+      "textbook_example_id": 12920,
+      "status": "verified",
+      "problem_type_id": "quartile_frequency",
+      "domain_operation": "quartile_frequency",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12920/generate.py"
+    },
+    {
+      "component_id": "src_12921",
+      "textbook_example_id": 12921,
+      "status": "verified",
+      "problem_type_id": "median_consecutive",
+      "domain_operation": "median_consecutive",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12921/generate.py"
+    },
+    {
+      "component_id": "src_12922",
+      "textbook_example_id": 12922,
+      "status": "verified",
+      "problem_type_id": "percentile_frequency",
+      "domain_operation": "percentile_frequency",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12922/generate.py"
+    },
+    {
+      "component_id": "src_12923",
+      "textbook_example_id": 12923,
+      "status": "verified",
+      "problem_type_id": "statement_selection",
+      "domain_operation": "statement_selection",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12923/generate.py"
+    },
+    {
+      "component_id": "src_12934",
+      "textbook_example_id": 12934,
+      "status": "verified",
+      "problem_type_id": "true_false_stat",
+      "domain_operation": "true_false_stat",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12934/generate.py"
+    },
+    {
+      "component_id": "src_12935",
+      "textbook_example_id": 12935,
+      "status": "verified",
+      "problem_type_id": "list_summary_stats",
+      "domain_operation": "list_summary_stats",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12935/generate.py"
+    },
+    {
+      "component_id": "src_12946",
+      "textbook_example_id": 12946,
+      "status": "verified",
+      "problem_type_id": "statement_selection",
+      "domain_operation": "statement_selection",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12946/generate.py"
+    }
+  ]
+}

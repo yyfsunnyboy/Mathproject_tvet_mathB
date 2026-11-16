@@ -706,6 +706,27 @@ def test_repository_unit2_source_skill_map_counts():
     }
 
 
+_UNIT8 = "單元8 一維數據分析"
+_MEAN, _MEDIAN, _VAR, _SHIFT = (
+    "gh_Mean", "gh_MedianAndPercentiles", "gh_VarianceAndStandardDeviation", "gh_DataScalingAndShifting",
+)
+
+
+def test_repository_unit8_source_skill_map_counts():
+    entry = tp.find_general_high_source_skill_map("general", "數學2", _UNIT8)
+    counts = {}
+    for sid in entry["titles"].values():
+        counts[sid] = counts.get(sid, 0) + 1
+    assert len(entry["titles"]) == 35
+    assert counts == {_MEAN: 9, _MEDIAN: 9, _VAR: 10, _SHIFT: 7}
+    assert entry["titles"]["8習題 觀念澄清1"] == _MEAN
+    assert entry["titles"]["8習題 觀念澄清2"] == _VAR
+    assert entry["titles"]["8習題 觀念澄清3"] == _SHIFT
+    assert entry["titles"]["8習題 觀念澄清4"] == _MEDIAN
+    assert tp.find_general_high_source_skill_map("vocational", "數學2", _UNIT8) is None
+    assert tp.find_general_high_source_skill_map("general", "數學1", _UNIT8) is None
+
+
 _UNIT7 = "單元7 圓與直線的關係"
 _JUDGE, _TANGENT = "gh_JudgingTheRelationshipOfCircleAndLine", "gh_TangentLinesOfACircle"
 _UNIT7_TEACHER_FIXED = {"7習題 進階題10", "7習題 進階題12"}
@@ -910,6 +931,12 @@ def test_classify_keeps_single_pick_unless_group_assembly_enabled():
             "如圖，求長度。",
             tp.GH_VISUAL_ATTACHED,
             False,
+        ),
+        (
+            {"needs_review": False, "source_evidence": {"pictures": [{"expected": True, "location": "stem", "sha256": "x"}]}},
+            "以下為人數百分比分布圖。求標準差。",
+            tp.GH_VISUAL_REQUIRED_MISSING,
+            True,
         ),
     ],
 )
