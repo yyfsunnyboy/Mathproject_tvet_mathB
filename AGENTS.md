@@ -40,6 +40,7 @@
 - 正式 Stage 1 封板、Capability Promotion、Gencode Publish：執行正式契約的必要 Gate，優先採用仍有效證據。
 - 正式契約若要求更廣測試不得縮減，須簡述原因；不因單一修補自動全域 pytest、全技能 seed sweep 或完整瀏覽器巡檢。
 - 相同測試 PASS 後，無新相關修改不得重跑；輸出只保留 PASS/FAIL 與失敗原因，不貼大量日誌。
+- 未經授權不得完整複製 Repository，也不得為單一功能修復另建大型 baseline 專案副本；細節見 Lean SOP §5.0。
 
 ## 4. 三層架構
 - `progression` 控制教材順序與先備意圖；`routing`（PPO）控制政策動作與 skill/subskill 路由。

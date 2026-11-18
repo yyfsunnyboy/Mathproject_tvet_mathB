@@ -225,6 +225,7 @@
 不因單一 Generator 重跑 B1–B4／所有普高單元，也不因單一 Checker 測所有無關題型。
 相同測試 PASS 後，沒有新相關修改不得重跑；只記錄 PASS/FAIL 與失敗原因，不貼大量日誌。
 禁止無理由全域 pytest、全技能 seed sweep 或完整瀏覽器巡檢；數量多不等於修正品質高。
+未經授權不得完整複製 Repository，也不得為單一功能修復另建大型 baseline 專案副本；Impact-Based Testing 以就地唯讀分析、最小受影響測試與既有隔離 sandbox／DB 副本為準。
 Stage 1 封板、Capability Promotion、正式 Publish 仍執行所有必要 Gate，優先使用仍有效的既有證據。
 
 ### 5.1 正式 Gate
