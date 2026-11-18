@@ -1,0 +1,322 @@
+{
+ "failures": {},
+ "report": {
+  "excluded_components": [],
+  "12949": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "true_false_bivariate",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 3,
+   "verify": {
+    "generate_sha256": "c054e2255de069d1cf61f53cc4e3d6c906c63d2f6d717878549ccb2e88488009",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12950": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "correlation_from_table",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "a48d3a7e57824e1c20f143af2d9c91eb545c8d987d20e63aa9df085e4fab9804",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12951": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "correlation_from_table",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "5a2deb3e14c8e1112522fe53630885806d5943ebb33975f559c321c0bcb99665",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12952": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "correlation_from_table",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "2ef0a1a2ea20c453360d4c08d1541acd0e4ee350bb33d89ada3638e05218f640",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12953": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "correlation_from_table",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "12d49b87b7012f47d4b0084c43f672798d146529d8b6abf1e22d67b26fb5f8ba",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12955": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "true_false_bivariate",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 9,
+   "verify": {
+    "generate_sha256": "f9c66f30363f4f5c00be96f9d545bc7668f8268862142dc43958619a2923b1a8",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12956": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "true_false_bivariate",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "05621e3e5ee983545a1e01165066320d56b074ca9131d94b5c99d17de7dc66c7",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12957": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "true_false_bivariate",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 12,
+   "verify": {
+    "generate_sha256": "ddbd964ab2fc912a9701751e91e10aca8ced7094e4f4f3c3ec85f4bb3d7faef7",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12958": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "true_false_bivariate",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "94679451f091d64b295210e215e51e34dbb96cea80c4d6f9fbdc833e5037b466",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12959": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "correlation_remove_point",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "7c21231cd9e4ff36b6fb82ce4b997ebd3b4763e28df98867cba0912bfb63e393",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12961": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "regression_from_summary",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "1cd29baf40f7d3955b12856a9014a78eacf84a0edb81f764e8d18df57e2f47a4",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12962": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "regression_from_table",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "c65d8d4b5942c3e8c4e3d56823a7bb5c32d77346cac481bea7f17e82f5d35e92",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12964": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "regression_rounded_from_table",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "bcc8ec718245fbe3b07441a576d6decb1a821409de37bacb0882d96e6b12e875",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12965": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "correlation_from_regression_point",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "4bbc6bcb47e5e31db4f47dd0da1bfa69a52aceb3269ee845a260323ae9c37720",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12966": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "regression_from_table",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "f3a26c0a7b7a3679d01834e1b0b92eaf5e0dee1d9e44275d621aa70e346dfa09",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12967": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "correlation_change_add_point",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "6eb771a90c857055f725a8090fce5fefb09aa83a436d36ac53ed4d91a1682593",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12968": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "correlation_from_table",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "bd9fe43126b71eb80d5c9792140412355923c7ba02edf0927e27efadf11ea160",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12969": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "regression_from_table",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "7ac752e074648a5bf437d6155030d983d3124852c781063b6bf33f35f5365508",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12970": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "regression_line_unknown_intercept",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "8ba2f80e7220f67d6114e079c1ec9cb4010a5be7335d0eb6bc46744fa6491ec9",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12971": {
+   "skill": "gh_LeastSquaresMethodAndRegressionLine",
+   "operation": "regression_statement_selection",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_LeastSquaresMethodAndRegressionLine",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "5f8d0b04ed1924a165fc8c77c4b78cf0267a1d686cbbcc6530d7e8e351255db5",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  },
+  "12972": {
+   "skill": "gh_CorrelationCoefficient",
+   "operation": "correlation_rescale",
+   "phase_status": "V3_SHADOW_BRIDGE",
+   "tracker": [
+    "gh_CorrelationCoefficient",
+    "verified"
+   ],
+   "variants": 20,
+   "verify": {
+    "generate_sha256": "d0665f13bc6088aee7b44570ba7d0c03e0ca695da94a1f3ad0e133afdc262dce",
+    "failures": [],
+    "differs_from_reviewed_sandbox": []
+   }
+  }
+ },
+ "passed": true
+}

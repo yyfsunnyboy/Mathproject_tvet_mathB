@@ -200,6 +200,29 @@ def get_template_slot(spec: dict[str, Any]) -> str:
     return str(slots.get("stem", "")).strip()
 
 
+def get_source_dependency(spec: dict[str, Any]) -> dict[str, Any]:
+    """Cross-question dependency of the source row (core.textbook_source_dependency.generation_contract); {} when none."""
+    sd = spec.get("source_dependency")
+    return sd if isinstance(sd, dict) and sd.get("self_contained_required") else {}
+
+
+def _source_dependency_prompt(spec: dict[str, Any]) -> str:
+    sd = get_source_dependency(spec)
+    if not sd:
+        return ""
+    figure = " The setup also relies on a figure: generate its data and render it as a visual payload." if sd.get("source_setup_has_figure") else ""
+    return (
+        "=== SOURCE DEPENDENCY ===\n"
+        f"The source question continues {sd.get('example_title')} and is answerable only with that example's setup:\n"
+        f"{sd.get('source_setup_text')}\n"
+        "Every generated item must be self-contained: generate its own complete data set (vary it per seed; never reuse "
+        "this setup as the only template), show all of it in question_text, and never mention any 例題 / 承例題. "
+        "Compute answer and explanation from the generated data in code; do not hard-code the source answer."
+        f"{figure}\n"
+        "=========================\n\n"
+    )
+
+
 # build_generator_plan_prompt and build_generator_code_prompt are defined here
 # and re-exported via problem_type_contracts.py as a backward-compatible facade.
 
@@ -213,6 +236,7 @@ def build_generator_plan_prompt(spec: dict[str, Any]) -> str:
         f"dependency_contract={json.dumps(get_dependency_contract(spec), ensure_ascii=False)}\n"
         f"semantic_contract={json.dumps(get_semantic_contract(spec), ensure_ascii=False)}\n"
         f"generator_contract={json.dumps(get_generator_contract(spec), ensure_ascii=False)}\n"
+        f"{_source_dependency_prompt(spec)}"
     )
 
 
@@ -243,6 +267,7 @@ def build_generator_code_prompt(spec: dict[str, Any], examples_context: str = ""
         "5. STEM COMPLETENESS & REQUIRED CONCEPT TOKENS: Any generated string for question_text must be a fully cohesive, human-readable textbook problem. It is strictly forbidden to output truncated stubs or generic placeholders. For choice-based or fallback problem types, the question_text must explicitly construct the mathematical conditions and contextual application story. It must naturally include the unit soul tokens declared by semantic_contract.required_concepts and reflected by the provided source examples. EVERY random branch, scenario conditional, or fallback string assignment within the generated generate(seed) function MUST explicitly construct a fully descriptive problem. Truncating text in ANY code path is strictly prohibited. The final runtime length of question_text for EVERY generated seed MUST be robust and naturally exceed 30 characters under all randomization paths, ensuring no empty or minimalist stubs can ever be evaluated.\n"
         "6. SLOT REGISTRATION DEFENSE & LATEX WRAPPING FOR TEXT_SHORT: If answer_type is text_short or algebraic expressions (such as line equations ax+by+c=0), the generated component must strictly include and invoke the system's registered 'text_short' slot or its corresponding string-cleaning/algebraic-alignment slots. You are strictly forbidden from inventing unregistered slot names. Non-numeric text short answers must be routed to standard registered short-answer slots. All mathematical expressions (coordinates, slope formula, line equations) must be wrapped in standard LaTeX dollar delimiters $...$, and braces in formatted strings must be double escaped (e.g., {{...}}) to prevent formula_not_wrapped errors. If low sample diversity (low_source_examples) is encountered, prioritize complete text_short slot registration to allow graceful degradation to runtime_ready_with_warning instead of throwing unregistered slot exceptions.\n"
         "=================================\n\n"
+        f"{_source_dependency_prompt(spec)}"
         f"{sop_section}"
         "Generate Python generate() using this ProblemTypeSpec only.\n"
         "Flow: generator_plan comment -> generate() implementation.\n"

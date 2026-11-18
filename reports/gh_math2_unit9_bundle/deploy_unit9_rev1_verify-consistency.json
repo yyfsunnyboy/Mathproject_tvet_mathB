@@ -1,0 +1,130 @@
+{
+ "expected_components": {
+  "gh_CorrelationCoefficient": 11,
+  "gh_LeastSquaresMethodAndRegressionLine": 10
+ },
+ "excluded_components": [],
+ "tracker_duplicates": 0,
+ "tracker_matches_expected": true,
+ "dryrun_components": {
+  "gh_CorrelationCoefficient": [
+   12949,
+   12950,
+   12951,
+   12952,
+   12953,
+   12957,
+   12958,
+   12959,
+   12967,
+   12968,
+   12972
+  ],
+  "gh_LeastSquaresMethodAndRegressionLine": [
+   12955,
+   12956,
+   12961,
+   12962,
+   12964,
+   12965,
+   12966,
+   12969,
+   12970,
+   12971
+  ]
+ },
+ "dryrun_matches_expected": true,
+ "staging_leftovers": [],
+ "store_bundle_sha256": "f99c60060e701b0a0ed239f2a71cf3e43b4193a0232148575d6f8ebc27496faa",
+ "store_matches_approval": true,
+ "promoted_package_matches_bundle": true,
+ "operations_registered": 11,
+ "unit9_published_paths": {
+  "gh_CorrelationCoefficient": [
+   "skills\\gh_CorrelationCoefficient.py",
+   "agent_skills_v3\\gh_CorrelationCoefficient"
+  ],
+  "gh_LeastSquaresMethodAndRegressionLine": [
+   "skills\\gh_LeastSquaresMethodAndRegressionLine.py",
+   "agent_skills_v3\\gh_LeastSquaresMethodAndRegressionLine"
+  ]
+ },
+ "passed": true,
+ "manifest": {
+  "gh_CorrelationCoefficient": {
+   "facade": true,
+   "publish_status": "production_manifest_compiled",
+   "verified": [
+    12949,
+    12950,
+    12951,
+    12952,
+    12953,
+    12957,
+    12958,
+    12959,
+    12967,
+    12968,
+    12972
+   ],
+   "component_dirs": [
+    12949,
+    12950,
+    12951,
+    12952,
+    12953,
+    12957,
+    12958,
+    12959,
+    12967,
+    12968,
+    12972
+   ],
+   "domain_authority": [
+    "statistics.bivariate_descriptive",
+    "confirmed"
+   ]
+  },
+  "gh_LeastSquaresMethodAndRegressionLine": {
+   "facade": true,
+   "publish_status": "production_manifest_compiled",
+   "verified": [
+    12955,
+    12956,
+    12961,
+    12962,
+    12964,
+    12965,
+    12966,
+    12969,
+    12970,
+    12971
+   ],
+   "component_dirs": [
+    12955,
+    12956,
+    12961,
+    12962,
+    12964,
+    12965,
+    12966,
+    12969,
+    12970,
+    12971
+   ],
+   "domain_authority": [
+    "statistics.bivariate_descriptive",
+    "confirmed"
+   ]
+  }
+ },
+ "skills_match_expected": true,
+ "excluded_absent": true,
+ "facade_problems": {},
+ "facade_served_excluded": [],
+ "release_snapshot": "940cff975a47465d82ece29f681b36f2ba5ac517875c0b67fbdf6ac0717b2063",
+ "unchanged_since_publish": true,
+ "protected_files_unchanged": true,
+ "textbook_unchanged": true,
+ "db_integrity": "ok"
+}

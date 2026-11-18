@@ -48,6 +48,24 @@
       "regions": {
         "例題9": [{"page": 17, "bbox": [110.0, 179.0, 515.0, 282.0], "why": "Two 109-學測 grade-distribution bar charts (Chinese / Math) that the stem calls 分布圖; PDF vector ink x=113.7..510.5 y=183.5..278.1 including axis labels and bar values; sub-question (1) at y=287.8 and the worked solution below excluded"}]
       }
+    },
+    {
+      "pdf_sha256": "632399683e47eb6954aa20d9c131deb0cdec4b63109d57239ed6d04d30d6dc4a",
+      "curriculum": "general",
+      "volume": "數學2",
+      "chapter": "單元9 二維數據分析",
+      "verified_by": "user_authorized_unit9_stage1_repair_2026-11-18_pending_final_acceptance",
+      "verified_on": "2026-11-18",
+      "regions": {
+        "例題6": [{"page": 16, "bbox": [120.0, 590.0, 515.0, 666.0], "why": "Four option scatter plots labelled 1-4 in book order (axes y 156..174, x 24..29, 40 red data dots) that sub-question (1) asks to choose from; PDF ink x=127.8..510.5 y=595.2..662.0; stem line (1) ending y=585.3 and sub-question (2) at y=672.4 excluded"}],
+        "9習題 基礎題2": [{"page": 22, "bbox": [170.0, 165.0, 468.0, 268.0], "why": "Scatter plots A (r=-0.7), B (r=-0.9) and C (asked) side by side with axes and labels, 15 red data dots; PDF ink x=176.0..461.8 y=170.2..263.5; stem line ending y=154.4 and the question line at y=279.5 excluded"}]
+      },
+      "answer_workspaces": {
+        "隨堂練習2": [{"page": 8, "bbox": [376.0, 624.0, 514.0, 746.0], "docx_picture_sha256": "00fe827c08e47723b1a6c95bcce71c267e2be8c63b04f803554bbf2a85a203da", "why": "Blank grid x 0..14, y 0..12 for the student to draw the scatter plot of (1); grid lines, axis ticks and x/y labels only, 0 data dots; all data is in the stem table"}],
+        "隨堂練習3": [{"page": 10, "bbox": [395.0, 122.0, 514.0, 292.0], "docx_picture_sha256": "df3b72c59ba58ac56373c17a0efde7c88d4f5fa4316899ddd2f7d1ac5ac69969", "why": "Blank grid x 0..6, y 0..10 for the student to draw the scatter plot of (1); grid lines, axis ticks and x/y labels only, 0 data dots; all data is in the stem table"}],
+        "9習題 基礎題1": [{"page": 21, "bbox": [256.0, 534.0, 381.0, 656.0], "docx_picture_sha256": "3c28092809d19aacc797eacd3261c0febdb0c64e8031389970525c28bef63834", "why": "Blank grid x 0..12, y 0..12 for the student to draw the scatter plot of (1); grid lines, axis ticks and x/y labels only, 0 data dots; all data is in the stem table"}],
+        "9習題 基礎題3": [{"page": 22, "bbox": [256.0, 476.0, 381.0, 598.0], "docx_picture_sha256": "3c28092809d19aacc797eacd3261c0febdb0c64e8031389970525c28bef63834", "why": "Blank grid x 0..12, y 0..12 (same DOCX picture as 基礎題1) for the student to draw the scatter plot of (1); grid lines, axis ticks and x/y labels only, 0 data dots; all data is in the stem table"}]
+      }
     }
   ]
 }

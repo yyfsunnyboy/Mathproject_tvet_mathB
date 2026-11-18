@@ -111,6 +111,10 @@ def test_all_35_rows_are_served_from_the_textbook_with_tables_and_charts(client_
         assert set(ids) <= set(seen)
     assert sorted(seen) == list(range(12912, 12947))
     for qid, question in seen.items():
+        if qid == 12930:  # 承例題9: served with 例題9's setup in front, its own stem untouched
+            assert question["question_text"].startswith("【例題9的資料】") and question["question_text"].endswith(stems[qid])
+            assert "分布圖" in question["question_text"] and "頂標" not in question["question_text"]
+            continue
         assert question["question_text"] == stems[qid]  # stem, formulas and tables untouched
         assert ("\\begin{array}" in question["question_text"]) == (qid in TABLE_ROWS)
         assets = question.get("image_assets") or []
@@ -119,6 +123,18 @@ def test_all_35_rows_are_served_from_the_textbook_with_tables_and_charts(client_
         else:
             assert assets == []
     assert seen[12926]["image_assets"][0]["url"] == seen[12930]["image_assets"][0]["url"]
+
+
+def test_practice10_carries_the_example9_setup_and_chart_and_stays_ungraded(client_and_db):
+    client, copy = client_and_db
+    stem = _stems(copy)[12930]
+    question = _next(client, "gh_VarianceAndStandardDeviation", textbook_example_id=12930)
+    text = question["question_text"]
+    assert question["textbook_example_id"] == 12930 and text.startswith("【例題9的資料】") and text.endswith(stem)
+    assert "分布圖" in text and "頂標" not in text and "標準差" not in text  # 例題9's sub-questions stay out
+    assets = question.get("image_assets") or []
+    assert len(assets) == 1 and assets[0]["url"].endswith("_fig1.png")  # same crop as the row's own, shown once
+    assert question["check_mode"] == "ungraded_self_study" and question["graded"] is False
 
 
 def test_submit_is_ungraded_self_study_and_leaves_no_record(client_and_db):

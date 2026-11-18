@@ -1,0 +1,713 @@
+{
+  "schema": "reviewed_capability_bundle.v1",
+  "proposal_id": "capability_statistics_bivariate_descriptive_affe15e1",
+  "proposal_revision": 1,
+  "review": {
+    "status": "human_approved",
+    "approved_by": "owner_authorized_unit9_publish_2026-11-18: user explicitly approved revision_0001 — 21 V3 + 5 deferred originals (12947,12948,12954,12960,12963); Stage1 pending_final_acceptance unchanged | teacher checklist reviewer: owner_authorized_unit9_publish_2026-11-18 at 2026-11-18 23:15 | approved components: 21/21 | excluded (teacher rejected, not published): none",
+    "approved_revision": 1,
+    "approval_scope": "revision 1: 普高數學2 Unit 9 二維數據分析 — domain statistics.bivariate_descriptive (12 operations: correlation_change_add_point, correlation_from_regression_point, correlation_from_table, correlation_remove_point, correlation_rescale, regression_from_summary, regression_from_table, regression_line_unknown_intercept, regression_predict_given_line, regression_rounded_from_table, regression_statement_selection, true_false_bivariate); Skills gh_ScatterPlot (0 components: ); gh_CorrelationCoefficient (11 components: 12949, 12950, 12951, 12952, 12953, 12957, 12958, 12959, 12967, 12968, 12972); gh_LeastSquaresMethodAndRegressionLine (10 components: 12955, 12956, 12961, 12962, 12964, 12965, 12966, 12969, 12970, 12971); VERIFIED [12949, 12950, 12951, 12952, 12953, 12955, 12956, 12957, 12958, 12959, 12961, 12962, 12964, 12965, 12966, 12967, 12968, 12969, 12970, 12971, 12972]; VISUAL_CAPABILITY_GAP / DEFERRED [12947, 12948, 12954, 12960, 12963] (12947:draw-only scatter plot (student drawing grader / scatter renderer not part of this unit); 12948:read an existing scatter figure (positive / negative / zero correlation); needs a generated figure; 12954:rank the correlation coefficients of four scatter figures; needs generated figures; 12960:choose the likely r of figure C from the figures of A and B; needs generated figures; 12963:例題6 topology is (1) choose scatter from data + (2) predict from given line; V3 only covered (2)); FIXED_CONCEPT=[12949, 12955, 12957]; FIXED_ROWS=[]. Population S_xx/S_yy/S_xy; r=S_xy/(√S_xx√S_yy); regression m=S_xy/S_xx. Partial Publish OK. This revision is not approved and is not published."
+  },
+  "domain_key": "statistics.bivariate_descriptive",
+  "package_name": "bivariate_statistics",
+  "package_dir": "production_package",
+  "files": {
+    "__init__.py": "d06705db3d9cc1c0b047270fe5bef8dffd88437c7b20c765c7f23313b2a83fa2",
+    "bivariate_statistics_adapter.py": "4f6795268ae894d9810764563481444008a87f300662b3b97501806470a9f6b2",
+    "bivariate_statistics_domain.py": "e94ec4bf45805bba45106571009c86d4bd926004f87297f4646c3ae915f019e4"
+  },
+  "domain_module": "bivariate_statistics_domain",
+  "entrypoint": "build_bivariate_statistics_matrix",
+  "capabilities": [
+    "correlation_change_add_point",
+    "correlation_from_regression_point",
+    "correlation_from_table",
+    "correlation_remove_point",
+    "correlation_rescale",
+    "regression_from_summary",
+    "regression_from_table",
+    "regression_line_unknown_intercept",
+    "regression_rounded_from_table",
+    "regression_statement_selection",
+    "true_false_bivariate"
+  ],
+  "operations": {
+    "correlation_change_add_point": {
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "correlation_change_add_point"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "validator": "validate_correlation_change_add_point_matrix"
+    },
+    "correlation_from_regression_point": {
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "correlation_from_regression_point"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "validator": "validate_correlation_from_regression_point_matrix"
+    },
+    "correlation_from_table": {
+      "checker_keys": [
+        "rational_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "correlation_from_table"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "validator": "validate_correlation_from_table_matrix"
+    },
+    "correlation_remove_point": {
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "correlation_remove_point"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "validator": "validate_correlation_remove_point_matrix"
+    },
+    "correlation_rescale": {
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "correlation_rescale"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "validator": "validate_correlation_rescale_matrix"
+    },
+    "regression_from_summary": {
+      "checker_keys": [
+        "linear_equation_equivalent_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "regression_from_summary"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "equation"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "validator": "validate_regression_from_summary_matrix"
+    },
+    "regression_from_table": {
+      "checker_keys": [
+        "linear_equation_equivalent_checker",
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "regression_from_table"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "equation",
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "validator": "validate_regression_from_table_matrix"
+    },
+    "regression_line_unknown_intercept": {
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "regression_line_unknown_intercept"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "validator": "validate_regression_line_unknown_intercept_matrix"
+    },
+    "regression_rounded_from_table": {
+      "checker_keys": [
+        "multi_part_answer_checker",
+        "rational_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "regression_rounded_from_table"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "multi_part",
+        "rational"
+      ],
+      "supported_presentation_modes": [
+        "multiple_inputs"
+      ],
+      "validator": "validate_regression_rounded_from_table_matrix"
+    },
+    "regression_statement_selection": {
+      "checker_keys": [
+        "solution_set_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "regression_statement_selection"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "solution_set"
+      ],
+      "supported_presentation_modes": [
+        "short_answer"
+      ],
+      "validator": "validate_regression_statement_selection_matrix"
+    },
+    "true_false_bivariate": {
+      "checker_keys": [
+        "choice_label_checker"
+      ],
+      "handler": "build_bivariate_statistics_matrix",
+      "payload_adapter": "bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+      "provided_capabilities": [
+        "true_false_bivariate"
+      ],
+      "runtime_contract": "bivariate_statistics_exact_v1",
+      "supported_answer_types": [
+        "single_choice"
+      ],
+      "supported_presentation_modes": [
+        "single_choice"
+      ],
+      "validator": "validate_true_false_bivariate_matrix"
+    }
+  },
+  "skill_bindings": {
+    "gh_CorrelationCoefficient": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "correlation_change_add_point",
+        "correlation_from_table",
+        "correlation_remove_point",
+        "correlation_rescale",
+        "true_false_bivariate"
+      ]
+    },
+    "gh_LeastSquaresMethodAndRegressionLine": {
+      "default_curriculum_profile": "general_high",
+      "allowed_operations": [
+        "correlation_from_regression_point",
+        "regression_from_summary",
+        "regression_from_table",
+        "regression_line_unknown_intercept",
+        "regression_rounded_from_table",
+        "regression_statement_selection",
+        "true_false_bivariate"
+      ]
+    }
+  },
+  "smoke_cases": {
+    "correlation_change_add_point": [
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            "24.5",
+            "25",
+            "25",
+            "25.5",
+            "26",
+            "26",
+            "26.5",
+            "27",
+            "27.5",
+            "28"
+          ],
+          "y": [
+            160,
+            158,
+            163,
+            163,
+            161,
+            163,
+            168,
+            170,
+            168,
+            173
+          ],
+          "new_point": [
+            "26",
+            174
+          ]
+        },
+        "textbook_example_id": 12967
+      }
+    ],
+    "correlation_from_regression_point": [
+      {
+        "seed": 0,
+        "constraints": {
+          "mx": 3,
+          "my": 2,
+          "sx": 5,
+          "sy": 8,
+          "point": [
+            6,
+            4
+          ]
+        },
+        "textbook_example_id": 12965
+      }
+    ],
+    "correlation_from_table": [
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "y": [
+            4,
+            5,
+            3,
+            1,
+            2
+          ],
+          "scene": "plain"
+        },
+        "textbook_example_id": 12950
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            2,
+            4,
+            6,
+            8,
+            10
+          ],
+          "y": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "scene": "plain"
+        },
+        "textbook_example_id": 12951
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            2,
+            3,
+            6,
+            10,
+            14
+          ],
+          "y": [
+            1,
+            8,
+            3,
+            7,
+            11
+          ],
+          "scene": "plain"
+        },
+        "textbook_example_id": 12952
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "y": [
+            10,
+            9,
+            8,
+            7,
+            6
+          ],
+          "scene": "plain"
+        },
+        "textbook_example_id": 12953
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            5,
+            3,
+            7,
+            4,
+            8,
+            12,
+            10
+          ],
+          "y": [
+            3,
+            2,
+            6,
+            4,
+            4,
+            7,
+            9
+          ],
+          "scene": "aptitude"
+        },
+        "textbook_example_id": 12968
+      }
+    ],
+    "correlation_remove_point": [
+      {
+        "seed": 0,
+        "constraints": {
+          "labels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "x": [
+            2,
+            4,
+            5,
+            10,
+            10
+          ],
+          "y": [
+            3,
+            4,
+            6,
+            1,
+            11
+          ]
+        },
+        "textbook_example_id": 12959
+      }
+    ],
+    "correlation_rescale": [
+      {
+        "seed": 0,
+        "constraints": {
+          "n_questions": 20,
+          "old_per": 5,
+          "new_per": 6,
+          "top": 80,
+          "r": "0.73"
+        },
+        "textbook_example_id": 12972
+      }
+    ],
+    "regression_from_summary": [
+      {
+        "seed": 0,
+        "constraints": {
+          "mx": 6,
+          "my": 9,
+          "sx": 3,
+          "sy": 5,
+          "r": "-0.8"
+        },
+        "textbook_example_id": 12961
+      }
+    ],
+    "regression_from_table": [
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            33,
+            31,
+            29,
+            27
+          ],
+          "y": [
+            14,
+            12,
+            8,
+            10
+          ],
+          "x0": 30,
+          "scene": "temp_sales"
+        },
+        "textbook_example_id": 12962
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            5,
+            6,
+            8,
+            9,
+            9,
+            11
+          ],
+          "y": [
+            5,
+            8,
+            8,
+            12,
+            13,
+            14
+          ],
+          "x0": 10,
+          "scene": "eq_achievement"
+        },
+        "textbook_example_id": 12966
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "y": [
+            9,
+            10,
+            8,
+            6,
+            7
+          ],
+          "x0": "17.5",
+          "scene": "price_demand"
+        },
+        "textbook_example_id": 12969
+      }
+    ],
+    "regression_line_unknown_intercept": [
+      {
+        "seed": 0,
+        "constraints": {
+          "mx": 2,
+          "my": 7,
+          "sx": 3,
+          "sy": 8,
+          "slope": 2
+        },
+        "textbook_example_id": 12970
+      }
+    ],
+    "regression_rounded_from_table": [
+      {
+        "seed": 0,
+        "constraints": {
+          "x": [
+            "0.4",
+            "1.0",
+            "4.6",
+            "5.4",
+            "6.6",
+            "7.4",
+            "10.1",
+            "9.4",
+            "8.7",
+            "8.5",
+            "6.6",
+            "2.2"
+          ],
+          "y": [
+            "3.0",
+            "3.9",
+            "1.8",
+            "5.7",
+            "7.6",
+            "9.6",
+            "9.3",
+            "8.2",
+            "8.0",
+            "4.0",
+            "3.6",
+            "1.3"
+          ],
+          "r_places": 1,
+          "coef_places": 4
+        },
+        "textbook_example_id": 12964
+      }
+    ],
+    "regression_statement_selection": [
+      {
+        "seed": 0,
+        "constraints": {
+          "n": 20,
+          "mx": 6,
+          "my": 5,
+          "r": "-0.9",
+          "line_point": [
+            4,
+            6
+          ],
+          "statements": [
+            {
+              "kind": "passes_point",
+              "x": 6,
+              "y": 5
+            },
+            {
+              "kind": "slope_is",
+              "stated": "-0.5"
+            },
+            {
+              "kind": "passes_point",
+              "x": 2,
+              "y": 7
+            },
+            {
+              "kind": "sigma_less",
+              "first": "x",
+              "second": "y"
+            }
+          ]
+        },
+        "textbook_example_id": 12971
+      }
+    ],
+    "true_false_bivariate": [
+      {
+        "seed": 0,
+        "constraints": {
+          "claim": {
+            "kind": "points_vs_correlation",
+            "stated": "higher"
+          }
+        },
+        "textbook_example_id": 12949
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "claim": {
+            "kind": "slope_sign",
+            "r_rel": ">",
+            "m_rel": ">"
+          }
+        },
+        "textbook_example_id": 12955
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "claim": {
+            "kind": "slope_sigma",
+            "k": 1,
+            "c": 1
+          }
+        },
+        "textbook_example_id": 12956
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "claim": {
+            "kind": "r_range",
+            "lo": -1,
+            "hi": 1,
+            "lo_closed": true,
+            "hi_closed": true
+          }
+        },
+        "textbook_example_id": 12957
+      },
+      {
+        "seed": 0,
+        "constraints": {
+          "claim": {
+            "kind": "points_on_line",
+            "a": 2,
+            "b": -1,
+            "stated": 1
+          }
+        },
+        "textbook_example_id": 12958
+      }
+    ]
+  },
+  "deferred_components": {
+    "12947": "draw-only scatter plot (student drawing grader / scatter renderer not part of this unit)",
+    "12948": "read an existing scatter figure (positive / negative / zero correlation); needs a generated figure",
+    "12954": "rank the correlation coefficients of four scatter figures; needs generated figures",
+    "12960": "choose the likely r of figure C from the figures of A and B; needs generated figures",
+    "12963": "例題6 topology is (1) choose scatter from data + (2) predict from given line; V3 only covered (2)"
+  },
+  "coverage_rows": 26,
+  "supersedes": null,
+  "visual_assets": {}
+}

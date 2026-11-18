@@ -5680,6 +5680,269 @@
         }
       }
     },
+    "statistics.bivariate_descriptive": {
+      "approved_by": "owner_authorized_unit9_publish_2026-11-18: user explicitly approved revision_0001 — 21 V3 + 5 deferred originals (12947,12948,12954,12960,12963); Stage1 pending_final_acceptance unchanged | teacher checklist reviewer: owner_authorized_unit9_publish_2026-11-18 at 2026-11-18 23:15 | approved components: 21/21 | excluded (teacher rejected, not published): none",
+      "bundle_sha256": "f99c60060e701b0a0ed239f2a71cf3e43b4193a0232148575d6f8ebc27496faa",
+      "capabilities": [
+        "correlation_change_add_point",
+        "correlation_from_regression_point",
+        "correlation_from_table",
+        "correlation_remove_point",
+        "correlation_rescale",
+        "regression_from_summary",
+        "regression_from_table",
+        "regression_line_unknown_intercept",
+        "regression_rounded_from_table",
+        "regression_statement_selection",
+        "true_false_bivariate"
+      ],
+      "domain_module": "core.domain.promoted.bivariate_statistics.bivariate_statistics_domain",
+      "entrypoint": "build_bivariate_statistics_matrix",
+      "operations": {
+        "correlation_change_add_point": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "correlation_change_add_point"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_correlation_change_add_point_matrix"
+        },
+        "correlation_from_regression_point": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "correlation_from_regression_point"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_correlation_from_regression_point_matrix"
+        },
+        "correlation_from_table": {
+          "checker_keys": [
+            "rational_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "correlation_from_table"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_correlation_from_table_matrix"
+        },
+        "correlation_remove_point": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "correlation_remove_point"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_correlation_remove_point_matrix"
+        },
+        "correlation_rescale": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "correlation_rescale"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_correlation_rescale_matrix"
+        },
+        "regression_from_summary": {
+          "checker_keys": [
+            "linear_equation_equivalent_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "regression_from_summary"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "equation"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_regression_from_summary_matrix"
+        },
+        "regression_from_table": {
+          "checker_keys": [
+            "linear_equation_equivalent_checker",
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "regression_from_table"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "equation",
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_regression_from_table_matrix"
+        },
+        "regression_line_unknown_intercept": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "regression_line_unknown_intercept"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_regression_line_unknown_intercept_matrix"
+        },
+        "regression_rounded_from_table": {
+          "checker_keys": [
+            "multi_part_answer_checker",
+            "rational_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "regression_rounded_from_table"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "multi_part",
+            "rational"
+          ],
+          "supported_presentation_modes": [
+            "multiple_inputs"
+          ],
+          "validator": "validate_regression_rounded_from_table_matrix"
+        },
+        "regression_statement_selection": {
+          "checker_keys": [
+            "solution_set_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "regression_statement_selection"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "solution_set"
+          ],
+          "supported_presentation_modes": [
+            "short_answer"
+          ],
+          "validator": "validate_regression_statement_selection_matrix"
+        },
+        "true_false_bivariate": {
+          "checker_keys": [
+            "choice_label_checker"
+          ],
+          "handler": "build_bivariate_statistics_matrix",
+          "payload_adapter": "core.domain.promoted.bivariate_statistics.bivariate_statistics_adapter.adapt_bivariate_statistics_matrix",
+          "provided_capabilities": [
+            "true_false_bivariate"
+          ],
+          "runtime_contract": "bivariate_statistics_exact_v1",
+          "supported_answer_types": [
+            "single_choice"
+          ],
+          "supported_presentation_modes": [
+            "single_choice"
+          ],
+          "validator": "validate_true_false_bivariate_matrix"
+        }
+      },
+      "package_files": {
+        "__init__.py": "d06705db3d9cc1c0b047270fe5bef8dffd88437c7b20c765c7f23313b2a83fa2",
+        "bivariate_statistics_adapter.py": "4f6795268ae894d9810764563481444008a87f300662b3b97501806470a9f6b2",
+        "bivariate_statistics_domain.py": "e94ec4bf45805bba45106571009c86d4bd926004f87297f4646c3ae915f019e4"
+      },
+      "package_import": "core.domain.promoted.bivariate_statistics",
+      "package_name": "bivariate_statistics",
+      "proposal_id": "capability_statistics_bivariate_descriptive_affe15e1",
+      "proposal_revision": 1,
+      "registry_revision": "promoted-f99c60060e70",
+      "skill_bindings": {
+        "gh_CorrelationCoefficient": {
+          "allowed_operations": [
+            "correlation_change_add_point",
+            "correlation_from_table",
+            "correlation_remove_point",
+            "correlation_rescale",
+            "true_false_bivariate"
+          ],
+          "default_curriculum_profile": "general_high"
+        },
+        "gh_LeastSquaresMethodAndRegressionLine": {
+          "allowed_operations": [
+            "correlation_from_regression_point",
+            "regression_from_summary",
+            "regression_from_table",
+            "regression_line_unknown_intercept",
+            "regression_rounded_from_table",
+            "regression_statement_selection",
+            "true_false_bivariate"
+          ],
+          "default_curriculum_profile": "general_high"
+        }
+      }
+    },
     "statistics.univariate_descriptive": {
       "approved_by": "同意第二冊 Unit 8「一維數據分析」revision_0004 的 35 個 Component、4 個 Skill 依正式 SOP 進行 Promotion／Publish。 | teacher checklist reviewer: admin at 2026/11/06 | approved components: 35/35 | excluded (teacher rejected, not published): none",
       "bundle_sha256": "0a33ae94fd3a4c960e31149bc64453766a435a5650767389664e2857c4ff634e",

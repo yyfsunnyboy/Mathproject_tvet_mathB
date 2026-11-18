@@ -113,6 +113,8 @@ UNGRADED_SELF_STUDY_MODE = "ungraded_self_study"
 # self-study notice must not call them proof / figure-pattern questions.
 UNGRADED_NO_VERIFIED_ANSWER_SKILLS = frozenset({
     "gh_Mean", "gh_MedianAndPercentiles", "gh_VarianceAndStandardDeviation", "gh_DataScalingAndShifting",
+    # Unit 9: no fixed_textbook_practice / verified answers yet; original Fallback must stay ungraded.
+    "gh_ScatterPlot", "gh_CorrelationCoefficient", "gh_LeastSquaresMethodAndRegressionLine",
 })
 # Explicit opt-in per skill (proof / figure-pattern units with no checker); other legacy skills keep their existing behaviour.
 UNGRADED_SELF_STUDY_SKILLS = frozenset({"gh_MathematicalInduction"}) | UNGRADED_NO_VERIFIED_ANSWER_SKILLS
@@ -468,11 +470,14 @@ def _select_textbook_example_for_skill(skill_id: str, example_id: int | None = N
         if te is not None and str(te.skill_id) == str(skill_id):
             return te
         return None
+    from core.textbook_source_dependency import resolve_for_model_row, standalone_blocked
+
     rows = (
         TextbookExample.query.filter_by(skill_id=skill_id)
         .order_by(TextbookExample.id.asc())
         .all()
     )
+    rows = [row for row in rows if not standalone_blocked(resolve_for_model_row(row))]
     if not rows:
         return None
     seq_key = f"te_seq_{skill_id}"
@@ -502,12 +507,27 @@ def _build_textbook_example_practice_response(
 ):
     """Serve an existing TextbookExample stem + notes.image_assets (no generation)."""
     from core.question_image_assets import list_student_image_assets_from_notes
+    from core.textbook_source_dependency import (
+        STATUS_RESOLVED, compose_practice_stem, merge_image_assets, resolve_for_model_row, standalone_blocked,
+    )
 
-    stem = str(getattr(te, "problem_text", "") or "")
+    dependency = resolve_for_model_row(te)
+    if standalone_blocked(dependency):
+        current_app.logger.warning("[PRACTICE textbook_example] example_id=%s not standalone: %s", te.id, dependency.get("reason"))
+        return jsonify({
+            "success": False,
+            "error_code": "TEXTBOOK_EXAMPLE_NOT_STANDALONE",
+            "skill_id": skill_id,
+            "textbook_example_id": te.id,
+            "reason": dependency.get("reason"),
+            "message": "本題需要引用其他例題的資料，目前無法單獨出題，請通知教師檢查。",
+        }), 409
+    depends = dependency.get("status") == STATUS_RESOLVED
+    stem = compose_practice_stem(dependency, str(getattr(te, "problem_text", "") or ""))
     answer = getattr(te, "correct_answer", None)
     if answer is None:
         answer = ""
-    assets = list_student_image_assets_from_notes(getattr(te, "notes", None))
+    assets = merge_image_assets(list_student_image_assets_from_notes(getattr(te, "notes", None)), dependency)
     input_type = "text"
     if isinstance(skill_info, dict):
         input_type = skill_info.get("input_type", "text") or "text"
@@ -524,10 +544,17 @@ def _build_textbook_example_practice_response(
         answer = fixed["answer"] if isinstance(fixed["answer"], dict) else str(fixed["answer"])  # multi_part: per-part keys
         input_type = str((fixed.get("answer_contract") or {}).get("answer_type") or input_type)
     ungraded = bool(fixed and fixed["mode"] == "ungraded") or (skill_id in UNGRADED_SELF_STUDY_SKILLS and not str(answer).strip())
+    # A continuing row's stored answer was never checked against the example data it now shows: only a reviewed graded entry may grade it.
+    no_verified_answer = depends and not fixed_graded
+    ungraded = ungraded or no_verified_answer
     fixed_extra: dict[str, Any] = {}
     if fixed:
         fixed_extra = {"fixed_textbook_practice": fixed["mode"], "reference_solution": list(fixed.get("reference_solution") or []),
                        "practice_scaffold": list(fixed.get("practice_scaffold") or [])}
+        # Ungraded entries may request handwriting canvas (e.g. draw-a-scatter) without inventing a graded contract.
+        preferred_input = str(fixed.get("answer_input_type") or (fixed.get("answer_contract") or {}).get("answer_type") or "").strip()
+        if preferred_input and not fixed_graded:
+            input_type = preferred_input
         if fixed_graded:
             fixed_extra["answer_contract"] = dict(fixed["answer_contract"])
             fixed_extra["presentation_mode"] = "short_answer"
@@ -539,6 +566,7 @@ def _build_textbook_example_practice_response(
         "context_string": "",
         "answer_type": input_type,
         **({"check_mode": UNGRADED_SELF_STUDY_MODE, "grading_mode": UNGRADED_SELF_STUDY_MODE} if ungraded else {}),
+        **({"ungraded_reason": "no_verified_answer"} if no_verified_answer else {}),
         **fixed_extra,
         "textbook_example_id": te.id,
         "question_id": te.id,
@@ -551,6 +579,8 @@ def _build_textbook_example_practice_response(
             "textbook_example_id": te.id,
             "source_kind": "textbook_example",
             "source_description": getattr(te, "source_description", "") or "",
+            **({"source_dependency": {k: dependency[k] for k in ("kind", "example_title", "example_id", "needs", "provenance")}}
+               if depends else {}),
         },
     }
     session_data = _normalize_gencode_runtime_payload(dict(data), skill_id=skill_id)
@@ -3317,7 +3347,7 @@ def check_answer():
             reference_steps = [str(x) for x in (entry or {}).get("reference_solution") or []]
         except Exception:  # noqa: BLE001 - the notice below is still correct without the steps
             reference_steps = []
-        no_answer = skill_id in UNGRADED_NO_VERIFIED_ANSWER_SKILLS and not reference_steps
+        no_answer = (skill_id in UNGRADED_NO_VERIFIED_ANSWER_SKILLS or current.get("ungraded_reason") == "no_verified_answer") and not reference_steps
         return jsonify(
             {
                 "correct": None,

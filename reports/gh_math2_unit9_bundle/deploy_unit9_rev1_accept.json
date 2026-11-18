@@ -1,0 +1,130 @@
+{
+ "db_copy": "C:\\Projects\\Mathproject_tvet_mathB\\backups\\math2_unit9_bivariate_statistics\\20261118_231904\\accept_20261118_232116\\kumon_math_accept.db",
+ "student_id": 2,
+ "excluded_components": [],
+ "skills": {
+  "gh_CorrelationCoefficient": {
+   "practice_page": 200,
+   "served": {
+    "12949": 2,
+    "12950": 3,
+    "12951": 2,
+    "12952": 2,
+    "12953": 2,
+    "12957": 2,
+    "12958": 2,
+    "12959": 2,
+    "12967": 2,
+    "12968": 2,
+    "12972": 2
+   },
+   "http_errors": [],
+   "grading": [],
+   "load_errors": 0,
+   "route_modes": {
+    "v3": 23
+   },
+   "answer_leaks": []
+  },
+  "gh_LeastSquaresMethodAndRegressionLine": {
+   "practice_page": 200,
+   "served": {
+    "12955": 2,
+    "12956": 2,
+    "12961": 3,
+    "12962": 3,
+    "12964": 2,
+    "12965": 2,
+    "12966": 2,
+    "12969": 2,
+    "12970": 2,
+    "12971": 2
+   },
+   "http_errors": [],
+   "grading": [],
+   "load_errors": 0,
+   "route_modes": {
+    "v3": 22
+   },
+   "answer_leaks": []
+  }
+ },
+ "other_skill_smoke": {
+  "gh_Mean": [
+   200,
+   true,
+   "v3"
+  ],
+  "gh_MathematicalExpectation": [
+   200,
+   true,
+   "v3"
+  ]
+ },
+ "runtime_errors": [],
+ "components_served": 21,
+ "excluded_served": [],
+ "practice7_dependency": {
+  "status": 200,
+  "prefix_ok": true,
+  "ungraded": true
+ },
+ "deferred_originals": {
+  "12947": {
+   "status": 200,
+   "source": "db_textbook_example",
+   "fixed": "ungraded",
+   "check_mode": "ungraded_self_study",
+   "graded": false,
+   "images": 1,
+   "input": "handwriting",
+   "submit_graded": false,
+   "submit_correct": null
+  },
+  "12948": {
+   "status": 200,
+   "source": "db_textbook_example",
+   "fixed": "ungraded",
+   "check_mode": "ungraded_self_study",
+   "graded": false,
+   "images": 1,
+   "input": "text",
+   "submit_graded": false,
+   "submit_correct": null
+  },
+  "12954": {
+   "status": 200,
+   "source": "db_textbook_example",
+   "fixed": "ungraded",
+   "check_mode": "ungraded_self_study",
+   "graded": false,
+   "images": 1,
+   "input": "text",
+   "submit_graded": false,
+   "submit_correct": null
+  },
+  "12960": {
+   "status": 200,
+   "source": "db_textbook_example",
+   "fixed": "ungraded",
+   "check_mode": "ungraded_self_study",
+   "graded": false,
+   "images": 1,
+   "input": "text",
+   "submit_graded": false,
+   "submit_correct": null
+  },
+  "12963": {
+   "status": 200,
+   "source": "db_textbook_example",
+   "fixed": "ungraded",
+   "check_mode": "ungraded_self_study",
+   "graded": false,
+   "images": 1,
+   "input": "text",
+   "submit_graded": false,
+   "submit_correct": null
+  }
+ },
+ "passed": true
+}

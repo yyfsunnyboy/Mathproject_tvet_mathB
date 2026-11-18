@@ -216,6 +216,7 @@ def slim_payload_for_store(data: dict[str, Any], *, skill_id: str, question_uid:
             "semantic_answer_shape",
             "template_variant",
             "ratio_values",
+            "source_dependency",
         )
         if k in meta
     }
@@ -246,6 +247,7 @@ def slim_payload_for_store(data: dict[str, Any], *, skill_id: str, question_uid:
         "metadata": slim_meta,
         "check_mode": str(data.get("check_mode", data.get("grading_mode", ""))).strip(),
         "grading_mode": str(data.get("grading_mode", data.get("check_mode", ""))).strip(),
+        "ungraded_reason": str(data.get("ungraded_reason", "")).strip(),
         "answer_input_type": str(data.get("answer_input_type", "")).strip(),
         "created_at": time.time(),
         "stored_at": time.time(),

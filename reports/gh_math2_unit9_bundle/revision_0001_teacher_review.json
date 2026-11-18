@@ -1,0 +1,38 @@
+{
+  "bundle_sha256": "35f1d19d8cb29197bf094a2badd703a381992fda6151b9b29bf83da91a04ad19",
+  "proposal_id": "capability_statistics_bivariate_descriptive_affe15e1",
+  "proposal_revision": 1,
+  "reviewer": "owner_authorized_unit9_publish_2026-11-18",
+  "reviewed_at": "2026-11-18 23:15",
+  "approval_scope": "Unit 9 revision_0001: 21 V3 components + 5 deferred original ungraded rows (12947,12948,12954,12960,12963). Stage1 pending_final_acceptance unchanged.",
+  "components": [
+    {"id": 12949, "teacher_review": "approved"},
+    {"id": 12950, "teacher_review": "approved"},
+    {"id": 12951, "teacher_review": "approved"},
+    {"id": 12952, "teacher_review": "approved"},
+    {"id": 12953, "teacher_review": "approved"},
+    {"id": 12955, "teacher_review": "approved"},
+    {"id": 12956, "teacher_review": "approved"},
+    {"id": 12957, "teacher_review": "approved"},
+    {"id": 12958, "teacher_review": "approved"},
+    {"id": 12959, "teacher_review": "approved"},
+    {"id": 12961, "teacher_review": "approved"},
+    {"id": 12962, "teacher_review": "approved"},
+    {"id": 12964, "teacher_review": "approved"},
+    {"id": 12965, "teacher_review": "approved"},
+    {"id": 12966, "teacher_review": "approved"},
+    {"id": 12967, "teacher_review": "approved"},
+    {"id": 12968, "teacher_review": "approved"},
+    {"id": 12969, "teacher_review": "approved"},
+    {"id": 12970, "teacher_review": "approved"},
+    {"id": 12971, "teacher_review": "approved"},
+    {"id": 12972, "teacher_review": "approved"}
+  ],
+  "deferred_originals_not_published": {
+    "12947": "draw-only scatter → fixed ungraded original",
+    "12948": "read figure → fixed ungraded original",
+    "12954": "rank figures → fixed ungraded original",
+    "12960": "figure choice → fixed ungraded original",
+    "12963": "incomplete V3 topology (scatter choice + predict) → fixed ungraded original; excluded from Publish"
+  }
+}

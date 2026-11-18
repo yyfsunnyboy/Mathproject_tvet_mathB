@@ -1,0 +1,128 @@
+{
+  "skill_id": "gh_CorrelationCoefficient",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 11,
+  "components": [
+    {
+      "component_id": "src_12949",
+      "textbook_example_id": 12949,
+      "status": "verified",
+      "problem_type_id": "true_false_bivariate",
+      "domain_operation": "true_false_bivariate",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12949/generate.py"
+    },
+    {
+      "component_id": "src_12950",
+      "textbook_example_id": 12950,
+      "status": "verified",
+      "problem_type_id": "correlation_from_table",
+      "domain_operation": "correlation_from_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12950/generate.py"
+    },
+    {
+      "component_id": "src_12951",
+      "textbook_example_id": 12951,
+      "status": "verified",
+      "problem_type_id": "correlation_from_table",
+      "domain_operation": "correlation_from_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12951/generate.py"
+    },
+    {
+      "component_id": "src_12952",
+      "textbook_example_id": 12952,
+      "status": "verified",
+      "problem_type_id": "correlation_from_table",
+      "domain_operation": "correlation_from_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12952/generate.py"
+    },
+    {
+      "component_id": "src_12953",
+      "textbook_example_id": 12953,
+      "status": "verified",
+      "problem_type_id": "correlation_from_table",
+      "domain_operation": "correlation_from_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12953/generate.py"
+    },
+    {
+      "component_id": "src_12957",
+      "textbook_example_id": 12957,
+      "status": "verified",
+      "problem_type_id": "true_false_bivariate",
+      "domain_operation": "true_false_bivariate",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12957/generate.py"
+    },
+    {
+      "component_id": "src_12958",
+      "textbook_example_id": 12958,
+      "status": "verified",
+      "problem_type_id": "true_false_bivariate",
+      "domain_operation": "true_false_bivariate",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12958/generate.py"
+    },
+    {
+      "component_id": "src_12959",
+      "textbook_example_id": 12959,
+      "status": "verified",
+      "problem_type_id": "correlation_remove_point",
+      "domain_operation": "correlation_remove_point",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12959/generate.py"
+    },
+    {
+      "component_id": "src_12967",
+      "textbook_example_id": 12967,
+      "status": "verified",
+      "problem_type_id": "correlation_change_add_point",
+      "domain_operation": "correlation_change_add_point",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12967/generate.py"
+    },
+    {
+      "component_id": "src_12968",
+      "textbook_example_id": 12968,
+      "status": "verified",
+      "problem_type_id": "correlation_from_table",
+      "domain_operation": "correlation_from_table",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_12968/generate.py"
+    },
+    {
+      "component_id": "src_12972",
+      "textbook_example_id": 12972,
+      "status": "verified",
+      "problem_type_id": "correlation_rescale",
+      "domain_operation": "correlation_rescale",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12972/generate.py"
+    }
+  ]
+}

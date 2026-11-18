@@ -1099,3 +1099,233 @@ def test_v3_template_general_polling_branch_and_stop_conditions():
     assert "if (decision === 'continue') {" in template
     assert "✅ 教材匯入完成" in template
 
+
+_UNIT9 = "單元9 二維數據分析"
+_SCATTER, _CORR, _LSQ = "gh_ScatterPlot", "gh_CorrelationCoefficient", "gh_LeastSquaresMethodAndRegressionLine"
+_GRID_SHA, _FIGURE_SHA = "a" * 64, "b" * 64
+_WS_SPEC = {"page": 8, "bbox": [376.0, 624.0, 514.0, 746.0], "docx_picture_sha256": _GRID_SHA, "why": "blank grid"}
+
+
+def _picture_notes(*pictures):
+    return {"source_evidence": {"tables": [], "pictures": [
+        {"name": name, "sha256": sha, "location": "stem", "expected": True} for name, sha in pictures
+    ]}}
+
+
+def _apply_ws(notes, specs, **kw):
+    from core.textbook_stage1_auto_review import apply_verified_answer_workspaces
+
+    args = {"pdf_sha256": "c" * 64, "verified_by": "teacher", "verified_on": "2026-11-18", **kw}
+    return apply_verified_answer_workspaces(notes, specs, **args)
+
+
+def _gate(notes):
+    import json
+
+    from core.textbook_stage1_gate import evaluate_row
+
+    return evaluate_row({"notes": json.dumps(notes), "problem_text": "繪出x與y的散布圖。", "detailed_solution": ""})
+
+
+def test_verified_answer_workspace_clears_only_the_named_blank_grid():
+    notes = _picture_notes(("grid", _GRID_SHA))
+    assert "required_figure_missing" in _gate(notes)["blockers"]
+    assert _apply_ws(notes, [_WS_SPEC]) == []
+    picture = notes["source_evidence"]["pictures"][0]
+    assert picture["expected"] is False and picture["role"] == "answer_workspace"
+    assert notes["answer_workspace"][0]["runtime"] == "handwriting_scratchpad"
+    assert notes["answer_workspace"][0]["docx_picture_sha256"] == _GRID_SHA
+    assert _gate(notes) == {"blockers": [], "reviews": []}
+
+
+def test_answer_workspace_does_not_exempt_a_real_figure_in_the_same_question():
+    notes = _picture_notes(("grid", _GRID_SHA), ("figure", _FIGURE_SHA))
+    assert _apply_ws(notes, [_WS_SPEC]) == []
+    assert "required_figure_missing" in _gate(notes)["blockers"]
+    notes["image_assets"] = [{"path": "uploads/x.png", "visual_status": "accepted"}]
+    assert _gate(notes) == {"blockers": [], "reviews": []}
+
+
+@pytest.mark.parametrize(
+    "spec, kw, issue",
+    [
+        (dict(_WS_SPEC, docx_picture_sha256=_FIGURE_SHA), {}, "answer_workspace_picture_not_found"),
+        (dict(_WS_SPEC, bbox=[1, 2]), {}, "answer_workspace_spec_invalid"),
+        (_WS_SPEC, {"verified_by": ""}, "answer_workspace_reviewer_missing"),
+    ],
+)
+def test_unverified_answer_workspace_leaves_the_figure_required(spec, kw, issue):
+    notes = _picture_notes(("grid", _GRID_SHA))
+    assert _apply_ws(notes, [spec], **kw) == [issue]
+    assert notes["source_evidence"]["pictures"][0]["expected"] is True and "answer_workspace" not in notes
+    assert "required_figure_missing" in _gate(notes)["blockers"]
+
+
+def test_text_cue_alone_never_makes_an_answer_workspace():
+    notes = _picture_notes(("grid", _GRID_SHA))
+    assert _apply_ws(notes, []) == ["answer_workspace_spec_invalid"]
+    assert "required_figure_missing" in _gate(notes)["blockers"]
+
+
+def test_general_high_enrichment_applies_verified_answer_workspaces(admin_app, monkeypatch, tmp_path):
+    import json
+
+    import core.textbook_pdf_visual as visual_mod
+    import core.textbook_stage1_auto_review as review_mod
+    from models import TextbookExample, db
+
+    rows = _seed_general_rows(db, [
+        ("例題2", "畫出 \\(y=x\\) 的圖形。", _picture_notes(("grid", _GRID_SHA))),
+        ("隨堂練習2", "畫出 \\(y=2x\\) 的圖形。", _picture_notes(("other", _FIGURE_SHA))),
+    ])
+    ids = {title: te.id for title, te in rows.items()}
+    catalog = {"pdf_sha256": "d" * 64, "verified_by": "teacher", "verified_on": "2026-11-18", "regions": {},
+               "answer_workspaces": {"例題2": [_WS_SPEC], "隨堂練習2": [_WS_SPEC]}}
+    monkeypatch.setattr(review_mod, "verified_visual_regions", lambda *a, **k: catalog)
+    monkeypatch.setattr(visual_mod, "enrich_textbook_examples_with_pdf_visuals", _fake_shared_enrichment([], set()))
+    pdf = tmp_path / "unit.pdf"
+    pdf.write_bytes(b"%PDF-1.4\n")
+
+    summary = tp.enrich_general_high_pdf_visuals(
+        pdf_path=str(pdf), parsed_data={"chapters": [{"chapter_title": "單元3 函數"}]},
+        scan=tp.scan_general_high_layout(GENERAL_HIGH_TEXT),
+        curriculum_info={"curriculum": "general", "volume": "數學1"},
+        import_policy={"visual_asset_root": str(tmp_path / "assets")},
+    )
+
+    assert summary["answer_workspaces_applied"] == ["例題2"]
+    assert summary["warnings"] == ["answer_workspace_picture_not_found:隨堂練習2"]
+    notes = {t: json.loads(db.session.get(TextbookExample, i).notes) for t, i in ids.items()}
+    assert notes["例題2"]["pdf_visual_status"] == tp.GH_NO_VISUAL_REQUIRED
+    assert notes["例題2"]["answer_workspace"][0]["source_pdf_sha256"] == "d" * 64
+    assert notes["隨堂練習2"]["pdf_visual_status"] == tp.GH_VISUAL_REQUIRED_MISSING
+    assert notes["隨堂練習2"]["needs_review"] is True
+
+
+def test_repository_unit9_visual_catalog_locks_figures_and_workspaces_to_the_pdf():
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    entries = json.loads((root / "configs/stage1_verified_visual_regions.json").read_text(encoding="utf-8"))["sources"]
+    entry = next(e for e in entries if e["chapter"] == _UNIT9 and e["volume"] == "數學2")
+    assert entry["pdf_sha256"] == "632399683e47eb6954aa20d9c131deb0cdec4b63109d57239ed6d04d30d6dc4a"
+    assert sorted(entry["regions"]) == ["9習題 基礎題2", "例題6"]
+    assert sorted(entry["answer_workspaces"]) == ["9習題 基礎題1", "9習題 基礎題3", "隨堂練習2", "隨堂練習3"]
+    assert not set(entry["regions"]) & set(entry["answer_workspaces"])
+    for specs in entry["answer_workspaces"].values():
+        assert all(len(s["docx_picture_sha256"]) == 64 and len(s["bbox"]) == 4 for s in specs)
+    pdf = root / "textbook_import/uploaded_sources/general/數學2/632399683e47_單元09-二維數據分析.pdf"
+    if pdf.is_file():
+        from core.textbook_pdf_visual import load_visual_region_overrides
+
+        overrides, warnings = load_visual_region_overrides(pdf, entry)
+        assert warnings == [] and len(overrides) == 2
+
+
+def test_repository_unit9_source_skill_map():
+    entry = tp.find_general_high_source_skill_map("general", "數學2", _UNIT9)
+    titles = entry["titles"]
+    expected = (
+        [f"例題{i}" for i in range(1, 8)] + [f"隨堂練習{i}" for i in range(1, 8)]
+        + [f"9習題 觀念澄清{i}" for i in range(1, 6)] + [f"9習題 基礎題{i}" for i in range(1, 6)]
+        + ["9習題 進階題6", "9習題 進階題7"]
+    )
+    assert sorted(titles) == sorted(expected)
+    counts = {}
+    for sid in titles.values():
+        counts[sid] = counts.get(sid, 0) + 1
+    assert counts == {_SCATTER: 2, _CORR: 13, _LSQ: 11}
+    assert titles["例題6"] == _LSQ and entry["secondary_skills"]["例題6"] == [_SCATTER]
+    assert titles["隨堂練習7"] == _CORR
+    assert titles["9習題 基礎題3"] == _CORR and titles["9習題 進階題7"] == _CORR
+    assert titles["例題4"] == _LSQ and titles["隨堂練習5"] == _LSQ
+    assert entry["linked_examples"] == {
+        "隨堂練習1": "例題1", "隨堂練習2": "例題2", "隨堂練習3": "例題3", "隨堂練習4": "例題3",
+        "隨堂練習5": "例題4", "隨堂練習6": "例題5", "隨堂練習7": "例題6",
+    }
+    assert tp.find_general_high_source_skill_map("general", "數學1", _UNIT9) is None
+
+
+_LINK_MAP = [{
+    "id": "t_links", "curriculum": "general", "volume": "數學1", "chapter": "單元2 絕對值",
+    "titles": {"例題1": "gh_a", "例題2": "gh_a", "隨堂練習2": "gh_a", "隨堂練習3": "gh_a"},
+    "secondary_skills": {"隨堂練習2": ["gh_b"]},
+    "linked_examples": {"隨堂練習2": "例題1", "隨堂練習3": "例題2"},
+}]
+
+
+def test_source_skill_map_confirms_links_and_records_continues_example_dependency(admin_app):
+    import json
+
+    from models import TextbookExample, db
+
+    ids = _seed_unit_rows(db, "單元2 絕對值", [("例題1", "gh_a"), ("例題2", "gh_a"), ("隨堂練習2", "gh_a"), ("隨堂練習3", "gh_a")],
+                          ["gh_a", "gh_b"])
+    row = db.session.get(TextbookExample, ids["隨堂練習2"])
+    row.source_description = "隨堂練習2 [source_type=in_class_practice | linked_example=例題2 | needs_review=true | dedupe=x]"
+    row.problem_text = "承例題1，若新增一筆資料，相關係數會變大還是變小？"
+    row.notes = json.dumps({"needs_review": True, "review_required_by_confidence": True, "import_confidence": 0.4,
+                            "linked_example_inference": {"added_review_only": True, "confidence_without_link_review": 0.9}})
+    other = db.session.get(TextbookExample, ids["隨堂練習3"])
+    other.source_description = "隨堂練習3 [source_type=in_class_practice | linked_example=例題3 | needs_review=true]"
+    other.notes = json.dumps({"needs_review": True, "review_required_by_confidence": True, "import_confidence": 0.4,
+                              "linked_example_inference": {"added_review_only": False}})
+    db.session.commit()
+
+    summary = tp.apply_general_high_source_skill_map(
+        parsed_data={"chapters": [{"chapter_title": "單元2 絕對值"}]}, scan={"chapter": {}},
+        curriculum_info={"curriculum": "general", "volume": "數學1"}, maps=_LINK_MAP,
+    )
+
+    assert summary["applied"] is True and not summary.get("link_conflicts")
+    row = db.session.get(TextbookExample, ids["隨堂練習2"])
+    notes = json.loads(row.notes)
+    assert row.source_description == "隨堂練習2 [source_type=in_class_practice | linked_example=例題1 | dedupe=x]"
+    assert notes["source_dependency"] == {"kind": "continues_example", "example_title": "例題1",
+                                          "evidence": "承例題1", "requires_example_data": True}
+    assert notes["needs_review"] is False and notes["review_required_by_confidence"] is False
+    assert notes["import_confidence"] == 0.9
+    assert notes["linked_example_binding"]["previous_linked_example"] == "例題2"
+    assert notes["skill_binding"]["secondary_skill_ids"] == ["gh_b"]
+    kept = json.loads(db.session.get(TextbookExample, ids["隨堂練習3"]).notes)
+    assert kept["review_required_by_confidence"] is True and kept["needs_review"] is True
+    assert kept["linked_example_binding"]["linked_example"] == "例題2"
+
+
+def test_source_skill_map_link_conflicting_with_continues_example_text_goes_to_review(admin_app):
+    import json
+
+    from models import TextbookExample, db
+
+    ids = _seed_unit_rows(db, "單元2 絕對值", [("例題1", "gh_a"), ("例題2", "gh_a"), ("隨堂練習2", "gh_a"), ("隨堂練習3", "gh_a")],
+                          ["gh_a", "gh_b"])
+    row = db.session.get(TextbookExample, ids["隨堂練習2"])
+    row.source_description = "隨堂練習2 [linked_example=例題2]"
+    row.problem_text = "承例題2，求相關係數。"
+    db.session.commit()
+
+    summary = tp.apply_general_high_source_skill_map(
+        parsed_data={"chapters": [{"chapter_title": "單元2 絕對值"}]}, scan={"chapter": {}},
+        curriculum_info={"curriculum": "general", "volume": "數學1"}, maps=_LINK_MAP,
+    )
+
+    assert summary["link_conflicts"] == ["隨堂練習2"]
+    row = db.session.get(TextbookExample, ids["隨堂練習2"])
+    notes = json.loads(row.notes)
+    assert row.source_description == "隨堂練習2 [linked_example=例題2]"
+    assert notes["needs_review"] is True and notes["linked_example_binding"]["conflict_with_stem"] == ["例題2"]
+    assert "source_dependency" not in notes
+
+
+def test_source_skill_map_rejects_links_or_secondary_skills_outside_the_map(admin_app):
+    from models import db
+
+    _seed_unit_rows(db, "單元2 絕對值", [("例題1", "gh_a")], ["gh_a"])
+    for bad in ({"linked_examples": {"隨堂練習9": "例題1"}}, {"secondary_skills": {"例題1": ["gh_not_bound"]}}):
+        summary = tp.apply_general_high_source_skill_map(
+            parsed_data={"chapters": [{"chapter_title": "單元2 絕對值"}]}, scan={"chapter": {}},
+            curriculum_info={"curriculum": "general", "volume": "數學1"}, maps=[dict(_LINK_MAP[0], **bad)],
+        )
+        assert summary["applied"] is False and summary["error"]
+

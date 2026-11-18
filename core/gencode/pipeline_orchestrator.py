@@ -4921,7 +4921,55 @@ def _skill_has_python_classifier(skill_id: str) -> bool:
         return False
 
 
+def _v3_source_dependency_for_row(textbook_row: dict[str, Any], conn: Any) -> dict[str, Any]:
+    from core.textbook_source_dependency import (
+        STATUS_BLOCKED, STATUS_NONE, detect_source_dependency, has_source_dependency_signal, resolve_from_conn,
+    )
+
+    text, notes = textbook_row.get("problem_text"), textbook_row.get("notes")
+    if conn is not None and textbook_row.get("id"):
+        return resolve_from_conn(conn, int(textbook_row["id"]), problem_text_hint=text)
+    if has_source_dependency_signal(text, notes):
+        return {**detect_source_dependency(text, notes), "status": STATUS_BLOCKED, "reason": "dependency_lookup_unavailable"}
+    return {"status": STATUS_NONE}
+
+
 def run_v3_no_llm_phase1_for_example(
+    skill_id: str,
+    textbook_row: dict[str, Any],
+    *,
+    conn: Any = None,
+    skill_examples: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    """Phase 1 preflight; a row continuing a textbook example only proceeds with its prerequisite data resolved."""
+    from core.textbook_source_dependency import STATUS_BLOCKED, generation_contract
+
+    dependency = _v3_source_dependency_for_row(textbook_row, conn)
+    if dependency.get("status") == STATUS_BLOCKED:
+        example_id = int(textbook_row.get("id") or 0)
+        return {
+            "classification_status": "unresolved",
+            "classification_status_code": PHASE1_CLASSIFICATION_UNRESOLVED,
+            "skill_id": str(skill_id or "").strip(),
+            "source_example_id": example_id,
+            "textbook_example_id": example_id,
+            "source_hash": _compute_v3_example_source_hash(textbook_row),
+            "problem_type_id": "",
+            "required_capabilities": [],
+            "classification_source": "source_dependency",
+            "presentation_mode": "",
+            "answer_contract": {},
+            "reason": f"SOURCE_DEPENDENCY_UNRESOLVED:{dependency.get('reason')}",
+            "source_dependency": {k: v for k, v in dependency.items() if k != "image_assets"},
+        }
+    result = _run_v3_no_llm_phase1_core(skill_id, textbook_row, conn=conn, skill_examples=skill_examples)
+    contract = generation_contract(dependency)
+    if contract and isinstance(result, dict):
+        result = {**result, "source_dependency": contract}
+    return result
+
+
+def _run_v3_no_llm_phase1_core(
     skill_id: str,
     textbook_row: dict[str, Any],
     *,
@@ -5319,7 +5367,17 @@ def resolve_v3_admin_induced_spec(
         except Exception:
             cached_spec = {}
 
-        if _phase1_induced_spec_is_reusable(cached_spec, source_hash=source_hash):
+        from core.textbook_source_dependency import STATUS_BLOCKED, generation_contract
+
+        # The row hash does not cover the example it continues: a cached spec is reused only for the same prerequisite data.
+        resolution = _v3_source_dependency_for_row(row, conn)
+        dependency = generation_contract(resolution) or {}
+        cached_dependency = cached_spec.get("source_dependency") if isinstance(cached_spec.get("source_dependency"), dict) else {}
+        if (
+            resolution.get("status") != STATUS_BLOCKED
+            and _phase1_induced_spec_is_reusable(cached_spec, source_hash=source_hash)
+            and dependency.get("fingerprint") == cached_dependency.get("fingerprint")
+        ):
             return {
                 "ok": True,
                 "induced_spec": cached_spec,

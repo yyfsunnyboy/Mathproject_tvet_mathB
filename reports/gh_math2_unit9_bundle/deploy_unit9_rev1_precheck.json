@@ -1,0 +1,53 @@
+{
+ "revision": 1,
+ "root": "C:\\Projects\\Mathproject_tvet_mathB",
+ "bundle_file_sha256": "8253427bb49d63f1d117a5d458476f779cbc7caa250ff98f5e82cd88748ce555",
+ "bundle_sha_matches_reviewed": true,
+ "bundle_digest_matches_reviewed": true,
+ "bundle_review_status": "ready_for_human_review",
+ "bundle_package_intact": true,
+ "bundle_package_matches_source": true,
+ "bundle_coverage_rows": 26,
+ "sandbox_reference_components": 21,
+ "isolated_rehearsal_passed": true,
+ "db_integrity": "ok",
+ "stage1_gate": {
+  "status": "READY",
+  "blocked": 0,
+  "needs_review": 0
+ },
+ "unit9_rows": 26,
+ "unit9_ids_match_specs": true,
+ "binding_mismatches": {},
+ "textbook_digest": "20bbb46450907739339323f28c600f0116eb8e8b17b322c5ace6d0e7f9760aa7",
+ "unit9_tracker_rows_before": 0,
+ "skill_tracker_rows_before": 0,
+ "active_orchestrator_jobs": [],
+ "journal_mode": "wal",
+ "unit9_v3_fixed_entries": [],
+ "unit9_deferred_fixed_entries": [
+  12947,
+  12948,
+  12954,
+  12960,
+  12963
+ ],
+ "unit9_deferred_fixed_sha_ok": {
+  "12947": true,
+  "12948": true,
+  "12954": true,
+  "12960": true,
+  "12963": true
+ },
+ "hot_rollback_journal": false,
+ "write_lock_free": true,
+ "unit9_already_published": {
+  "gh_CorrelationCoefficient": [],
+  "gh_LeastSquaresMethodAndRegressionLine": []
+ },
+ "unit9_leftover_build_dirs": [],
+ "promoted_package_exists": false,
+ "domain_in_store": false,
+ "protected_file_count": 5906,
+ "passed": true
+}

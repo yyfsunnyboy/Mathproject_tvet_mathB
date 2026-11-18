@@ -131,6 +131,14 @@ def validate_generator_payload(
     errors.extend(validate_answer_contract_consistency(payload.get("answer_contract") or {}))
     errors.extend(validate_dependency_contract(payload, spec))
     errors.extend(validate_semantic_contract(payload, spec))
+    from core.gencode.problem_type_spec import get_source_dependency
+
+    source_dependency = get_source_dependency(spec)
+    if source_dependency:
+        from core.textbook_source_dependency import generated_payload_dependency_issues
+
+        errors.extend(f"SOURCE_DEPENDENCY_SELF_CONTAINED: {issue}"
+                      for issue in generated_payload_dependency_issues(payload, source_dependency))
 
     # --- Six Generic Verification Gates ---
     # 1. SOURCE_FIDELITY: Graph drawing tasks must not be degraded to value reading

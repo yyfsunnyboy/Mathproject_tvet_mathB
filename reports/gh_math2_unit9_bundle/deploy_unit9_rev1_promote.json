@@ -1,0 +1,64 @@
+{
+ "promoted": true,
+ "unchanged": false,
+ "domain_key": "statistics.bivariate_descriptive",
+ "registry_revision": "promoted-f99c60060e70",
+ "bundle_sha256": "f99c60060e701b0a0ed239f2a71cf3e43b4193a0232148575d6f8ebc27496faa",
+ "allowed_operations": [
+  "correlation_change_add_point",
+  "correlation_from_regression_point",
+  "correlation_from_table",
+  "correlation_remove_point",
+  "correlation_rescale",
+  "regression_from_summary",
+  "regression_from_table",
+  "regression_line_unknown_intercept",
+  "regression_rounded_from_table",
+  "regression_statement_selection",
+  "true_false_bivariate"
+ ],
+ "skill_bindings": {
+  "gh_CorrelationCoefficient": {
+   "fixed_domain_key": "statistics.bivariate_descriptive",
+   "allowed_operations": [
+    "correlation_change_add_point",
+    "correlation_from_table",
+    "correlation_remove_point",
+    "correlation_rescale",
+    "true_false_bivariate"
+   ]
+  },
+  "gh_LeastSquaresMethodAndRegressionLine": {
+   "fixed_domain_key": "statistics.bivariate_descriptive",
+   "allowed_operations": [
+    "correlation_from_regression_point",
+    "regression_from_summary",
+    "regression_from_table",
+    "regression_line_unknown_intercept",
+    "regression_rounded_from_table",
+    "regression_statement_selection",
+    "true_false_bivariate"
+   ]
+  }
+ },
+ "operations_executed": {
+  "correlation_change_add_point": 1,
+  "correlation_from_regression_point": 1,
+  "correlation_from_table": 5,
+  "correlation_remove_point": 1,
+  "correlation_rescale": 1,
+  "regression_from_summary": 1,
+  "regression_from_table": 3,
+  "regression_line_unknown_intercept": 1,
+  "regression_rounded_from_table": 1,
+  "regression_statement_selection": 1,
+  "true_false_bivariate": 5
+ },
+ "package_path": "C:\\Projects\\Mathproject_tvet_mathB\\core\\domain\\promoted\\bivariate_statistics",
+ "store_sha256_after": "75eef67c4caebe76f6ffd64a666b969f312e7ad780ba56affb3bbf6c2d962267",
+ "promoted_package_matches_bundle": true,
+ "unit9_published_paths": {
+  "gh_CorrelationCoefficient": [],
+  "gh_LeastSquaresMethodAndRegressionLine": []
+ }
+}

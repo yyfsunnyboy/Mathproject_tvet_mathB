@@ -1,0 +1,50 @@
+{
+  "port_5001_open": true,
+  "port_5000_open": true,
+  "home_status": 200,
+  "facades": {
+    "gh_CorrelationCoefficient": {
+      "keys": [
+        "src_12949",
+        "src_12950",
+        "src_12951",
+        "src_12952",
+        "src_12953",
+        "src_12957",
+        "src_12958",
+        "src_12959",
+        "src_12967",
+        "src_12968",
+        "src_12972"
+      ],
+      "n": 11,
+      "seed0_id": 12967,
+      "has_answer": true,
+      "route_ready": true
+    },
+    "gh_LeastSquaresMethodAndRegressionLine": {
+      "keys": [
+        "src_12955",
+        "src_12956",
+        "src_12961",
+        "src_12962",
+        "src_12964",
+        "src_12965",
+        "src_12966",
+        "src_12969",
+        "src_12970",
+        "src_12971"
+      ],
+      "n": 10,
+      "seed0_id": 12969,
+      "has_answer": true,
+      "route_ready": true
+    }
+  },
+  "deferred_absent_from_manifests": {
+    "gh_CorrelationCoefficient": [],
+    "gh_LeastSquaresMethodAndRegressionLine": []
+  },
+  "scatter_facade_absent": true,
+  "passed": true
+}

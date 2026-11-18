@@ -1,0 +1,117 @@
+{
+  "skill_id": "gh_LeastSquaresMethodAndRegressionLine",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 10,
+  "components": [
+    {
+      "component_id": "src_12955",
+      "textbook_example_id": 12955,
+      "status": "verified",
+      "problem_type_id": "true_false_bivariate",
+      "domain_operation": "true_false_bivariate",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12955/generate.py"
+    },
+    {
+      "component_id": "src_12956",
+      "textbook_example_id": 12956,
+      "status": "verified",
+      "problem_type_id": "true_false_bivariate",
+      "domain_operation": "true_false_bivariate",
+      "presentation_mode": "single_choice",
+      "answer_type": "choice_label",
+      "source_kind": "example",
+      "generate_py": "components/src_12956/generate.py"
+    },
+    {
+      "component_id": "src_12961",
+      "textbook_example_id": 12961,
+      "status": "verified",
+      "problem_type_id": "regression_from_summary",
+      "domain_operation": "regression_from_summary",
+      "presentation_mode": "short_answer",
+      "answer_type": "equation",
+      "source_kind": "example",
+      "generate_py": "components/src_12961/generate.py"
+    },
+    {
+      "component_id": "src_12962",
+      "textbook_example_id": 12962,
+      "status": "verified",
+      "problem_type_id": "regression_from_table",
+      "domain_operation": "regression_from_table",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12962/generate.py"
+    },
+    {
+      "component_id": "src_12964",
+      "textbook_example_id": 12964,
+      "status": "verified",
+      "problem_type_id": "regression_rounded_from_table",
+      "domain_operation": "regression_rounded_from_table",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12964/generate.py"
+    },
+    {
+      "component_id": "src_12965",
+      "textbook_example_id": 12965,
+      "status": "verified",
+      "problem_type_id": "correlation_from_regression_point",
+      "domain_operation": "correlation_from_regression_point",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12965/generate.py"
+    },
+    {
+      "component_id": "src_12966",
+      "textbook_example_id": 12966,
+      "status": "verified",
+      "problem_type_id": "regression_from_table",
+      "domain_operation": "regression_from_table",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "quiz",
+      "generate_py": "components/src_12966/generate.py"
+    },
+    {
+      "component_id": "src_12969",
+      "textbook_example_id": 12969,
+      "status": "verified",
+      "problem_type_id": "regression_from_table",
+      "domain_operation": "regression_from_table",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12969/generate.py"
+    },
+    {
+      "component_id": "src_12970",
+      "textbook_example_id": 12970,
+      "status": "verified",
+      "problem_type_id": "regression_line_unknown_intercept",
+      "domain_operation": "regression_line_unknown_intercept",
+      "presentation_mode": "multiple_inputs",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_12970/generate.py"
+    },
+    {
+      "component_id": "src_12971",
+      "textbook_example_id": 12971,
+      "status": "verified",
+      "problem_type_id": "regression_statement_selection",
+      "domain_operation": "regression_statement_selection",
+      "presentation_mode": "short_answer",
+      "answer_type": "solution_set",
+      "source_kind": "example",
+      "generate_py": "components/src_12971/generate.py"
+    }
+  ]
+}

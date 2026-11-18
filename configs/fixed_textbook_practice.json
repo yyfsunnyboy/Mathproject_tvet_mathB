@@ -1,6 +1,6 @@
 {
  "schema": "fixed_textbook_practice.v1",
- "reviewed": "2026-10-26",
+ "reviewed": "2026-11-18",
  "entries": {
   "12719": {
    "skill_id": "gh_Series",
@@ -557,6 +557,97 @@
    "oracle": {
     "verified": "sympy summation=0 (symbolic ok) + n=1..39 numeric + substitution into expanded (x+y)^n, n=1..12",
     "script": "reports/gh_math2_unit5_fixed/build_proof_entries.py"
+   }
+  },
+  "12947": {
+   "skill_id": "gh_ScatterPlot",
+   "label": "例題1 繪製散布圖（原題・未評分）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "以 x 為橫軸、y 為縱軸",
+    "依表中六點描點",
+    "對照教材參考圖自評"
+   ],
+   "reference_solution": [],
+   "problem_text_sha256": "4ed434f95d2d301cb4c28788f110225fa221a9ff559e32adcd4f450fb2ffc804",
+   "oracle": {
+    "method": "unit9_deferred_original_textbook",
+    "reason": "draw-only scatter; no student drawing grader in this unit",
+    "verified": false,
+    "note": "ungraded self-study only; no automatic verdict"
+   },
+   "answer_input_type": "handwriting"
+  },
+  "12948": {
+   "skill_id": "gh_ScatterPlot",
+   "label": "隨堂練習1 判讀散布圖相關方向（原題・未評分）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "觀察右圖點的走向",
+    "判斷正相關、負相關或零相關",
+    "對照參考解法自評"
+   ],
+   "reference_solution": [],
+   "problem_text_sha256": "e1f48aacc9e8c718cfccdd8344613365d2768276ee101afa3ed82ac7d40dc3a6",
+   "oracle": {
+    "method": "unit9_deferred_original_textbook",
+    "reason": "read existing scatter figure",
+    "verified": false,
+    "note": "ungraded self-study only; no automatic verdict"
+   }
+  },
+  "12954": {
+   "skill_id": "gh_CorrelationCoefficient",
+   "label": "隨堂練習4 散布圖相關係數排序（原題・未評分）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "觀察四張散布圖的相關強度與方向",
+    "比較 r1～r4",
+    "由大到小排列"
+   ],
+   "reference_solution": [],
+   "problem_text_sha256": "f36b71a9e36d6e8fe69964eb7ba07e139cebf95f9e60f6720bf9bdcfdb7856fb",
+   "oracle": {
+    "method": "unit9_deferred_original_textbook",
+    "reason": "rank four scatter figures",
+    "verified": false,
+    "note": "ungraded self-study only; no automatic verdict"
+   }
+  },
+  "12960": {
+   "skill_id": "gh_CorrelationCoefficient",
+   "label": "基礎題2 依圖估計相關係數（原題・未評分）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "觀察資料 A、B 的散布圖與相關係數",
+    "估計資料 C 可能的 r",
+    "選擇最接近的選項"
+   ],
+   "reference_solution": [],
+   "problem_text_sha256": "24455f46c51a66699cb8fd1a201c03f11258d024851a9023aa1528a6617ed7fa",
+   "oracle": {
+    "method": "unit9_deferred_original_textbook",
+    "reason": "figure-based multiple choice for r",
+    "verified": false,
+    "note": "ungraded self-study only; no automatic verdict"
+   }
+  },
+  "12963": {
+   "skill_id": "gh_LeastSquaresMethodAndRegressionLine",
+   "label": "例題6 選散布圖並用迴歸估計（原題・未評分）",
+   "mode": "ungraded",
+   "practice_scaffold": [
+    "依資料趨勢選出可能的散布圖",
+    "將 x=26.8 代入給定迴歸直線",
+    "四捨五入到整數位"
+   ],
+   "reference_solution": [],
+   "problem_text_sha256": "98f2d7cd6709db22e2a3577dc2f661db1ba1a55f5f90dd28b3074ab881753092",
+   "oracle": {
+    "method": "unit9_deferred_original_textbook",
+    "reason": "full topology includes scatter choice; V3 generator only covered prediction",
+    "verified": false,
+    "note": "ungraded self-study only; no automatic verdict"
    }
   }
  }

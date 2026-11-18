@@ -880,6 +880,47 @@ def attach_general_high_source_evidence(
     return summary
 
 
+_GH_CONTINUES_EXAMPLE_RE = re.compile(r"承\s*例題\s*(\d+)")
+_GH_LINKED_EXAMPLE_RE = re.compile(r"linked_example=([^|\]\s]+)")
+
+
+def _apply_confirmed_linked_example(row, notes: dict, title: str, example_title: str, entry: dict, summary: dict) -> None:
+    """Teacher-confirmed practice -> example link; a stem citing 承例題N must agree with it."""
+    desc = str(row.source_description or "")
+    m = _GH_LINKED_EXAMPLE_RE.search(desc)
+    previous = m.group(1) if m else None
+    if m:
+        desc = desc[:m.start(1)] + example_title + desc[m.end(1):]
+    elif desc.endswith("]"):
+        desc = desc[:-1] + f" | linked_example={example_title}]"
+    else:
+        desc = f"{desc} [linked_example={example_title}]"
+    binding = {"source": "general_high_source_skill_map", "map_id": entry.get("id"),
+               "linked_example": example_title, "previous_linked_example": previous}
+    cited = [f"例題{n}" for n in _GH_CONTINUES_EXAMPLE_RE.findall(str(row.problem_text or ""))]
+    if any(c != example_title for c in cited):
+        binding["conflict_with_stem"] = cited
+        notes["needs_review"] = True
+        notes["linked_example_binding"] = binding
+        summary.setdefault("link_conflicts", []).append(title)
+        return
+    if cited:
+        notes["source_dependency"] = {"kind": "continues_example", "example_title": example_title,
+                                      "evidence": f"承{example_title}", "requires_example_data": True}
+    inference = notes.get("linked_example_inference") or {}
+    if inference.get("added_review_only"):
+        notes["needs_review"] = bool(notes.get("visual_required_missing"))
+        if "needs_review_before_visual" in notes:
+            notes["needs_review_before_visual"] = False
+        notes["review_required_by_confidence"] = False
+        notes["import_confidence"] = inference.get("confidence_without_link_review", notes.get("import_confidence"))
+        desc = desc.replace(" | needs_review=true", "")
+        binding["cleared_link_inference_review"] = True
+    row.source_description = desc
+    notes["linked_example_binding"] = binding
+    summary["linked"].append({"title": title, "from": previous, "to": example_title})
+
+
 def apply_general_high_source_skill_map(
     *,
     parsed_data: dict,
@@ -918,9 +959,16 @@ def apply_general_high_source_skill_map(
                 SkillCurriculum.chapter == chapter,
             )
         }
-        bad = sorted({s for s in entry["titles"].values() if s not in allowed})
+        secondary = entry.get("secondary_skills") or {}
+        linked = entry.get("linked_examples") or {}
+        bad = sorted({s for s in entry["titles"].values() if s not in allowed}
+                     | {s for ids in secondary.values() for s in ids if s not in allowed})
         if bad:
             summary["error"] = f"skills_not_in_chapter:{bad}"
+            break
+        bad_links = sorted(t for t, ex in linked.items() if t not in entry["titles"] or ex not in entry["titles"])
+        if bad_links:
+            summary["error"] = f"linked_examples_not_in_map:{bad_links}"
             break
         rows = TextbookExample.query.filter(
             TextbookExample.source_curriculum == "general",
@@ -928,9 +976,12 @@ def apply_general_high_source_skill_map(
             TextbookExample.source_chapter == chapter,
         ).all()
         seen = set()
+        summary["linked"] = []
         for row in rows:
             title = _GH_ROW_TITLE_SUFFIX_RE.sub("", str(row.source_description or "")).strip()
             notes = json.loads(row.notes) if row.notes else {}
+            if title in linked:
+                _apply_confirmed_linked_example(row, notes, title, linked[title], entry, summary)
             skill = entry["titles"].get(title)
             if skill is None:
                 notes["needs_review"] = True
@@ -954,6 +1005,8 @@ def apply_general_high_source_skill_map(
                     row.skill_id = skill
                     if allowed[skill]:
                         row.source_paragraph = allowed[skill]
+                if secondary.get(title):
+                    notes["skill_binding"]["secondary_skill_ids"] = list(secondary[title])
             row.notes = json.dumps(notes, ensure_ascii=False)
         summary["missing"] = sorted(set(entry["titles"]) - seen)
         summary["map_id"] = entry.get("id")
@@ -1102,10 +1155,31 @@ def enrich_general_high_pdf_visuals(
                 row.notes = json.dumps(notes, ensure_ascii=False)
             targets.append(row)
 
-        from core.textbook_stage1_auto_review import verified_visual_regions
+        from core.textbook_stage1_auto_review import apply_verified_answer_workspaces, verified_visual_regions
         reviewed_regions = verified_visual_regions(
             pdf, curriculum="general", volume=volume, chapter=chapter_title
         )
+        workspaces = {
+            normalize_question_label(str(label)): specs
+            for label, specs in ((reviewed_regions or {}).get("answer_workspaces") or {}).items()
+        }
+        summary["answer_workspaces_applied"] = []
+        for row in targets:
+            title = _GH_ROW_TITLE_SUFFIX_RE.sub("", str(row.source_description or "")).strip()
+            label = normalize_question_label(title)
+            if label not in workspaces:
+                continue
+            notes = parse_notes_dict(row.notes)
+            issues = apply_verified_answer_workspaces(
+                notes, workspaces[label], pdf_sha256=reviewed_regions["pdf_sha256"],
+                verified_by=str(reviewed_regions.get("verified_by") or ""),
+                verified_on=str(reviewed_regions.get("verified_on") or ""),
+            )
+            if issues:
+                summary["warnings"].extend(f"{i}:{title}" for i in issues)
+                continue
+            row.notes = json.dumps(notes, ensure_ascii=False)
+            summary["answer_workspaces_applied"].append(title)
         enrich = enrich_textbook_examples_with_pdf_visuals(
             pdf_path=pdf,
             examples=targets,
@@ -7546,6 +7620,14 @@ def save_to_database(
         current_app.logger.warning(f"[DOCX FORMULA WARNING] formula_asset_requires_review title={question_title}")
         return meta
 
+    def _link_inference_meta(raw_text, standardized_meta, linked_title, link_added_review):
+        # Lets a teacher-confirmed link (source skill map) clear review that only the link guess caused.
+        return {
+            "linked_example": linked_title,
+            "added_review_only": bool(link_added_review and not (standardized_meta or {}).get("needs_review")),
+            "confidence_without_link_review": _build_math_metadata(raw_text, standardized_meta)["import_confidence"],
+        }
+
     def _build_math_metadata(raw_text, standardized_meta, needs_review=False):
         confidence = 0.9
         if needs_review or standardized_meta.get("needs_review", False):
@@ -8254,6 +8336,7 @@ def save_to_database(
                         else:
                             needs_review = bool(ex.get("needs_review", False)) or structure_alignment_failed
                         linked_example_title = None
+                        review_before_link = needs_review
                         if source_type == "in_class_practice":
                             linked_example_title, needs_review = _infer_linked_example_title(
                                 example_title,
@@ -8262,6 +8345,7 @@ def save_to_database(
                                 needs_review,
                             )
                             ex["linked_example_title"] = linked_example_title
+                        link_added_review = bool(needs_review and not review_before_link)
                         dedupe_hash = _normalize_problem_hash(
                             db_problem_text, sub_questions=sub_questions, source_type=source_type, title=example_title
                         )
@@ -8466,6 +8550,10 @@ def save_to_database(
                             and not image_meta.get("image_assets")
                         )
                         math_meta = _build_math_metadata(db_problem_text_raw, ex_math_meta, needs_review=needs_review)
+                        if source_type == "in_class_practice":
+                            math_meta["linked_example_inference"] = _link_inference_meta(
+                                db_problem_text_raw, ex_math_meta, linked_example_title, link_added_review
+                            )
                         if image_review:
                             math_meta["needs_review_before_visual"] = bool(math_meta.get("needs_review"))
                             math_meta["visual_required_missing"] = True
@@ -8664,10 +8752,12 @@ def save_to_database(
                             needs_review = section_textbook_allowed_needs_review(practice)
                         else:
                             needs_review = bool(practice.get("needs_review", False))
+                        review_before_link = needs_review
                         if source_type == "in_class_practice":
                             linked_example_title, needs_review = _infer_linked_example_title(
                                 practice_title, linked_example_title, saved_example_titles, needs_review
                             )
+                        link_added_review = bool(needs_review and not review_before_link)
 
                         target_skill_id = str(practice.get("skill_id", "") or "").strip()
                         if not target_skill_id:
@@ -8679,6 +8769,7 @@ def save_to_database(
                             elif saved_example_order:
                                 target_skill_id = saved_example_order[-1][1]
                                 needs_review = True
+                                link_added_review = False
                                 warn_msg = (
                                     f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_exact_linked_example"
                                 )
@@ -8687,6 +8778,7 @@ def save_to_database(
                             else:
                                 target_skill_id = _determine_target_skill_id(clean_en_id, section_title, concept_name, practice)
                                 needs_review = True
+                                link_added_review = False
                                 warn_msg = (
                                     f"[PRACTICE IMPORT WARNING] title={practice_title} reason=missing_linked_example"
                                 )
@@ -8885,6 +8977,10 @@ def save_to_database(
                             and not image_meta.get("image_assets")
                         )
                         math_meta = _build_math_metadata(practice_problem_raw, practice_math_meta, needs_review=needs_review)
+                        if source_type == "in_class_practice":
+                            math_meta["linked_example_inference"] = _link_inference_meta(
+                                practice_problem_raw, practice_math_meta, linked_example_title, link_added_review
+                            )
                         if image_review:
                             math_meta["needs_review_before_visual"] = bool(math_meta.get("needs_review"))
                             math_meta["visual_required_missing"] = True

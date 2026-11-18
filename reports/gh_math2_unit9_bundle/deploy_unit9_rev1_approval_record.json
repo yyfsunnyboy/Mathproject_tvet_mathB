@@ -1,0 +1,23 @@
+{
+ "time": "2026-11-18 23:19:04 +0800",
+ "rehearsal_only": false,
+ "bundle_file_sha256_before_approval": "8253427bb49d63f1d117a5d458476f779cbc7caa250ff98f5e82cd88748ce555",
+ "bundle_canonical_sha256_before": "35f1d19d8cb29197bf094a2badd703a381992fda6151b9b29bf83da91a04ad19",
+ "bundle_file_sha256_after_approval": "01e4b4f399e8ec94f5962840cb2b984f9e78ad1f896b186660782d5f7e2ced50",
+ "bundle_canonical_sha256_after": "f99c60060e701b0a0ed239f2a71cf3e43b4193a0232148575d6f8ebc27496faa",
+ "package_files": {
+  "__init__.py": "d06705db3d9cc1c0b047270fe5bef8dffd88437c7b20c765c7f23313b2a83fa2",
+  "bivariate_statistics_adapter.py": "4f6795268ae894d9810764563481444008a87f300662b3b97501806470a9f6b2",
+  "bivariate_statistics_domain.py": "e94ec4bf45805bba45106571009c86d4bd926004f87297f4646c3ae915f019e4"
+ },
+ "checklist": "C:\\Projects\\Mathproject_tvet_mathB\\reports\\gh_math2_unit9_bundle\\revision_0001_teacher_review.json",
+ "checklist_sha256": "1281d573b39ef7f8f38b1fd7c08d37e327ac8828b575cb6552c56d53cd9524d6",
+ "reviewer": "owner_authorized_unit9_publish_2026-11-18",
+ "reviewed_at": "2026-11-18 23:15",
+ "key_item_decisions": {
+  "12967": "approved",
+  "12972": "approved"
+ },
+ "excluded_components": [],
+ "approved_by": "owner_authorized_unit9_publish_2026-11-18: user explicitly approved revision_0001 — 21 V3 + 5 deferred originals (12947,12948,12954,12960,12963); Stage1 pending_final_acceptance unchanged | teacher checklist reviewer: owner_authorized_unit9_publish_2026-11-18 at 2026-11-18 23:15 | approved components: 21/21 | excluded (teacher rejected, not published): none"
+}

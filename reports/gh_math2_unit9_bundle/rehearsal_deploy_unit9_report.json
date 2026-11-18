@@ -1,0 +1,30 @@
+{
+  "started": "2026-11-18 23:18:50",
+  "method": "preflight + sqlite3.backup integrity + package/sandbox checks (full repo copy forbidden)",
+  "approved_bundle_digest": "35f1d19d8cb29197bf094a2badd703a381992fda6151b9b29bf83da91a04ad19",
+  "bundle_file_sha256": "8253427bb49d63f1d117a5d458476f779cbc7caa250ff98f5e82cd88748ce555",
+  "bundle_digest": "35f1d19d8cb29197bf094a2badd703a381992fda6151b9b29bf83da91a04ad19",
+  "preflight_passed": false,
+  "preflight_blockers": [
+    "human_review_not_approved",
+    "approved_revision_mismatch"
+  ],
+  "package_matches_bundle": true,
+  "source_matches_bundle": true,
+  "sandbox_components": 21,
+  "db_copy_integrity": "ok",
+  "unit9_textbook_rows": 26,
+  "deferred_excluded_from_publish": [
+    12947,
+    12948,
+    12954,
+    12960,
+    12963
+  ],
+  "formal_store_untouched": true,
+  "formal_package_absent": true,
+  "review_status": "ready_for_human_review",
+  "preflight_blockers_are_approval_only": true,
+  "passed": true,
+  "finished": "2026-11-18 23:18:50"
+}

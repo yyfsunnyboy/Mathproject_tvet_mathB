@@ -37,6 +37,44 @@ def verified_visual_regions(pdf_path: str | Path, *, curriculum: str, volume: st
     return None
 
 
+def apply_verified_answer_workspaces(notes: dict, specs: list[dict], *, pdf_sha256: str,
+                                     verified_by: str, verified_on: str) -> list[str]:
+    """Reclassify teacher-verified blank drawing grids from required stem figures to answer workspace.
+
+    Only a DOCX stem picture whose SHA-256 is named by a verified spec changes; every other stem picture
+    stays required, so a real figure in the same question still needs an accepted crop. Returns issues;
+    any issue leaves ``notes`` unchanged.
+    """
+    evidence = notes.get("source_evidence") if isinstance(notes.get("source_evidence"), dict) else None
+    pictures = [p for p in ((evidence or {}).get("pictures") or []) if isinstance(p, dict)]
+    if not verified_by or not verified_on or not pdf_sha256:
+        return ["answer_workspace_reviewer_missing"]
+    matched: list[tuple[dict, dict]] = []
+    for spec in specs or []:
+        digest = str((spec or {}).get("docx_picture_sha256") or "")
+        bbox = (spec or {}).get("bbox")
+        if not digest or not isinstance(bbox, list) or len(bbox) != 4 or int(spec.get("page") or 0) < 1:
+            return ["answer_workspace_spec_invalid"]
+        hits = [p for p in pictures if p.get("location") == "stem" and p.get("sha256") == digest]
+        if not hits:
+            return ["answer_workspace_picture_not_found"]
+        matched.extend((p, spec) for p in hits)
+    if not matched:
+        return ["answer_workspace_spec_invalid"]
+    workspaces = []
+    for picture, spec in matched:
+        picture["expected"] = False
+        picture["role"] = "answer_workspace"
+        workspaces.append({
+            "docx_picture_sha256": picture.get("sha256"), "docx_picture_name": picture.get("name"),
+            "page": int(spec["page"]), "bbox": [float(v) for v in spec["bbox"]], "why": str(spec.get("why") or ""),
+            "source_pdf_sha256": pdf_sha256, "verified_by": verified_by, "verified_on": verified_on,
+            "runtime": "handwriting_scratchpad",
+        })
+    notes["answer_workspace"] = workspaces
+    return []
+
+
 def _sha(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as stream:
