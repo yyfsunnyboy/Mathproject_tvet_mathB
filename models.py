@@ -413,11 +413,7 @@ def init_db(engine, *, seed_bridges: bool = False):
             FOREIGN KEY (resolved_attempt_id) REFERENCES practice_attempts (id)
         )
     ''')
-    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_active_student_created ON mistake_notebook_entries (student_id, resolved_at, created_at)')
-    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_source_attempt ON mistake_notebook_entries (source_attempt_id)')
-    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_source_question_uid ON mistake_notebook_entries (source_question_uid)')
-    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_skill_id ON mistake_notebook_entries (skill_id)')
-    c.execute('CREATE INDEX IF NOT EXISTS idx_mistake_notebook_problem_type_id ON mistake_notebook_entries (problem_type_id)')
+    # Indexes that reference migrated columns are created after add_column_if_not_exists below.
 
     # Textbook Examples 表格
     c.execute('''
@@ -625,6 +621,55 @@ def init_db(engine, *, seed_bridges: bool = False):
     add_column_if_not_exists('skill_gencode_prompt', 'success_rate', 'FLOAT DEFAULT 0.0')
     add_column_if_not_exists('textbook_examples', 'difficulty_h', 'FLOAT NOT NULL DEFAULT 1.0')
     add_column_if_not_exists('textbook_examples', 'notes', 'TEXT')
+
+    # Mistake notebook: legacy tables may predate resolved_at / source metadata columns.
+    # Add columns before creating indexes that reference them.
+    for col, definition in (
+        ('source_type', "TEXT NOT NULL DEFAULT 'practice'"),
+        ('source_attempt_id', 'INTEGER'),
+        ('source_question_uid', 'TEXT'),
+        ('source_session_id', 'TEXT'),
+        ('curriculum', 'TEXT'),
+        ('volume', 'TEXT'),
+        ('chapter', 'TEXT'),
+        ('section', 'TEXT'),
+        ('problem_type_id', 'TEXT'),
+        ('component_id', 'TEXT'),
+        ('generator_key', 'TEXT'),
+        ('variant', 'TEXT'),
+        ('template_variant', 'TEXT'),
+        ('generator_metadata', 'JSON'),
+        ('question_text', 'TEXT'),
+        ('user_answer', 'TEXT'),
+        ('expected_answer', 'TEXT'),
+        ('retry_count', 'INTEGER NOT NULL DEFAULT 0'),
+        ('last_retry_at', 'DATETIME'),
+        ('resolved_at', 'DATETIME'),
+        ('resolved_attempt_id', 'INTEGER'),
+        ('resolution_method', 'TEXT'),
+        ('updated_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP'),
+    ):
+        add_column_if_not_exists('mistake_notebook_entries', col, definition)
+    c.execute(
+        'CREATE INDEX IF NOT EXISTS idx_mistake_notebook_active_student_created '
+        'ON mistake_notebook_entries (student_id, resolved_at, created_at)'
+    )
+    c.execute(
+        'CREATE INDEX IF NOT EXISTS idx_mistake_notebook_source_attempt '
+        'ON mistake_notebook_entries (source_attempt_id)'
+    )
+    c.execute(
+        'CREATE INDEX IF NOT EXISTS idx_mistake_notebook_source_question_uid '
+        'ON mistake_notebook_entries (source_question_uid)'
+    )
+    c.execute(
+        'CREATE INDEX IF NOT EXISTS idx_mistake_notebook_skill_id '
+        'ON mistake_notebook_entries (skill_id)'
+    )
+    c.execute(
+        'CREATE INDEX IF NOT EXISTS idx_mistake_notebook_problem_type_id '
+        'ON mistake_notebook_entries (problem_type_id)'
+    )
 
     c.execute('''
         CREATE TABLE IF NOT EXISTS ablation_settings (
