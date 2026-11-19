@@ -128,18 +128,8 @@ def _deterministic_classify_parallel_lines(source: TextbookExampleSource) -> dic
     text = source.question_text or ""
     compact = text.replace(" ", "").replace("　", "")
 
-    if ("(A)" in text or "(B)" in text or source.choices) and ("斜率" in text):
-        return {
-            "selected_operation": "parallel_lines_distance_single_choice",
-            "problem_type_id": "parallel_lines_distance_single_choice",
-            "math_family": "parallel_lines_distance",
-            "task_intent": "solve_parameter_sum_from_slope_and_distance",
-            "presentation_mode": "single_choice",
-            "answer_type": "single_choice",
-            "required_domain_capabilities": ["parallel_lines_distance_single_choice"],
-            "confidence": 1.0,
-            "classification_source": "deterministic",
-        }
+    # Slope + origin-distance parameter items belong to point-line distance,
+    # not parallel-lines distance. Do not classify them here.
 
     if "面積" in text and ("直線" in text or "L" in text):
         return {
@@ -737,6 +727,23 @@ def _deterministic_classify(
 
     # For vh_數學B1_DistanceBetweenPointAndLine textbook examples:
     if "DistanceBetweenPointAndLine" in source.skill_id or "距離" in text and ("到直線" in text or "到" in text and "的距離" in text):
+        # Structural family: slope determines a, point-line distance determines k.
+        if ("斜率" in text) and ("a+k" in text.replace(" ", "") or "a＋k" in text) and (
+            source.choices or "(A)" in text or "A)" in text
+        ):
+            return {
+                "selected_operation": "slope_and_point_line_distance_parameter_choice",
+                "problem_type_id": "slope_and_point_line_distance_parameter_choice",
+                "math_family": "point_line_distance",
+                "task_intent": "solve_parameter_sum_from_slope_and_point_line_distance",
+                "given_structure": ["line_equation_with_parameters", "slope", "origin_distance"],
+                "target_structure": ["parameter_sum_choice"],
+                "presentation_mode": "single_choice",
+                "answer_type": "single_choice",
+                "required_domain_capabilities": ["slope_and_point_line_distance_parameter_choice"],
+                "confidence": 1.0,
+                "classification_source": "deterministic_structural",
+            }
         if "何者" in text or "比較近" in text or "比較遠" in text or "何者較" in text:
             return {
                 "problem_type_id": "compare_point_to_line_distances",

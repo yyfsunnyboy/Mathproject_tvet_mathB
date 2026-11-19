@@ -7,7 +7,7 @@ from typing import Any
 
 PRESENTATION_MODE = "single_choice"
 ANSWER_TYPE = "choice_label"
-PROBLEM_TYPE_ID = "parallel_lines_distance_single_choice"
+PROBLEM_TYPE_ID = "slope_and_point_line_distance_parameter_choice"
 TEXTBOOK_EXAMPLE_ID = 4584
 COMPONENT_ID = "src_4584"
 

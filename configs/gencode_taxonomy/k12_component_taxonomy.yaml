@@ -122,7 +122,9 @@ skills:
     allowed_types:
       - distance_from_point_to_line
       - distance_from_point_to_line_parameter
+      - distance_from_point_to_line_parameter_single_choice_scalar
       - compare_point_to_line_distances
+      - slope_and_point_line_distance_parameter_choice
   vh_數學B1_DistanceBetweenTwoParallelLines:
     fixed_domain_key: coordinate_geometry.parallel_lines_distance
     domain_module: core.domain.coordinate_geometry.parallel_lines_distance_domain
@@ -133,7 +135,6 @@ skills:
       - distance_between_parallel_lines
       - solve_parameter_from_parallel_distance
       - construct_parallel_line_at_distance
-      - parallel_lines_distance_single_choice
       - area_using_parallel_distance
   vh_數學B1_CartesianCoordinateSystemEstablishment:
     fixed_domain_key: coordinate_geometry.line_equation

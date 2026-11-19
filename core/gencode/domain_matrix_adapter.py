@@ -998,6 +998,62 @@ def _build_line_equation_answer_contract(
             "semantic_answer": parts_map,
             "parts": part_rows,
         }
+    if answer_type == "multi_part" and isinstance(semantic_answer, dict):
+        part_rows: list[dict[str, Any]] = []
+        for key, expected in semantic_answer.items():
+            expected_text = str(expected)
+            key_text = str(key)
+            split = _split_numbered_part_key(key_text)
+            group_label = split[0] if split is not None else key_text
+            part_rows.append(
+                {
+                    "key": key_text,
+                    "label": group_label,
+                    "display_label": group_label,
+                    "field_key": key_text,
+                    "group_label": group_label,
+                    "checker": "expression_equivalence_checker",
+                    "checker_key": "expression_equivalence_checker",
+                    "equivalence_type": "radical_equivalence",
+                    "expected_answer": expected_text,
+                    "display_answer": _format_latex_display_answer(
+                        canonicalize_part_display_answer(
+                            {
+                                "checker": "expression_equivalence_checker",
+                                "expected_answer": expected_text,
+                            }
+                        ),
+                        task_type,
+                    ),
+                }
+            )
+        return {
+            "presentation_mode": "short_answer",
+            "answer_type": "multi_part",
+            "answer_shape": "multi_part",
+            "checker": "multi_part_answer_checker",
+            "checker_key": "multi_part_answer_checker",
+            "answer_equivalence": "multi_part_answer",
+            "equivalence_type": "multi_part_answer",
+            "equivalence": "multi_part_answer",
+            "semantic_answer": semantic_answer,
+            "parts": part_rows,
+            "ui_contract": {
+                "response_mode": "multi_part",
+                "text_input_enabled": True,
+            },
+        }
+    if answer_type == "solution_set":
+        return {
+            "presentation_mode": "short_answer",
+            "answer_type": "solution_set",
+            "checker": "solution_set_checker",
+            "checker_key": "solution_set_checker",
+            "answer_equivalence": "unordered_solution_set",
+            "equivalence": "unordered_solution_set",
+            "equivalence_type": "unordered_solution_set",
+            "semantic_answer": semantic_answer,
+        }
     if answer_type == "numeric_or_radical":
         return {
             "presentation_mode": "short_answer",
@@ -1179,8 +1235,18 @@ def convert_line_equation_matrix_to_question_payload(
     assert isinstance(distractors, list)
 
     canonical_raw = answer["canonical_form"]
-    canonical = str(canonical_raw)
-    semantic_answer: Any = canonical_raw
+    presentation_variant = str(
+        givens.get("presentation_variant")
+        or answer.get("presentation_variant")
+        or validation_facts.get("presentation_variant")
+        or ""
+    ).strip().lower()
+    if isinstance(canonical_raw, dict):
+        semantic_answer: Any = canonical_raw
+        canonical = canonicalize_multi_part_display(canonical_raw)
+    else:
+        canonical = str(canonical_raw)
+        semantic_answer = canonical_raw
     question_text = _build_line_equation_question_text(givens, validation_facts)
     mode = str(presentation_mode or "short_answer").strip()
     task_type = str(validation_facts.get("task_type") or validation_facts.get("line_type") or "").strip()
@@ -1252,7 +1318,7 @@ def convert_line_equation_matrix_to_question_payload(
         "area_using_parallel_distance",
     ):
         default_answer_type = "numeric_or_radical"
-    elif task_type == "parallel_lines_distance_single_choice":
+    elif task_type == "slope_and_point_line_distance_parameter_choice":
         default_answer_type = "single_choice"
     else:
         default_answer_type = "expression"
@@ -1274,11 +1340,20 @@ def convert_line_equation_matrix_to_question_payload(
         parts_map = answer.get("parts")
         if isinstance(parts_map, dict):
             semantic_answer = parts_map
-    elif task_type in (
-        "distance_between_parallel_lines",
-        "solve_parameter_from_parallel_distance",
-        "area_using_parallel_distance",
-    ) and mode != "single_choice":
+    elif task_type == "distance_between_parallel_lines" and mode != "single_choice":
+        parts_map = answer.get("parts") if isinstance(answer.get("parts"), dict) else None
+        if presentation_variant in {"multipart", "multi_part", "multi"} or isinstance(parts_map, dict):
+            resolved_answer_type = "multi_part"
+            if isinstance(parts_map, dict):
+                semantic_answer = parts_map
+        else:
+            resolved_answer_type = "numeric_or_radical"
+    elif task_type == "solve_parameter_from_parallel_distance" and mode != "single_choice":
+        if answer.get("solution_set") or givens.get("require_all_solutions") or answer.get("answer_type") == "solution_set":
+            resolved_answer_type = "solution_set"
+        else:
+            resolved_answer_type = "numeric_or_radical"
+    elif task_type == "area_using_parallel_distance" and mode != "single_choice":
         resolved_answer_type = "numeric_or_radical"
 
     math_objects = _infer_math_objects(validation_facts)
@@ -1353,7 +1428,7 @@ def convert_line_equation_matrix_to_question_payload(
             choices, correct_label = _build_choice_options(canonical, distractors, seed_text=canonical)
         payload_answer = correct_label
         payload_correct = correct_label
-        if task_type == "parallel_lines_distance_single_choice":
+        if task_type == "slope_and_point_line_distance_parameter_choice":
             semantic_answer = correct_label
             display_answer = correct_label
         else:
@@ -1458,6 +1533,22 @@ def convert_line_equation_matrix_to_question_payload(
             **ui_contract,
         }
         payload["answer_contract"] = answer_contract
+    elif (
+        task_type == "distance_between_parallel_lines"
+        and str(payload.get("answer_type") or "") == "multi_part"
+        and isinstance(answer_contract.get("parts"), list)
+    ):
+        payload["subquestions"] = _subquestions_from_multi_field_contract(answer_contract)
+        ui_contract = dict(payload.get("ui_contract") or {})
+        ui_contract["response_mode"] = "multi_part"
+        ui_contract["text_input_enabled"] = True
+        payload["ui_contract"] = ui_contract
+        answer_contract = dict(answer_contract)
+        answer_contract["ui_contract"] = {
+            **dict(answer_contract.get("ui_contract") or {}),
+            **ui_contract,
+        }
+        payload["answer_contract"] = answer_contract
     return _apply_line_equation_practice_surface(payload)
 
 
@@ -1541,7 +1632,13 @@ def _format_latex_display_answer(value: str, task_type: str = "") -> str:
 
 def _format_display_answer(value: Any, task_type: str = "", answer_type: str = "") -> Any:
     if str(answer_type or "").strip() == "multi_part" and isinstance(value, dict):
-        return canonicalize_multi_part_display(value)
+        canon = canonicalize_multi_part_display(value)
+        if isinstance(canon, dict):
+            return {
+                str(key): _format_latex_display_answer(str(part_value), task_type)
+                for key, part_value in canon.items()
+            }
+        return canon
     return _format_latex_display_answer(str(value), task_type)
 
 
@@ -1664,10 +1761,10 @@ def _build_line_equation_question_text(
         "distance_from_point_to_line_parameter",
         "distance_from_point_to_line_parameter_single_choice_scalar",
         "compare_point_to_line_distances",
+        "slope_and_point_line_distance_parameter_choice",
         "distance_between_parallel_lines",
         "solve_parameter_from_parallel_distance",
         "construct_parallel_line_at_distance",
-        "parallel_lines_distance_single_choice",
         "area_using_parallel_distance",
     }
 
@@ -1675,6 +1772,52 @@ def _build_line_equation_question_text(
         raise ValueError(f"unsupported_line_equation_task_type:{task_type}")
 
     if task_type == "distance_between_parallel_lines":
+        variant = str(givens.get("presentation_variant") or "").strip().lower()
+        if variant in {"multipart", "multi_part", "multi"}:
+            items = givens.get("items")
+            if not isinstance(items, list) or len(items) < 2:
+                raise ValueError(
+                    "required_line_task_slot_missing:distance_between_parallel_lines:multipart_items"
+                )
+            lines: list[str] = ["試求下列各組平行線之間的距離。"]
+            for index, item in enumerate(items, start=1):
+                if not isinstance(item, dict):
+                    raise ValueError(
+                        "required_line_task_slot_missing:distance_between_parallel_lines:multipart_item"
+                    )
+                line_1 = _format_latex_math_text(item.get("line_1"))
+                line_2 = _format_latex_math_text(item.get("line_2"))
+                if not line_1 or not line_2:
+                    raise ValueError(
+                        "required_line_task_slot_missing:distance_between_parallel_lines:multipart_pair"
+                    )
+                lines.append(
+                    f"({index}) "
+                    f"$\\left\\{{ \\begin{{align}}"
+                    f"& L_{{{2 * index - 1}}}: {line_1} \\\\"
+                    f"& L_{{{2 * index}}}: {line_2} \\\\"
+                    f"\\end{{align}} \\right.$"
+                )
+            return "\n".join(lines)
+        if variant in {"life_context", "context", "word_problem"}:
+            line_1 = _format_latex_math_text(givens.get("line_1") or givens.get("equation_1"))
+            line_2 = _format_latex_math_text(givens.get("line_2") or givens.get("equation_2"))
+            road_a = str(givens.get("road_a") or "").strip()
+            road_b = str(givens.get("road_b") or "").strip()
+            role = str(givens.get("context_role") or "送貨員").strip()
+            city = str(givens.get("context_city") or "").strip()
+            if not line_1 or not line_2 or not road_a or not road_b:
+                raise ValueError(
+                    "required_line_task_slot_missing:distance_between_parallel_lines:life_context"
+                )
+            city_clause = f"{city}的" if city else ""
+            return (
+                f"小陳是個{role}，每天在{city_clause}大街小巷奔波。"
+                f"他發現很多道路採互相平行的方式規劃。"
+                f"假設在坐標平面上，{road_a}與{road_b}的直線方程式分別為"
+                f"$L_1: {line_1}$ 與 $L_2: {line_2}$。"
+                f"若小陳要從{road_a}送到{road_b}，試問兩道路之間的最短距離為何？"
+            )
         line_1 = _format_latex_math_text(givens.get("line_1") or givens.get("equation_1"))
         line_2 = _format_latex_math_text(givens.get("line_2") or givens.get("equation_2"))
         if not line_1 or not line_2:
@@ -1686,12 +1829,18 @@ def _build_line_equation_question_text(
         line_2 = _format_latex_math_text(givens.get("line_2"))
         target_distance = _format_latex_math_text(givens.get("target_distance") or "")
         param_name = givens.get("parameter_name") or "k"
-        parameter_condition = _format_latex_math_text(givens.get("parameter_condition") or "")
+        parameter_condition = str(givens.get("parameter_condition") or "").strip()
         if not line_1 or not line_2:
             raise ValueError("required_line_task_slot_missing:solve_parameter_from_parallel_distance:parallel_line_pair")
+        if parameter_condition:
+            condition_latex = _format_latex_math_text(parameter_condition)
+            return (
+                f"坐標平面上，若兩平行線 ${line_1}$ 與 ${line_2}$ 的距離為 ${target_distance}$，"
+                f"且 ${condition_latex}$，試求 ${param_name}$ 之值。"
+            )
         return (
             f"坐標平面上，若兩平行線 ${line_1}$ 與 ${line_2}$ 的距離為 ${target_distance}$，"
-            f"且 ${parameter_condition}$，試求 ${param_name}$ 之值。"
+            f"試求 ${param_name}$ 之值。"
         )
 
     if task_type == "area_using_parallel_distance":
@@ -1707,13 +1856,16 @@ def _build_line_equation_question_text(
             f"若 $\\overline{{BC}}$ 的長為 ${segment_length}$，試求 {triangle_abc} 的面積。"
         )
 
-    if task_type == "parallel_lines_distance_single_choice":
+    if task_type == "slope_and_point_line_distance_parameter_choice":
         line_expr = _format_latex_math_text(givens.get("line_expression") or "")
         slope = _format_latex_math_text(givens.get("slope") or "")
         origin_distance = _format_latex_math_text(givens.get("origin_distance") or "")
-        a_value = givens.get("a_value")
+        if not line_expr or not slope or not origin_distance:
+            raise ValueError(
+                "required_line_task_slot_missing:slope_and_point_line_distance_parameter_choice:givens"
+            )
         return (
-            f"已知 $a>0$、$k>0$，且本題 $a={a_value}$。若直線 $L: {line_expr}$ 的斜率為 ${slope}$，"
+            f"已知 $k>0$。若直線 $L: {line_expr}$ 的斜率為 ${slope}$，"
             f"且點 $(0,0)$ 到直線 $L$ 的距離為 ${origin_distance}$，則 $a+k=$？"
         )
 
@@ -3435,10 +3587,10 @@ def convert_domain_matrix_to_question_payload(
         "distance_from_point_to_line_parameter",
         "distance_from_point_to_line_parameter_single_choice_scalar",
         "compare_point_to_line_distances",
+        "slope_and_point_line_distance_parameter_choice",
         "distance_between_parallel_lines",
         "solve_parameter_from_parallel_distance",
         "construct_parallel_line_at_distance",
-        "parallel_lines_distance_single_choice",
         "area_using_parallel_distance",
     }:
         return _finalize_question_payload(

@@ -6,7 +6,7 @@ from core.domain.coordinate_geometry.parallel_lines_distance_domain import build
 from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
 
 PRESENTATION_MODE = "short_answer"
-ANSWER_TYPE = "rational"
+ANSWER_TYPE = "solution_set"
 PROBLEM_TYPE_ID = "solve_parameter_from_parallel_distance"
 TEXTBOOK_EXAMPLE_ID = 4571
 
@@ -17,7 +17,7 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         domain_operation="solve_parameter_from_parallel_distance",
         curriculum_profile="vocational_high_b",
         difficulty_profile="easy",
-        constraints={},
+        constraints={"require_all_solutions": True},
     )
     component_id = str(kwargs.get("component_id") or "")
     payload = convert_line_equation_matrix_to_question_payload(
@@ -27,7 +27,7 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
         problem_type_id=PROBLEM_TYPE_ID,
         component_id=component_id or None,
         textbook_example_id=TEXTBOOK_EXAMPLE_ID or None,
-        answer_schema_key="parameter_scalar",
+        answer_schema_key="parameter_solution_set",
         domain_operation="solve_parameter_from_parallel_distance",
     )
     if component_id:

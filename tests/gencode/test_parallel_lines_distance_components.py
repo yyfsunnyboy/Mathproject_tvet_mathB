@@ -8,6 +8,8 @@ import sympy
 from sympy.parsing.sympy_parser import implicit_multiplication_application, parse_expr, standard_transformations
 
 from core.checkers.expression_equivalence_checker import check_expression_equivalence_answer
+from core.checkers.multi_part_answer_checker import check_multi_part_answer
+from core.checkers.solution_set_checker import check_solution_set_answer
 
 
 COMPONENTS = [
@@ -18,11 +20,16 @@ COMPONENTS = [
     "src_4579",
     "src_4580",
     "src_4583",
-    "src_4584",
     "src_4588",
     "src_4589",
     "src_4608",
 ]
+
+MULTIPART_COMPONENTS = {"src_4570", "src_4588"}
+LIFE_CONTEXT_COMPONENTS = {"src_4577"}
+SOLUTION_SET_COMPONENTS = {"src_4571"}
+POSITIVE_K_COMPONENTS = {"src_4580", "src_4589"}
+NEGATIVE_K_COMPONENTS = {"src_4579"}
 
 
 def _skill_component_root() -> Path:
@@ -76,24 +83,47 @@ def _assert_no_bare_sqrt(payload: dict[str, Any]) -> None:
     assert not any("sqrt(" in str(item) for item in visible)
 
 
-def _assert_choice_payload_consistent(payload: dict[str, Any]) -> None:
-    assert payload["answer"] == payload["correct_answer"] == payload["display_answer"] == payload["semantic_answer"]
-    labels = [choice["label"] for choice in payload["choices"]]
-    texts = [choice["text"] for choice in payload["choices"]]
-    assert payload["answer"] in labels
-    assert len(labels) == len(set(labels)) == 4
-    assert len(texts) == len(set(texts)) == 4
-
-
-def _validate_payload(payload: dict[str, Any]) -> None:
+def _validate_payload(payload: dict[str, Any], *, component_id: str) -> None:
     _assert_no_bare_sqrt(payload)
     task_type = payload["problem_type_id"]
     givens = payload["math_core"]["raw_givens"]
+    contract = payload.get("answer_contract") or {}
 
     if task_type == "distance_between_parallel_lines":
-        expected = _distance_between(givens["line_1"], givens["line_2"])
-        assert expected > 0
-        assert check_expression_equivalence_answer(payload["correct_answer"], str(expected))
+        if component_id in MULTIPART_COMPONENTS:
+            assert payload.get("answer_type") == "multi_part"
+            assert str(contract.get("checker") or "") == "multi_part_answer_checker"
+            parts = contract.get("parts") or []
+            assert len(parts) == 2
+            items = givens.get("items") or []
+            assert len(items) == 2
+            stem = str(payload.get("question_text") or "")
+            assert "試求下列各組平行線之間的距離" in stem
+            assert "(1)" in stem and "(2)" in stem
+            semantic = payload.get("semantic_answer")
+            assert isinstance(semantic, dict)
+            for item, part in zip(items, parts):
+                expected = _distance_between(item["line_1"], item["line_2"])
+                assert expected > 0
+                assert check_expression_equivalence_answer(part["expected_answer"], str(expected))
+            ok = check_multi_part_answer(semantic, semantic, answer_contract=contract)
+            assert (ok is True) or (isinstance(ok, dict) and ok.get("is_correct") is True)
+            wrong = dict(semantic)
+            first_key = next(iter(wrong))
+            wrong[first_key] = "0"
+            bad = check_multi_part_answer(wrong, semantic, answer_contract=contract)
+            assert (bad is False) or (isinstance(bad, dict) and bad.get("is_correct") is False)
+        else:
+            expected = _distance_between(givens["line_1"], givens["line_2"])
+            assert expected > 0
+            assert check_expression_equivalence_answer(payload["correct_answer"], str(expected))
+            if component_id in LIFE_CONTEXT_COMPONENTS:
+                stem = str(payload.get("question_text") or "")
+                assert "最短距離" in stem
+                assert givens.get("road_a") and givens.get("road_b")
+                assert str(givens.get("road_a")) in stem
+                assert str(givens.get("road_b")) in stem
+                assert givens["line_1"].replace(" ", "") in stem.replace(" ", "") or "L_1" in stem or "L1" in stem
     elif task_type == "solve_parameter_from_parallel_distance":
         k = sympy.symbols("k", real=True)
         a1, b1, c1 = _line_coefficients(givens["line_1"], local_dict={"k": k})
@@ -102,12 +132,32 @@ def _validate_payload(payload: dict[str, Any]) -> None:
         na2, nb2, nc2 = _normalize(a2, b2, c2)
         assert (na1, nb1) == (na2, nb2)
         distance = _parse_expr(givens["target_distance"])
-        answer = _parse_expr(payload["correct_answer"])
-        equation_value = sympy.simplify(abs(nc1.subs(k, answer) - nc2) / sympy.sqrt(na1**2 + nb1**2))
-        assert sympy.simplify(equation_value - distance) == 0
-        condition = str(givens["parameter_condition"])
-        bound = _parse_expr(condition.split(">", 1)[1] if ">" in condition else condition.split("<", 1)[1])
-        assert (answer > bound) if ">" in condition else (answer < bound)
+        condition = str(givens.get("parameter_condition") or "")
+        if component_id in SOLUTION_SET_COMPONENTS:
+            assert payload.get("answer_type") == "solution_set"
+            assert not condition
+            assert "且 $" not in str(payload.get("question_text") or "")
+            values = givens.get("solution_values") or []
+            assert len(values) == 2
+            for value in values:
+                answer = _parse_expr(value)
+                equation_value = sympy.simplify(abs(nc1.subs(k, answer) - nc2) / sympy.sqrt(na1**2 + nb1**2))
+                assert sympy.simplify(equation_value - distance) == 0
+            assert check_solution_set_answer(payload["correct_answer"], " 或 ".join(values)) is True
+        else:
+            answer = _parse_expr(payload["correct_answer"])
+            equation_value = sympy.simplify(abs(nc1.subs(k, answer) - nc2) / sympy.sqrt(na1**2 + nb1**2))
+            assert sympy.simplify(equation_value - distance) == 0
+            assert condition
+            if component_id in POSITIVE_K_COMPONENTS:
+                assert condition.replace(" ", "") == "k>0"
+                assert answer > 0
+            elif component_id in NEGATIVE_K_COMPONENTS:
+                assert condition.replace(" ", "") == "k<0"
+                assert answer < 0
+            else:
+                bound = _parse_expr(condition.split(">", 1)[1] if ">" in condition else condition.split("<", 1)[1])
+                assert (answer > bound) if ">" in condition else (answer < bound)
     elif task_type == "area_using_parallel_distance":
         a, b, c = _line_coefficients(givens["line"])
         x0, y0 = givens["point_a"]
@@ -115,27 +165,8 @@ def _validate_payload(payload: dict[str, Any]) -> None:
         expected = sympy.simplify(sympy.Rational(givens["segment_length"], 2) * height)
         assert expected > 0
         assert check_expression_equivalence_answer(payload["correct_answer"], str(expected))
-    elif task_type == "parallel_lines_distance_single_choice":
-        _assert_choice_payload_consistent(payload)
-        question = payload["question_text"]
-        a = int(givens["a"])
-        b = int(givens["b"])
-        k = int(givens["k"])
-        slope = sympy.Rational(str(givens["slope"]))
-        distance_squared = sympy.Rational(str(givens["origin_distance_squared"]))
-        solved_a = -slope * b
-        assert solved_a.q == 1
-        assert int(solved_a) == a
-        assert b != 0
-        assert k > 0
-        assert sympy.simplify(distance_squared * (a * a + b * b) - k * k) == 0
-        expected = str(a + k)
-        choice = next(choice for choice in payload["choices"] if choice["label"] == payload["correct_answer"])
-        assert choice["text"] == expected
-        assert "L:" in question
-        assert "a>0" not in question
-        assert "a=" not in question
-        assert "ax+2ay+k=0" not in question
+    else:
+        raise AssertionError(f"unexpected parallel-lines task_type: {task_type}")
 
 
 def test_parallel_lines_distance_components_generate_valid_math() -> None:
@@ -143,4 +174,35 @@ def test_parallel_lines_distance_components_generate_valid_math() -> None:
         module = _load_component(component_id)
         for seed in range(20):
             payload = module.generate(seed=seed, component_id=component_id)
-            _validate_payload(payload)
+            _validate_payload(payload, component_id=component_id)
+
+
+def test_parallel_lines_presentation_variants_are_distinct() -> None:
+    skill_root = next(Path("agent_skills_v3").glob("*DistanceBetweenTwoParallelLines"))
+    spec = importlib.util.spec_from_file_location("parallel_lines_skill", skill_root / "__init__.py")
+    assert spec and spec.loader
+    skill = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(skill)
+
+    single = skill.generate(seed=11, component_id="src_4578")
+    multipart = skill.generate(seed=11, component_id="src_4570")
+    life = skill.generate(seed=11, component_id="src_4577")
+    both = skill.generate(seed=11, component_id="src_4571")
+    pos = skill.generate(seed=11, component_id="src_4580")
+    neg = skill.generate(seed=11, component_id="src_4579")
+
+    assert "試求兩平行線" in str(single.get("question_text") or "")
+    assert "試求下列各組平行線之間的距離" in str(multipart.get("question_text") or "")
+    assert multipart.get("answer_type") == "multi_part"
+    assert "最短距離" in str(life.get("question_text") or "")
+    assert both.get("answer_type") == "solution_set"
+    assert "k > 0" in str(pos.get("question_text") or "") or "k>0" in str(pos.get("question_text") or "").replace(" ", "")
+    assert "k < 0" in str(neg.get("question_text") or "") or "k<0" in str(neg.get("question_text") or "").replace(" ", "")
+    # Same seed must not collapse presentation variants into identical stems.
+    stems = {
+        str(single.get("question_text")),
+        str(multipart.get("question_text")),
+        str(life.get("question_text")),
+        str(both.get("question_text")),
+    }
+    assert len(stems) == 4

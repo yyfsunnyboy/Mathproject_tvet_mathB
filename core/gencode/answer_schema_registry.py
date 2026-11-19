@@ -69,7 +69,7 @@ DOMAIN_OPERATION_ANSWER_SCHEMA: dict[str, str] = {
     "distance_between_parallel_lines": "distance_scalar",
     "solve_parameter_from_parallel_distance": "parameter_scalar",
     "construct_parallel_line_at_distance": "distance_scalar",
-    "parallel_lines_distance_single_choice": "choice_label",
+    "slope_and_point_line_distance_parameter_choice": "choice_label",
     "area_using_parallel_distance": "numeric_scalar",
     "find_parameter_from_point_line_distance": "parameter_scalar",
     "distance_from_point_to_line_parameter": "parameter_scalar",

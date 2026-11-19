@@ -499,7 +499,9 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
         "allowed_types": [
             "distance_from_point_to_line",
             "distance_from_point_to_line_parameter",
+            "distance_from_point_to_line_parameter_single_choice_scalar",
             "compare_point_to_line_distances",
+            "slope_and_point_line_distance_parameter_choice",
         ],
     },
     "vh_數學B1_DistanceBetweenTwoParallelLines": {
@@ -511,7 +513,6 @@ SKILL_TO_DOMAIN: dict[str, dict[str, Any]] = {
             "distance_between_parallel_lines",
             "solve_parameter_from_parallel_distance",
             "construct_parallel_line_at_distance",
-            "parallel_lines_distance_single_choice",
             "area_using_parallel_distance",
         ],
     },

@@ -5892,7 +5892,7 @@ def _v3_template_slot_for_line_type(line_type: str) -> str:
         "line_through_point_perpendicular_to_segment": "line_through_point_perpendicular_to_segment",
         "distance_between_parallel_lines": "distance_between_parallel_lines",
         "solve_parameter_from_parallel_distance": "solve_parameter_from_parallel_distance",
-        "parallel_lines_distance_single_choice": "parallel_lines_distance_single_choice",
+        "slope_and_point_line_distance_parameter_choice": "slope_and_point_line_distance_parameter_choice",
         "area_using_parallel_distance": "area_using_parallel_distance",
     }
     slot = mapping.get(line_type, line_type)
@@ -6369,7 +6369,7 @@ def build_v3_component_draft_from_skill(
             answer_type = "linear_equation"
         elif line_type == "distance_from_point_to_line":
             answer_type = "rational"
-        elif line_type == "parallel_lines_distance_single_choice":
+        elif line_type == "slope_and_point_line_distance_parameter_choice":
             answer_type = "single_choice"
         elif line_type == "area_using_parallel_distance":
             answer_type = "rational"
@@ -6625,7 +6625,7 @@ def build_v3_component_draft_from_skill(
         checker_key = "text_short_checker"
         equivalence_type = "exact_string"
         checker_module = "core.checkers.structured_text_checker"
-    elif line_type == "parallel_lines_distance_single_choice":
+    elif line_type == "slope_and_point_line_distance_parameter_choice":
         checker_key = "choice_label_checker"
         equivalence_type = "choice_label"
         checker_module = "core.checkers.choice_label_checker"

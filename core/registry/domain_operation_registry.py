@@ -377,12 +377,17 @@ register_domain_spec(DomainCapabilitySpec(
     domain_key="coordinate_geometry.point_line_distance",
     domain_module="core.domain.coordinate_geometry.line_equation_domain",
     entrypoint="build_coordinate_geometry_matrix",
-    capabilities=frozenset({"distance_from_point_to_line", "compare_point_to_line_distances"}),
+    capabilities=frozenset({
+        "distance_from_point_to_line",
+        "compare_point_to_line_distances",
+        "slope_and_point_line_distance_parameter_choice",
+    }),
     operations={
         "distance_from_point_to_line":                           _op("distance_from_point_to_line",                           "build_coordinate_geometry_matrix", supported_answer_types=("expression",)),
         "distance_from_point_to_line_parameter":                 _op("distance_from_point_to_line_parameter",                 "build_coordinate_geometry_matrix", supported_answer_types=("expression",)),
         "distance_from_point_to_line_parameter_single_choice_scalar": _op("distance_from_point_to_line_parameter_single_choice_scalar", "build_coordinate_geometry_matrix", supported_answer_types=("choice",)),
         "compare_point_to_line_distances":                       _op("compare_point_to_line_distances",                       "build_coordinate_geometry_matrix", supported_answer_types=("choice",)),
+        "slope_and_point_line_distance_parameter_choice":        _op("slope_and_point_line_distance_parameter_choice",        "build_coordinate_geometry_matrix", supported_answer_types=("choice",)),
     },
 ))
 
@@ -394,13 +399,12 @@ register_domain_spec(DomainCapabilitySpec(
     capabilities=frozenset({
         "distance_between_parallel_lines", "parallel_lines_distance",
         "solve_parameter_from_parallel_distance", "construct_parallel_line_at_distance",
-        "parallel_lines_distance_single_choice", "area_using_parallel_distance",
+        "area_using_parallel_distance",
     }),
     operations={
         "distance_between_parallel_lines":      _op("distance_between_parallel_lines",      "build_parallel_lines_distance_matrix", supported_answer_types=("expression",)),
         "solve_parameter_from_parallel_distance": _op("solve_parameter_from_parallel_distance", "build_parallel_lines_distance_matrix", supported_answer_types=("expression",)),
         "construct_parallel_line_at_distance":  _op("construct_parallel_line_at_distance",  "build_parallel_lines_distance_matrix", supported_answer_types=("expression",)),
-        "parallel_lines_distance_single_choice": _op("parallel_lines_distance_single_choice", "build_parallel_lines_distance_matrix", supported_answer_types=("choice",)),
         "area_using_parallel_distance":         _op("area_using_parallel_distance",         "build_parallel_lines_distance_matrix", supported_answer_types=("expression",)),
     },
 ))

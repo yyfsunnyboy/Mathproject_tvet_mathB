@@ -65,6 +65,7 @@ _SUPPORTED_LINE_TYPES = frozenset(
         "distance_from_point_to_line",
         "distance_from_point_to_line_parameter",
         "distance_from_point_to_line_parameter_single_choice_scalar",
+        "slope_and_point_line_distance_parameter_choice",
         "compare_point_to_line_distances", "graph_intercepts_and_linear_equation",
         "draw_constant_function_graph",
         "draw_linear_function_graph",
@@ -307,6 +308,10 @@ def build_line_equation_matrix(
         )
     elif normalized_type == "distance_from_point_to_line_parameter_single_choice_scalar":
         givens, answer, actual_type = _build_distance_from_point_to_line_parameter_single_choice_scalar(
+            rng, coord_min, coord_max, extra
+        )
+    elif normalized_type == "slope_and_point_line_distance_parameter_choice":
+        givens, answer, actual_type = _build_slope_and_point_line_distance_parameter_choice(
             rng, coord_min, coord_max, extra
         )
     elif normalized_type == "compare_point_to_line_distances":
@@ -3371,6 +3376,96 @@ def _build_distance_from_point_to_line_parameter(
         "value": canonical,
     }
     return givens, answer, "oblique_line"
+
+
+def _build_slope_and_point_line_distance_parameter_choice(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Slope determines a; origin-to-line distance and k>0 determine k; ask a+k."""
+    del coord_min, coord_max, constraints
+    parameter_pool = [
+        (-2, 4, 10),
+        (-3, 6, 15),
+        (-4, 8, 20),
+        (-1, 2, 5),
+        (-6, 4, 10),
+        (-4, 6, 13),
+        (-8, 6, 25),
+        (2, 4, 10),
+        (3, 6, 15),
+        (4, 8, 20),
+        (6, 4, 10),
+        (4, 6, 13),
+        (8, 6, 25),
+        (-5, 12, 13),
+        (5, 12, 13),
+        (-7, 24, 25),
+        (7, 24, 25),
+    ]
+    a, b, k = parameter_pool[rng.randrange(len(parameter_pool))]
+    slope = Fraction(-a, b)
+    norm_sq = a * a + b * b
+    distance = Fraction(k, 1) / Fraction(int(math.isqrt(norm_sq)), 1) if int(math.isqrt(norm_sq)) ** 2 == norm_sq else None
+    if distance is None:
+        # Keep radical form as plain ratio of squares for matrix consumers.
+        origin_distance = f"sqrt({k * k}/{norm_sq})"
+        origin_distance_squared = fraction_to_plain(Fraction(k * k, norm_sq))
+    else:
+        origin_distance = fraction_to_plain(distance)
+        origin_distance_squared = fraction_to_plain(distance * distance)
+    if b == 1:
+        line_expression = "ax+y+k=0"
+    elif b == -1:
+        line_expression = "ax-y+k=0"
+    elif b > 0:
+        line_expression = f"ax+{b}y+k=0"
+    else:
+        line_expression = f"ax{b}y+k=0"
+    correct_value = a + k
+    distractors = {
+        correct_value - 4,
+        correct_value - 2,
+        correct_value + 2,
+        correct_value + 4,
+        correct_value + 6,
+        abs(correct_value),
+    }
+    distractors.discard(correct_value)
+    while len(distractors) < 3:
+        distractors.add(correct_value + rng.choice([-10, -8, -6, 6, 8, 10]))
+        distractors.discard(correct_value)
+    values = [correct_value] + sorted(distractors, key=lambda x: (abs(x - correct_value), x))[:3]
+    rng.shuffle(values)
+    labels = ["A", "B", "C", "D"]
+    choice_rows = [{"label": label, "text": str(value)} for label, value in zip(labels, values)]
+    correct_label = next(row["label"] for row in choice_rows if int(row["text"]) == correct_value)
+    givens = {
+        "line_expression": line_expression,
+        "slope": fraction_to_plain(slope),
+        "origin_distance": origin_distance,
+        "origin_distance_squared": origin_distance_squared,
+        "parameter_name": "k",
+        "a": a,
+        "b": b,
+        "k": k,
+        "choices": choice_rows,
+    }
+    answer = {
+        "canonical_form": correct_label,
+        "general_form": correct_label,
+        "coefficients": {"A": a, "B": b, "C": k},
+        "distance": origin_distance,
+        "parameter": str(k),
+        "parameter_name": "k",
+        "sum_a_plus_k": str(correct_value),
+        "correct_label": correct_label,
+        "choices": choice_rows,
+        "value": correct_label,
+    }
+    return givens, answer, "slope_and_point_line_distance_parameter_choice"
 
 
 def _build_distance_from_point_to_line_parameter_single_choice_scalar(

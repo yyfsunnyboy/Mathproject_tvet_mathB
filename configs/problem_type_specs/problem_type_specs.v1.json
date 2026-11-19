@@ -610,9 +610,9 @@
       }
     },
     {
-      "problem_type_id": "parallel_lines_distance_single_choice",
-      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
-      "display_name": "parallel-line distance parameter single choice",
+      "problem_type_id": "slope_and_point_line_distance_parameter_choice",
+      "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+      "display_name": "slope and point-to-line distance parameter choice",
       "answer_contract": {
         "answer_type": "single_choice",
         "choices_required": true,
@@ -647,7 +647,8 @@
       },
       "semantic_contract": {
         "reasoning_type": [
-          "distance_formula",
+          "slope_formula",
+          "point_line_distance_formula",
           "choice_elimination"
         ],
         "reject_if": [
@@ -658,7 +659,7 @@
       },
       "generator_contract": {
         "template_slots": {
-          "stem": "parallel_lines_distance_single_choice"
+          "stem": "slope_and_point_line_distance_parameter_choice"
         },
         "derivation_steps_required": true,
         "use_domain_functions": true,
