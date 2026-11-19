@@ -877,14 +877,79 @@ def _build_line_equation_answer_contract(
             "semantic_answer": semantic_answer,
         }
     if task_type == "slope_intercept_read_slope_and_intercept":
+        parts_map = semantic_answer if isinstance(semantic_answer, dict) else {}
+        m_expected = parts_map.get("m")
+        b_expected = parts_map.get("b")
+        if m_expected is None and isinstance(semantic_answer, dict):
+            m_expected = semantic_answer.get("slope")
+        if b_expected is None and isinstance(semantic_answer, dict):
+            b_expected = semantic_answer.get("intercept") or semantic_answer.get("y_intercept")
+        m_text = str(m_expected if m_expected is not None else "")
+        b_text = str(b_expected if b_expected is not None else "")
+        structured = {"m": m_text, "b": b_text}
+        m_label = _student_facing_part_label(
+            "m",
+            explicit="斜率 $m$",
+            domain_operation=task_type,
+        )
+        b_label = _student_facing_part_label(
+            "b",
+            explicit="$y$ 截距",
+            domain_operation=task_type,
+        )
         return {
             "presentation_mode": "short_answer",
-            "answer_type": "text_short",
-            "checker": "text_short_checker",
-            "checker_key": "text_short_checker",
-            "answer_equivalence": "exact_string",
-            "equivalence": "exact_string",
-            "semantic_answer": semantic_answer,
+            "answer_type": "multi_part",
+            "answer_shape": "multi_part",
+            "checker": "multi_part_answer_checker",
+            "checker_key": "multi_part_answer_checker",
+            "answer_equivalence": "multi_part_answer",
+            "equivalence_type": "multi_part_answer",
+            "equivalence": "multi_part_answer",
+            "semantic_answer": structured,
+            "parts": [
+                {
+                    "key": "m",
+                    "label": m_label,
+                    "display_label": m_label,
+                    "field_key": "m",
+                    "group_label": "",
+                    "input_type": "text",
+                    "choices": [],
+                    "checker": "rational_checker",
+                    "equivalence_type": "rational_equivalent",
+                    "expected_answer": m_text,
+                    "display_answer": canonicalize_part_display_answer(
+                        {
+                            "checker": "rational_checker",
+                            "expected_answer": m_text,
+                        }
+                    ),
+                },
+                {
+                    "key": "b",
+                    "label": b_label,
+                    "display_label": b_label,
+                    "field_key": "b",
+                    "group_label": "",
+                    "input_type": "text",
+                    "choices": [],
+                    "checker": "rational_checker",
+                    "equivalence_type": "rational_equivalent",
+                    "expected_answer": b_text,
+                    "display_answer": canonicalize_part_display_answer(
+                        {
+                            "checker": "rational_checker",
+                            "expected_answer": b_text,
+                        }
+                    ),
+                },
+            ],
+            "ui_contract": {
+                "response_mode": "multi_part",
+                "text_input_enabled": True,
+                "compact_answer_strip": True,
+            },
         }
     if task_type == "intercept_form_triangle_area":
         return {
@@ -971,6 +1036,16 @@ def _build_line_equation_answer_contract(
                 group_label = ""
                 choices = []
             fig_label = _figure_slot_display_label(key_text)
+            display_answer = (
+                expected_text
+                if checker == "expression_equivalence_checker"
+                else canonicalize_part_display_answer(
+                    {
+                        "checker": "rational_checker",
+                        "expected_answer": expected_text,
+                    }
+                )
+            )
             part_rows.append(
                 {
                     "key": key,
@@ -983,7 +1058,7 @@ def _build_line_equation_answer_contract(
                     "checker": checker,
                     "equivalence_type": equiv,
                     "expected_answer": expected_text,
-                    "display_answer": expected_text,
+                    "display_answer": display_answer,
                 }
             )
         return {
@@ -1304,7 +1379,7 @@ def convert_line_equation_matrix_to_question_payload(
     elif task_type == "slope_intercept_find_x_intercept":
         default_answer_type = "rational"
     elif task_type == "slope_intercept_read_slope_and_intercept":
-        default_answer_type = "text_short"
+        default_answer_type = "multi_part"
     elif task_type == "distance_from_point_to_line":
         default_answer_type = "rational"
     elif task_type in (
@@ -1326,7 +1401,15 @@ def convert_line_equation_matrix_to_question_payload(
     if task_type == "slope_intercept_find_x_intercept" and mode != "single_choice":
         resolved_answer_type = "rational"
     elif task_type == "slope_intercept_read_slope_and_intercept" and mode != "single_choice":
-        resolved_answer_type = "text_short"
+        resolved_answer_type = "multi_part"
+        parts_map = answer.get("parts") if isinstance(answer.get("parts"), dict) else None
+        if isinstance(parts_map, dict) and parts_map:
+            semantic_answer = parts_map
+        else:
+            semantic_answer = {
+                "m": str(answer.get("slope") or ""),
+                "b": str(answer.get("intercept") or ""),
+            }
     elif task_type == "intercept_form_triangle_area" and mode != "single_choice":
         resolved_answer_type = "rational"
     elif task_type == "intercept_form_equation_and_triangle_area":
@@ -1463,6 +1546,17 @@ def convert_line_equation_matrix_to_question_payload(
             domain_operation=str(domain_operation or task_type or ""),
             label_context={"question_text": question_text, "question": question_text},
         )
+        part_labels = answer.get("part_labels") if isinstance(answer.get("part_labels"), dict) else {}
+        if part_labels:
+            for row in answer_contract["parts"]:
+                if not isinstance(row, dict):
+                    continue
+                key_text = str(row.get("key") or row.get("field_key") or "")
+                label_text = str(part_labels.get(key_text) or "").strip()
+                if not label_text:
+                    continue
+                row["label"] = label_text
+                row["display_label"] = label_text
 
     # Merge comparison-specific fields into the contract for compare_point_to_line_distances.
     # This populates target_direction, closer_line, farther_line, comparison_relation,

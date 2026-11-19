@@ -15,17 +15,17 @@ TARGET_TASK: Final[str] = "slope_intercept_read_slope_and_intercept"
 TEMPLATE_SLOT: Final[str] = "slope_intercept_read_slope_and_intercept"
 PROBLEM_TYPE_ID: Final[str] = "slope_intercept_read_slope_and_intercept"
 PRESENTATION_MODE: Final[str] = "short_answer"
-ANSWER_TYPE: Final[str] = "text_short"
+ANSWER_TYPE: Final[str] = "multi_part"
 
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "core.domain.coordinate_geometry.line_equation_domain.build_line_equation_matrix",
 )
 
 ANSWER_VERIFICATION_TYPE: Final[dict[str, str]] = {
-    "checker_key": "text_short_checker",
-    "equivalence_type": "exact_string",
-    "answer_type": "text_short",
-    "module": "core.checkers.structured_text_checker",
+    "checker_key": "multi_part_answer_checker",
+    "equivalence_type": "multi_part_answer",
+    "answer_type": "multi_part",
+    "module": "core.checkers.multi_part_answer_checker",
 }
 
 GENERATOR_READINESS: Final[str] = "draft"

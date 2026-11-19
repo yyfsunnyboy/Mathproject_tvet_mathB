@@ -6,7 +6,7 @@ from core.domain.coordinate_geometry.line_equation_domain import build_line_equa
 from core.gencode.domain_matrix_adapter import convert_line_equation_matrix_to_question_payload
 
 PRESENTATION_MODE = "short_answer"
-ANSWER_TYPE = "text_short"
+ANSWER_TYPE = "multi_part"
 PROBLEM_TYPE_ID = "slope_intercept_read_slope_and_intercept"
 TEXTBOOK_EXAMPLE_ID = 4603
 

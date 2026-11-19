@@ -1,27 +1,53 @@
 (function (global) {
   "use strict";
 
-  function appendText(parent, tag, text, className) {
+  function appendText(parent, tag, text, className, mathDisplay) {
     if (text === undefined || text === null || text === "") return null;
     const node = document.createElement(tag);
     if (className) node.className = className;
     node.textContent = String(text);
+    if (mathDisplay) node.setAttribute("data-math-display", mathDisplay);
     parent.appendChild(node);
     return node;
   }
 
   async function typeset(node) {
-    if (!global.MathJax) return;
-    if (typeof global.MathJax.typesetPromise === "function") {
-      await global.MathJax.typesetPromise([node]);
-    } else if (typeof global.MathJax.typeset === "function") {
-      global.MathJax.typeset([node]);
+    if (!node) return;
+    const normalizer = global.MathDisplayNormalizer;
+    if (normalizer && typeof normalizer.typesetMathDisplay === "function") {
+      await normalizer.typesetMathDisplay(node);
+      return;
+    }
+    // Fallback: wait for async MathJax startup. window.MathJax exists as a
+    // config object before tex-svg.js finishes loading, so typesetPromise may
+    // be missing on first paint (raw \(...\) / \frac visible on iPad Safari).
+    const mathJax = await new Promise((resolve) => {
+      let tries = 0;
+      (function poll() {
+        const mj = global.MathJax;
+        if (mj && mj.startup && mj.startup.promise) {
+          mj.startup.promise.then(() => resolve(mj), () => resolve(null));
+        } else if (tries++ < 200) {
+          setTimeout(poll, 50);
+        } else {
+          resolve(mj && mj.typesetPromise ? mj : null);
+        }
+      })();
+    });
+    if (!mathJax) return;
+    if (typeof mathJax.typesetPromise === "function") {
+      await mathJax.typesetPromise([node]);
+    } else if (typeof mathJax.typeset === "function") {
+      mathJax.typeset([node]);
     }
   }
 
   function mathText(value) {
     const text = String(value == null ? "" : value);
-    if (global.MathDisplayNormalizer) {
+    if (global.MathDisplayNormalizer && typeof global.MathDisplayNormalizer.normalizeAnswerText === "function") {
+      return global.MathDisplayNormalizer.normalizeAnswerText(text);
+    }
+    if (global.MathDisplayNormalizer && typeof global.MathDisplayNormalizer.normalizeMathText === "function") {
       return global.MathDisplayNormalizer.normalizeMathText(text, { mathContext: true });
     }
     const alreadyDelimited = /(?:\\\(|\\\[|\$\$|\$)/.test(text);
@@ -53,13 +79,19 @@
     if (!display || typeof display !== "object") return false;
     appendText(root, "div", "正確答案：", "correct-answer-title");
     if (display.answer_type === "single_choice") {
-      appendText(root, "div", `${display.label || "正確選項"}：${mathText(display.option_text || "")}`, "correct-answer-value");
+      appendText(
+        root,
+        "div",
+        `${display.label || "正確選項"}：${mathText(display.option_text || "")}`,
+        "correct-answer-value",
+        "answer"
+      );
     } else if (Array.isArray(display.items)) {
       const list = document.createElement("dl");
       list.className = "correct-answer-items";
       display.items.forEach((item, index) => {
         appendText(list, "dt", itemLabel(item, index), "correct-answer-item-label");
-        appendText(list, "dd", mathText(item.value), "correct-answer-item-value");
+        appendText(list, "dd", mathText(item.value), "correct-answer-item-value", "answer");
       });
       root.appendChild(list);
     } else if (display.answer_type === "drawing") {
@@ -77,7 +109,7 @@
         root.appendChild(list);
       });
     } else {
-      appendText(root, "div", mathText(display.value), "correct-answer-value");
+      appendText(root, "div", mathText(display.value), "correct-answer-value", "answer");
     }
     return true;
   }

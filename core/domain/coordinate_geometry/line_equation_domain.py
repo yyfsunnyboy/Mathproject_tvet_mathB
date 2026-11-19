@@ -619,17 +619,38 @@ def _build_slope_intercept_read_slope_and_intercept(
     coord_max: int,
     constraints: dict[str, object],
 ) -> tuple[dict[str, object], dict[str, object], str]:
-    _ = constraints
-    slope = _pick_nonzero_slope_intercept_slope(rng)
-    y_intercept = _pick_slope_intercept_b(rng, coord_min, coord_max)
+    raw_slope = constraints.get("slope")
+    if raw_slope is not None:
+        slope = _parse_fraction(raw_slope)
+        if slope == 0:
+            slope = Fraction(1, 1)
+    else:
+        slope = _pick_nonzero_slope_intercept_slope(rng)
+    raw_b = (
+        constraints.get("y_intercept")
+        if constraints.get("y_intercept") is not None
+        else constraints.get("intercept")
+        if constraints.get("intercept") is not None
+        else constraints.get("b")
+    )
+    if raw_b is not None:
+        y_intercept = _parse_fraction(raw_b)
+    else:
+        y_intercept = _pick_slope_intercept_b(rng, coord_min, coord_max)
     answer, _ = _line_from_slope_intercept(slope, y_intercept)
     answer = dict(answer)
-    answer["canonical_form"] = (
-        f"m = {_format_number(slope)}, b = {_format_number(y_intercept)}"
-    )
+    m_text = _format_number(slope)
+    b_text = _format_number(y_intercept)
+    # Structured multipart contract: slope (m) and y-intercept (b) are separate
+    # rational fields. Keep the legacy combined string only as a display summary.
+    answer["parts"] = {"m": m_text, "b": b_text}
+    answer["part_labels"] = {"m": "斜率 $m$", "b": "$y$ 截距"}
+    answer["canonical_form"] = f"m = {m_text}, b = {b_text}"
     answer["line_equation"] = _format_slope_intercept(slope, y_intercept)
     givens: dict[str, object] = {
         "equation": answer["line_equation"],
+        "slope": m_text,
+        "y_intercept": b_text,
     }
     return givens, answer, "slope_intercept_read_slope_and_intercept"
 
@@ -2501,84 +2522,197 @@ def _build_collinear_three_points_parameter_choice(
     return givens, answer, actual_type
 
 
-def _build_slopes_of_named_segments(
+def _slope_kind_token(slope: Fraction | str) -> str:
+    if isinstance(slope, str):
+        return "vertical"
+    if slope == 0:
+        return "horizontal"
+    if slope > 0:
+        return "oblique_pos"
+    return "oblique_neg"
+
+
+def _random_distinct_named_points(
     rng: random.Random,
+    labels: list[str],
     coord_min: int,
     coord_max: int,
-    constraints: dict[str, object],
-) -> tuple[dict[str, object], dict[str, object], str]:
-    """Compute slopes of multiple named segments (shared by 4519/4533-style items)."""
-    segment_count = int(constraints.get("segment_count") or 4)
-    kinds = list(
-        constraints.get("segment_kinds")
-        or ["oblique_neg", "oblique_pos", "horizontal", "vertical"]
-    )
-    while len(kinds) < segment_count:
-        kinds.append(rng.choice(["oblique_pos", "oblique_neg", "horizontal", "vertical"]))
-    kinds = kinds[:segment_count]
-
+) -> dict[str, list[int]]:
     points: dict[str, list[int]] = {}
-    labels = [chr(ord("A") + i) for i in range(max(6, segment_count + 2))]
-    # Shared pool of points; generate distinct points then wire segments.
+    used: set[tuple[int, int]] = set()
     for label in labels:
-        points[label] = [rng.randint(coord_min, coord_max), rng.randint(coord_min, coord_max)]
+        for _ in range(80):
+            xy = (rng.randint(coord_min, coord_max), rng.randint(coord_min, coord_max))
+            if xy in used:
+                continue
+            used.add(xy)
+            points[label] = [xy[0], xy[1]]
+            break
+        else:
+            points[label] = [rng.randint(coord_min, coord_max), rng.randint(coord_min, coord_max)]
+    return points
 
+
+def _parse_fixed_named_segments(
+    constraints: dict[str, object],
+) -> tuple[dict[str, list[int]], list[tuple[str, str]]] | None:
+    raw_points = constraints.get("fixed_points")
+    raw_segments = constraints.get("fixed_segments")
+    if not isinstance(raw_points, dict) or not isinstance(raw_segments, (list, tuple)):
+        return None
+    points: dict[str, list[int]] = {}
+    for label, coords in raw_points.items():
+        if not isinstance(coords, (list, tuple)) or len(coords) < 2:
+            return None
+        points[str(label)] = [int(coords[0]), int(coords[1])]
+    pairs: list[tuple[str, str]] = []
+    for item in raw_segments:
+        if isinstance(item, str) and len(item) >= 2:
+            pairs.append((item[0], item[1]))
+        elif isinstance(item, (list, tuple)) and len(item) >= 2:
+            pairs.append((str(item[0]), str(item[1])))
+        else:
+            return None
+        a_lbl, b_lbl = pairs[-1]
+        if a_lbl not in points or b_lbl not in points:
+            return None
+    if not pairs:
+        return None
+    return points, pairs
+
+
+def _place_endpoint_for_kind(
+    rng: random.Random,
+    base: list[int],
+    kind: str,
+    coord_min: int,
+    coord_max: int,
+    occupied: set[tuple[int, int]],
+) -> list[int] | None:
+    bx, by = int(base[0]), int(base[1])
+    for _ in range(60):
+        if kind == "vertical":
+            y2 = rng.randint(coord_min, coord_max)
+            while y2 == by:
+                y2 = rng.randint(coord_min, coord_max)
+            candidate = [bx, y2]
+        elif kind == "horizontal":
+            x2 = rng.randint(coord_min, coord_max)
+            while x2 == bx:
+                x2 = rng.randint(coord_min, coord_max)
+            candidate = [x2, by]
+        else:
+            run = rng.randint(1, 4)
+            rise = rng.randint(1, 4)
+            if kind == "oblique_neg":
+                rise = -rise
+            if rng.random() < 0.5:
+                run = -run
+                rise = -rise
+            candidate = [bx + run, by + rise]
+        x2, y2 = candidate
+        if not (coord_min <= x2 <= coord_max and coord_min <= y2 <= coord_max):
+            continue
+        if (x2, y2) in occupied or (x2, y2) == (bx, by):
+            continue
+        realized = _slope_between_points(bx, by, x2, y2)
+        if _slope_kind_token(realized) != kind:
+            continue
+        return candidate
+    return None
+
+
+def _build_named_segments_tree_fallback(
+    rng: random.Random,
+    kinds: list[str],
+    coord_min: int,
+    coord_max: int,
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Guarantee requested kinds by growing a shared-endpoint tree (no overwrites)."""
+    labels = [chr(ord("A") + i) for i in range(12)]
+    points: dict[str, list[int]] = {}
+    pairs: list[tuple[str, str]] = []
+    occupied: set[tuple[int, int]] = set()
+    next_label = 0
+
+    def _alloc_label() -> str:
+        nonlocal next_label
+        label = labels[next_label]
+        next_label += 1
+        return label
+
+    for attempt in range(40):
+        points = {}
+        pairs = []
+        occupied = set()
+        next_label = 0
+        a_lbl = _alloc_label()
+        b_lbl = _alloc_label()
+        anchor = [rng.randint(coord_min, coord_max), rng.randint(coord_min, coord_max)]
+        points[a_lbl] = anchor
+        occupied.add((anchor[0], anchor[1]))
+        other = _place_endpoint_for_kind(rng, anchor, kinds[0], coord_min, coord_max, occupied)
+        if other is None:
+            continue
+        points[b_lbl] = other
+        occupied.add((other[0], other[1]))
+        pairs.append((a_lbl, b_lbl))
+        ok = True
+        for kind in kinds[1:]:
+            shared_lbl = rng.choice(list(points.keys()))
+            new_lbl = _alloc_label()
+            placed = _place_endpoint_for_kind(
+                rng, points[shared_lbl], kind, coord_min, coord_max, occupied
+            )
+            if placed is None:
+                ok = False
+                break
+            points[new_lbl] = placed
+            occupied.add((placed[0], placed[1]))
+            pairs.append((shared_lbl, new_lbl))
+        if ok:
+            return _finalize_named_segment_slopes(points, pairs, coord_min, coord_max)
+    # Absolute last resort: independent segments (still two-phase finalize).
+    points = {}
+    pairs = []
+    occupied = set()
+    next_label = 0
+    for kind in kinds:
+        a_lbl = _alloc_label()
+        b_lbl = _alloc_label()
+        for _ in range(40):
+            a_pt = [rng.randint(coord_min, coord_max), rng.randint(coord_min, coord_max)]
+            if tuple(a_pt) in occupied:
+                continue
+            b_pt = _place_endpoint_for_kind(rng, a_pt, kind, coord_min, coord_max, occupied | {tuple(a_pt)})
+            if b_pt is None:
+                continue
+            points[a_lbl] = a_pt
+            points[b_lbl] = b_pt
+            occupied.add(tuple(a_pt))
+            occupied.add(tuple(b_pt))
+            pairs.append((a_lbl, b_lbl))
+            break
+    return _finalize_named_segment_slopes(points, pairs, coord_min, coord_max)
+
+
+def _finalize_named_segment_slopes(
+    points: dict[str, list[int]],
+    pairs: list[tuple[str, str]],
+    coord_min: int,
+    coord_max: int,
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Phase 2: compute every slope from the same frozen final coordinates."""
     segments: list[dict[str, object]] = []
     part_answers: dict[str, str] = {}
     segment_answers: dict[str, str] = {}
     ordered_values: list[str] = []
-    used_pairs: set[tuple[str, str]] = set()
+    part_labels: dict[str, str] = {}
 
-    def _fresh_pair() -> tuple[str, str]:
-        for _ in range(40):
-            a_lbl = rng.choice(labels[:6])
-            b_lbl = rng.choice(labels[:6])
-            if a_lbl == b_lbl:
-                continue
-            key = (a_lbl, b_lbl)
-            if key in used_pairs or (b_lbl, a_lbl) in used_pairs:
-                continue
-            used_pairs.add(key)
-            return a_lbl, b_lbl
-        return "A", "B"
-
-    for idx, kind in enumerate(kinds):
-        a_lbl, b_lbl = _fresh_pair()
-        if kind == "vertical":
-            x0 = rng.randint(coord_min, coord_max)
-            y1 = rng.randint(coord_min, coord_max)
-            y2 = rng.randint(coord_min, coord_max)
-            while y2 == y1:
-                y2 = rng.randint(coord_min, coord_max)
-            points[a_lbl] = [x0, y1]
-            points[b_lbl] = [x0, y2]
-        elif kind == "horizontal":
-            y0 = rng.randint(coord_min, coord_max)
-            x1 = rng.randint(coord_min, coord_max)
-            x2 = rng.randint(coord_min, coord_max)
-            while x2 == x1:
-                x2 = rng.randint(coord_min, coord_max)
-            points[a_lbl] = [x1, y0]
-            points[b_lbl] = [x2, y0]
-        elif kind == "oblique_neg":
-            x1 = rng.randint(coord_min, coord_max - 1)
-            y1 = rng.randint(coord_min + 1, coord_max)
-            run = rng.randint(1, 4)
-            rise = -rng.randint(1, 4)
-            points[a_lbl] = [x1, y1]
-            points[b_lbl] = [x1 + run, y1 + rise]
-        else:
-            x1 = rng.randint(coord_min, coord_max - 1)
-            y1 = rng.randint(coord_min, coord_max - 1)
-            run = rng.randint(1, 4)
-            rise = rng.randint(1, 4)
-            points[a_lbl] = [x1, y1]
-            points[b_lbl] = [x1 + run, y1 + rise]
-
-        x1, y1 = points[a_lbl]
-        x2, y2 = points[b_lbl]
-        slope = _slope_between_points(x1, y1, x2, y2)
-        slope_text = _format_slope_answer(slope)
+    for idx, (a_lbl, b_lbl) in enumerate(pairs):
+        x1, y1 = int(points[a_lbl][0]), int(points[a_lbl][1])
+        x2, y2 = int(points[b_lbl][0]), int(points[b_lbl][1])
+        slope_text = _format_slope_answer(_slope_between_points(x1, y1, x2, y2))
         seg_name = f"{a_lbl}{b_lbl}"
         part_key = f"part_{idx + 1}"
         segments.append(
@@ -2593,6 +2727,7 @@ def _build_slopes_of_named_segments(
             }
         )
         part_answers[part_key] = slope_text
+        part_labels[part_key] = f"（{idx + 1}）{seg_name}"
         segment_answers[seg_name] = slope_text
         ordered_values.append(slope_text)
 
@@ -2601,16 +2736,25 @@ def _build_slopes_of_named_segments(
         int(first[0][0]), int(first[0][1]), int(first[1][0]), int(first[1][1])
     )
     used_labels = sorted({s["from"] for s in segments} | {s["to"] for s in segments})
+    frozen_points = {lbl: [int(points[lbl][0]), int(points[lbl][1])] for lbl in used_labels}
     givens = {
-        "points": {lbl: points[lbl] for lbl in used_labels},
+        "points": frozen_points,
         "segments": [
-            {"name": s["name"], "from": s["from"], "to": s["to"], "points": s["points"]}
+            {
+                "name": s["name"],
+                "from": s["from"],
+                "to": s["to"],
+                "points": [
+                    list(frozen_points[str(s["from"])]),
+                    list(frozen_points[str(s["to"])]),
+                ],
+            }
             for s in segments
         ],
         "visual_spec_override": {
             "kind": "coordinate_plane_segments",
             "points": [
-                {"x": int(points[lbl][0]), "y": int(points[lbl][1]), "label": lbl}
+                {"x": int(frozen_points[lbl][0]), "y": int(frozen_points[lbl][1]), "label": lbl}
                 for lbl in used_labels
             ],
             "lines": [
@@ -2628,6 +2772,7 @@ def _build_slopes_of_named_segments(
     answer = {
         "canonical_form": "；".join(ordered_values),
         "parts": part_answers,
+        "part_labels": part_labels,
         "segment_slopes": segment_answers,
         "slopes": ordered_values,
         "coefficients": {"A": coeffs[0], "B": coeffs[1], "C": coeffs[2]},
@@ -2636,6 +2781,89 @@ def _build_slopes_of_named_segments(
         "distractors": ["0", "1", "-1", "不存在", "2", "-2"],
     }
     return givens, answer, "oblique_line"
+
+
+def _build_slopes_of_named_segments(
+    rng: random.Random,
+    coord_min: int,
+    coord_max: int,
+    constraints: dict[str, object],
+) -> tuple[dict[str, object], dict[str, object], str]:
+    """Compute slopes of multiple named segments (shared by 4519/4533-style items).
+
+    Two-phase design:
+    1. Freeze all point coordinates and segment endpoint relations first.
+    2. Compute every slope only from that frozen coordinate set.
+    Shared endpoints are preserved; coordinates are never rewritten after slopes
+    (or stem/visual) are derived.
+    """
+    fixed = _parse_fixed_named_segments(constraints)
+    if fixed is not None:
+        return _finalize_named_segment_slopes(fixed[0], fixed[1], coord_min, coord_max)
+
+    segment_count = int(constraints.get("segment_count") or 4)
+    kinds = list(
+        constraints.get("segment_kinds")
+        or ["oblique_neg", "oblique_pos", "horizontal", "vertical"]
+    )
+    while len(kinds) < segment_count:
+        kinds.append(rng.choice(["oblique_pos", "oblique_neg", "horizontal", "vertical"]))
+    kinds = kinds[:segment_count]
+
+    labels = [chr(ord("A") + i) for i in range(max(6, segment_count + 2))]
+
+    for _ in range(160):
+        # Phase 1: freeze coordinates, then select pairs whose realized kinds match.
+        points = _random_distinct_named_points(rng, labels, coord_min, coord_max)
+        buckets: dict[str, list[tuple[str, str]]] = {
+            "oblique_pos": [],
+            "oblique_neg": [],
+            "horizontal": [],
+            "vertical": [],
+        }
+        for i, a_lbl in enumerate(labels):
+            for b_lbl in labels[i + 1 :]:
+                slope = _slope_between_points(
+                    points[a_lbl][0], points[a_lbl][1], points[b_lbl][0], points[b_lbl][1]
+                )
+                buckets[_slope_kind_token(slope)].append((a_lbl, b_lbl))
+
+        selected: list[tuple[str, str]] = []
+        used_pairs: set[tuple[str, str]] = set()
+        used_points: set[str] = set()
+        ok = True
+        for kind in kinds:
+            candidates = [
+                pair
+                for pair in buckets.get(kind, [])
+                if pair not in used_pairs and (pair[1], pair[0]) not in used_pairs
+            ]
+            if not candidates:
+                ok = False
+                break
+            shared = [
+                pair
+                for pair in candidates
+                if pair[0] in used_points or pair[1] in used_points
+            ]
+            pool = shared if shared else candidates
+            choice = rng.choice(pool)
+            used_pairs.add(choice)
+            used_points.update(choice)
+            selected.append(choice)
+        if not ok:
+            continue
+        # Keep textbook-style shared endpoints whenever possible.
+        if segment_count >= 2:
+            freq: dict[str, int] = {}
+            for a_lbl, b_lbl in selected:
+                freq[a_lbl] = freq.get(a_lbl, 0) + 1
+                freq[b_lbl] = freq.get(b_lbl, 0) + 1
+            if max(freq.values()) < 2:
+                continue
+        return _finalize_named_segment_slopes(points, selected, coord_min, coord_max)
+
+    return _build_named_segments_tree_fallback(rng, kinds, coord_min, coord_max)
 
 
 def _line_through_origin_points(slope: Fraction, span: int = 3) -> list[list[float]]:

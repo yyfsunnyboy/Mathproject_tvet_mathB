@@ -74,17 +74,18 @@ def test_slope_intercept_read_slope_and_intercept_short_answer_contract():
     payload = convert_line_equation_matrix_to_question_payload(
         matrix,
         presentation_mode="short_answer",
-        answer_type="text_short",
+        answer_type="multi_part",
         problem_type_id="slope_intercept_read_slope_and_intercept",
     )
 
     assert payload["presentation_mode"] == "short_answer"
     assert payload["choices"] == []
     assert payload["answer"] == payload["correct_answer"]
-    assert payload["semantic_answer"] == payload["answer"]
-    assert payload["display_answer"].startswith("\\(")
+    assert payload["semantic_answer"] == payload["answer"] == {"m": "3/2", "b": "-4"}
+    assert isinstance(payload["display_answer"], dict)
     assert "/" not in payload["question_text"]
-    assert payload["answer_contract"]["checker"] == "text_short_checker"
+    assert payload["answer_contract"]["checker"] == "multi_part_answer_checker"
+    assert [row["key"] for row in payload["answer_contract"]["parts"]] == ["m", "b"]
 
 
 def test_slope_intercept_components_vary_by_seed():
