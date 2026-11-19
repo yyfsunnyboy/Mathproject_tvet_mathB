@@ -88,6 +88,17 @@ but does not count as completed chapter coverage.
 Coverage must preserve the source problem's core reasoning topology,
 not merely its broad mathematical topic.
 
+Core Problem Type and teaching Presentation Variant are distinct.
+Shared Domain operations are allowed; unconstrained identical builders that erase
+source-required differences (multipart, required parameter conditions, modeling
+context, answer topology, required table/figure/unit/geometry) are a fidelity gap.
+Identical structure across components is not automatically FAIL—only when a
+source-required difference is not preserved. Evidence must cite source features,
+not stem-string similarity alone.
+Report Source / Verified Component / Core Problem Type / Preserved Presentation
+Variant / Runtime Selectable counts separately; component count ≠ diversity.
+If required features cannot be preserved safely → mark gap/DEFERRED; do not claim complete.
+
 #### Student-runtime production readiness
 
 Source coverage alone does not constitute production readiness.
@@ -125,6 +136,7 @@ A renderable diagram alone does not constitute coverage.
 * **共享算子**：共享數學算子 (Shared Mathematical Primitive) 允許跨 Domain 調用，但不改變上層 routing domain。
 * **型別驗證**：若發現 operation 不符時回報為 `operation_contract_mismatch`，禁止以更換 Domain 逃避。
 * **Readiness 邊界**：`fixed_domain_key` 存在**不等於** capability ready。完整就緒條件見 §10.1 Exact Capability Readiness Gate。
+* **經核准的 Skill 歸屬更正**：僅在人工核准後執行。保留原教材列／ID／來源 provenance；目的 Skill Domain 必須可支援；Component、Registry、Manifest、Wrapper、`textbook_examples.skill_id`、Tracker 與 Runtime 抽題必須一致；來源 Skill 不得再抽出該題；`pass_target` 由教材筆數自然計算；不得改動學生歷史作答。Generator／Runtime 嚴禁私自改寫正式 DB `skill_id`。
 
 ---
 
@@ -361,6 +373,7 @@ safe parse → normalize → mathematical equivalence → optional required-form
 ## 9. 變數與約束分層 (Current)
 
 * **參數約束**：在組件執行期調用 `generate()` 時，由各 component 或 Domain 執行自身已實作的變數範圍抽樣與局部防禦性檢查。
+* **來源差異約束**：共用同一 Domain builder 時，component `constraints` 必須編碼來源必要差異；空 constraints 造成的無差異克隆不算完成覆蓋（見 §2.2）。
 * **學生端輸入驗證**：如 `分母 != 0` 屬於作答批改期 Answer Parser 與 Checker 職責，嚴禁混入出題期的變數約束。
 * **[Planned] 宣告式變數與約束**：支援 `ConstraintPolicy` 引擎（變數 `variables`、`hard_constraints`（支援二元比較如 `>=`, `>`, `<=`, `<`, `==`, `!=`）、`quality_constraints` 與 `sampling_policy`）。
 

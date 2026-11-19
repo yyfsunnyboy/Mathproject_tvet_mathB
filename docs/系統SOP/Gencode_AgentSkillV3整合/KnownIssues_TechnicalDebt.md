@@ -39,6 +39,13 @@ runtime wrapper `check_answer` 在 contract 指向象限 checker 時仍走共用
 | 已發布的直線 adapter 會輸出「承例題 11：」 | 數學1 單元5 的 `line_equations_adapter` 沿用原例題設定，因為它的 spec 沒有 `source_dependency`，不受 gate 影響 | 若日後以 V3 重建 12424，自含性 gate 會擋下，必須改成自含題幹 |
 | 「承上題」 | 數學2 單元11（1564）屬於題內引用，不解析 | 如有跨列需求另案處理 |
 
+## Generator Presentation Variant 保真與 Skill 搬移一致性的 IMPLEMENTATION_GAP
+
+- 狀態：open。規範見 [Specification](./SOP_Gencode_AgentSkillV3_Specification.md) §2、§3、§9 與 [Lean SOP](./SOP_Gencode_V3_Lean.md) §3.1、§5.1。
+- 缺口：尚無正式自動 Validator 判定「來源必要 Presentation Variant 是否保留」或「Skill 搬移後 DB／Tracker／Runtime 是否一致」。
+- 建議位置：Phase 2 component validation／publish eligibility 旁路檢查；PASS/FAIL 須引用來源特徵證據，不得只依題幹字串相似度。
+- 不得宣稱新 Gate 已啟用；不得新增 production tracker enum；不得因此改動既有 VERIFIED 狀態機。
+
 ## 教材原題 Fallback 與教師預覽的 IMPLEMENTATION_GAP
 
 - 來源：2026-11-03 第二冊 Unit 8 唯讀查核；規範見 [Lean SOP](./SOP_Gencode_V3_Lean.md) §0.2、§6.1，流程見 [PipelineFlow](./SOP_Gencode_AgentSkillV3_PipelineFlow.md) §6.2。

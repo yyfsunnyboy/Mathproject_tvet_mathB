@@ -11,6 +11,7 @@
 - 日常 Gencode V3 唯一主要 SOP：`docs/系統SOP/Gencode_AgentSkillV3整合/SOP_Gencode_V3_Lean.md`。
 - **任何新單元導入前必讀 Lean §0.2**（教材與 Generator 分離、Generator 優先＋原題 Fallback、不強制 100%、審核不依賴正式發布、停止條件、結案六項）；§0.2.1 標為 IMPLEMENTATION_GAP 者不得宣稱完成，§0.2.2 預設決策不逐單元重議。
 - 欄位、Answer Contract、Checker、Gate：同目錄 `SOP_Gencode_AgentSkillV3_Specification.md` 對應章節，為規範權威。
+- Generator 教材保真（含 Presentation Variant）與經核准的 Skill 搬移完整性：Specification §2、§3、§9；未實作的自動稽核見 `KnownIssues_TechnicalDebt.md`。
 - 時序、狀態與 publish/recovery：同目錄 `SOP_Gencode_AgentSkillV3_PipelineFlow.md` 對應章節，為流程權威。
 - 數學等價與 required form：`docs/系統SOP/數學答案檢核原則_v1.12_20260908.md`。
 - 已知債：同目錄 `KnownIssues_TechnicalDebt.md`；Complete Master SOP 僅供歷史與案例查考，非預設必讀。

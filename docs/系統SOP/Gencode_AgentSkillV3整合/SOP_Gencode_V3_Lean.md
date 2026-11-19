@@ -143,6 +143,8 @@
 4. 只有真正缺失的共用能力才新增；先定義責任、input/output、canonical contract 與覆蓋題目。
 5. 禁止逐題複製數學公式、以不相關題型映射或讓 fallback-only 進入 production。
 6. **WARNING**：不得因新單元重新打造已有的數學能力；先確認舊能力對新教材來源仍有效。
+7. Generator 須保留來源必要特徵（核心推理、條件、作答拓撲、必要情境／圖表）；可共用 Domain，但不得以空 constraints 抹平來源差異（Specification §2、§9）。
+8. 經核准的 Skill 歸屬更正須使 DB `skill_id`、Tracker、Manifest／Wrapper 與 Runtime 一致；未核准不得改正式 DB（Specification §3）。
 
 ### 3.1.1 Domain Function：共用數學能力
 
@@ -239,6 +241,7 @@ Stage 1 封板、Capability Promotion、正式 Publish 仍執行所有必要 Gat
 7. 正式發布前查 Source Fidelity、Answer Oracle、Exact Readiness、Executable Workspace、Validator、Answer Contract、Shared Checker。
 8. 另查 Specification 與 PipelineFlow 規定的 Phase 3 publish eligibility、runtime smoke 與人工審核位置。
 9. Staging 失敗不得 promote；修正通用責任層後重新驗證 staging。
+10. 驗收報告分開列出 Source／Verified Component／Core Problem Type／Preserved Presentation Variant／Runtime Selectable；不得只用 Component 數量代表多樣性（Specification §2.2）。
 
 ### 5.2 增量驗收（新增元件或新 revision）
 
