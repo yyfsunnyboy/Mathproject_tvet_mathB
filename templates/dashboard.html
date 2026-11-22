@@ -893,9 +893,15 @@
                 if (accuracy) accuracy.textContent = '熟練度 ' + mastery.recent_accuracy_label;
                 if (progress) progress.style.width = mastery.recent_accuracy + '%';
                 if (streak) {
-                    streak.textContent = mastery.binding_issue
-                        ? '連續答對 ' + mastery.current_streak + ' / 暫無門檻'
-                        : '連續答對 ' + mastery.current_streak + ' / ' + mastery.pass_target + ' 題';
+                    if (mastery.progress_mode === 'problem_type_mastery') {
+                        streak.textContent = mastery.binding_issue
+                            ? '暫無可練習題型'
+                            : ('已掌握題型 ' + mastery.current_streak + '/' + mastery.pass_target);
+                    } else {
+                        streak.textContent = mastery.binding_issue
+                            ? '連續答對 ' + mastery.current_streak + ' / 暫無門檻'
+                            : '連續答對 ' + mastery.current_streak + ' / ' + mastery.pass_target + ' 題';
+                    }
                 }
                 if (attempts) {
                     attempts.textContent = '最近 ' + mastery.recent_attempt_count

@@ -11,7 +11,12 @@ from typing import Any
 
 PUBLIC_TOP_LEVEL = frozenset({
     "skill_id", "question_uid", "question_text_hash", "question_id", "question_text", "new_question_text", "message",
-    "context_string", "inequality_string", "consecutive_correct", "current_level", "mode",
+    "context_string", "inequality_string", "consecutive_correct", "pass_target",
+    "progress_mode", "mastered_types", "total_types", "skill_complete", "skill_just_completed",
+    "chapter_just_completed", "volume_just_completed", "celebration_kind",
+    "progress_display", "next_skill_id", "next_skill_name", "next_skill_url",
+    "next_nav_kind", "next_button_label", "next_target_url", "dashboard_url",
+    "current_level", "mode",
     "choices", "choices_display", "subquestions", "table", "table_title", "table_data", "table_question",
     "image_base64", "image_assets", "visual_spec", "diagram_spec", "visual_aids", "visual_backed", "visual_asset_type",
     "answer_type", "answer_input_type", "answer_contract", "answer_shape", "presentation_mode", "interaction_type",

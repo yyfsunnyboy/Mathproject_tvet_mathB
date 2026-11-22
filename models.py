@@ -771,6 +771,36 @@ def init_db(engine, *, seed_bridges: bool = False):
         "CREATE INDEX IF NOT EXISTS idx_practice_attempts_student_skill_created "
         "ON practice_attempts (student_id, skill_id, created_at)"
     )
+    # B1 Generator problem-type mastery (idempotent; does not alter B2–B4 tables).
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS student_problem_type_mastery (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            skill_id TEXT NOT NULL,
+            problem_type_id TEXT NOT NULL,
+            status TEXT NOT NULL DEFAULT 'NOT_STARTED',
+            consecutive_wrong INTEGER NOT NULL DEFAULT 0,
+            needs_independent_verify BOOLEAN NOT NULL DEFAULT 0,
+            attempt_count INTEGER NOT NULL DEFAULT 0,
+            last_attempt_at DATETIME,
+            last_attempt_id INTEGER,
+            last_question_uid TEXT,
+            mastered_at DATETIME,
+            mastery_attempt_id INTEGER,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            UNIQUE(user_id, skill_id, problem_type_id)
+        )
+    ''')
+    c.execute(
+        "CREATE INDEX IF NOT EXISTS idx_sptm_user_skill "
+        "ON student_problem_type_mastery (user_id, skill_id)"
+    )
+    c.execute(
+        "CREATE INDEX IF NOT EXISTS idx_sptm_user_skill_status "
+        "ON student_problem_type_mastery (user_id, skill_id, status)"
+    )
     c.execute('''
         CREATE TABLE IF NOT EXISTS node_competency (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1411,6 +1441,40 @@ class PracticeAttempt(db.Model):
     session_id = db.Column(db.String(64), nullable=True)
     difficulty = db.Column(db.Float, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False, index=True)
+
+
+class StudentProblemTypeMastery(db.Model):
+    """B1 per-student Generator problem-type mastery (skill completion by type coverage)."""
+
+    __tablename__ = "student_problem_type_mastery"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False, index=True)
+    skill_id = db.Column(db.String(120), nullable=False, index=True)
+    problem_type_id = db.Column(db.String(160), nullable=False, index=True)
+    # NOT_STARTED | PRACTICING | REMEDIATION | MASTERED
+    status = db.Column(db.String(32), nullable=False, default="NOT_STARTED")
+    consecutive_wrong = db.Column(db.Integer, nullable=False, default=0)
+    needs_independent_verify = db.Column(db.Boolean, nullable=False, default=False)
+    attempt_count = db.Column(db.Integer, nullable=False, default=0)
+    last_attempt_at = db.Column(db.DateTime, nullable=True)
+    last_attempt_id = db.Column(db.Integer, nullable=True)
+    last_question_uid = db.Column(db.String(64), nullable=True)
+    mastered_at = db.Column(db.DateTime, nullable=True)
+    mastery_attempt_id = db.Column(db.Integer, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(
+        db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "user_id",
+            "skill_id",
+            "problem_type_id",
+            name="uq_student_skill_problem_type_mastery",
+        ),
+    )
 
 
 class StudentAbility(db.Model):

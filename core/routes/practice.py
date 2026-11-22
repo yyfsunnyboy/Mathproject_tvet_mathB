@@ -811,12 +811,49 @@ def _practice_type_rotation_next(
             return None
     else:
         state = ptr.ensure_state(session.get(ptr.SESSION_KEY), skill_id, types)
+        # B1: prefer DB mastery so mastered types are not re-served as advancement work.
+        try:
+            from core.practice_type_mastery import (
+                is_b1_type_mastery_skill,
+                normalize_type_id,
+                rotation_status_map,
+            )
+            from flask_login import current_user
+
+            if (
+                is_b1_type_mastery_skill(skill_id)
+                and getattr(current_user, "is_authenticated", False)
+                and getattr(current_user, "id", None)
+            ):
+                db_statuses = rotation_status_map(int(current_user.id), skill_id)
+                if db_statuses:
+                    mapped = {}
+                    for key in types:
+                        mapped[key] = db_statuses.get(
+                            normalize_type_id(key),
+                            db_statuses.get(key, ptr.STATUS_UNSEEN),
+                        )
+                    ptr.apply_statuses(state, types, mapped)
+                    if not state.get("q"):
+                        # Rebuild queue from remaining non-passed types.
+                        state = ptr.restore_state(
+                            skill_id,
+                            types,
+                            mapped,
+                            seed=f"b1-mastery:{current_user.id}:{skill_id}",
+                        )
+        except Exception:
+            current_app.logger.exception(
+                "[PRACTICE type_rotation] B1 mastery sync failed skill_id=%s", skill_id
+            )
         pick = ptr.next_pick(state, types)
         if pick is None:
             state = ptr.new_state(skill_id, types)
             pick = ptr.next_pick(state, types)
     session[ptr.SESSION_KEY] = state
     session.modified = True
+    if pick is None:
+        return None
     pick["candidate_count"] = len(types[pick["type_key"]])
     pick.update(ptr.summarize(state, types))
     if run is not None:
@@ -1327,6 +1364,8 @@ def _emit_check_result(
         )
     pending_write = False
     practice_attempt = None
+    b1_was_complete_before = None
+    b1_mastery_write_attempted = False
     if record_progress and _is_gradable and not is_guest_demo():
         try:
             update_progress(current_user.id, skill_id, bool(out.get("correct", False)), commit=False)
@@ -1397,6 +1436,49 @@ def _emit_check_result(
                     question=ctx.get("current_question") or {},
                     user_answer=ctx.get("user_answer"),
                 )
+            # B1: persist Generator problem-type mastery (does not revoke other mastered types).
+            try:
+                from core.practice_type_mastery import (
+                    clear_question_assisted,
+                    get_skill_type_progress,
+                    is_b1_type_mastery_skill,
+                    question_was_assisted,
+                    record_type_attempt,
+                )
+
+                if is_b1_type_mastery_skill(skill_id):
+                    cq = ctx.get("current_question") if isinstance(ctx.get("current_question"), dict) else {}
+                    meta = cq.get("metadata") if isinstance(cq.get("metadata"), dict) else {}
+                    pt = str(
+                        cq.get("problem_type_id")
+                        or meta.get("problem_type_id")
+                        or cr_type_key
+                        or ""
+                    ).strip()
+                    assisted = question_was_assisted(session, uid)
+                    if b1_was_complete_before is None:
+                        b1_was_complete_before = bool(
+                            get_skill_type_progress(int(current_user.id), skill_id).get("complete")
+                        )
+                    record_type_attempt(
+                        user_id=int(current_user.id),
+                        skill_id=skill_id,
+                        problem_type_id=pt,
+                        is_correct=bool(out.get("correct", False)),
+                        question_uid=uid or None,
+                        practice_attempt_id=int(getattr(practice_attempt, "id", 0) or 0) or None,
+                        assisted=assisted,
+                        commit=False,
+                    )
+                    b1_mastery_write_attempted = True
+                    if bool(out.get("correct", False)) and not assisted:
+                        clear_question_assisted(session, uid)
+            except Exception:
+                current_app.logger.exception(
+                    "[B1 type mastery] record failed student_id=%s skill_id=%s",
+                    getattr(current_user, "id", None),
+                    skill_id,
+                )
         except Exception:
             db.session.rollback()
             pending_write = False
@@ -1404,9 +1486,11 @@ def _emit_check_result(
                 "[MistakeNotebook] answer persistence failed student_id=%s skill_id=%s",
                 getattr(current_user, "id", None), skill_id,
             )
+    answer_persisted = False
     if pending_write:
         try:
             db.session.commit()
+            answer_persisted = True
         except Exception:
             db.session.rollback()
             current_app.logger.exception(
@@ -1425,6 +1509,71 @@ def _emit_check_result(
 
         out["consecutive_correct"] = int(progress.consecutive_correct if progress else 0)
         out["pass_target"] = get_pass_target(skill_id)
+        try:
+            from core.practice_type_mastery import (
+                build_skill_completion_payload,
+                is_b1_type_mastery_skill,
+            )
+            from flask import url_for
+
+            if is_b1_type_mastery_skill(skill_id):
+                completion = build_skill_completion_payload(
+                    user_id=int(current_user.id),
+                    skill_id=skill_id,
+                    was_complete_before=bool(b1_was_complete_before),
+                    persisted=bool(answer_persisted and b1_mastery_write_attempted),
+                )
+                mp = completion["progress"]
+                out["progress_mode"] = "problem_type_mastery"
+                out["consecutive_correct"] = int(mp.get("mastered_count") or 0)
+                out["pass_target"] = int(mp.get("total_types") or 0)
+                out["mastered_types"] = int(mp.get("mastered_count") or 0)
+                out["total_types"] = int(mp.get("total_types") or 0)
+                out["skill_complete"] = bool(completion.get("skill_complete"))
+                out["skill_just_completed"] = bool(completion.get("skill_just_completed"))
+                out["chapter_just_completed"] = bool(completion.get("chapter_just_completed"))
+                out["volume_just_completed"] = bool(completion.get("volume_just_completed"))
+                out["celebration_kind"] = str(completion.get("celebration_kind") or "skill")
+                out["progress_display"] = str(mp.get("display_label") or "")
+                next_skill = completion.get("next_nav") or completion.get("next_skill")
+                out["dashboard_url"] = url_for("dashboard")
+                if isinstance(next_skill, dict):
+                    out["next_nav_kind"] = str(next_skill.get("nav_kind") or "")
+                    out["next_button_label"] = str(
+                        next_skill.get("button_label") or "返回學習儀表板"
+                    )
+                    out["celebration_kind"] = str(
+                        next_skill.get("celebration_kind")
+                        or out["celebration_kind"]
+                        or "skill"
+                    )
+                    if next_skill.get("skill_id") and next_skill.get("target") == "practice":
+                        out["next_skill_id"] = str(next_skill["skill_id"])
+                        out["next_skill_name"] = str(
+                            next_skill.get("skill_ch_name") or next_skill["skill_id"]
+                        )
+                        out["next_skill_url"] = url_for(
+                            "practice.practice", skill_id=str(next_skill["skill_id"])
+                        )
+                        out["next_target_url"] = out["next_skill_url"]
+                    else:
+                        out["next_skill_id"] = None
+                        out["next_skill_name"] = None
+                        out["next_skill_url"] = None
+                        out["next_target_url"] = out["dashboard_url"]
+                else:
+                    out["next_nav_kind"] = None
+                    out["next_button_label"] = None
+                    out["next_skill_id"] = None
+                    out["next_skill_name"] = None
+                    out["next_skill_url"] = None
+                    out["next_target_url"] = None
+        except Exception:
+            current_app.logger.exception(
+                "[B1 type mastery] progress read failed student_id=%s skill_id=%s",
+                getattr(current_user, "id", None),
+                skill_id,
+            )
     return jsonify(out)
 
 
@@ -2089,6 +2238,42 @@ def practice(skill_id):
 
     consecutive_correct = int(progress.consecutive_correct if progress else 0)
     pass_target = get_pass_target(skill_id)
+    progress_mode = "streak"
+    skill_complete = False
+    review_next_skill_url = None
+    review_next_skill_label = None
+    try:
+        from core.practice_type_mastery import (
+            get_skill_type_progress,
+            is_b1_type_mastery_skill,
+            resolve_next_b1_practice_skill,
+        )
+
+        if current_user.is_authenticated and is_b1_type_mastery_skill(skill_id):
+            mp = get_skill_type_progress(int(current_user.id), skill_id)
+            progress_mode = "problem_type_mastery"
+            consecutive_correct = int(mp.get("mastered_count") or 0)
+            pass_target = int(mp.get("total_types") or 0)
+            skill_complete = bool(mp.get("complete"))
+            if skill_complete:
+                review_nav = resolve_next_b1_practice_skill(
+                    skill_id, user_id=int(current_user.id), exclude_current=True
+                )
+                if isinstance(review_nav, dict) and review_nav.get("skill_id"):
+                    review_next_skill_url = url_for(
+                        "practice.practice", skill_id=str(review_nav["skill_id"])
+                    )
+                    review_next_skill_label = str(
+                        review_nav.get("button_label")
+                        or f"前往下一個未完成技能"
+                    )
+                elif isinstance(review_nav, dict) and review_nav.get("nav_kind") == "volume_complete":
+                    review_next_skill_url = url_for("dashboard")
+                    review_next_skill_label = "返回學習儀表板"
+    except Exception:
+        current_app.logger.exception(
+            "[B1 type mastery] page progress failed skill_id=%s", skill_id
+        )
 
     chapter_review_arg = (request.args.get("chapter_review") or "").strip()
     chapter_review = None
@@ -2125,6 +2310,10 @@ def practice(skill_id):
                            tutor_model_name=tutor_model_name,
                            consecutive_correct=consecutive_correct,
                            pass_target=pass_target,
+                           progress_mode=progress_mode,
+                           skill_complete=skill_complete,
+                           review_next_skill_url=review_next_skill_url,
+                           review_next_skill_label=review_next_skill_label,
                            practice_mode='standard',
                            manual_review_unavailable=manual_review_info)
 
@@ -2684,6 +2873,20 @@ def next_question():
 
         progress = db.session.query(Progress).filter_by(user_id=current_user.id, skill_id=skill_id).first()
         consecutive = progress.consecutive_correct if progress else 0
+        pass_target_for_payload = None
+        progress_mode_for_payload = "streak"
+        try:
+            from core.practice_type_mastery import get_skill_type_progress, is_b1_type_mastery_skill
+
+            if is_b1_type_mastery_skill(skill_id) and not is_guest_demo():
+                mp = get_skill_type_progress(int(current_user.id), skill_id)
+                consecutive = int(mp.get("mastered_count") or 0)
+                pass_target_for_payload = int(mp.get("total_types") or 0)
+                progress_mode_for_payload = "problem_type_mastery"
+        except Exception:
+            current_app.logger.exception(
+                "[B1 type mastery] get_next_question progress failed skill_id=%s", skill_id
+            )
 
         # No generator module: serve existing TextbookExample stems (read-only).
         # Supports optional ?textbook_example_id= for verifying a specific TE.
@@ -3153,6 +3356,10 @@ def next_question():
             "context_string": session_data.get("context_string", ""),
             "inequality_string": session_data.get("inequality_string", ""),
             "consecutive_correct": consecutive,
+            "pass_target": pass_target_for_payload,
+            "progress_mode": progress_mode_for_payload,
+            "mastered_types": consecutive if progress_mode_for_payload == "problem_type_mastery" else None,
+            "total_types": pass_target_for_payload if progress_mode_for_payload == "problem_type_mastery" else None,
             "current_level": difficulty_level,
             "image_base64": _materialize_question_image(data.get("image_base64", "")),
             "visual_spec": data.get("visual_spec", {}),

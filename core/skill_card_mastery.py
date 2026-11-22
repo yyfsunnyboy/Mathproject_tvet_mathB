@@ -201,5 +201,38 @@ def build_skill_card_mastery(
             "card_status": status,
             "card_status_label": STATUS_LABELS[status],
             "card_color": STATUS_COLORS[status],
+            "progress_mode": "streak",
+            "progress_label": (
+                f"連續答對 {int(current_streak_by_skill.get(skill_id, 0) or 0)} / "
+                f"{'暫無門檻' if binding_issue else f'{pass_target} 題'}"
+            ),
         }
+
+    # B1 overlay: skill-card gate uses Generator problem-type mastery (X/Y),
+    # without changing non-B1 streak semantics.
+    try:
+        from core.practice_type_mastery import get_skill_type_progress, is_b1_type_mastery_skill
+
+        for skill_id, card in result.items():
+            if not is_b1_type_mastery_skill(skill_id):
+                continue
+            mp = get_skill_type_progress(normalized_student_id, skill_id)
+            total = int(mp.get("total_types") or 0)
+            mastered = int(mp.get("mastered_count") or 0)
+            card["progress_mode"] = "problem_type_mastery"
+            card["pass_target"] = total
+            card["current_streak"] = mastered
+            card["binding_issue"] = total == 0
+            card["binding_issue_code"] = "missing_runtime_problem_types" if total == 0 else None
+            card["progress_label"] = (
+                f"已掌握題型 {mastered}/{total}" if total > 0 else "暫無可練習題型"
+            )
+            if total > 0 and mastered >= total:
+                card["card_status"] = "mastered"
+                card["card_status_label"] = STATUS_LABELS["mastered"]
+                card["card_color"] = STATUS_COLORS["mastered"]
+    except Exception:
+        # Card display must not break practice browsing if mastery table is absent.
+        pass
+
     return result

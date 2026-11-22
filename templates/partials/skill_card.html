@@ -10,7 +10,9 @@
             <div class="progress-fill" data-mastery-field="progress"
                 style="width: {{ skill_card.recent_accuracy }}%"></div>
         </div>
-        {% if skill_card.binding_issue %}
+        {% if skill_card.progress_mode == 'problem_type_mastery' %}
+        <small data-mastery-field="streak">{% if skill_card.binding_issue %}暫無可練習題型{% else %}已掌握題型 {{ skill_card.current_streak }}/{{ skill_card.pass_target }}{% endif %}</small>
+        {% elif skill_card.binding_issue %}
         <small data-mastery-field="streak">連續答對 {{ skill_card.current_streak }} / 暫無門檻</small>
         {% else %}
         <small data-mastery-field="streak">連續答對 {{ skill_card.current_streak }} / {{ skill_card.pass_target }} 題</small>
