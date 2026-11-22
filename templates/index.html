@@ -2212,7 +2212,7 @@
     <script src="{{ url_for('static', filename='js/triangle_diagram.js') }}?v=b2-triangle-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/scratchpad_layers.js') }}?v=compact-figure-1"></script>
     <script src="{{ url_for('static', filename='js/math_display_normalizer.js') }}?v=tutor-math-1"></script>
-    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-5-canvas-strip"></script>
+    <script src="{{ url_for('static', filename='js/multipart_field_renderer.js') }}?v=answer-strip-6-trig-labels"></script>
     <script src="{{ url_for('static', filename='js/choice_math.js') }}?v=slash-frac-1-ios12"></script>
     <script src="{{ url_for('static', filename='js/correct_answer_feedback.js') }}?v=answer-feedback-mathjax-ready-20261119"></script>
     <script src="{{ url_for('static', filename='js/practice_correct_answer_flow.js') }}"></script>
@@ -3926,19 +3926,32 @@ span[style*="粗細"],
             const scratchpad = document.getElementById('scratchpad-container');
             const isMultiImage = imgSources.length > 1;
             if (scratchpad) {
+                // Single tall textbook crops also need the taller canvas band so
+                // labels stay readable; the figure still lives only on scratchpad.
                 scratchpad.classList.toggle('scratchpad-has-figures', isMultiImage);
                 scratchpad.style.display = '';
             }
             scheduleResizeCanvas();
-            const imageSize = resolveScratchpadCssSize();
             return layer.loadImageBackgrounds(imgSources)
                 .then((images) => {
+                    const primary = images[0];
+                    const tallSingle = !isMultiImage
+                        && primary
+                        && primary.naturalHeight > primary.naturalWidth * 1.12;
+                    if (scratchpad) {
+                        scratchpad.classList.toggle(
+                            'scratchpad-has-figures',
+                            isMultiImage || !!tallSingle
+                        );
+                    }
+                    scheduleResizeCanvas();
+                    const drawnSize = resolveScratchpadCssSize();
                     const ok = layer.setImagesBackground(
                         images,
                         imgSources,
                         backgroundCtx,
-                        imageSize.cw,
-                        imageSize.ch
+                        drawnSize.cw,
+                        drawnSize.ch
                     );
                     if (ok) {
                         layer.hideQuestionMediaContainer(qmc);
@@ -6059,7 +6072,9 @@ span[style*="粗細"],
                 const index = Number(cmp[1]);
                 return `圖${marks[index - 1] || index}`;
             }
-            const raw = String((part && (part.label || part.prompt)) || key || '').trim();
+            const raw = String(
+                (part && (part.display_label || part.math_label || part.label || part.prompt)) || key || ''
+            ).trim();
             const generic = raw.match(/^(?:part|欄位|第)?[\s_\-]*[\(（]?\s*(\d{1,2})\s*[\)）]?[\s_\-]*(?:小題|題)?$/i);
             return !raw ? `(${fallbackIndex + 1})` : (generic ? `(${Number(generic[1])})` : raw);
         }

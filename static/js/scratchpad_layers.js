@@ -52,9 +52,26 @@
         compactQuestionFigure = enabled !== false;
     }
 
+    function isTallSingleStoredImage() {
+        const images = storedQuestionImages.length
+            ? storedQuestionImages
+            : (storedQuestionImage ? [storedQuestionImage] : []);
+        if (images.length !== 1) return false;
+        const image = images[0];
+        const width = Number(image && image.naturalWidth) || 0;
+        const height = Number(image && image.naturalHeight) || 0;
+        return width > 0 && height > width * 1.12;
+    }
+
     function computeQuestionFigureRegion(canvasWidth, canvasHeight, edgePadding) {
         const region = computeQuestionBackgroundRegion(canvasWidth, canvasHeight, edgePadding);
-        if (!compactQuestionFigure || region.canvasWidth < WIDE_FIGURE_MIN_CANVAS_WIDTH) {
+        // Tall textbook crops keep the full reference quadrant so edge labels
+        // (e.g. vertex B) remain readable; wide short canvases stay compact.
+        if (
+            !compactQuestionFigure
+            || region.canvasWidth < WIDE_FIGURE_MIN_CANVAS_WIDTH
+            || isTallSingleStoredImage()
+        ) {
             return region;
         }
         const quadrantWidth = region.quadrantWidth * WIDE_FIGURE_SCALE;

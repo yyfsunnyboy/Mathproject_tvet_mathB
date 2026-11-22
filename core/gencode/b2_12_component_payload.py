@@ -75,7 +75,26 @@ def _select_outputs(payload: dict[str, Any], output_specs: list[dict[str, Any]])
                 "equivalence_type": "exact_string",
             })
         key = str(output.get("key") or source_key or f"part_{index + 1}")
-        base.update({"key": key, "field_key": key, "label": str(output.get("label") or key)})
+        explicit = str(output.get("label") or "").strip()
+        inherited = str(
+            base.get("display_label") or base.get("math_label") or base.get("label") or ""
+        ).strip()
+        if explicit and explicit != key:
+            label = explicit
+        elif inherited and inherited != key:
+            label = inherited
+        else:
+            from core.gencode.domain_matrix_adapter import _student_facing_part_label
+
+            label = _student_facing_part_label(key, explicit=explicit or None)
+        base.update({
+            "key": key,
+            "field_key": key,
+            "label": label,
+            "display_label": label,
+        })
+        if "$" in label or r"\(" in label:
+            base["math_label"] = label
         for name in ("checker", "checker_key", "equivalence_type", "required_form", "unit"):
             if output.get(name) is not None:
                 base[name] = output[name]
@@ -189,6 +208,13 @@ def generate_b2_12_component_payload(
             })
         else:
             canonical = {str(part["key"]): part["expected_answer"] for part in parts}
+            from core.gencode.domain_matrix_adapter import _humanize_answer_contract_parts
+
+            humanized_parts = _humanize_answer_contract_parts(
+                parts,
+                domain_operation=domain_operation,
+                label_context={"question_text": question_text, "question": question_text},
+            )
             contract = {
                 "presentation_mode": "multiple_inputs",
                 "answer_type": "multi_part",
@@ -197,7 +223,7 @@ def generate_b2_12_component_payload(
                 "checker_key": "multi_part_answer_checker",
                 "answer_equivalence": "multi_part_answer",
                 "equivalence_type": "multi_part_answer",
-                "parts": parts,
+                "parts": humanized_parts,
                 "fixed_domain_key": (first.get("answer_contract") or {}).get("fixed_domain_key"),
             }
             payload = first

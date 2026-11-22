@@ -1,0 +1,61 @@
+{
+  "backup": "C:\\Projects\\Mathproject_tvet_mathB\\instance\\backups\\kumon_math_pre_b2_p1_swing_cable_20261122_110812.db",
+  "crops": {
+    "11583": {
+      "abs_path": "C:\\Projects\\Mathproject_tvet_mathB\\static\\question_assets\\vocational\\longteng\\數學B2\\ch01_unknown\\sec_1-2_銳角三角函數\\advanced_exercise_1-2習題_進階題9_vocation_fig1.png",
+      "backup": "C:\\Projects\\Mathproject_tvet_mathB\\static\\question_assets\\vocational\\longteng\\數學B2\\ch01_unknown\\sec_1-2_銳角三角函數\\advanced_exercise_1-2習題_進階題9_vocation_fig1.png.bak_20261122_110812",
+      "width": 404,
+      "height": 404,
+      "file_size": 19990,
+      "sha256": "5423d542d02454a32877d75215b50aeec2b83ee91752cbd2819e9dbdbb062559",
+      "bbox": [
+        410.0,
+        255.0,
+        555.0,
+        400.0
+      ],
+      "rel_path": "uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題9_vocation_fig1.png"
+    },
+    "11584": {
+      "abs_path": "C:\\Projects\\Mathproject_tvet_mathB\\static\\question_assets\\vocational\\longteng\\數學B2\\ch01_unknown\\sec_1-2_銳角三角函數\\advanced_exercise_1-2習題_進階題10_vocation_fig1.png",
+      "backup": "C:\\Projects\\Mathproject_tvet_mathB\\static\\question_assets\\vocational\\longteng\\數學B2\\ch01_unknown\\sec_1-2_銳角三角函數\\advanced_exercise_1-2習題_進階題10_vocation_fig1.png.bak_20261122_110812",
+      "width": 445,
+      "height": 518,
+      "file_size": 18248,
+      "sha256": "3640617e100ed04b59d64e16a5250d376df0c909dc15698150ea4cb10499d6db",
+      "bbox": [
+        400.0,
+        412.0,
+        560.0,
+        598.0
+      ],
+      "rel_path": "uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題10_vocation_fig1.png"
+    }
+  },
+  "db": [
+    {
+      "id": 11583,
+      "old_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "new_skill_id": "vh_數學B2_ArcLengthAndAreaOfSector",
+      "asset_sha256": "5423d542d02454a32877d75215b50aeec2b83ee91752cbd2819e9dbdbb062559",
+      "bbox": [
+        410.0,
+        255.0,
+        555.0,
+        400.0
+      ]
+    },
+    {
+      "id": 11584,
+      "old_skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "new_skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "asset_sha256": "3640617e100ed04b59d64e16a5250d376df0c909dc15698150ea4cb10499d6db",
+      "bbox": [
+        400.0,
+        412.0,
+        560.0,
+        598.0
+      ]
+    }
+  ]
+}

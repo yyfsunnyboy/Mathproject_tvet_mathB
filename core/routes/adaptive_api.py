@@ -425,6 +425,16 @@ def ai_check_handwriting():
         ctx=ctx,
         ai_result=ai_result,
     )
+    # Vision-assisted recognition counts as help for independent mastery.
+    try:
+        from core.practice_type_mastery import mark_question_assisted
+
+        mark_question_assisted(session, str(ctx.question_uid or "").strip())
+    except Exception:
+        current_app.logger.exception(
+            "[type mastery] mark assisted failed on ai-check-handwriting question_uid=%s",
+            ctx.question_uid,
+        )
     from core.handwriting_ai_check import ink_band_count, join_recognized_work, recognition_is_last_line_only
     recognized_work = join_recognized_work(
         response.get("recognized_answer") or response.get("normalized_answer"),

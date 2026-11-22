@@ -1,0 +1,33 @@
+{
+  "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+  "component_id": "src_11579",
+  "flask": "http://127.0.0.1:5001",
+  "verified_at": "2026-11-22T15:10:00Z",
+  "question_payload_after_fix": "θ 為銳角且 $\\sin\\theta=\\sqrt{3}\\cos\\theta$，求 $\\tan\\theta$ 與 $\\sin\\theta+\\cos\\theta$。",
+  "answer_keys_preserved": ["tan", "sum"],
+  "display_labels_after": ["$\\tan\\theta$", "$\\sin\\theta+\\cos\\theta$"],
+  "browser_dom": {
+    "question_has_msqrt": true,
+    "vinculum_rect_present": true,
+    "digit_bbox_inside_radical_bbox": true,
+    "mathjax_glyphs": ["#MJX-TEX-N-221A", "#MJX-TEX-N-33", "rect"],
+    "multipart_label_text": ["tanθ", "sinθ+cosθ"]
+  },
+  "checker": {
+    "submit_answers": {"tan": "sqrt(3)", "sum": "1/2+sqrt(3)/2"},
+    "result": "答對了",
+    "mastery_after": "1/4"
+  },
+  "regression_src_11577_unicode_sqrt": {
+    "question_contains_unicode_radical_in_spec": true,
+    "frontend_normalizer_converts_to_msqrt": true,
+    "digit_inside_radical": true,
+    "multipart_labels": ["(1)", "(2)"]
+  },
+  "screenshots": [
+    "after_src11579_sqrt_and_labels.png",
+    "after_submit_correct.png",
+    "after_src11577_fullpage.png",
+    "after_src11577_unicode_sqrt_regression.png"
+  ]
+}

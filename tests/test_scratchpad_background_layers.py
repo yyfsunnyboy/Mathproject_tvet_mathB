@@ -91,6 +91,25 @@ def test_question_figure_region_is_two_thirds_on_wide_canvas_only() -> None:
     assert out["drawing"] == base
 
 
+def test_tall_single_image_skips_wide_compact_scale() -> None:
+    """Tall textbook crops keep the full reference quadrant (edge labels stay readable)."""
+    script = (
+        "const L=require(process.argv[1]);"
+        "const tall={naturalWidth:465,naturalHeight:574};"
+        "const wide={naturalWidth:640,naturalHeight:360};"
+        "L.setImagesBackground([tall],['tall.png'],null,900,500);"
+        "const tallRegion=L.computeQuestionFigureRegion(900,500);"
+        "const base=L.computeQuestionBackgroundRegion(900,500);"
+        "L.setImagesBackground([wide],['wide.png'],null,900,500);"
+        "const wideRegion=L.computeQuestionFigureRegion(900,500);"
+        "process.stdout.write(JSON.stringify({tallRegion,base,wideRegion,scale:L.WIDE_FIGURE_SCALE}));"
+    )
+    out = json.loads(_run_node(script, str(SCRATCHPAD_LAYERS_PATH)))
+    assert out["tallRegion"]["width"] == out["base"]["width"]
+    assert out["tallRegion"]["height"] == out["base"]["height"]
+    assert abs(out["wideRegion"]["quadrantWidth"] - out["base"]["quadrantWidth"] * out["scale"]) < 0.01
+
+
 def test_visual_spec_equal_unit_scale_keeps_square_grid_cells() -> None:
     script = (
         "const runtime=require(process.argv[1]);"

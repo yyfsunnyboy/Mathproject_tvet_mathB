@@ -415,6 +415,16 @@ def normalize_multi_part_handwriting_answer(value: Any, ctx: HandwritingCheckCon
         if len(keys) == 1:
             mapped[keys[0]] = text
             return mapped
+        # Ordered multi-line / semicolon answers without (1)(2) markers.
+        segments = [
+            part.strip(" \t\r\n;；,")
+            for part in re.split(r"[\n\r;；]+", text)
+            if part.strip(" \t\r\n;；,")
+        ]
+        if len(segments) == len(keys):
+            for key, segment in zip(keys, segments):
+                mapped[key] = segment
+            return mapped
         return value
     for pos, match in enumerate(matches):
         number_text = next((group for group in match.groups() if group), "")

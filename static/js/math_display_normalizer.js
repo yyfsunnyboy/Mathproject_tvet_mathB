@@ -200,24 +200,44 @@
     return text;
   }
 
+  // Unicode radical √ is not MathJax TeX. Convert √n / √(…) / √{…} to \sqrt{…}
+  // so the vinculum covers the radicand; wrap only when the surrounding text is not
+  // already inside an explicit math delimiter.
+  function replaceUnicodeRadicals(text, wrapBare) {
+    return String(text ?? "").replace(
+      /√\s*(?:\(([^()]+)\)|\{([^{}]+)\}|(\d+(?:\.\d+)?))/g,
+      (_, paren, brace, digits) => {
+        const latex = `\\sqrt{${paren ?? brace ?? digits}}`;
+        return wrapBare ? `\\(${latex}\\)` : latex;
+      }
+    );
+  }
+
   function normalizeMathText(value, options) {
-    const source = String(value ?? "");
+    const raw = String(value ?? "");
     // Only repair ASCII math in explicit delimiters; existing TeX passes through.
     const spans = /\\\(([\s\S]*?)\\\)|\\\[([\s\S]*?)\\\]|\$\$([\s\S]*?)\$\$|\$([^$]*?)\$/g;
-    if (spans.test(source)) {
+    if (spans.test(raw)) {
       spans.lastIndex = 0;
-      return source.replace(spans, (whole, ...parts) => {
-        const body = parts.slice(0, 4).find(x => x !== undefined);
+      const repaired = raw.replace(spans, (whole, ...parts) => {
+        const originalBody = parts.slice(0, 4).find(x => x !== undefined);
+        let body = replaceUnicodeRadicals(originalBody, false);
         if (!body.includes('\\')) {
           const assignment = body.match(/^([A-Za-z]\s*=\s*)(.+)$/);
           const expression = assignment ? assignment[2] : body;
           const latex = numericLatex(expression.trim());
-          if (latex !== null) return whole.replace(body, () => (assignment ? assignment[1] : '') + latex);
+          if (latex !== null) {
+            return whole.replace(originalBody, () => (assignment ? assignment[1] : '') + latex);
+          }
         }
         const converted = slashFractionsToLatex(body);
-        return converted === body ? whole : whole.replace(body, () => converted);
+        return converted === originalBody ? whole : whole.replace(originalBody, () => converted);
       });
+      // Radicals that sit outside any delimiter still need local math spans.
+      return replaceUnicodeRadicals(repaired, true);
     }
+    // Undelimited prose may still contain Unicode radicals (e.g. sinθ=√3cosθ).
+    const source = replaceUnicodeRadicals(raw, true);
     // "(1)" / "（2）" are subquestion markers; typesetting them drops the parentheses.
     if (/^[\(（]\s*\d{1,2}\s*[\)）]$/.test(source.trim())) return source;
     if (!/^[+-]?\d+(?:\.\d+)?$/.test(source.trim())) {
@@ -360,10 +380,10 @@
   function normalizeAnswerText(value) {
     const source = String(value ?? "").trim();
     if (!source || CHOICE_LETTER.test(source)) return source;
-    if (/\\\(|\\\[|\$/.test(source)) return normalizeMathText(source);
+    if (/\\\(|\\\[|\$/.test(source) || source.includes("√")) return normalizeMathText(source);
     if (CJK.test(source) || isPlainTextException(source)) return normalizeMathText(normalizeTutorText(source));
     if (!ANSWER_MATH.test(source) || source.length > 400 || /<\/?[A-Za-z][^>]*>/.test(source)) return source;
-    return `\\(${setBracesToLatex(slashFractionsToLatex(source))}\\)`;
+    return `\\(${setBracesToLatex(slashFractionsToLatex(replaceUnicodeRadicals(source, false)))}\\)`;
   }
 
   function normalizeQuestionText(value) {

@@ -256,6 +256,12 @@ def _student_facing_part_label(
         "value": "值",
         "dot": "內積",
         "cosine": r"$\cos\theta$",
+        "sin": r"$\sin\theta$",
+        "cos": r"$\cos\theta$",
+        "tan": r"$\tan\theta$",
+        "sum": r"$\sin\theta+\cos\theta$",
+        "product": r"$\sin\theta\cos\theta$",
+        "difference": r"$\sin\theta-\cos\theta$",
         "unit": "單位向量",
         "angle_degrees": "夾角（度）",
         "turn_degrees": "左轉角度（度）",
@@ -263,6 +269,11 @@ def _student_facing_part_label(
         "intercept": "截距",
         "x_intercept": "$x$ 截距",
         "y_intercept": "$y$ 截距",
+        "elevation": "海拔高度",
+        "base_elevation": "基準海拔",
+        "vertical_projection": "垂直高度",
+        "horizontal_projection": "水平距離",
+        "projection": "投影",
         "切線一": "切線一",
         "切線二": "切線二",
     }
@@ -371,12 +382,23 @@ def _looks_like_internal_part_key(key: str, label: str) -> bool:
         "simplified",
         "unit",
         "cosine",
+        "sin",
+        "cos",
+        "tan",
+        "sum",
+        "product",
+        "difference",
         "dot",
         "extra",
         "cofunction",
         "slope",
         "intercept",
+        "elevation",
+        "projection",
     }:
+        return True
+    # Long English identifiers without digits still leak internal keys (e.g. elevation).
+    if re.fullmatch(r"[a-z]{4,}", key_text):
         return True
     return False
 

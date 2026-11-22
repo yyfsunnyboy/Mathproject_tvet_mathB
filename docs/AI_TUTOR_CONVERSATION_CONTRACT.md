@@ -77,6 +77,8 @@ Both practice templates follow the same button contract:
 - AI check is available whenever the question has a handwriting canvas (`handwriting_enabled` and `canvas_required` not false), or when `ai_check_required` is true. `ai_check_required: false` means optional, not blocked.
 - Student ink on the canvas is enough; the answer text field is not required. Background grids and system figures are not ink. A blank canvas shows a message and sends no request.
 - AI check is separate from formal submission. Recognition, `/check_answer`, and `/analyze_handwriting` each have a client timeout.
+- Multipart handwriting recognition must map onto `answer_contract.parts` keys before the authoritative checker runs. Ordered newline / semicolon segments are accepted when their count matches the part arity; do not compare the last OCR line against `str(correct_answer_dict)`.
+- Tutor prompts and structured analysis must use labeled multipart expected answers (or the formal multipart checker), never a Python `str(dict)` dump. When vision recognition or tutor feedback is used, mark the question assisted so independent MASTERED is not granted.
 - An unfinished (`in_progress`) answer still gets a tutor reply on the current steps.
 - Model or vision failures return HTTP 503 with `ai_unavailable` and `retryable`. They are not reported as unclear handwriting.
 - Success and failure always end the loading state and re-enable the button. A failed check can be retried at once.

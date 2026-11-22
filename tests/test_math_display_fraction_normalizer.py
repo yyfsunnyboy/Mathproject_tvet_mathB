@@ -86,6 +86,21 @@ def test_compound_radicals_and_explicit_stem_math():
         r'\(\frac{3\sqrt{2}}{2}\)', r'已知 \(a = \frac{3\sqrt{2}}{2}\)，求角度']
 
 
+def test_unicode_radical_in_prose_becomes_delimited_sqrt():
+    """Bare Unicode √ must become MathJax \\sqrt so the vinculum covers the radicand."""
+    assert _normalize(["θ 為銳角且 sinθ=√3cosθ，求 tanθ"]) == [
+        r"θ 為銳角且 sinθ=\(\sqrt{3}\)cosθ，求 tanθ"
+    ]
+    assert _normalize(["已知 sinθ=√3/2", "1/√2", "√(a+b)"]) == [
+        r"已知 sinθ=\(\sqrt{3}\)/2",
+        r"1/\(\sqrt{2}\)",
+        r"\(\sqrt{a+b}\)",
+    ]
+    assert _normalize([r"已知 $\sin\theta=\sqrt{3}\cos\theta$"]) == [
+        r"已知 $\sin\theta=\sqrt{3}\cos\theta$"
+    ]
+
+
 def _slash(values: list[str]) -> list[str]:
     script = (
         "const n=require(process.argv[1]);"

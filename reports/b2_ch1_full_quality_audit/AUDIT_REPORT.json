@@ -1,0 +1,2852 @@
+{
+  "stamp": "20261122_160007",
+  "scope": "B2 chapter 1 三角函數 only",
+  "db_copy": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\b2_ch1_audit_20261122_160007\\kumon_math.db",
+  "sample_n": 30,
+  "skills": [
+    {
+      "skill_id": "vh_數學B2_DirectedAngle",
+      "display_name": "有向角",
+      "chapter": "第1章 三角函數",
+      "section": "1-1 角度的基本性質",
+      "display_order": 1,
+      "is_active": false,
+      "te_count": 0,
+      "source_ids": [],
+      "y": 0,
+      "problem_type_ids": [],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_DirectedAngle.py",
+        "usable": [],
+        "health": "WARN",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SKIPPED_INACTIVE",
+      "generator_samples": {},
+      "status": "INACTIVE_OK"
+    },
+    {
+      "skill_id": "vh_數學B2_RatioAndRatioValue",
+      "display_name": "比與比值",
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 1,
+      "is_active": true,
+      "te_count": 2,
+      "source_ids": [
+        11556,
+        11566
+      ],
+      "y": 1,
+      "problem_type_ids": [
+        "solve_similar_triangle_proportion"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_RatioAndRatioValue.py",
+        "usable": [
+          "solve_similar_triangle_proportion"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "solve_similar_triangle_proportion": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 2,
+          "unique_params": null,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LIMITED_VARIATION"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_1",
+      "display_name": "標準位置角",
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 1,
+      "is_active": true,
+      "te_count": 3,
+      "source_ids": [
+        11626,
+        11627,
+        11645
+      ],
+      "y": 1,
+      "problem_type_ids": [
+        "classify_standard_position_angle"
+      ],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_3_1.py",
+        "usable": [
+          "classify_standard_position_angle"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": "A類 SubSection：是否納入 B2 題型掌握制 allowlist（目前仍顯示舊連對／暫無門檻語意）",
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "classify_standard_position_angle": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 3,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              },
+              {
+                "key": "part_3",
+                "label": "(3)",
+                "display_label": "(3)"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              },
+              {
+                "key": "part_3",
+                "label": "(3)",
+                "display_label": "(3)"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              },
+              {
+                "key": "part_3",
+                "label": "(3)",
+                "display_label": "(3)"
+              },
+              {
+                "key": "part_4",
+                "label": "(4)",
+                "display_label": "(4)"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        }
+      },
+      "status": "NEEDS_DECISION"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_1",
+      "display_name": "正弦函數的圖形與其週期現象的表徵",
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 1,
+      "is_active": false,
+      "te_count": 0,
+      "source_ids": [],
+      "y": 0,
+      "problem_type_ids": [],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_4_1.py",
+        "usable": [],
+        "health": "WARN",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "INACTIVE_SHELL",
+      "generator_samples": {},
+      "status": "INACTIVE_OK"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_2",
+      "display_name": "任意角的三角函數",
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 2,
+      "is_active": true,
+      "te_count": 3,
+      "source_ids": [
+        11628,
+        11629,
+        11646
+      ],
+      "y": 1,
+      "problem_type_ids": [
+        "compute_terminal_ray_trig_ratios"
+      ],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_3_2.py",
+        "usable": [
+          "compute_terminal_ray_trig_ratios"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": "A類 SubSection：是否納入 B2 題型掌握制 allowlist（目前仍顯示舊連對／暫無門檻語意）",
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_terminal_ray_trig_ratios": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 3,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "sin",
+                "label": "$\\sin\\theta$",
+                "display_label": "$\\sin\\theta$"
+              },
+              {
+                "key": "cos",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              },
+              {
+                "key": "tan",
+                "label": "$\\tan\\theta$",
+                "display_label": "$\\tan\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "sin",
+                "label": "$\\sin\\theta$",
+                "display_label": "$\\sin\\theta$"
+              },
+              {
+                "key": "cos",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              },
+              {
+                "key": "tan",
+                "label": "$\\tan\\theta$",
+                "display_label": "$\\tan\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "sin",
+                "label": "$\\sin\\theta$",
+                "display_label": "$\\sin\\theta$"
+              },
+              {
+                "key": "cos",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              },
+              {
+                "key": "tan",
+                "label": "$\\tan\\theta$",
+                "display_label": "$\\tan\\theta$"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        }
+      },
+      "status": "NEEDS_DECISION"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_2",
+      "display_name": "餘弦函數的圖形與其週期現象的表徵",
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 2,
+      "is_active": false,
+      "te_count": 0,
+      "source_ids": [],
+      "y": 0,
+      "problem_type_ids": [],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_4_2.py",
+        "usable": [],
+        "health": "WARN",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "INACTIVE_SHELL",
+      "generator_samples": {},
+      "status": "INACTIVE_OK"
+    },
+    {
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "display_name": "銳角三角函數",
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 2,
+      "is_active": true,
+      "te_count": 11,
+      "source_ids": [
+        11557,
+        11558,
+        11567,
+        11568,
+        11575,
+        11576,
+        11577,
+        11579,
+        11581,
+        11582,
+        11584
+      ],
+      "y": 4,
+      "problem_type_ids": [
+        "compute_right_triangle_trig_ratios",
+        "simplify_fundamental_trig_expression",
+        "solve_acute_trig_constraints",
+        "solve_right_triangle_projection"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_TrigonometricFunctionsOfAcuteAngles.py",
+        "usable": [
+          "compute_right_triangle_trig_ratios",
+          "simplify_fundamental_trig_expression",
+          "solve_acute_trig_constraints",
+          "solve_right_triangle_projection"
+        ],
+        "health": "WARN",
+        "error": null
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "detail": [
+            "simplify_fundamental_trig_expression",
+            "solve_right_triangle_projection"
+          ]
+        }
+      ],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_right_triangle_trig_ratios": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 3,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "sin",
+                "label": "$\\sin\\theta$",
+                "display_label": "$\\sin\\theta$"
+              },
+              {
+                "key": "cos",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              },
+              {
+                "key": "tan",
+                "label": "$\\tan\\theta$",
+                "display_label": "$\\tan\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "sin_1",
+                "label": "(1) sin A",
+                "display_label": "(1) sin A"
+              },
+              {
+                "key": "cos_1",
+                "label": "(1) cos A",
+                "display_label": "(1) cos A"
+              },
+              {
+                "key": "tan_1",
+                "label": "(1) tan A",
+                "display_label": "(1) tan A"
+              },
+              {
+                "key": "sin_2",
+                "label": "(2) sin A",
+                "display_label": "(2) sin A"
+              },
+              {
+                "key": "cos_2",
+                "label": "(2) cos A",
+                "display_label": "(2) cos A"
+              },
+              {
+                "key": "tan_2",
+                "label": "(2) tan A",
+                "display_label": "(2) tan A"
+              }
+            ],
+            [
+              {
+                "key": "sin",
+                "label": "$\\sin\\theta$",
+                "display_label": "$\\sin\\theta$"
+              },
+              {
+                "key": "cos",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              },
+              {
+                "key": "tan",
+                "label": "$\\tan\\theta$",
+                "display_label": "$\\tan\\theta$"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        },
+        "simplify_fundamental_trig_expression": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "solve_acute_trig_constraints": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 5,
+          "unique_params": null,
+          "unique_answers": 5,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "sin",
+                "label": "$\\sin\\theta$",
+                "display_label": "$\\sin\\theta$"
+              },
+              {
+                "key": "cos",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "sin",
+                "label": "$\\sin\\theta$",
+                "display_label": "$\\sin\\theta$"
+              },
+              {
+                "key": "tan",
+                "label": "$\\tan\\theta$",
+                "display_label": "$\\tan\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        },
+        "solve_right_triangle_projection": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "elevation",
+                "label": "(1) B 站海拔（公尺）",
+                "display_label": "(1) B 站海拔（公尺）"
+              },
+              {
+                "key": "horizontal_projection",
+                "label": "(2) 兩站水平距離（公尺）",
+                "display_label": "(2) 兩站水平距離（公尺）"
+              }
+            ],
+            [
+              {
+                "key": "elevation",
+                "label": "(1) B 站海拔（公尺）",
+                "display_label": "(1) B 站海拔（公尺）"
+              },
+              {
+                "key": "horizontal_projection",
+                "label": "(2) 兩站水平距離（公尺）",
+                "display_label": "(2) 兩站水平距離（公尺）"
+              }
+            ],
+            [
+              {
+                "key": "elevation",
+                "label": "(1) B 站海拔（公尺）",
+                "display_label": "(1) B 站海拔（公尺）"
+              },
+              {
+                "key": "horizontal_projection",
+                "label": "(2) 兩站水平距離（公尺）",
+                "display_label": "(2) 兩站水平距離（公尺）"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "display_name": "角的度量與換算",
+      "chapter": "第1章 三角函數",
+      "section": "1-1 角度的基本性質",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 5,
+      "source_ids": [
+        11606,
+        11607,
+        11616,
+        11617,
+        11618
+      ],
+      "y": 1,
+      "problem_type_ids": [
+        "convert_angle_measure"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_AngleMeasurementAndConversion.py",
+        "usable": [
+          "convert_angle_measure"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "convert_angle_measure": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 25,
+          "unique_params": null,
+          "unique_answers": 25,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "c0",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "c2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "c3",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              },
+              {
+                "key": "c5",
+                "label": "小題 4",
+                "display_label": "小題 4"
+              },
+              {
+                "key": "c6",
+                "label": "小題 5",
+                "display_label": "小題 5"
+              },
+              {
+                "key": "c7",
+                "label": "小題 6",
+                "display_label": "小題 6"
+              },
+              {
+                "key": "c10",
+                "label": "小題 7",
+                "display_label": "小題 7"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_3",
+      "display_name": "正切函數的圖形與其週期現象的表徵",
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 8,
+      "source_ids": [
+        11655,
+        11656,
+        11657,
+        11658,
+        11659,
+        11660,
+        11661,
+        11662
+      ],
+      "y": 3,
+      "problem_type_ids": [
+        "analyze_affine_transformed_trig_graph",
+        "compare_trig_values_by_monotonicity",
+        "solve_trig_value_quadratic_constraint"
+      ],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_4_3.py",
+        "usable": [
+          "analyze_affine_transformed_trig_graph",
+          "compare_trig_values_by_monotonicity",
+          "solve_trig_value_quadratic_constraint"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": "A類 SubSection：是否納入 B2 題型掌握制 allowlist（目前仍顯示舊連對／暫無門檻語意）",
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "analyze_affine_transformed_trig_graph": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 4,
+          "unique_params": null,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "period",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "maximum",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "minimum",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              }
+            ],
+            [
+              {
+                "key": "period",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "maximum",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "minimum",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              }
+            ],
+            [
+              {
+                "key": "period",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "maximum",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "minimum",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        },
+        "compare_trig_values_by_monotonicity": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 2,
+          "unique_params": null,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LIMITED_VARIATION"
+        },
+        "solve_trig_value_quadratic_constraint": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 2,
+          "unique_params": null,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LIMITED_VARIATION"
+        }
+      },
+      "status": "NEEDS_DECISION"
+    },
+    {
+      "skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "display_name": "30°、45°、60° 特別角的三角函數值",
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 5,
+      "source_ids": [
+        11559,
+        11560,
+        11569,
+        11570,
+        11578
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "evaluate_exact_special_angle_expression",
+        "solve_right_triangle_projection"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_TrigonometricValuesOfSpecialAngles.py",
+        "usable": [
+          "evaluate_exact_special_angle_expression",
+          "solve_right_triangle_projection"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "evaluate_exact_special_angle_expression": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 3,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        },
+        "solve_right_triangle_projection": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 2,
+          "unique_params": null,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "rise",
+                "label": "上升高度",
+                "display_label": "上升高度"
+              },
+              {
+                "key": "horizontal",
+                "label": "水平距離",
+                "display_label": "水平距離"
+              }
+            ],
+            [
+              {
+                "key": "vertical_projection",
+                "label": "(1) 垂直高度（公尺）",
+                "display_label": "(1) 垂直高度（公尺）"
+              },
+              {
+                "key": "horizontal_projection",
+                "label": "(2) 水平距離（公尺）",
+                "display_label": "(2) 水平距離（公尺）"
+              }
+            ],
+            [
+              {
+                "key": "rise",
+                "label": "上升高度",
+                "display_label": "上升高度"
+              },
+              {
+                "key": "horizontal",
+                "label": "水平距離",
+                "display_label": "水平距離"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LIMITED_VARIATION"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_ArcLengthAndAreaOfSector",
+      "display_name": "扇形的弧長與面積",
+      "chapter": "第1章 三角函數",
+      "section": "1-1 角度的基本性質",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 8,
+      "source_ids": [
+        11583,
+        11608,
+        11609,
+        11610,
+        11619,
+        11620,
+        11624,
+        11625
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "compute_chord_and_arc_length",
+        "sector_arc_and_area"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_ArcLengthAndAreaOfSector.py",
+        "usable": [
+          "compute_chord_and_arc_length",
+          "sector_arc_and_area"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "detail": [
+            "compute_chord_and_arc_length"
+          ]
+        }
+      ],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_chord_and_arc_length": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "chord_length",
+                "label": "弦長",
+                "display_label": "弦長"
+              },
+              {
+                "key": "arc_length",
+                "label": "弧長",
+                "display_label": "弧長"
+              }
+            ],
+            [
+              {
+                "key": "chord_length",
+                "label": "弦長",
+                "display_label": "弦長"
+              },
+              {
+                "key": "arc_length",
+                "label": "弧長",
+                "display_label": "弧長"
+              }
+            ],
+            [
+              {
+                "key": "chord_length",
+                "label": "弦長",
+                "display_label": "弦長"
+              },
+              {
+                "key": "arc_length",
+                "label": "弧長",
+                "display_label": "弧長"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "sector_arc_and_area": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 29,
+          "unique_params": null,
+          "unique_answers": 29,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "part_3",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "display_name": "使用計算機計算函數值",
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 2,
+      "source_ids": [
+        11561,
+        11571
+      ],
+      "y": 1,
+      "problem_type_ids": [
+        "evaluate_trig_decimal"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_CalculatingFunctionValuesUsingCalculator.py",
+        "usable": [
+          "evaluate_trig_decimal"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "evaluate_trig_decimal": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 2,
+          "unique_params": null,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LIMITED_VARIATION"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_4",
+      "display_name": "三角函數值在四個象限的正負情形",
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 7,
+      "source_ids": [
+        11630,
+        11631,
+        11632,
+        11633,
+        11647,
+        11649,
+        11653
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "classify_trig_derived_point_quadrant",
+        "solve_signed_trig_constraints"
+      ],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_3_4.py",
+        "usable": [
+          "classify_trig_derived_point_quadrant",
+          "solve_signed_trig_constraints"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "detail": [
+            "classify_trig_derived_point_quadrant"
+          ]
+        }
+      ],
+      "decision_needed": "A類 SubSection：是否納入 B2 題型掌握制 allowlist（目前仍顯示舊連對／暫無門檻語意）",
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "classify_trig_derived_point_quadrant": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "solve_signed_trig_constraints": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 6,
+          "unique_params": null,
+          "unique_answers": 6,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "cos",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              },
+              {
+                "key": "tan",
+                "label": "$\\tan\\theta$",
+                "display_label": "$\\tan\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "sin",
+                "label": "$\\sin\\theta$",
+                "display_label": "$\\sin\\theta$"
+              },
+              {
+                "key": "cos",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "sin",
+                "label": "$\\sin\\theta$",
+                "display_label": "$\\sin\\theta$"
+              },
+              {
+                "key": "tan",
+                "label": "$\\tan\\theta$",
+                "display_label": "$\\tan\\theta$"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        }
+      },
+      "status": "NEEDS_DECISION"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_4",
+      "display_name": "三角函數圖形的變化與週期",
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 13,
+      "source_ids": [
+        11663,
+        11664,
+        11665,
+        11666,
+        11667,
+        11668,
+        11669,
+        11670,
+        11671,
+        11672,
+        11673,
+        11674,
+        11675
+      ],
+      "y": 9,
+      "problem_type_ids": [
+        "analyze_affine_transformed_trig_graph",
+        "analyze_tangent_absolute_graph_period",
+        "calculate_trig_period_from_argument_scale",
+        "classify_trig_equation_feasibility",
+        "classify_trig_expression_sign_change",
+        "compare_trig_values_by_monotonicity",
+        "count_sine_cosine_intersections",
+        "evaluate_trig_decimal",
+        "solve_trig_value_quadratic_constraint"
+      ],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_4_4.py",
+        "usable": [
+          "analyze_affine_transformed_trig_graph",
+          "analyze_tangent_absolute_graph_period",
+          "calculate_trig_period_from_argument_scale",
+          "classify_trig_equation_feasibility",
+          "classify_trig_expression_sign_change",
+          "compare_trig_values_by_monotonicity",
+          "count_sine_cosine_intersections",
+          "evaluate_trig_decimal",
+          "solve_trig_value_quadratic_constraint"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "detail": [
+            "analyze_tangent_absolute_graph_period",
+            "classify_trig_equation_feasibility",
+            "classify_trig_expression_sign_change",
+            "compare_trig_values_by_monotonicity",
+            "count_sine_cosine_intersections",
+            "evaluate_trig_decimal",
+            "solve_trig_value_quadratic_constraint"
+          ]
+        }
+      ],
+      "decision_needed": "A類 SubSection：是否納入 B2 題型掌握制 allowlist（目前仍顯示舊連對／暫無門檻語意）",
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "analyze_affine_transformed_trig_graph": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 3,
+          "unique_params": null,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "period",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "maximum",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "minimum",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              }
+            ],
+            [
+              {
+                "key": "period",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "maximum",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "minimum",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              }
+            ],
+            [
+              {
+                "key": "period",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "maximum",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "minimum",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        },
+        "analyze_tangent_absolute_graph_period": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "period",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              }
+            ],
+            [
+              {
+                "key": "period",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              }
+            ],
+            [
+              {
+                "key": "period",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "calculate_trig_period_from_argument_scale": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 3,
+          "unique_params": null,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        },
+        "classify_trig_equation_feasibility": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "classify_trig_expression_sign_change": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "compare_trig_values_by_monotonicity": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "count_sine_cosine_intersections": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "evaluate_trig_decimal": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "solve_trig_value_quadratic_constraint": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        }
+      },
+      "status": "NEEDS_DECISION"
+    },
+    {
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "display_name": "三角函數的基本關係式",
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 5,
+      "is_active": true,
+      "te_count": 10,
+      "source_ids": [
+        11562,
+        11563,
+        11564,
+        11565,
+        11572,
+        11573,
+        11574,
+        11580,
+        11585,
+        11586
+      ],
+      "y": 3,
+      "problem_type_ids": [
+        "complete_cofunction_identity",
+        "simplify_fundamental_trig_expression",
+        "solve_acute_trig_constraints"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_FundamentalTrigonometricIdentities.py",
+        "usable": [
+          "complete_cofunction_identity",
+          "simplify_fundamental_trig_expression",
+          "solve_acute_trig_constraints"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "complete_cofunction_identity": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 2,
+          "unique_params": null,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "given_angle_1",
+                "label": "(1) 原角",
+                "display_label": "(1) 原角"
+              },
+              {
+                "key": "complement_1",
+                "label": "(1) 互餘角",
+                "display_label": "(1) 互餘角"
+              },
+              {
+                "key": "given_angle_2",
+                "label": "(2) 原角",
+                "display_label": "(2) 原角"
+              },
+              {
+                "key": "complement_2",
+                "label": "(2) 互餘角",
+                "display_label": "(2) 互餘角"
+              }
+            ],
+            [
+              {
+                "key": "given_angle_1",
+                "label": "(1) 原角",
+                "display_label": "(1) 原角"
+              },
+              {
+                "key": "complement_1",
+                "label": "(1) 互餘角",
+                "display_label": "(1) 互餘角"
+              },
+              {
+                "key": "given_angle_2",
+                "label": "(2) 原角",
+                "display_label": "(2) 原角"
+              },
+              {
+                "key": "complement_2",
+                "label": "(2) 互餘角",
+                "display_label": "(2) 互餘角"
+              }
+            ],
+            [
+              {
+                "key": "given_angle_1",
+                "label": "(1) 原角",
+                "display_label": "(1) 原角"
+              },
+              {
+                "key": "complement_1",
+                "label": "(1) 互餘角",
+                "display_label": "(1) 互餘角"
+              },
+              {
+                "key": "given_angle_2",
+                "label": "(2) 原角",
+                "display_label": "(2) 原角"
+              },
+              {
+                "key": "complement_2",
+                "label": "(2) 互餘角",
+                "display_label": "(2) 互餘角"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LIMITED_VARIATION"
+        },
+        "simplify_fundamental_trig_expression": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 5,
+          "unique_params": null,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        },
+        "solve_acute_trig_constraints": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 3,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "product",
+                "label": "$\\sin\\theta\\cos\\theta$",
+                "display_label": "$\\sin\\theta\\cos\\theta$"
+              },
+              {
+                "key": "difference",
+                "label": "$\\sin\\theta-\\cos\\theta$",
+                "display_label": "$\\sin\\theta-\\cos\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "product",
+                "label": "$\\sin\\theta\\cos\\theta$",
+                "display_label": "$\\sin\\theta\\cos\\theta$"
+              },
+              {
+                "key": "sum",
+                "label": "$\\sin\\theta+\\cos\\theta$",
+                "display_label": "$\\sin\\theta+\\cos\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "product",
+                "label": "$\\sin\\theta\\cos\\theta$",
+                "display_label": "$\\sin\\theta\\cos\\theta$"
+              },
+              {
+                "key": "difference",
+                "label": "$\\sin\\theta-\\cos\\theta$",
+                "display_label": "$\\sin\\theta-\\cos\\theta$"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_5",
+      "display_name": "象限角的三角函數值",
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 5,
+      "is_active": true,
+      "te_count": 3,
+      "source_ids": [
+        11634,
+        11635,
+        11648
+      ],
+      "y": 1,
+      "problem_type_ids": [
+        "evaluate_exact_arbitrary_angle_trig_expression"
+      ],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_3_5.py",
+        "usable": [
+          "evaluate_exact_arbitrary_angle_trig_expression"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": "A類 SubSection：是否納入 B2 題型掌握制 allowlist（目前仍顯示舊連對／暫無門檻語意）",
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "evaluate_exact_arbitrary_angle_trig_expression": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 3,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              },
+              {
+                "key": "part_3",
+                "label": "(3)",
+                "display_label": "(3)"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              },
+              {
+                "key": "part_3",
+                "label": "(3)",
+                "display_label": "(3)"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              },
+              {
+                "key": "part_3",
+                "label": "(3)",
+                "display_label": "(3)"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        }
+      },
+      "status": "NEEDS_DECISION"
+    },
+    {
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "display_name": "同界角",
+      "chapter": "第1章 三角函數",
+      "section": "1-1 角度的基本性質",
+      "display_order": 6,
+      "is_active": true,
+      "te_count": 8,
+      "source_ids": [
+        11611,
+        11612,
+        11613,
+        11614,
+        11615,
+        11621,
+        11622,
+        11623
+      ],
+      "y": 1,
+      "problem_type_ids": [
+        "coterminal_angles"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_CoterminalAngles.py",
+        "usable": [
+          "coterminal_angles"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "coterminal_angles": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 29,
+          "unique_params": null,
+          "unique_answers": 18,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1_pos",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_1_neg",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "part_2_pos",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              },
+              {
+                "key": "part_2_neg",
+                "label": "小題 4",
+                "display_label": "小題 4"
+              }
+            ],
+            [
+              {
+                "key": "part_1_pos",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_1_neg",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "part_2_pos",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              },
+              {
+                "key": "part_2_neg",
+                "label": "小題 4",
+                "display_label": "小題 4"
+              }
+            ],
+            [
+              {
+                "key": "part_1_pos",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_1_neg",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              },
+              {
+                "key": "part_2_pos",
+                "label": "小題 3",
+                "display_label": "小題 3"
+              },
+              {
+                "key": "part_2_neg",
+                "label": "小題 4",
+                "display_label": "小題 4"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_6",
+      "display_name": "任意角三角函數求值",
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 6,
+      "is_active": true,
+      "te_count": 6,
+      "source_ids": [
+        11636,
+        11637,
+        11638,
+        11639,
+        11650,
+        11654
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "evaluate_exact_arbitrary_angle_trig_expression",
+        "solve_arbitrary_angle_vertical_projection"
+      ],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_3_6.py",
+        "usable": [
+          "evaluate_exact_arbitrary_angle_trig_expression",
+          "solve_arbitrary_angle_vertical_projection"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "detail": [
+            "solve_arbitrary_angle_vertical_projection"
+          ]
+        }
+      ],
+      "decision_needed": "A類 SubSection：是否納入 B2 題型掌握制 allowlist（目前仍顯示舊連對／暫無門檻語意）",
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "evaluate_exact_arbitrary_angle_trig_expression": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 5,
+          "unique_params": null,
+          "unique_answers": 5,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "sin_120",
+                "label": "sin120°",
+                "display_label": "sin120°"
+              },
+              {
+                "key": "cos_120",
+                "label": "cos120°",
+                "display_label": "cos120°"
+              },
+              {
+                "key": "tan_120",
+                "label": "tan120°",
+                "display_label": "tan120°"
+              },
+              {
+                "key": "sin_210",
+                "label": "sin210°",
+                "display_label": "sin210°"
+              },
+              {
+                "key": "cos_210",
+                "label": "cos210°",
+                "display_label": "cos210°"
+              },
+              {
+                "key": "tan_210",
+                "label": "tan210°",
+                "display_label": "tan210°"
+              }
+            ],
+            [
+              {
+                "key": "sin_150",
+                "label": "sin150°",
+                "display_label": "sin150°"
+              },
+              {
+                "key": "cos_150",
+                "label": "cos150°",
+                "display_label": "cos150°"
+              },
+              {
+                "key": "tan_150",
+                "label": "tan150°",
+                "display_label": "tan150°"
+              },
+              {
+                "key": "sin_240",
+                "label": "sin240°",
+                "display_label": "sin240°"
+              },
+              {
+                "key": "cos_240",
+                "label": "cos240°",
+                "display_label": "cos240°"
+              },
+              {
+                "key": "tan_240",
+                "label": "tan240°",
+                "display_label": "tan240°"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "sin(−30°)",
+                "display_label": "sin(−30°)"
+              },
+              {
+                "key": "part_2",
+                "label": "cos300°",
+                "display_label": "cos300°"
+              },
+              {
+                "key": "part_3",
+                "label": "tan(−135°)",
+                "display_label": "tan(−135°)"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        },
+        "solve_arbitrary_angle_vertical_projection": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        }
+      },
+      "status": "NEEDS_DECISION"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_7",
+      "display_name": "化任意角為銳角轉換關係式",
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 7,
+      "is_active": true,
+      "te_count": 7,
+      "source_ids": [
+        11640,
+        11641,
+        11642,
+        11643,
+        11644,
+        11651,
+        11652
+      ],
+      "y": 4,
+      "problem_type_ids": [
+        "classify_trig_derived_point_quadrant",
+        "complete_reference_angle_conversion",
+        "evaluate_exact_arbitrary_angle_trig_expression",
+        "simplify_fundamental_trig_expression"
+      ],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "facade": "C:\\Projects\\Mathproject_tvet_mathB\\skills\\vh_數學B2_SubSection_1_3_7.py",
+        "usable": [
+          "classify_trig_derived_point_quadrant",
+          "complete_reference_angle_conversion",
+          "evaluate_exact_arbitrary_angle_trig_expression",
+          "simplify_fundamental_trig_expression"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "detail": [
+            "classify_trig_derived_point_quadrant",
+            "complete_reference_angle_conversion"
+          ]
+        }
+      ],
+      "decision_needed": "A類 SubSection：是否納入 B2 題型掌握制 allowlist（目前仍顯示舊連對／暫無門檻語意）",
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "classify_trig_derived_point_quadrant": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "complete_reference_angle_conversion": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 1,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "reference_1",
+                "label": "第1列參考角",
+                "display_label": "第1列參考角"
+              },
+              {
+                "key": "sign_1",
+                "label": "第1列正負號",
+                "display_label": "第1列正負號"
+              },
+              {
+                "key": "reference_2",
+                "label": "第2列參考角",
+                "display_label": "第2列參考角"
+              },
+              {
+                "key": "sign_2",
+                "label": "第2列正負號",
+                "display_label": "第2列正負號"
+              },
+              {
+                "key": "reference_3",
+                "label": "第3列參考角",
+                "display_label": "第3列參考角"
+              },
+              {
+                "key": "sign_3",
+                "label": "第3列正負號",
+                "display_label": "第3列正負號"
+              },
+              {
+                "key": "reference_4",
+                "label": "第4列參考角",
+                "display_label": "第4列參考角"
+              },
+              {
+                "key": "sign_4",
+                "label": "第4列正負號",
+                "display_label": "第4列正負號"
+              },
+              {
+                "key": "reference_5",
+                "label": "第5列參考角",
+                "display_label": "第5列參考角"
+              },
+              {
+                "key": "sign_5",
+                "label": "第5列正負號",
+                "display_label": "第5列正負號"
+              },
+              {
+                "key": "reference_6",
+                "label": "第6列參考角",
+                "display_label": "第6列參考角"
+              },
+              {
+                "key": "sign_6",
+                "label": "第6列正負號",
+                "display_label": "第6列正負號"
+              }
+            ],
+            [
+              {
+                "key": "reference_1",
+                "label": "第1列參考角",
+                "display_label": "第1列參考角"
+              },
+              {
+                "key": "sign_1",
+                "label": "第1列正負號",
+                "display_label": "第1列正負號"
+              },
+              {
+                "key": "reference_2",
+                "label": "第2列參考角",
+                "display_label": "第2列參考角"
+              },
+              {
+                "key": "sign_2",
+                "label": "第2列正負號",
+                "display_label": "第2列正負號"
+              },
+              {
+                "key": "reference_3",
+                "label": "第3列參考角",
+                "display_label": "第3列參考角"
+              },
+              {
+                "key": "sign_3",
+                "label": "第3列正負號",
+                "display_label": "第3列正負號"
+              },
+              {
+                "key": "reference_4",
+                "label": "第4列參考角",
+                "display_label": "第4列參考角"
+              },
+              {
+                "key": "sign_4",
+                "label": "第4列正負號",
+                "display_label": "第4列正負號"
+              },
+              {
+                "key": "reference_5",
+                "label": "第5列參考角",
+                "display_label": "第5列參考角"
+              },
+              {
+                "key": "sign_5",
+                "label": "第5列正負號",
+                "display_label": "第5列正負號"
+              },
+              {
+                "key": "reference_6",
+                "label": "第6列參考角",
+                "display_label": "第6列參考角"
+              },
+              {
+                "key": "sign_6",
+                "label": "第6列正負號",
+                "display_label": "第6列正負號"
+              }
+            ],
+            [
+              {
+                "key": "reference_1",
+                "label": "第1列參考角",
+                "display_label": "第1列參考角"
+              },
+              {
+                "key": "sign_1",
+                "label": "第1列正負號",
+                "display_label": "第1列正負號"
+              },
+              {
+                "key": "reference_2",
+                "label": "第2列參考角",
+                "display_label": "第2列參考角"
+              },
+              {
+                "key": "sign_2",
+                "label": "第2列正負號",
+                "display_label": "第2列正負號"
+              },
+              {
+                "key": "reference_3",
+                "label": "第3列參考角",
+                "display_label": "第3列參考角"
+              },
+              {
+                "key": "sign_3",
+                "label": "第3列正負號",
+                "display_label": "第3列正負號"
+              },
+              {
+                "key": "reference_4",
+                "label": "第4列參考角",
+                "display_label": "第4列參考角"
+              },
+              {
+                "key": "sign_4",
+                "label": "第4列正負號",
+                "display_label": "第4列正負號"
+              },
+              {
+                "key": "reference_5",
+                "label": "第5列參考角",
+                "display_label": "第5列參考角"
+              },
+              {
+                "key": "sign_5",
+                "label": "第5列正負號",
+                "display_label": "第5列正負號"
+              },
+              {
+                "key": "reference_6",
+                "label": "第6列參考角",
+                "display_label": "第6列參考角"
+              },
+              {
+                "key": "sign_6",
+                "label": "第6列正負號",
+                "display_label": "第6列正負號"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LOW_VARIATION_SUSPECT"
+        },
+        "evaluate_exact_arbitrary_angle_trig_expression": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 3,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "(1)",
+                "display_label": "(1)"
+              },
+              {
+                "key": "part_2",
+                "label": "(2)",
+                "display_label": "(2)"
+              },
+              {
+                "key": "part_3",
+                "label": "(3)",
+                "display_label": "(3)"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION"
+        },
+        "simplify_fundamental_trig_expression": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "unique_stems": 2,
+          "unique_params": null,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ],
+            [
+              {
+                "key": "part_1",
+                "label": "小題 1",
+                "display_label": "小題 1"
+              },
+              {
+                "key": "part_2",
+                "label": "小題 2",
+                "display_label": "小題 2"
+              }
+            ]
+          ],
+          "image_count_max": 0,
+          "diversity_note": "LIMITED_VARIATION"
+        }
+      },
+      "status": "NEEDS_DECISION"
+    }
+  ],
+  "special_checks": {
+    "te_11583_11584": {
+      "11583": {
+        "skill_id": "vh_數學B2_ArcLengthAndAreaOfSector",
+        "expect_contains": "ArcLengthAndAreaOfSector",
+        "pass": true,
+        "has_image": true
+      },
+      "11584": {
+        "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+        "expect_contains": "TrigonometricFunctionsOfAcuteAngles",
+        "pass": true,
+        "has_image": true
+      }
+    },
+    "subsection_1_3_2_labels": {
+      "types": [
+        "compute_terminal_ray_trig_ratios"
+      ],
+      "humanize_raw_keys": [
+        "$\\sin\\theta$",
+        "$\\cos\\theta$",
+        "$\\tan\\theta$"
+      ],
+      "humanize_ok": true,
+      "samples": [
+        {
+          "stem": "設 P(−4,3) 為標準位置角 θ 終邊上的點，求 sinθ、cosθ、tanθ。",
+          "parts": [
+            {
+              "key": "sin",
+              "label": "$\\sin\\theta$",
+              "display_label": "$\\sin\\theta$"
+            },
+            {
+              "key": "cos",
+              "label": "$\\cos\\theta$",
+              "display_label": "$\\cos\\theta$"
+            },
+            {
+              "key": "tan",
+              "label": "$\\tan\\theta$",
+              "display_label": "$\\tan\\theta$"
+            }
+          ],
+          "answer_hash": "91a49dd9f6ca"
+        },
+        {
+          "stem": "設 P(−√3,−1) 為標準位置角 θ 終邊上的點，求 sinθ、cosθ、tanθ。",
+          "parts": [
+            {
+              "key": "sin",
+              "label": "$\\sin\\theta$",
+              "display_label": "$\\sin\\theta$"
+            },
+            {
+              "key": "cos",
+              "label": "$\\cos\\theta$",
+              "display_label": "$\\cos\\theta$"
+            },
+            {
+              "key": "tan",
+              "label": "$\\tan\\theta$",
+              "display_label": "$\\tan\\theta$"
+            }
+          ],
+          "answer_hash": "f81e3e4a2dd1"
+        },
+        {
+          "stem": "設 P(2,−1) 為 θ 終邊上一點，求 sinθ、cosθ、tanθ。",
+          "parts": [
+            {
+              "key": "sin",
+              "label": "$\\sin\\theta$",
+              "display_label": "$\\sin\\theta$"
+            },
+            {
+              "key": "cos",
+              "label": "$\\cos\\theta$",
+              "display_label": "$\\cos\\theta$"
+            },
+            {
+              "key": "tan",
+              "label": "$\\tan\\theta$",
+              "display_label": "$\\tan\\theta$"
+            }
+          ],
+          "answer_hash": "e2e7adaab009"
+        },
+        {
+          "stem": "設 P(−4,3) 為標準位置角 θ 終邊上的點，求 sinθ、cosθ、tanθ。",
+          "parts": [
+            {
+              "key": "sin",
+              "label": "$\\sin\\theta$",
+              "display_label": "$\\sin\\theta$"
+            },
+            {
+              "key": "cos",
+              "label": "$\\cos\\theta$",
+              "display_label": "$\\cos\\theta$"
+            },
+            {
+              "key": "tan",
+              "label": "$\\tan\\theta$",
+              "display_label": "$\\tan\\theta$"
+            }
+          ],
+          "answer_hash": "91a49dd9f6ca"
+        },
+        {
+          "stem": "設 P(−√3,−1) 為標準位置角 θ 終邊上的點，求 sinθ、cosθ、tanθ。",
+          "parts": [
+            {
+              "key": "sin",
+              "label": "$\\sin\\theta$",
+              "display_label": "$\\sin\\theta$"
+            },
+            {
+              "key": "cos",
+              "label": "$\\cos\\theta$",
+              "display_label": "$\\cos\\theta$"
+            },
+            {
+              "key": "tan",
+              "label": "$\\tan\\theta$",
+              "display_label": "$\\tan\\theta$"
+            }
+          ],
+          "answer_hash": "f81e3e4a2dd1"
+        }
+      ],
+      "issues": [],
+      "status": "PASS"
+    }
+  },
+  "summary": {
+    "skill_count": 19,
+    "active": 16,
+    "inactive": 3,
+    "named_mastery_pilot": 8,
+    "a_class_subsection": [
+      "vh_數學B2_SubSection_1_3_1",
+      "vh_數學B2_SubSection_1_3_2",
+      "vh_數學B2_SubSection_1_4_3",
+      "vh_數學B2_SubSection_1_3_4",
+      "vh_數學B2_SubSection_1_4_4",
+      "vh_數學B2_SubSection_1_3_5",
+      "vh_數學B2_SubSection_1_3_6",
+      "vh_數學B2_SubSection_1_3_7"
+    ],
+    "status_counts": {
+      "INACTIVE_OK": 3,
+      "PASS": 8,
+      "NEEDS_DECISION": 8
+    }
+  }
+}

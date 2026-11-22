@@ -118,7 +118,10 @@
             const index = Number(cmp[1]);
             return `圖${marks[index - 1] || index}`;
         }
-        return studentLabel((part && (part.label || part.prompt)) || key, fallbackIndex);
+        return studentLabel(
+            (part && (part.display_label || part.math_label || part.label || part.prompt)) || key,
+            fallbackIndex
+        );
     }
 
     function controlKind(part) {

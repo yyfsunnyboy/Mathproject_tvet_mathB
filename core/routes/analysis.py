@@ -208,11 +208,35 @@ def _handwriting_expected_answer(trusted_question):
     """Return only the answer attached to the server-validated question."""
     if not isinstance(trusted_question, dict):
         return ""
-    return str(
-        trusted_question.get("correct_answer")
-        or trusted_question.get("answer")
-        or ""
-    ).strip()
+    raw = trusted_question.get("correct_answer")
+    if raw in (None, ""):
+        raw = trusted_question.get("answer")
+    # Multipart contracts keep a dict of part answers; never str(dict) into prompts.
+    if isinstance(raw, dict):
+        contract = trusted_question.get("answer_contract") if isinstance(trusted_question.get("answer_contract"), dict) else {}
+        parts = contract.get("parts") if isinstance(contract.get("parts"), list) else []
+        lines: list[str] = []
+        if parts:
+            for index, part in enumerate(parts, start=1):
+                if not isinstance(part, dict):
+                    continue
+                key = str(part.get("key") or "").strip()
+                label = str(
+                    part.get("display_label") or part.get("label") or f"({index})"
+                ).strip()
+                value = part.get("expected_answer")
+                if value is None and key:
+                    value = raw.get(key)
+                if value is None:
+                    continue
+                lines.append(f"{label}: {value}")
+        if not lines:
+            for index, (key, value) in enumerate(raw.items(), start=1):
+                lines.append(f"({index}) {key}: {value}")
+        return "\n".join(lines).strip()
+    if isinstance(raw, (list, tuple)):
+        return "\n".join(f"({index}) {item}" for index, item in enumerate(raw, start=1)).strip()
+    return str(raw or "").strip()
 
 
 def _handwriting_final_answer_candidates(expr):
@@ -906,8 +930,58 @@ def _clean_math_expr(expr: str) -> str:
     return cleaned
 
 
-def _handwriting_structured_analysis(recognized_expression, expected_answer, question_text, family_id):
-    exp = (expected_answer or "").strip()
+def _handwriting_multipart_oracle_match(recognized_expression, trusted_question) -> bool | None:
+    """Use the formal multi_part checker when the trusted question has part contracts."""
+    if not isinstance(trusted_question, dict):
+        return None
+    contract = trusted_question.get("answer_contract")
+    if not isinstance(contract, dict):
+        return None
+    parts = contract.get("parts")
+    if not isinstance(parts, list) or not parts:
+        return None
+    if str(contract.get("answer_type") or "").strip().lower() not in {"multi_part", ""}:
+        # Still allow when parts exist even if answer_type omitted.
+        if str(trusted_question.get("answer_type") or "").strip().lower() != "multi_part":
+            if not any(isinstance(p, dict) and p.get("expected_answer") is not None for p in parts):
+                return None
+    try:
+        from core.handwriting_ai_check import (
+            HandwritingCheckContext,
+            deterministic_final_answer_check,
+            normalize_multi_part_handwriting_answer,
+        )
+    except Exception:
+        return None
+    correct = trusted_question.get("correct_answer")
+    if correct in (None, ""):
+        correct = trusted_question.get("answer")
+    ctx = HandwritingCheckContext(
+        skill_id=str(trusted_question.get("skill_id") or trusted_question.get("skill") or ""),
+        question_text=str(trusted_question.get("question_text") or trusted_question.get("question") or ""),
+        problem_type_id=str(trusted_question.get("problem_type_id") or ""),
+        answer_type="multi_part",
+        correct_answer=correct,
+        answer_contract=contract,
+        checker=str(contract.get("checker") or "multi_part_answer_checker"),
+        equivalence=str(contract.get("answer_equivalence") or contract.get("equivalence_type") or "multi_part_answer"),
+    )
+    mapped = normalize_multi_part_handwriting_answer(recognized_expression, ctx)
+    if not isinstance(mapped, dict) or not any(str(v or "").strip() for v in mapped.values()):
+        return None
+    return deterministic_final_answer_check(mapped, ctx)
+
+
+def _handwriting_structured_analysis(
+    recognized_expression,
+    expected_answer,
+    question_text,
+    family_id,
+    trusted_question=None,
+):
+    exp = (expected_answer or "").strip() if not isinstance(expected_answer, (dict, list)) else ""
+    if isinstance(expected_answer, (dict, list)) and not exp:
+        exp = _handwriting_expected_answer({"correct_answer": expected_answer, "answer_contract": (trusted_question or {}).get("answer_contract") if isinstance(trusted_question, dict) else {}})
     qt = (question_text or "").strip()
     skill_focus = _handwriting_skill_focus(family_id)
     family_label_zh, family_description_zh = _handwriting_family_meta(family_id)
@@ -936,6 +1010,19 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         base["status"] = "ocr_failed"
         return base
 
+    multipart_match = _handwriting_multipart_oracle_match(recognized_expression, trusted_question)
+    if multipart_match is True:
+        base.update({
+            "is_correct": True,
+            "process_correct": True,
+            "status": "correct",
+            "main_issue": "",
+            "skill_focus": skill_focus or "你已掌握本題重點",
+            "issue_tag": "multipart_oracle_matched",
+            "analysis_source": "multipart_oracle_checker",
+        })
+        return base
+
     if not exp:
         base["main_issue"] = "目前缺少可對照的標準答案，無法完成穩定批改。"
         base["skill_focus"] = skill_focus or "依題目重點進行化簡與整理"
@@ -949,10 +1036,12 @@ def _handwriting_structured_analysis(recognized_expression, expected_answer, que
         candidates = [str(recognized_expression).strip()]
 
     # 在進入複雜邏輯前，先進行穩定格式比較 (字串去白/全半形正規化)
-    exp_clean = _clean_math_expr(exp)
+    # Multipart expected display strings are not a single math expression; skip
+    # whole-string equality against the joined labeled expected text.
+    exp_clean = _clean_math_expr(exp) if "\n" not in exp and ":" not in exp else ""
     for cand in candidates:
         cand_clean = _clean_math_expr(cand)
-        if cand_clean and cand_clean == exp_clean:
+        if cand_clean and exp_clean and cand_clean == exp_clean:
             base.update({
                 "is_correct": True,
                 "process_correct": True,
@@ -2752,11 +2841,16 @@ def analyze_handwriting():
                 }
             ), 409
 
+    # Handwriting tutor feedback counts as assisted help for type-mastery independence.
+    try:
+        from core.practice_type_mastery import mark_question_assisted
 
-
-
-
-
+        mark_question_assisted(session, str(data.get("question_uid") or "").strip())
+    except Exception:
+        current_app.logger.exception(
+            "[type mastery] mark assisted failed on analyze_handwriting question_uid=%s",
+            data.get("question_uid"),
+        )
 
     print("payload keys:", list(data.keys()))
     print("has image:", bool(data.get("image_base64")))
@@ -3128,7 +3222,11 @@ def analyze_handwriting():
         )
 
         analysis_result = _handwriting_structured_analysis(
-            expr, expected_answer, question_text, family_id
+            expr,
+            expected_answer,
+            question_text,
+            family_id,
+            trusted_question=trusted_question,
         )
         if handwriting_submission_id:
             analysis_result["checker_status"] = str(

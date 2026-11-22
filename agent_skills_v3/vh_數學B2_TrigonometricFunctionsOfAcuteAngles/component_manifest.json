@@ -103,15 +103,15 @@
       "generate_py": "components/src_11582/generate.py"
     },
     {
-      "component_id": "src_11583",
-      "textbook_example_id": 11583,
+      "component_id": "src_11584",
+      "textbook_example_id": 11584,
       "status": "verified",
-      "problem_type_id": "compute_chord_and_arc_length",
-      "domain_operation": "compute_chord_and_arc_length",
+      "problem_type_id": "solve_right_triangle_projection",
+      "domain_operation": "solve_right_triangle_projection",
       "presentation_mode": "multiple_inputs",
       "answer_type": "expression",
       "source_kind": "exercise",
-      "generate_py": "components/src_11583/generate.py"
+      "generate_py": "components/src_11584/generate.py"
     }
   ]
 }

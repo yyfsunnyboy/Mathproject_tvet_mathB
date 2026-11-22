@@ -1,0 +1,39 @@
+{
+  "te_id": 11584,
+  "root_cause": [
+    "D: student /uploads/ still served pre-P1 polluted crop (340x911) with B clipped + 熟習度自評表",
+    "A: even static recrop bbox y0=412 clipped italic B top (ink at PNG y=0)",
+    "B(partial): tall figure hidden from question-media and only shown as tiny compact scratchpad thumbnail"
+  ],
+  "pdf_original": "textbook_import/source/vocational/math_B2/第一章 1-2 銳角三角函數-課本.pdf page_index=19; labels A,B,C,D,E correct",
+  "bbox_before": [
+    400.0,
+    412.0,
+    560.0,
+    598.0
+  ],
+  "bbox_after": [
+    395.0,
+    392.0,
+    562.0,
+    598.0
+  ],
+  "backup_db": "instance/backups/kumon_math_pre_b2_p1_cable_crop_20261122_232134.db",
+  "files": [
+    "uploads/.../進階題10_vocation_fig1.png",
+    "static/.../進階題10_vocation_fig1.png",
+    "templates/index.html (tall preview)",
+    "scripts/repair_b2_p1_cable_11584_crop.py",
+    "textbook_examples.notes.image_assets for 11584"
+  ],
+  "answer_unchanged": {
+    "elevation": "500 + 450*sqrt(2)",
+    "horizontal_projection": "450*sqrt(2)"
+  },
+  "evidence": [
+    "before_uploads_11584_polluted.png",
+    "after_uploads_11584_full_B.png",
+    "browser_after_11584_tall_preview.png",
+    "browser_fetched_11584.png"
+  ]
+}

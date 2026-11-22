@@ -8,6 +8,7 @@ from typing import Any
 RATIO = "vh_數學B2_RatioAndRatioValue"
 ACUTE = "vh_數學B2_TrigonometricFunctionsOfAcuteAngles"
 SPECIAL = "vh_數學B2_TrigonometricValuesOfSpecialAngles"
+SECTOR = "vh_數學B2_ArcLengthAndAreaOfSector"
 CALCULATOR = "vh_數學B2_CalculatingFunctionValuesUsingCalculator"
 IDENTITY = "vh_數學B2_FundamentalTrigonometricIdentities"
 
@@ -65,7 +66,7 @@ COMPONENT_SPECS: dict[int, dict[str, Any]] = {
         _call(EXACT, {"terms": [_term("cos", "1/6", unit="pi_coefficient"), _term("sin", "1/3", unit="pi_coefficient")]}, [_out(key="part_1", label="(1)")]),
         _call(EXACT, {"terms": [_term("cos", 45, coefficient="sqrt(2)"), _term("tan", 45, coefficient=-1, power=2)]}, [_out(key="part_2", label="(2)")]),
     ]},
-    11570: {"skill_id": SPECIAL, "operation": PROJECTION, "answer_type": "multi_part", "question": "斜邊長 100 且仰角為 60°，求垂直高度與水平距離。", "calls": [_call(PROJECTION, {"hypotenuse": 100, "angle": 60, "requested": ["vertical_projection", "horizontal_projection"], "length_unit": "m"})]},
+    11570: {"skill_id": SPECIAL, "operation": PROJECTION, "answer_type": "multi_part", "question": "斜邊長 100 且仰角為 60°，求垂直高度與水平距離。", "calls": [_call(PROJECTION, {"hypotenuse": 100, "angle": 60, "requested": ["vertical_projection", "horizontal_projection"], "length_unit": "m"}, [_out("vertical_projection", "vertical_projection", "(1) 垂直高度（公尺）"), _out("horizontal_projection", "horizontal_projection", "(2) 水平距離（公尺）")])]},
     11571: {"skill_id": CALCULATOR, "operation": DECIMAL, "answer_type": "multi_part", "question": "使用計算機求：(1) tan55°；(2) cos80°30′。", "calls": [_call(DECIMAL, {"requests": [{"function": "tan", "degrees": 55, "precision": 8}, {"function": "cos", "degrees": 80, "minutes": 30, "precision": 8}]})]},
     11572: {"skill_id": IDENTITY, "operation": SIMPLIFY, "answer_type": "multi_part", "question": "利用基本關係填空：(1) sin66°/cos66°；(2) tan55°·cos55°。", "calls": [_call(SIMPLIFY, {"expressions": {"part_1": "sin(66*pi/180)/cos(66*pi/180)", "part_2": "tan(55*pi/180)*cos(55*pi/180)"}})]},
     11573: {"skill_id": IDENTITY, "operation": COFUNCTION, "answer_type": "multi_part", "question": "利用餘函數關係完成 sin65° 與 cos77° 的等式。", "calls": [
@@ -83,7 +84,7 @@ COMPONENT_SPECS: dict[int, dict[str, Any]] = {
         _call(EXACT, {"terms": [_term("cos", 60, coefficient="4/3", power=2)]}, [_out(key="part_1", label="(1)")]),
         _call(EXACT, {"terms": [_term("sin", 45, power=2), _term("cos", 30, coefficient=2, power=2), _term("tan", 60, power=2)]}, [_out(key="part_2", label="(2)")]),
     ]},
-    11579: {"skill_id": ACUTE, "operation": CONSTRAINT, "answer_type": "multi_part", "question": "θ 為銳角且 sinθ=√3cosθ，求 tanθ 與 sinθ+cosθ。", "calls": [_call(CONSTRAINT, {"relations": ["sin_theta=sqrt(3)*cos_theta"], "targets": {"tan": "tan_theta", "sum": "sin_theta+cos_theta"}})]},
+    11579: {"skill_id": ACUTE, "operation": CONSTRAINT, "answer_type": "multi_part", "question": r"θ 為銳角且 $\sin\theta=\sqrt{3}\cos\theta$，求 $\tan\theta$ 與 $\sin\theta+\cos\theta$。", "calls": [_call(CONSTRAINT, {"relations": ["sin_theta=sqrt(3)*cos_theta"], "targets": {"tan": "tan_theta", "sum": "sin_theta+cos_theta"}}, [_out("tan", "tan", r"$\tan\theta$"), _out("sum", "sum", r"$\sin\theta+\cos\theta$")])]},
     11580: {"skill_id": IDENTITY, "operation": SIMPLIFY, "answer_type": "multi_part", "question": "利用基本關係填空：(1) sin88°/cos88°；(2) tan35°·cos35°；(3) sin²35°+cos²35°；(4) sin30°=cos(90°−＿)=cos＿；(5) cos45°=sin(90°−＿)=sin＿。", "calls": [
         _call(SIMPLIFY, {"expressions": {"part_1": "sin(88*pi/180)/cos(88*pi/180)", "part_2": "tan(35*pi/180)*cos(35*pi/180)", "part_3": "sin(35*pi/180)**2+cos(35*pi/180)**2"}}),
         _call(COFUNCTION, {"function": "sin", "angle": 30}, [_out("given:angle", "part_4a", "(4) 原角"), _out("complement_degrees", "part_4b", "(4) 互餘角")]),
@@ -91,8 +92,10 @@ COMPONENT_SPECS: dict[int, dict[str, Any]] = {
     ]},
     11581: {"skill_id": ACUTE, "operation": SIMPLIFY, "answer_type": "short_answer", "question": "θ 為銳角，求 (sinθ+cosθ)²+(sinθ−cosθ)²。", "calls": [_call(SIMPLIFY, {"expressions": {"value": "(sin_theta+cos_theta)**2+(sin_theta-cos_theta)**2"}}, [_out("value", "value", "值")])]},
     11582: {"skill_id": ACUTE, "operation": CONSTRAINT, "answer_type": "multi_part", "question": "θ 為銳角且 sinθ+cosθ=√2，求 sinθcosθ 與 sinθ−cosθ。", "calls": [_call(CONSTRAINT, {"relations": ["sin_theta+cos_theta=sqrt(2)"], "targets": {"product": "sin_theta*cos_theta", "difference": "sin_theta-cos_theta"}})]},
-    11583: {"skill_id": ACUTE, "operation": CHORD_ARC, "answer_type": "multi_part", "question": "鞦韆繩長 2 公尺，向兩側擺動各 30° 至 A、B，求弦 AB 與弧 AB 的長。", "visual_asset": "uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題9_vocation_fig1.png", "calls": [_call(CHORD_ARC, {"radius": 2, "central_angle": 60, "length_unit": "m"})]},
-    11584: {"skill_id": SPECIAL, "operation": PROJECTION, "answer_type": "multi_part", "question": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。", "visual_asset": "uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題10_vocation_fig1.png", "calls": [_call(PROJECTION, {"hypotenuse": 900, "angle": 45, "base_elevation": 500, "requested": ["elevation", "horizontal_projection"], "length_unit": "m"})]},
+    # 11583: textbook 1-2 進階題9, but math concept is sector chord+arc → ArcLength Skill
+    11583: {"skill_id": SECTOR, "operation": CHORD_ARC, "answer_type": "multi_part", "question": "鞦韆繩長 2 公尺，向兩側擺動各 30° 至 A、B，求弦 AB 與弧 AB 的長。", "visual_asset": "uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題9_vocation_fig1.png", "calls": [_call(CHORD_ARC, {"radius": 2, "central_angle": 60, "length_unit": "m"})]},
+    # 11584: textbook 1-2 進階題10, 45° right-triangle projection → AcuteAngles Skill
+    11584: {"skill_id": ACUTE, "operation": PROJECTION, "answer_type": "multi_part", "question": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。", "visual_asset": "uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題10_vocation_fig1.png", "calls": [_call(PROJECTION, {"hypotenuse": 900, "angle": 45, "base_elevation": 500, "requested": ["elevation", "horizontal_projection"], "length_unit": "m"}, [_out("elevation", "elevation", "(1) B 站海拔（公尺）"), _out("horizontal_projection", "horizontal_projection", "(2) 兩站水平距離（公尺）")])]},
     11585: {"skill_id": IDENTITY, "operation": CONSTRAINT, "answer_type": "single_choice", "question": "已知 0<θ<π/2、tanθ=7/25，令 a=sinθcosθ，下列何者正確？", "calls": [_call(CONSTRAINT, {"known": {"tan": "7/25"}, "targets": {"a": "sin_theta*cos_theta"}, "choice_options": [
         {"label": "A", "semantic": "1/2<a<1", "lower": "1/2", "upper": "1"}, {"label": "B", "semantic": "0<a<1/2", "lower": "0", "upper": "1/2"},
         {"label": "C", "semantic": "-1/2<a<0", "lower": "-1/2", "upper": "0"}, {"label": "D", "semantic": "-1<a<-1/2", "lower": "-1", "upper": "-1/2"},

@@ -275,7 +275,8 @@ def _build_convert(rng: random.Random, constraints: dict[str, Any]) -> dict[str,
             if kind in {"deg_to_rad", "deg_to_rad_list"}:
                 deg = _frac(item["degrees"])
                 ans = _pi_plain(degrees_to_pi_coeff(deg))
-                prompts.append(f"({idx}) 將 ${deg}\\circ$ 化為弧度。")
+                # Must use ^\circ inside math mode; bare \circ sits like a letter "o".
+                prompts.append(f"({idx}) 將 ${_deg_plain(deg)}^\\circ$ 化為弧度。")
             elif kind in {"rad_number_to_deg"}:
                 raw = _frac(item["radians"])
                 # θ rad = θ * 180/π degrees

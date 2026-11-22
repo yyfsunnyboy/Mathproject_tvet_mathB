@@ -1,0 +1,41 @@
+{
+  "backup_db": "C:\\Projects\\Mathproject_tvet_mathB\\instance\\backups\\kumon_math_pre_b2_p1_cable_crop_20261122_232134.db",
+  "crop": {
+    "abs_path": "C:\\Projects\\Mathproject_tvet_mathB\\static\\question_assets\\vocational\\longteng\\數學B2\\ch01_unknown\\sec_1-2_銳角三角函數\\advanced_exercise_1-2習題_進階題10_vocation_fig1.png",
+    "backup": "C:\\Projects\\Mathproject_tvet_mathB\\static\\question_assets\\vocational\\longteng\\數學B2\\ch01_unknown\\sec_1-2_銳角三角函數\\advanced_exercise_1-2習題_進階題10_vocation_fig1.png.bak_20261122_232134",
+    "width": 465,
+    "height": 574,
+    "file_size": 19110,
+    "sha256": "a75aff22fab143ed08b40f700604bba1ca11f8037c83777cfa8bf6e68485335d",
+    "bbox": [
+      395.0,
+      392.0,
+      562.0,
+      598.0
+    ],
+    "rel_path": "uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題10_vocation_fig1.png"
+  },
+  "db_id": 11584,
+  "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+  "asset": {
+    "asset_type": "pdf_visual_crop",
+    "asset_slot": "pdf_visual_01",
+    "source": "pdf",
+    "path": "uploads/question_assets/vocational/longteng/數學B2/ch01_unknown/sec_1-2_銳角三角函數/advanced_exercise_1-2習題_進階題10_vocation_fig1.png",
+    "page_index": 19,
+    "bbox": [
+      395.0,
+      392.0,
+      562.0,
+      598.0
+    ],
+    "width": 465,
+    "height": 574,
+    "sha256": "a75aff22fab143ed08b40f700604bba1ca11f8037c83777cfa8bf6e68485335d",
+    "visual_status": "accepted",
+    "visual_review_reasons": [],
+    "match_method": "audited_B2_1-2_pdf_page20_manual_bbox_full_B",
+    "updated_at": "2026-11-22T15:21:34+00:00"
+  },
+  "reason": "expand bbox top so italic B is fully inside crop; bottom unchanged"
+}

@@ -31,16 +31,42 @@ def _scalar(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _selected_parts(call: dict[str, Any], payload: dict[str, Any]) -> list[dict[str, Any]]:
+    from core.gencode.domain_matrix_adapter import _student_facing_part_label
+
     available = _parts(payload)
     outputs = list(call.get("outputs") or [])
     if not outputs:
-        outputs = [{"source_key": key, "key": key, "label": key} for key in available] or [{"key": "value"}]
+        # Keys alone are internal; student labels come from domain rows / humanize map.
+        outputs = [{"source_key": key, "key": key} for key in available] or [{"key": "value"}]
     selected = []
     for index, output in enumerate(outputs):
         source = str(output.get("source_key") or "")
         part = dict(available[source]) if source in available else _scalar(payload)
         key = str(output.get("key") or source or f"part_{index+1}")
-        part.update({"key": key, "field_key": key, "label": str(output.get("label") or key)})
+        explicit = str(output.get("label") or "").strip()
+        if explicit and explicit != key:
+            label = explicit
+        else:
+            # Prefer Domain/Adapter classroom labels already on the part.
+            inherited = str(
+                part.get("display_label") or part.get("math_label") or part.get("label") or ""
+            ).strip()
+            if inherited and inherited != key:
+                label = inherited
+            else:
+                label = _student_facing_part_label(
+                    key,
+                    explicit=explicit or None,
+                    domain_operation=str(call.get("operation") or ""),
+                )
+        part.update({
+            "key": key,
+            "field_key": key,
+            "label": label,
+            "display_label": label,
+        })
+        if "$" in label or r"\(" in label:
+            part["math_label"] = label
         if call.get("operation") in {"classify_standard_position_angle", "classify_trig_derived_point_quadrant"}:
             part.update({
                 "expected_answer": angle_location_label(part.get("expected_answer")),
@@ -92,6 +118,12 @@ def generate_b2_13_component_payload(*, spec: dict[str, Any], textbook_example_i
             contract = {"presentation_mode":mode,"answer_type":"classification" if scalar_checker == "quadrant_checker" else answer_type,"answer_shape":"scalar","checker":scalar_checker,"checker_key":scalar_checker,"answer_equivalence":scalar_equiv,"equivalence_type":scalar_equiv,"canonical_answer":canonical,"fixed_domain_key":"trigonometry.arbitrary_angle"}
         else:
             canonical, mode = {str(part["key"]):part["expected_answer"] for part in parts}, "multiple_inputs"
+            from core.gencode.domain_matrix_adapter import _humanize_answer_contract_parts
+            parts = _humanize_answer_contract_parts(
+                parts,
+                domain_operation=str(spec.get("operation") or ""),
+                label_context={"question_text": str(spec.get("question") or "")},
+            )
             contract = {"presentation_mode":mode,"answer_type":"multi_part","answer_shape":"multi_part","checker":"multi_part_answer_checker","checker_key":"multi_part_answer_checker","answer_equivalence":"multi_part_answer","equivalence_type":"multi_part_answer","parts":parts,"fixed_domain_key":"trigonometry.arbitrary_angle"}
     payload.update({"skill_id":str(spec["skill_id"]),"component_id":component_id,"generator_key":component_id,"textbook_example_id":textbook_example_id,"problem_type_id":str(spec["operation"]),"domain_operation":str(spec["operation"]),"source_kind":"example" if spec["oracle_source"]=="source_provided" else "exercise","question_text":str(spec["question"]),"question":str(spec["question"]),"answer":canonical,"correct_answer":canonical,"display_answer":str(canonical),"presentation_mode":mode,"answer_type":answer_type,"checker":contract["checker"],"checker_key":contract["checker_key"],"equivalence":contract["equivalence_type"],"equivalence_type":contract["equivalence_type"],"answer_contract":contract})
     metadata = dict(payload.get("metadata") or {})

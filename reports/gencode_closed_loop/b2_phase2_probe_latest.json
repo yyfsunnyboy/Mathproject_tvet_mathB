@@ -1,0 +1,1161 @@
+{
+  "volume": "數學B2",
+  "ch1_named": [
+    {
+      "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "name": "角的度量與換算",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-1 角度的基本性質",
+      "display_order": 3,
+      "te_count": 5,
+      "te_sample": [
+        {
+          "id": 11606,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11607,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11616,
+          "source_kind": null,
+          "line_type": "textbook_exercise",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 1,
+      "usable_ids": [
+        "convert_angle_measure"
+      ],
+      "inventory_status": null,
+      "subsection": false
+    },
+    {
+      "skill_id": "vh_數學B2_ArcLengthAndAreaOfSector",
+      "name": "扇形的弧長與面積",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-1 角度的基本性質",
+      "display_order": 4,
+      "te_count": 7,
+      "te_sample": [
+        {
+          "id": 11608,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11609,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11610,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 1,
+      "usable_ids": [
+        "sector_arc_and_area"
+      ],
+      "inventory_status": null,
+      "subsection": false
+    },
+    {
+      "skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "name": "使用計算機計算函數值",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 4,
+      "te_count": 2,
+      "te_sample": [
+        {
+          "id": 11561,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11571,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 1,
+      "usable_ids": [
+        "evaluate_trig_decimal"
+      ],
+      "inventory_status": null,
+      "subsection": false
+    },
+    {
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "name": "同界角",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-1 角度的基本性質",
+      "display_order": 6,
+      "te_count": 8,
+      "te_sample": [
+        {
+          "id": 11611,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11612,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11613,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 1,
+      "usable_ids": [
+        "coterminal_angles"
+      ],
+      "inventory_status": null,
+      "subsection": false
+    },
+    {
+      "skill_id": "vh_數學B2_DirectedAngle",
+      "name": "有向角",
+      "active": false,
+      "chapter": "第1章 三角函數",
+      "section": "1-1 角度的基本性質",
+      "display_order": 1,
+      "te_count": 0,
+      "te_sample": [],
+      "facade": false,
+      "v3_pkg": false,
+      "usable_n": 0,
+      "usable_ids": [],
+      "inventory_status": null,
+      "subsection": false
+    },
+    {
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "name": "三角函數的基本關係式",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 5,
+      "te_count": 10,
+      "te_sample": [
+        {
+          "id": 11562,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11563,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11564,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 3,
+      "usable_ids": [
+        "complete_cofunction_identity",
+        "simplify_fundamental_trig_expression",
+        "solve_acute_trig_constraints"
+      ],
+      "inventory_status": null,
+      "subsection": false
+    },
+    {
+      "skill_id": "vh_數學B2_RatioAndRatioValue",
+      "name": "比與比值",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 1,
+      "te_count": 2,
+      "te_sample": [
+        {
+          "id": 11556,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11566,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 1,
+      "usable_ids": [
+        "solve_similar_triangle_proportion"
+      ],
+      "inventory_status": null,
+      "subsection": false
+    },
+    {
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "name": "銳角三角函數",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 2,
+      "te_count": 11,
+      "te_sample": [
+        {
+          "id": 11557,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11558,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11567,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 4,
+      "usable_ids": [
+        "compute_chord_and_arc_length",
+        "compute_right_triangle_trig_ratios",
+        "simplify_fundamental_trig_expression",
+        "solve_acute_trig_constraints"
+      ],
+      "inventory_status": null,
+      "subsection": false
+    },
+    {
+      "skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "name": "30°、45°、60° 特別角的三角函數值",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-2 銳角三角函數",
+      "display_order": 3,
+      "te_count": 6,
+      "te_sample": [
+        {
+          "id": 11559,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11560,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11569,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 2,
+      "usable_ids": [
+        "evaluate_exact_special_angle_expression",
+        "solve_right_triangle_projection"
+      ],
+      "inventory_status": null,
+      "subsection": false
+    }
+  ],
+  "ch1_subsections": [
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_1",
+      "name": "標準位置角",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 1,
+      "te_count": 3,
+      "te_sample": [
+        {
+          "id": 11626,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11627,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11645,
+          "source_kind": null,
+          "line_type": "textbook_exercise",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 1,
+      "usable_ids": [
+        "classify_standard_position_angle"
+      ],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "A_practice_skill"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_2",
+      "name": "任意角的三角函數",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 2,
+      "te_count": 3,
+      "te_sample": [
+        {
+          "id": 11628,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11629,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11646,
+          "source_kind": null,
+          "line_type": "textbook_exercise",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 1,
+      "usable_ids": [
+        "compute_terminal_ray_trig_ratios"
+      ],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "A_practice_skill"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_4",
+      "name": "三角函數值在四個象限的正負情形",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 4,
+      "te_count": 7,
+      "te_sample": [
+        {
+          "id": 11630,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11631,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11632,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 2,
+      "usable_ids": [
+        "classify_trig_derived_point_quadrant",
+        "solve_signed_trig_constraints"
+      ],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "A_practice_skill"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_5",
+      "name": "象限角的三角函數值",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 5,
+      "te_count": 3,
+      "te_sample": [
+        {
+          "id": 11634,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11635,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11648,
+          "source_kind": null,
+          "line_type": "textbook_exercise",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 1,
+      "usable_ids": [
+        "evaluate_exact_arbitrary_angle_trig_expression"
+      ],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "A_practice_skill"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_6",
+      "name": "任意角三角函數求值",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 6,
+      "te_count": 6,
+      "te_sample": [
+        {
+          "id": 11636,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11637,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11638,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 2,
+      "usable_ids": [
+        "evaluate_exact_arbitrary_angle_trig_expression",
+        "solve_arbitrary_angle_vertical_projection"
+      ],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "A_practice_skill"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_7",
+      "name": "化任意角為銳角轉換關係式",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-3 任意角的三角函數",
+      "display_order": 7,
+      "te_count": 7,
+      "te_sample": [
+        {
+          "id": 11640,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11641,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11642,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 4,
+      "usable_ids": [
+        "classify_trig_derived_point_quadrant",
+        "complete_reference_angle_conversion",
+        "evaluate_exact_arbitrary_angle_trig_expression",
+        "simplify_fundamental_trig_expression"
+      ],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "A_practice_skill"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_1",
+      "name": "正弦函數的圖形與其週期現象的表徵",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 1,
+      "te_count": 0,
+      "te_sample": [],
+      "facade": false,
+      "v3_pkg": false,
+      "usable_n": 0,
+      "usable_ids": [],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "B_org_or_incomplete_active"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_2",
+      "name": "餘弦函數的圖形與其週期現象的表徵",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 2,
+      "te_count": 0,
+      "te_sample": [],
+      "facade": false,
+      "v3_pkg": false,
+      "usable_n": 0,
+      "usable_ids": [],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "B_org_or_incomplete_active"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_3",
+      "name": "正切函數的圖形與其週期現象的表徵",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 3,
+      "te_count": 8,
+      "te_sample": [
+        {
+          "id": 11655,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11656,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11657,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 3,
+      "usable_ids": [
+        "analyze_affine_transformed_trig_graph",
+        "compare_trig_values_by_monotonicity",
+        "solve_trig_value_quadratic_constraint"
+      ],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "A_practice_skill"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_4",
+      "name": "三角函數圖形的變化與週期",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 4,
+      "te_count": 13,
+      "te_sample": [
+        {
+          "id": 11663,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11664,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11665,
+          "source_kind": null,
+          "line_type": "exam_practice",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 9,
+      "usable_ids": [
+        "analyze_affine_transformed_trig_graph",
+        "analyze_tangent_absolute_graph_period",
+        "calculate_trig_period_from_argument_scale",
+        "classify_trig_equation_feasibility",
+        "classify_trig_expression_sign_change",
+        "compare_trig_values_by_monotonicity",
+        "count_sine_cosine_intersections",
+        "evaluate_trig_decimal",
+        "solve_trig_value_quadratic_constraint"
+      ],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "A_practice_skill"
+    }
+  ],
+  "gap_1_4": [
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_1",
+      "name": "正弦函數的圖形與其週期現象的表徵",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 1,
+      "te_count": 0,
+      "te_sample": [],
+      "facade": false,
+      "v3_pkg": false,
+      "usable_n": 0,
+      "usable_ids": [],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "B_org_or_incomplete_active"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_2",
+      "name": "餘弦函數的圖形與其週期現象的表徵",
+      "active": true,
+      "chapter": "第1章 三角函數",
+      "section": "1-4 正弦、餘弦函數的圖形",
+      "display_order": 2,
+      "te_count": 0,
+      "te_sample": [],
+      "facade": false,
+      "v3_pkg": false,
+      "usable_n": 0,
+      "usable_ids": [],
+      "inventory_status": null,
+      "subsection": true,
+      "role_class": "B_org_or_incomplete_active"
+    }
+  ],
+  "ch2_all": [
+    {
+      "skill_id": "vh_數學B2_SubSection_2_1_1",
+      "name": "正弦定理",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-1 正弦定理與餘弦定理",
+      "display_order": 2,
+      "te_count": 13,
+      "te_sample": [
+        {
+          "id": 11676,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11677,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11678,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 6,
+      "usable_ids": [
+        "compute_sin_from_side_and_circumradius",
+        "compute_triangle_area_sas",
+        "solve_angle_by_law_of_sines",
+        "solve_side_and_circumradius_by_sines",
+        "solve_side_by_law_of_sines",
+        "solve_side_ratio_by_law_of_sines"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_1_2",
+      "name": "餘弦定理",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-1 正弦定理與餘弦定理",
+      "display_order": 4,
+      "te_count": 14,
+      "te_sample": [
+        {
+          "id": 11682,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11683,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11684,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 5,
+      "usable_ids": [
+        "compute_circumradius_from_three_sides",
+        "solve_angle_by_law_of_cosines",
+        "solve_cosine_identity_angle",
+        "solve_detour_extra_distance_by_cosines",
+        "solve_side_by_law_of_cosines"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_1",
+      "name": "測量的名詞與術語",
+      "active": false,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 1,
+      "te_count": 0,
+      "te_sample": [],
+      "facade": false,
+      "v3_pkg": false,
+      "usable_n": 0,
+      "usable_ids": [],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_2",
+      "name": "求解平面三角測量問題的原則",
+      "active": false,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 2,
+      "te_count": 0,
+      "te_sample": [],
+      "facade": false,
+      "v3_pkg": false,
+      "usable_n": 0,
+      "usable_ids": [],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_3",
+      "name": "直角三角形的測量",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 3,
+      "te_count": 15,
+      "te_sample": [
+        {
+          "id": 11687,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11688,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11689,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 10,
+      "usable_ids": [
+        "solve_adjacent_from_hypotenuse_ground_angle",
+        "solve_broken_tree_original_height",
+        "solve_building_height_with_flagpole_elevations",
+        "solve_height_decimal_from_sight_line_elevation",
+        "solve_height_from_sight_line_elevation",
+        "solve_horizontal_from_height_depression",
+        "solve_horizontal_from_height_elevation",
+        "solve_opposite_from_adjacent_elevation",
+        "solve_two_elevation_horizontal_shift",
+        "solve_two_elevation_unknown_height"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_4",
+      "name": "非直角三角形測量",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 4,
+      "te_count": 9,
+      "te_sample": [
+        {
+          "id": 11691,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11692,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11693,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 2,
+      "usable_ids": [
+        "solve_side_by_law_of_cosines",
+        "solve_side_by_law_of_sines"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_5",
+      "name": "簡單的立體測量",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 5,
+      "te_count": 4,
+      "te_sample": [
+        {
+          "id": 11695,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11696,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11697,
+          "source_kind": null,
+          "line_type": "exam_practice",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 3,
+      "usable_ids": [
+        "solve_height_from_isosceles_bearing_walk_elevation",
+        "solve_height_from_two_elevation_tan_ratios",
+        "solve_tower_two_elevation_path_and_river_width"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    }
+  ],
+  "ch2_named_candidates": [],
+  "ch2_subsection_practice_candidates": [
+    {
+      "skill_id": "vh_數學B2_SubSection_2_1_1",
+      "name": "正弦定理",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-1 正弦定理與餘弦定理",
+      "display_order": 2,
+      "te_count": 13,
+      "te_sample": [
+        {
+          "id": 11676,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11677,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11678,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 6,
+      "usable_ids": [
+        "compute_sin_from_side_and_circumradius",
+        "compute_triangle_area_sas",
+        "solve_angle_by_law_of_sines",
+        "solve_side_and_circumradius_by_sines",
+        "solve_side_by_law_of_sines",
+        "solve_side_ratio_by_law_of_sines"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_1_2",
+      "name": "餘弦定理",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-1 正弦定理與餘弦定理",
+      "display_order": 4,
+      "te_count": 14,
+      "te_sample": [
+        {
+          "id": 11682,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11683,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11684,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 5,
+      "usable_ids": [
+        "compute_circumradius_from_three_sides",
+        "solve_angle_by_law_of_cosines",
+        "solve_cosine_identity_angle",
+        "solve_detour_extra_distance_by_cosines",
+        "solve_side_by_law_of_cosines"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_3",
+      "name": "直角三角形的測量",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 3,
+      "te_count": 15,
+      "te_sample": [
+        {
+          "id": 11687,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11688,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11689,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 10,
+      "usable_ids": [
+        "solve_adjacent_from_hypotenuse_ground_angle",
+        "solve_broken_tree_original_height",
+        "solve_building_height_with_flagpole_elevations",
+        "solve_height_decimal_from_sight_line_elevation",
+        "solve_height_from_sight_line_elevation",
+        "solve_horizontal_from_height_depression",
+        "solve_horizontal_from_height_elevation",
+        "solve_opposite_from_adjacent_elevation",
+        "solve_two_elevation_horizontal_shift",
+        "solve_two_elevation_unknown_height"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_4",
+      "name": "非直角三角形測量",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 4,
+      "te_count": 9,
+      "te_sample": [
+        {
+          "id": 11691,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11692,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11693,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 2,
+      "usable_ids": [
+        "solve_side_by_law_of_cosines",
+        "solve_side_by_law_of_sines"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_5",
+      "name": "簡單的立體測量",
+      "active": true,
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 5,
+      "te_count": 4,
+      "te_sample": [
+        {
+          "id": 11695,
+          "source_kind": null,
+          "line_type": "textbook_example",
+          "preview": ""
+        },
+        {
+          "id": 11696,
+          "source_kind": null,
+          "line_type": "in_class_practice",
+          "preview": ""
+        },
+        {
+          "id": 11697,
+          "source_kind": null,
+          "line_type": "exam_practice",
+          "preview": ""
+        }
+      ],
+      "facade": true,
+      "v3_pkg": true,
+      "usable_n": 3,
+      "usable_ids": [
+        "solve_height_from_isosceles_bearing_walk_elevation",
+        "solve_height_from_two_elevation_tan_ratios",
+        "solve_tower_two_elevation_path_and_river_width"
+      ],
+      "inventory_status": null,
+      "subsection": true
+    }
+  ],
+  "ch2_blocked_active": [],
+  "summary": {
+    "ch1_named_n": 9,
+    "ch1_sub_n": 10,
+    "ch1_sub_A": 8,
+    "ch1_sub_B": 2,
+    "ch2_named_candidates_n": 0,
+    "ch2_sub_practice_n": 5,
+    "ch2_blocked_n": 0
+  }
+}

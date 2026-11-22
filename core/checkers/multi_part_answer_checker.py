@@ -310,7 +310,12 @@ def check_multi_part_answer(
                 ac.get("problem_type_id") or (payload or {}).get("problem_type_id"),
             )
         key = _part_key(part_contract, index)
-        label = str(part_contract.get("label") or key).strip()
+        label = str(
+            part_contract.get("display_label")
+            or part_contract.get("label")
+            or part_contract.get("prompt")
+            or key
+        ).strip()
         checker = str(part_contract.get("checker") or part_contract.get("checker_key") or "").strip()
         equivalence = str(part_contract.get("equivalence_type") or part_contract.get("answer_equivalence") or "").strip()
         expected = raw_part.get("expected_answer")
@@ -370,6 +375,7 @@ def check_multi_part_answer(
         row = {
             "key": key,
             "label": label,
+            "display_label": label,
             "checker": checker,
             "equivalence_type": equivalence,
             "correct": correct,

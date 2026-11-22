@@ -1,0 +1,87 @@
+{
+  "te_id": 11584,
+  "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+  "status": "PASS_PENDING_USER_ACCEPTANCE",
+  "sop": "VOCATIONAL practice: textbook figure only on scratchpad; stem text-only; no duplicate media; tall crop uses existing scratchpad-has-figures + skip WIDE_FIGURE_SCALE",
+  "root_cause": [
+    "Prior fix rendered a tall preview into #question-media-container, duplicating the textbook figure in the stem and violating the vocational layout SOP.",
+    "Scratchpad alone looked tiny because single-image mode did not enable scratchpad-has-figures (short canvas) and WIDE_FIGURE_SCALE=0.67 further shrank tall crops on wide canvases."
+  ],
+  "fix": [
+    "Restored hideQuestionMediaContainer for successful image-background loads; no stem tall preview.",
+    "Toggle scratchpad-has-figures for multi-image OR tall single textbook crops (naturalHeight > naturalWidth * 1.12).",
+    "Skip WIDE_FIGURE_SCALE for tall single stored images in scratchpad_layers.js so the full reference quadrant is used."
+  ],
+  "files_modified": [
+    "templates/index.html",
+    "static/js/scratchpad_layers.js",
+    "tests/test_scratchpad_background_layers.py"
+  ],
+  "not_changed": [
+    "Generator math content",
+    "PDF re-crop of whole volume",
+    "B1/B3/B4",
+    "student mastery records",
+    "DB (asset crop from prior turn retained in uploads/ + static/)",
+    "Flask 5000 / Cloudflare"
+  ],
+  "asset": {
+    "source_id": 11584,
+    "natural_size_px": [465, 574],
+    "labels_visible": ["A", "B", "C", "D/E base", "45°", "900公尺", "500公尺"],
+    "vertex_B_cropped": false
+  },
+  "before_after_positions": {
+    "before": "stem (#question-media-container) large figure + scratchpad tiny duplicate",
+    "after": "stem text-only; single figure only on scratchpad background"
+  },
+  "evidence": {
+    "desktop": "reports/b2_p1_swing_cable_visual/sop_layout/desktop_11584.png",
+    "phone390": "reports/b2_p1_swing_cable_visual/sop_layout/phone390_11584.png",
+    "ipad1180x820": "reports/b2_p1_swing_cable_visual/sop_layout/ipad1180x820_11584.png"
+  },
+  "metrics": {
+    "desktop_1440x900": {
+      "qmc": "none",
+      "stemImgs": 0,
+      "hasFigures": true,
+      "canvas_css": [854, 562],
+      "figure_bounds_px": [276, 340],
+      "overflowX": false
+    },
+    "phone_390x844": {
+      "qmc": "none",
+      "stemImgs": 0,
+      "hasFigures": true,
+      "canvas_css": [352, 500],
+      "figure_bounds_px": [204, 252],
+      "overflowX": false
+    },
+    "ipad_1180x820": {
+      "qmc": "none",
+      "stemImgs": 0,
+      "hasFigures": true,
+      "canvas_css": [636, 500],
+      "figure_bounds_px": [241, 298],
+      "overflowX": false
+    },
+    "switch_to_11579": {
+      "bgDark": 0,
+      "hasFigures": false,
+      "hasBg": false,
+      "qmcImgs": 0,
+      "residual_11584_figure": false
+    },
+    "ink_clear_keeps_background": {
+      "ink_after_clear": 0,
+      "bgDark_positive": true
+    }
+  },
+  "tests": {
+    "scratchpad_layers_tall_and_compact": "PASS (prior turn)"
+  },
+  "flask": {
+    "port_5001": "restarted earlier in session; no further restart this closeout",
+    "port_5000": "untouched"
+  }
+}

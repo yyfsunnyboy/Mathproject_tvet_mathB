@@ -981,6 +981,8 @@
     }
 
     function applyQuestionScratchpadBackground(payload) {
+      // Guard async image loads against cross-question pollution when switching quickly.
+      const questionUidAtStart = String(state.currentQuestionUid || "");
       if (typeof resizeCanvas === "function") {
         resizeCanvas();
       }
@@ -991,6 +993,9 @@
       const size = resolveScratchpadCssSize();
       const bgInfo = layer.shouldRenderBackgroundForPayload(payload, window.VisualSpecRuntime);
       if (bgInfo.kind === "none") {
+        if (questionUidAtStart && questionUidAtStart !== String(state.currentQuestionUid || "")) {
+          return Promise.resolve(false);
+        }
         layer.resetQuestionBackground();
         const scratchpad = document.querySelector('.scratchpad-section');
         if (scratchpad) scratchpad.classList.remove('scratchpad-has-figures');
@@ -998,6 +1003,9 @@
         return Promise.resolve(false);
       }
       if (bgInfo.kind === "visual_spec") {
+        if (questionUidAtStart && questionUidAtStart !== String(state.currentQuestionUid || "")) {
+          return Promise.resolve(false);
+        }
         const ok = layer.setVisualSpecBackground(
           bgInfo.visualSpec,
           backgroundCtx,
@@ -1020,6 +1028,9 @@
       const imageSize = resolveScratchpadCssSize();
       return layer.loadImageBackgrounds(imgSources)
         .then((images) => {
+          if (questionUidAtStart && questionUidAtStart !== String(state.currentQuestionUid || "")) {
+            return false;
+          }
           const ok = layer.setImagesBackground(
             images,
             imgSources,
@@ -2571,7 +2582,12 @@
       parts.forEach((part, index) => {
         const wrapper = document.createElement("label");
         wrapper.className = "multi-part-answer-field";
-        wrapper.textContent = String(part.label || part.key);
+        const visibleLabel = String(
+          part.display_label || part.label || part.prompt || `小題 ${index + 1}`
+        ).trim();
+        // Never surface raw internal keys such as elevation / horizontal_projection.
+        const looksInternal = /^[a-z][a-z0-9_]*$/i.test(visibleLabel) && !/[\u4e00-\u9fff]/.test(visibleLabel);
+        wrapper.textContent = looksInternal ? `小題 ${index + 1}` : visibleLabel;
         const input = document.createElement("input");
         input.type = "text";
         input.dataset.fieldKey = String(part.key);

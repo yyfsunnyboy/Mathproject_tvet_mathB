@@ -54,6 +54,7 @@ runtime wrapper `check_answer` 在 contract 指向象限 checker 時仍走共用
 | 缺口 | 現況（位置） | 實例 |
 | --- | --- | --- |
 | 原題缺必要圖片或資訊時標記不可用 | `_select_textbook_example_for_skill` 不檢查 Stage 1 封板或 required visual（`core/routes/practice.py`） | Unit 8 隨堂練習 10（id 12930）「承例題9」沒有綁定長條圖仍出題。P0-A 已於 2026-11-03 在正式 DB 單筆補綁 12926 長條圖（備份 `backups/math2_unit8_fallback_repair/20261103_233740/`）；重新匯入會遺失。2026-11-18 起，承例題類的題目改由跨題依賴解析器帶入例題的前置資料與圖片，缺圖就阻擋；其他類型缺少必要圖片的檢查仍未實作 |
+| Skill 歸屬與圖文配對可能同時錯，且不得混為一談 | Registry／`b2_12_component_specs` 的 `skill_id` 與 PDF crop `bbox` 是兩條獨立鏈；前端 Canvas 殘留是第三條。`VOCATIONAL` §11 已禁止 same-bbox 跨題 reuse 與自評表污染，但自動 enrich 仍可能寫出 `accepted` 錯圖 | B2 1-2 進階題 9／10（TE 11583 鞦韆／11584 纜車）：11583 曾錯掛 AcuteAngles，且兩題 crop 同頁同起點導致鞦韆題幹配纜車圖。2026-11-22 P1 已個案修復（11583→`ArcLengthAndAreaOfSector`、11584→`TrigonometricFunctionsOfAcuteAngles`、page-20 重裁、切題 `question_uid` 防護）；通用 auto-gate 仍未覆蓋全部章節 |
 | 未登錄原題明確標記不可用或未評分 | 不在 `configs/fixed_textbook_practice.json`、也不在 `UNGRADED_SELF_STUDY_SKILLS` 的原題以空答案出題；送出回傳「模組載入錯誤」（不寫紀錄） | Unit 8 全部 35 題。P0-B 已將其四個 Skill 列入 `UNGRADED_NO_VERIFIED_ANSWER_SKILLS`：5001 已驗收送出為未評分、無模組錯誤，5000 待重啟載入；其他未登錄 Skill 仍受影響 |
 | 單次練習的學生層級重複控制 | 只有 session 內依 id 循環（`current_textbook_example_id`）；沒有學生層級持久紀錄，一輪後或重新登入即重複 | — |
 | Generator 執行失敗時退回原題 | 重試用盡回傳 `_question_delivery_failure_response`，不退回原題 | — |
