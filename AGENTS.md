@@ -16,7 +16,7 @@
 - 數學等價與 required form：`docs/系統SOP/數學答案檢核原則_v1.12_20260908.md`。
 - 已知債：同目錄 `KnownIssues_TechnicalDebt.md`；Complete Master SOP 僅供歷史與案例查考，非預設必讀。
 - 修改 vocational practice / generator runtime 前讀 `docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`。
-- 技高 B1 學生晉級（題型掌握 X/Y、完成 MsgBox、同章略過／補缺導航）以該契約 **§12** 為準；B2～B4 未經逐冊驗收不得默認套用。實作錨點：`core/practice_type_mastery.py`、`student_problem_type_mastery`。
+- 技高 B1 學生晉級（題型掌握 X/Y、完成 MsgBox、同章略過／補缺導航）以該契約 **§12** 為準；B2 僅 `B2_TYPE_MASTERY_PILOT_SKILL_IDS`（第1章具名試點）啟用，其餘 B2～B4 未經逐冊驗收不得默認套用。實作錨點：`core/practice_type_mastery.py`、`student_problem_type_mastery`。
 - 已支援 AI Tutor 的 Skill 遵循 `docs/AI_TUTOR_CONVERSATION_CONTRACT.md` 共用多輪契約，不另建不相容服務。
 - 專案概觀與成熟度：`README.md`；目錄治理與 Canonical 文件表：`docs/REPOSITORY_STRUCTURE.md`；更新既有文件，不建立平行副本。
 - 自適應（AKT stub／PPO 路由）規格：`docs/自適應實作/`；`docs/audits/SYSTEM_CURRENT_STATE_AUDIT.md` 為歷史快照，不代表現況。

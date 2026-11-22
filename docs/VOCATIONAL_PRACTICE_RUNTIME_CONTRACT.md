@@ -446,6 +446,8 @@ Legacy assets 若缺少 `visual_status`，為相容視為 accepted（不得倒�
 
 ### 12.8 Scope & non-goals
 
-- §12 預設範圍：**B1 only**。B2～B4 維持既有連對／Skill 卡語意，除非該冊明確導入並通過驗收。
+- §12 預設範圍：**B1 full**。B3／B4 維持既有連對／Skill 卡語意，未經逐冊驗收不得默認套用。
+- **B2 第一批試點（2026-11-22）**：僅 `core/practice_type_mastery.py` 的 `B2_TYPE_MASTERY_PILOT_SKILL_IDS`（第1章具名 Skill，不含 SubSection）啟用 X/Y、完成 MsgBox 與同章導航；其餘 B2 Skill 仍用連對語意。
+- 試點不得把 `Progress.consecutive_correct` 換算成 `student_problem_type_mastery` MASTERED。
 - 不新增排行榜、扣分、懲罰或強迫連對機制。
 - 不平行發明第二套晉級系統；變更應落在本契約與既有 GenCode V3 Lean／Specification／PipelineFlow。

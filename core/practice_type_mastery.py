@@ -22,14 +22,42 @@ STATUS_MASTERED = "MASTERED"
 _ASSISTED_SESSION_KEY = "b1_assisted_question_uids"
 _WRONG_STREAK_FOR_REMEDIATION = 2
 
+# B2 phase-1 opt-in only: chapter-1 named skills with runtime-usable types.
+# SubSection shells and other B2 chapters stay on legacy consecutive-correct
+# until a later per-volume acceptance. Do not convert Progress.consecutive_correct
+# into MASTERED rows.
+B2_TYPE_MASTERY_PILOT_SKILL_IDS: frozenset[str] = frozenset(
+    {
+        "vh_數學B2_RatioAndRatioValue",
+        "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+        "vh_數學B2_AngleMeasurementAndConversion",
+        "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+        "vh_數學B2_CoterminalAngles",
+        "vh_數學B2_FundamentalTrigonometricIdentities",
+        "vh_數學B2_ArcLengthAndAreaOfSector",
+        "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+    }
+)
+
 
 def is_b1_type_mastery_skill(skill_id: str) -> bool:
+    """True when problem-type mastery (X/Y) is enabled for this skill.
+
+    Name kept for compatibility: covers full B1 plus the explicit B2 pilot set.
+    """
     sid = str(skill_id or "").strip()
+    if sid in B2_TYPE_MASTERY_PILOT_SKILL_IDS:
+        return True
     if not sid.startswith("vh_數學B1_"):
         return False
     if sid.startswith("outline_") or "SubSection" in sid:
         return False
     return True
+
+
+def is_type_mastery_skill(skill_id: str) -> bool:
+    """Alias for callers that prefer volume-agnostic naming."""
+    return is_b1_type_mastery_skill(skill_id)
 
 
 def normalize_type_id(problem_type_id: str) -> str:
