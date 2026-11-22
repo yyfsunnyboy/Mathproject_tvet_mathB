@@ -229,6 +229,12 @@ def contract_requires_factorized_form(
 _ASSIGNMENT_JOINERS = re.compile(r"\s*(?:且|、|;|；|\band\b)\s*", re.IGNORECASE)
 _VALUE_LIST_SEPARATORS = ("或", ",", "、", ";")
 _SAME_VAR_PREFIX = re.compile(r"^([A-Za-z])\s*=\s*(.+)$")
+# Space / fullwidth-space between adjacent `name=value` pairs (before space stripping).
+_ASSIGNMENT_SPACE_GAP = re.compile(r"([^=,\s])\s+([A-Za-z]+\s*=)")
+# Ordered unlabeled numeric/rational tokens (negatives, decimals, fractions).
+_ORDERED_VALUE_TOKEN = re.compile(
+    r"[+-]?(?:\d+(?:\.\d+)?|\.\d+)(?:\s*/\s*\d+(?:\.\d+)?)?"
+)
 
 
 def _split_value_list(text: object) -> tuple[list[str], set[str]] | None:
@@ -299,41 +305,190 @@ def _value_list_equivalent(user_answer: object, correct_answer: object) -> bool 
     return True
 
 
-def _assignment_lists_equivalent(user_answer: object, correct_answer: object) -> bool | None:
-    """Compare comma-separated assignments like a=-1,b=-3 without string identity.
+def _preprocess_assignment_text(text: object) -> str:
+    """Normalize punctuation / joiners while keeping assignment boundaries."""
+    from core.checkers.math_input_normalization import latex_to_plain
 
-    Returns True/False when both sides look like assignment lists; None otherwise.
-    """
-    def _parse_map(text: str) -> dict[str, Any] | None:
-        joined = _ASSIGNMENT_JOINERS.sub(",", str(text or ""))
-        norm = normalize_math_expression(joined)
-        if "," not in norm or "=" not in norm:
+    raw = unicodedata.normalize("NFKC", latex_to_plain(text)).strip()
+    if not raw:
+        return ""
+    raw = (
+        raw.replace("（", "(")
+        .replace("）", ")")
+        .replace("，", ",")
+        .replace("、", ",")
+        .replace("；", ";")
+        .replace("＝", "=")
+        .replace("−", "-")
+        .replace("－", "-")
+    )
+    raw = _ASSIGNMENT_JOINERS.sub(",", raw)
+    raw = _ASSIGNMENT_SPACE_GAP.sub(r"\1,\2", raw)
+    return raw.strip()
+
+
+def _strip_wrapping_group(text: str) -> str:
+    text = text.strip()
+    if len(text) >= 2 and text[0] == "(" and text[-1] == ")":
+        return text[1:-1].strip()
+    return text
+
+
+def _parse_assignment_map(text: object) -> dict[str, Any] | None:
+    """Parse labeled assignment lists like `a=0,b=3` / `a=0 b=3` / `a=0 且 b=3`."""
+    prepared = _preprocess_assignment_text(text)
+    if not prepared or "=" not in prepared:
+        return None
+    norm = normalize_math_expression(prepared)
+    if "=" not in norm:
+        return None
+    # Single assignment still counts when contract expects only one name, but
+    # multipart "a,b 之值" answers are multi-key; require at least one `=`.
+    mapping: dict[str, Any] = {}
+    chunks = norm.split(",") if "," in norm else [norm]
+    if len(chunks) < 2 and "," not in prepared and not re.search(r"[A-Za-z]+\s*=.+=", prepared):
+        # Keep two-or-more variable lists as the authoritative assignment shape.
+        # A lone `a=0` is not an ordered multi-value answer for this path.
+        if len(chunks) == 1 and chunks[0].count("=") == 1:
             return None
-        mapping: dict[str, Any] = {}
-        for chunk in norm.split(","):
-            if "=" not in chunk:
-                return None
-            key, raw_val = chunk.split("=", 1)
-            if not re.fullmatch(r"[a-z]+", key) or not raw_val or key in mapping:
-                return None
-            mapping[key] = _parse_sympy(raw_val)
-        return mapping or None
+    for chunk in chunks:
+        if "=" not in chunk:
+            return None
+        key, raw_val = chunk.split("=", 1)
+        if not re.fullmatch(r"[a-z]+", key) or not raw_val or key in mapping:
+            return None
+        mapping[key] = _parse_sympy(raw_val)
+    return mapping or None
 
-    try:
-        user_map = _parse_map(str(user_answer or ""))
-        correct_map = _parse_map(str(correct_answer or ""))
-    except Exception:
+
+def _parse_ordered_value_list(text: object, *, expected_len: int) -> list[Any] | None:
+    """Parse unlabeled ordered multi-values: `0,3` / `0 3` / `(0,3)` / fullwidth spaces.
+
+    Only returns a list when the entire input is exactly `expected_len` scalar tokens.
+    Does not split general algebra (`4x^2+4x-2`) or equations.
+    """
+    if expected_len < 2:
         return None
-    if user_map is None or correct_map is None:
+    prepared = _strip_wrapping_group(_preprocess_assignment_text(text))
+    if not prepared or "=" in prepared:
         return None
-    if set(user_map) != set(correct_map):
-        return False
+    # Reject equation / inequality / set markers that are not ordered scalars.
+    if any(ch in prepared for ch in ("<", ">", "{", "}", ":", "；", ";")):
+        return None
+
+    tokens: list[str]
+    if "," in prepared:
+        tokens = [part.strip() for part in prepared.split(",") if part.strip()]
+    else:
+        # Whitespace-separated only when there is no comma. Keep fractions intact.
+        tokens = [part.strip() for part in re.split(r"\s+", prepared) if part.strip()]
+
+    if len(tokens) != expected_len:
+        return None
+    values: list[Any] = []
+    for token in tokens:
+        compact = re.sub(r"\s+", "", token)
+        if not _ORDERED_VALUE_TOKEN.fullmatch(compact):
+            return None
+        values.append(_parse_sympy(compact))
+    return values
+
+
+def _exprs_equivalent(lhs: Any, rhs: Any) -> bool:
     from sympy import simplify
 
-    for key, value in user_map.items():
-        if simplify(value - correct_map[key]) != 0 and not _numeric_equal(value, correct_map[key]):
+    try:
+        return simplify(lhs - rhs) == 0 or _numeric_equal(lhs, rhs)
+    except Exception:
+        return False
+
+
+def ordered_variable_names_from_expected(text: object) -> list[str] | None:
+    """Return ordered variable names when `text` is a labeled multi-assignment answer."""
+    mapping = _parse_assignment_map(text)
+    if mapping is None or len(mapping) < 2:
+        return None
+    prepared = _preprocess_assignment_text(text)
+    names = [name.lower() for name in re.findall(r"([A-Za-z]+)\s*=", prepared)]
+    if set(names) != set(mapping) or len(names) != len(mapping):
+        return sorted(mapping.keys())
+    return names
+
+
+def _contract_variable_order(answer_contract: dict[str, Any] | None) -> list[str] | None:
+    if not isinstance(answer_contract, dict):
+        return None
+    raw = (
+        answer_contract.get("variable_order")
+        or answer_contract.get("ordered_variable_names")
+        or answer_contract.get("ordered_variables")
+    )
+    if not isinstance(raw, (list, tuple)) or len(raw) < 2:
+        return None
+    names = [str(item).strip().lower() for item in raw]
+    if not all(re.fullmatch(r"[a-z]+", name or "") for name in names):
+        return None
+    if len(set(names)) != len(names):
+        return None
+    return names
+
+
+def _assignment_lists_equivalent(
+    user_answer: object,
+    correct_answer: object,
+    *,
+    answer_contract: dict[str, Any] | None = None,
+) -> bool | None:
+    """Compare ordered named multi-value answers.
+
+    Activated when the canonical answer is a labeled assignment list
+    (`a=0,b=3`) and/or `answer_contract.variable_order` is present.
+
+    Accepts student forms:
+      - labeled by name: `a=0,b=3`, `b=3,a=0`, `a=0 b=3`
+      - unlabeled ordered by contract/canonical variable order: `0,3`, `0 3`, `(0,3)`
+
+    Rejects reversed unlabeled order, wrong arity, and unknown labels.
+    Does not treat the answer as an unordered set.
+    """
+    try:
+        correct_map = _parse_assignment_map(correct_answer)
+        contract_order = _contract_variable_order(answer_contract)
+        if correct_map is None and contract_order is None:
+            return None
+
+        if correct_map is None:
+            correct_values = _parse_ordered_value_list(correct_answer, expected_len=len(contract_order or []))
+            if correct_values is None or not contract_order:
+                return None
+            correct_map = dict(zip(contract_order, correct_values))
+            ordered_names = list(contract_order)
+        else:
+            if contract_order and set(contract_order) == set(correct_map):
+                ordered_names = list(contract_order)
+            else:
+                # Preserve canonical textual order of variables.
+                prepared = _preprocess_assignment_text(correct_answer)
+                ordered_names = [name.lower() for name in re.findall(r"([A-Za-z]+)\s*=", prepared)]
+                if set(ordered_names) != set(correct_map) or len(ordered_names) != len(correct_map):
+                    ordered_names = sorted(correct_map.keys())
+
+        user_map = _parse_assignment_map(user_answer)
+        if user_map is not None:
+            if set(user_map) != set(correct_map):
+                return False
+            return all(_exprs_equivalent(user_map[key], correct_map[key]) for key in correct_map)
+
+        user_values = _parse_ordered_value_list(user_answer, expected_len=len(ordered_names))
+        if user_values is None:
+            # Canonical is an ordered multi-value answer; unmatched student form is wrong.
             return False
-    return True
+        return all(
+            _exprs_equivalent(actual, correct_map[name])
+            for actual, name in zip(user_values, ordered_names)
+        )
+    except Exception:
+        return None
 
 
 def _has_pi_symbol(expr: Any) -> bool:
@@ -530,7 +685,11 @@ def check_expression_equivalence_debug(
     ).strip().lower()
     need_simplified_trig = required_form in _SIMPLIFIED_TRIG_FORMS
 
-    assign_eq = _assignment_lists_equivalent(ua_raw, ca_raw)
+    assign_eq = _assignment_lists_equivalent(
+        ua_raw,
+        ca_raw,
+        answer_contract=answer_contract if isinstance(answer_contract, dict) else None,
+    )
     if assign_eq is True:
         out["correct"] = True
         out["simplify_result"] = "assignment_list_equivalent"

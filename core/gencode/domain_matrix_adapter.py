@@ -645,9 +645,19 @@ def _multi_part_contract_parts(
             "equivalence_type": "numeric_exact" if numeric else "algebraic_equivalent",
             "expected_answer": value,
         }
+        from core.checkers.expression_equivalence_checker import ordered_variable_names_from_expected
+
+        ordered_vars = ordered_variable_names_from_expected(value)
+        if ordered_vars:
+            part_row["variable_order"] = ordered_vars
+            part_row["answer_shape"] = "ordered_named_values"
         if expected_is_directed_segment(value) or key_text.lower() == "simplified":
             part_row["answer_shape"] = "directed_segment"
-        elif op_shape == "vector_expression" and not (text.startswith("(") and text.endswith(")")):
+        elif (
+            part_row.get("answer_shape") != "ordered_named_values"
+            and op_shape == "vector_expression"
+            and not (text.startswith("(") and text.endswith(")"))
+        ):
             if key_text.lower() in {"vector", "unit", "ab", "ac", "bc"} or not numeric:
                 # Named basis / symbolic vector parts only (skip pure magnitudes when clearly numeric radical).
                 if key_text.lower() in {"vector", "unit", "simplified"} or any(ch.isalpha() for ch in text):

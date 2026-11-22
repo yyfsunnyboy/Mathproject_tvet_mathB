@@ -59,16 +59,22 @@ def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str
     if isinstance(payload.get("answer"), dict):
         _ans = payload["answer"]
         _parts = []
+        from core.checkers.expression_equivalence_checker import ordered_variable_names_from_expected
         for _k, _v in sorted(_ans.items(), key=lambda kv: str(kv[0])):
             _chk = "integer_checker" if str(_v).strip().lstrip("+-").isdigit() else "expression_checker"
-            _parts.append({
+            _part = {
                 "key": str(_k),
                 "label": str(_k),
                 "checker": _chk,
                 "checker_key": _chk,
                 "equivalence_type": "numeric_exact" if _chk == "integer_checker" else "algebraic_equivalent",
                 "expected_answer": _v,
-            })
+            }
+            _ordered = ordered_variable_names_from_expected(_v)
+            if _ordered:
+                _part["variable_order"] = _ordered
+                _part["answer_shape"] = "ordered_named_values"
+            _parts.append(_part)
         _ac = dict(payload.get("answer_contract") or {})
         _ac.update({
             "answer_type": "multi_part",

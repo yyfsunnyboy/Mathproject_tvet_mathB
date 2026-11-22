@@ -76,7 +76,11 @@ def _strip_assignment(text: str) -> str:
 
 
 def _split_pair_components(text: str) -> list[str]:
-    parts = [part.strip() for part in text.split(",")]
+    # Prefer comma / fullwidth-comma pairs; allow whitespace-only pairs like `2 3`.
+    if "," in text:
+        parts = [part.strip() for part in text.split(",")]
+    else:
+        parts = [part.strip() for part in re.split(r"\s+", text) if part.strip()]
     if len(parts) != 2:
         return []
     return [_strip_assignment(part) for part in parts]
