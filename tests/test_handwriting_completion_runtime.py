@@ -186,7 +186,7 @@ def test_browser_runtime_completed_answer_reaches_shared_checker(
     end = source.index("// === AI 分析 / 手寫正式答案提交 ===", start)
     body = source[start:end]
     assert body.index("completion_state === 'in_progress'") < body.index("/check_answer")
-    assert body.index("if (grade.correct === true)") < body.index("await handleCorrectAnswer()")
+    assert body.index("if (grade.correct === true)") < body.index("await handleCorrectAnswer(grade)")
 
 
 @pytest.mark.parametrize(
@@ -443,9 +443,10 @@ def test_wrong_37_then_new_submission_14_regrades_and_advances(runtime_app, monk
         source.index("async function submitHandwritingAsAnswer"):
         source.index("// === AI 分析 / 手寫正式答案提交 ===")
     ]
-    assert "await handleCorrectAnswer()" in submit_body
+    assert "await handleCorrectAnswer(grade)" in submit_body
     assert "showCustomAlert(message, resolve);" in source
     assert "setTimeout(loadQuestion, 500);" in source
+    assert "maybeShowB1SkillCompletion" in source
 
 
 def test_wrong_then_correct_handwriting_resubmit_is_fresh(runtime_app, monkeypatch):
@@ -629,7 +630,7 @@ def test_standard_frontend_resets_transient_handwriting_state_per_click():
     assert "mapHandwritingAnswerToMultiPart(normalizedAnswer, cq)" in body
     assert "delete handwritingPayload.answers;" in body
     assert "feedback.handwriting_submission_id !== submission.submissionId" in body
-    assert "await handleCorrectAnswer()" in body
+    assert "await handleCorrectAnswer(grade)" in body
 
     adaptive = (ROOT / "templates" / "adaptive_practice_v2.html").read_text(encoding="utf-8")
     assert "handwritingTransient: null" in adaptive

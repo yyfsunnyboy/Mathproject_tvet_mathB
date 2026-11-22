@@ -5,18 +5,22 @@ from typing import Any
 from core.gencode.problem_type_spec import load_problem_type_spec
 from core.gencode.slot_generators import generate_from_problem_type_spec
 
-SKILL_ID = 'vh_數學B1_QuadraticFunctionExtremum'
-PROBLEM_TYPE_ID = 'integer_compute_quadratic_vertex'
+SKILL_ID = "vh_數學B1_QuadraticFunctionExtremum"
+PROBLEM_TYPE_ID = "integer_compute_quadratic_vertex"
 TEXTBOOK_EXAMPLE_ID = 4457
-DEFAULT_COMPONENT_ID = 'src_4457'
-PRESENTATION_MODE = 'short_answer'
-ANSWER_TYPE = 'integer'
+DEFAULT_COMPONENT_ID = "src_4457"
+PRESENTATION_MODE = "short_answer"
+ANSWER_TYPE = "integer"
+PRESENTATION_VARIANT = "farmer_fence"
 
 
 def generate(level: int = 1, seed: int | None = None, **kwargs: Any) -> dict[str, Any]:
+    _ = level
     spec = load_problem_type_spec(SKILL_ID, PROBLEM_TYPE_ID, prefer="auto")
     if not isinstance(spec, dict):
         raise RuntimeError(f"missing_problem_type_spec:{PROBLEM_TYPE_ID}")
+    spec = dict(spec)
+    spec["presentation_variant"] = PRESENTATION_VARIANT
     payload = generate_from_problem_type_spec(SKILL_ID, spec, seed=seed)
     component_id = str(kwargs.get("component_id") or DEFAULT_COMPONENT_ID or "")
     if component_id:

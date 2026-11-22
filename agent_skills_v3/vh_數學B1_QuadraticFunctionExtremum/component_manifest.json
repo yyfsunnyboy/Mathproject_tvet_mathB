@@ -1,5 +1,150 @@
 {
   "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
-  "generated_at": "2026-08-12T13:39:19",
-  "source": "b1_13_14_materialize_quadratic_components"
+  "publish_status": "production_manifest_compiled",
+  "component_count": 13,
+  "components": [
+    {
+      "component_id": "src_4454",
+      "textbook_example_id": 4454,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "domain_operation": "integer_quadratic_vertex_or_parameter_computation",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4454/generate.py"
+    },
+    {
+      "component_id": "src_4455",
+      "textbook_example_id": 4455,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "domain_operation": "integer_quadratic_vertex_or_parameter_computation",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4455/generate.py"
+    },
+    {
+      "component_id": "src_4457",
+      "textbook_example_id": 4457,
+      "status": "verified",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "domain_operation": "integer_compute_quadratic_vertex",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4457/generate.py"
+    },
+    {
+      "component_id": "src_4458",
+      "textbook_example_id": 4458,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "domain_operation": "integer_quadratic_vertex_or_parameter_computation",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4458/generate.py"
+    },
+    {
+      "component_id": "src_4459",
+      "textbook_example_id": 4459,
+      "status": "verified",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "domain_operation": "integer_compute_quadratic_vertex",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4459/generate.py"
+    },
+    {
+      "component_id": "src_4463",
+      "textbook_example_id": 4463,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "domain_operation": "integer_quadratic_vertex_or_parameter_computation",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4463/generate.py"
+    },
+    {
+      "component_id": "src_4464",
+      "textbook_example_id": 4464,
+      "status": "verified",
+      "problem_type_id": "text_short_quadratic_vertex_or_parameter_computation",
+      "domain_operation": "text_short_quadratic_vertex_or_parameter_computation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4464/generate.py"
+    },
+    {
+      "component_id": "src_4465",
+      "textbook_example_id": 4465,
+      "status": "verified",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "domain_operation": "integer_compute_quadratic_vertex",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4465/generate.py"
+    },
+    {
+      "component_id": "src_4469",
+      "textbook_example_id": 4469,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "domain_operation": "integer_quadratic_vertex_or_parameter_computation",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4469/generate.py"
+    },
+    {
+      "component_id": "src_4470",
+      "textbook_example_id": 4470,
+      "status": "verified",
+      "problem_type_id": "text_short_quadratic_vertex_or_parameter_computation",
+      "domain_operation": "text_short_quadratic_vertex_or_parameter_computation",
+      "presentation_mode": "short_answer",
+      "answer_type": "rational",
+      "source_kind": "example",
+      "generate_py": "components/src_4470/generate.py"
+    },
+    {
+      "component_id": "src_4471",
+      "textbook_example_id": 4471,
+      "status": "verified",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "domain_operation": "integer_compute_quadratic_vertex",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4471/generate.py"
+    },
+    {
+      "component_id": "src_4472",
+      "textbook_example_id": 4472,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "domain_operation": "integer_quadratic_vertex_or_parameter_computation",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4472/generate.py"
+    },
+    {
+      "component_id": "src_4502",
+      "textbook_example_id": 4502,
+      "status": "verified",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "domain_operation": "integer_compute_quadratic_vertex",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4502/generate.py"
+    }
+  ]
 }

@@ -1,85 +1,100 @@
-"""Bootstrap adapter for vocational B1 NumberLine using JH NumberLine generator."""
+"""B1 NumberLine runtime adapter.
+
+Textbook source ``src_4401`` is an inequality operation table
+(multiply/divide both sides by positive/negative constants).
+
+As of 2026-11-22 incremental closeout, this adapter ships a *native*
+``inequality_operation_table`` generator with a deterministic oracle.
+JH bootstrap (point reading / distance) remains available only when
+``bootstrap=True`` is explicitly requested; it is **not** textbook-faithful
+coverage of ``src_4401`` and must not be reported as B1-native PASS.
+"""
 
 from __future__ import annotations
 
-import random
-from importlib import import_module
+from typing import Any
+
+from core.checkers.multi_part_answer_checker import check_multi_part_answer
+from core.gencode.numberline_inequality_table import generate_inequality_operation_table
 
 SKILL_ID = "vh_數學B1_NumberLine"
 BOOTSTRAP_SOURCE = "jh_數學1上_NumberLine"
-SOURCE_COVERAGE_STATUS = "INSUFFICIENT_OR_MISALIGNED_DB_EXAMPLES"
-BOOTSTRAP_MODE = True
+SOURCE_COVERAGE_STATUS = "COVERED_BY_NATIVE_GENERATOR"
+BOOTSTRAP_MODE = False
+TEXTBOOK_SOURCE_IDS = (4401,)
+TEXTBOOK_FIDELITY_STATUS = "NATIVE_COVERED"
+TEXTBOOK_FIDELITY_NOTES = (
+    "src_4401 inequality operation table covered by native generator; "
+    "JH bootstrap retained only as explicit non-faithful fallback."
+)
 
-_JH_MODULE = import_module("skills.jh_數學1上_NumberLine")
-
-_ANSWER_CONTRACTS = {
-    "number_line_point_value_reading": {
-        "answer_type": "integer",
-        "equivalence_type": "numeric_exact",
-        "checker_key": "integer_checker",
-        "order_matters": False,
-        "canonical_answer_schema": {"type": "integer"},
-    },
-    "number_line_distance_between_points": {
-        "answer_type": "integer",
-        "equivalence_type": "numeric_exact",
-        "checker_key": "integer_checker",
-        "order_matters": False,
-        "canonical_answer_schema": {"type": "integer"},
-    },
-}
-
-
-def _map_problem_type(level: int) -> str:
-    if int(level or 1) <= 1:
-        return "number_line_point_value_reading"
-    return "number_line_distance_between_points"
-
-
-def _to_payload(raw: dict, level: int) -> dict:
-    problem_type_id = _map_problem_type(level)
-    answer = str(raw.get("answer") or raw.get("correct_answer") or "").strip()
-    question_text = str(raw.get("question_text") or raw.get("question") or "").strip()
-    payload = {
-        "skill_id": SKILL_ID,
-        "problem_type_id": problem_type_id,
-        "question_text": question_text,
-        "question": question_text,
-        "answer": answer,
-        "correct_answer": answer,
-        "answer_type": "integer",
-        "answer_contract": _ANSWER_CONTRACTS[problem_type_id],
+GENERATOR_KEYS = ["src_4401"]
+GENERATOR_SPECS = [
+    {
+        "textbook_example_id": 4401,
+        "component_id": "src_4401",
+        "generator_key": "src_4401",
+        "problem_type_id": "inequality_operation_table",
+        "generator_readiness": "runtime_ready",
+        "presentation_mode": "short_answer",
+        "answer_type": "multi_part",
+        "checker_key": "multi_part_answer_checker",
+        "equivalence_type": "multi_part_answer",
         "source_coverage_status": SOURCE_COVERAGE_STATUS,
-        "bootstrap_mode": BOOTSTRAP_MODE,
-        "bootstrap_source_skill_id": BOOTSTRAP_SOURCE,
-        "metadata": {
-            "bootstrap_mode": BOOTSTRAP_MODE,
-            "bootstrap_source_skill_id": BOOTSTRAP_SOURCE,
-            "bootstrap_runtime_status": "PASS",
-            "source_coverage_status": SOURCE_COVERAGE_STATUS,
-            "adapter_mode": "bootstrap_reference",
-            "original_skill_id": str(raw.get("skill_id") or BOOTSTRAP_SOURCE),
-            "original_problem_type_id": str(raw.get("problem_type_id") or ""),
-        },
-    }
-    if raw.get("image_base64"):
-        payload["image_base64"] = raw.get("image_base64")
-    return payload
+        "textbook_fidelity_status": TEXTBOOK_FIDELITY_STATUS,
+        "sampling_weight": 10.0,
+        "display_order": 4401,
+        "source_order": 4401,
+    },
+]
 
 
-def generate(level=1, seed=None, difficulty=None):
-    _ = difficulty
-    requested_level = int(level or 1)
-    if requested_level <= 1:
-        rng = random.Random(seed)
-        runtime_level = rng.choice([1, 2])
-    else:
-        runtime_level = requested_level
+def generate(
+    level: int = 1,
+    seed: int | None = None,
+    difficulty: int | str | None = None,
+    **kwargs: Any,
+) -> dict[str, Any]:
+    _ = (level, difficulty)
+    if bool(kwargs.get("bootstrap")):
+        # Explicit non-faithful fallback — never the default student path.
+        from importlib import import_module
+        import random
 
-    raw = _JH_MODULE.generate(level=runtime_level)
-    if not isinstance(raw, dict):
-        raise RuntimeError("bootstrap NumberLine generator returned non-dict payload")
-    return _to_payload(raw, runtime_level)
+        jh = import_module("skills.jh_數學1上_NumberLine")
+        runtime_level = 1 if int(level or 1) <= 1 else int(level or 1)
+        if int(level or 1) <= 1:
+            runtime_level = random.Random(seed).choice([1, 2])
+        raw = jh.generate(level=runtime_level)
+        return {
+            "skill_id": SKILL_ID,
+            "problem_type_id": (
+                "number_line_point_value_reading"
+                if runtime_level <= 1
+                else "number_line_distance_between_points"
+            ),
+            "question_text": str(raw.get("question_text") or raw.get("question") or ""),
+            "question": str(raw.get("question_text") or raw.get("question") or ""),
+            "answer": str(raw.get("answer") or raw.get("correct_answer") or ""),
+            "correct_answer": str(raw.get("answer") or raw.get("correct_answer") or ""),
+            "answer_type": "integer",
+            "bootstrap_mode": True,
+            "textbook_fidelity_status": "DEFERRED_MISALIGNED_BOOTSTRAP",
+            "source_coverage_status": "BOOTSTRAP_ONLY_NOT_TEXTBOOK_FAITHFUL",
+            "metadata": {
+                "bootstrap_mode": True,
+                "bootstrap_source_skill_id": BOOTSTRAP_SOURCE,
+                "textbook_fidelity_status": "DEFERRED_MISALIGNED_BOOTSTRAP",
+            },
+        }
+
+    return generate_inequality_operation_table(
+        seed,
+        skill_id=SKILL_ID,
+        problem_type_id="inequality_operation_table",
+        component_id=str(kwargs.get("component_id") or "src_4401"),
+        textbook_example_id=4401,
+    )
 
 
 def generate_question(*args, **kwargs):
@@ -90,15 +105,16 @@ def get_question(*args, **kwargs):
     return generate(*args, **kwargs)
 
 
-def check(user_answer, correct_answer):
-    user = str(user_answer).strip().replace(" ", "")
-    correct = str(correct_answer).strip().replace(" ", "")
-    if user == correct:
-        return {"correct": True, "result": "答對了"}
-    try:
-        if abs(float(user) - float(correct)) < 1e-9:
-            return {"correct": True, "result": "答對了"}
-    except Exception:
-        pass
-    return {"correct": False, "result": f"答錯了，正確答案是 {correct_answer}"}
+def check(user_answer, correct_answer, question_payload=None):
+    payload = question_payload or {}
+    if str(payload.get("answer_type") or "") == "multi_part" or isinstance(correct_answer, dict):
+        ac = payload.get("answer_contract") if isinstance(payload.get("answer_contract"), dict) else None
+        return check_multi_part_answer(
+            user_answer,
+            correct_answer,
+            answer_contract=ac,
+            payload=payload,
+        )
+    from importlib import import_module
 
+    return import_module("skills.jh_數學1上_NumberLine").check(user_answer, correct_answer)

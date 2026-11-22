@@ -1,5 +1,326 @@
 {
   "skill_id": "vh_數學B1_QuadraticInequalitySolution",
-  "generated_at": "2026-08-12T13:39:20",
-  "source": "b1_13_14_materialize_quadratic_components"
+  "publish_status": "production_manifest_compiled",
+  "component_count": 29,
+  "components": [
+    {
+      "component_id": "src_4474",
+      "textbook_example_id": 4474,
+      "status": "verified",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "domain_operation": "integer_reverse_quadratic_inequality_coefficients",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4474/generate.py"
+    },
+    {
+      "component_id": "src_4475",
+      "textbook_example_id": 4475,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4475/generate.py"
+    },
+    {
+      "component_id": "src_4476",
+      "textbook_example_id": 4476,
+      "status": "verified",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "domain_operation": "integer_applied_quadratic_inequality_problem",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4476/generate.py"
+    },
+    {
+      "component_id": "src_4477",
+      "textbook_example_id": 4477,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4477/generate.py"
+    },
+    {
+      "component_id": "src_4478",
+      "textbook_example_id": 4478,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4478/generate.py"
+    },
+    {
+      "component_id": "src_4479",
+      "textbook_example_id": 4479,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality_parameter_range",
+      "domain_operation": "integer_solve_quadratic_inequality_parameter_range",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4479/generate.py"
+    },
+    {
+      "component_id": "src_4481",
+      "textbook_example_id": 4481,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4481/generate.py"
+    },
+    {
+      "component_id": "src_4482",
+      "textbook_example_id": 4482,
+      "status": "verified",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "domain_operation": "integer_reverse_quadratic_inequality_coefficients",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4482/generate.py"
+    },
+    {
+      "component_id": "src_4483",
+      "textbook_example_id": 4483,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4483/generate.py"
+    },
+    {
+      "component_id": "src_4484",
+      "textbook_example_id": 4484,
+      "status": "verified",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "domain_operation": "integer_applied_quadratic_inequality_problem",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4484/generate.py"
+    },
+    {
+      "component_id": "src_4485",
+      "textbook_example_id": 4485,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4485/generate.py"
+    },
+    {
+      "component_id": "src_4486",
+      "textbook_example_id": 4486,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4486/generate.py"
+    },
+    {
+      "component_id": "src_4487",
+      "textbook_example_id": 4487,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality_parameter_range",
+      "domain_operation": "integer_solve_quadratic_inequality_parameter_range",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4487/generate.py"
+    },
+    {
+      "component_id": "src_4488",
+      "textbook_example_id": 4488,
+      "status": "verified",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "domain_operation": "integer_applied_quadratic_inequality_problem",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4488/generate.py"
+    },
+    {
+      "component_id": "src_4489",
+      "textbook_example_id": 4489,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4489/generate.py"
+    },
+    {
+      "component_id": "src_4491",
+      "textbook_example_id": 4491,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4491/generate.py"
+    },
+    {
+      "component_id": "src_4492",
+      "textbook_example_id": 4492,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4492/generate.py"
+    },
+    {
+      "component_id": "src_4493",
+      "textbook_example_id": 4493,
+      "status": "verified",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "domain_operation": "integer_reverse_quadratic_inequality_coefficients",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4493/generate.py"
+    },
+    {
+      "component_id": "src_4494",
+      "textbook_example_id": 4494,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4494/generate.py"
+    },
+    {
+      "component_id": "src_4495",
+      "textbook_example_id": 4495,
+      "status": "verified",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "domain_operation": "integer_applied_quadratic_inequality_problem",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4495/generate.py"
+    },
+    {
+      "component_id": "src_4496",
+      "textbook_example_id": 4496,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4496/generate.py"
+    },
+    {
+      "component_id": "src_4497",
+      "textbook_example_id": 4497,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4497/generate.py"
+    },
+    {
+      "component_id": "src_4498",
+      "textbook_example_id": 4498,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality_parameter_range",
+      "domain_operation": "integer_solve_quadratic_inequality_parameter_range",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4498/generate.py"
+    },
+    {
+      "component_id": "src_4505",
+      "textbook_example_id": 4505,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4505/generate.py"
+    },
+    {
+      "component_id": "src_4506",
+      "textbook_example_id": 4506,
+      "status": "verified",
+      "problem_type_id": "integer_solve_quadratic_inequality",
+      "domain_operation": "integer_solve_quadratic_inequality",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4506/generate.py"
+    },
+    {
+      "component_id": "src_4507",
+      "textbook_example_id": 4507,
+      "status": "verified",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "domain_operation": "integer_reverse_quadratic_inequality_coefficients",
+      "presentation_mode": "short_answer",
+      "answer_type": "integer",
+      "source_kind": "example",
+      "generate_py": "components/src_4507/generate.py"
+    },
+    {
+      "component_id": "src_4508",
+      "textbook_example_id": 4508,
+      "status": "verified",
+      "problem_type_id": "rational_solve_quadratic_inequality_special_cases",
+      "domain_operation": "rational_solve_quadratic_inequality_special_cases",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "example",
+      "generate_py": "components/src_4508/generate.py"
+    },
+    {
+      "component_id": "src_4517",
+      "textbook_example_id": 4517,
+      "status": "verified",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "domain_operation": "integer_applied_quadratic_inequality_problem",
+      "presentation_mode": "short_answer",
+      "answer_type": "interval",
+      "source_kind": "example",
+      "generate_py": "components/src_4517/generate.py"
+    },
+    {
+      "component_id": "src_4518",
+      "textbook_example_id": 4518,
+      "status": "verified",
+      "problem_type_id": "rational_solve_quadratic_inequality_special_cases",
+      "domain_operation": "rational_solve_quadratic_inequality_special_cases",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "example",
+      "generate_py": "components/src_4518/generate.py"
+    }
+  ]
 }

@@ -16,9 +16,9 @@ PROBLEM_TYPE_ID: Final[str] = 'integer_applied_quadratic_inequality_problem'
 PRESENTATION_MODE: Final[str] = 'short_answer'
 RESPONSE_MODE: Final[str] = 'short_answer'
 INTERACTION_TYPE: Final[str] = 'short_answer'
-ANSWER_VALUE_TYPE: Final[str] = 'interval'
-ANSWER_TYPE: Final[str] = 'interval'
-LEGACY_ANSWER_TYPE: Final[str] = 'interval'
+ANSWER_VALUE_TYPE: Final[str] = 'text_short'
+ANSWER_TYPE: Final[str] = 'text_short'
+LEGACY_ANSWER_TYPE: Final[str] = 'text_short'
 DOMAIN_LIBRARY: Final[tuple[str, ...]] = (
     "core.gencode.slot_generators.generate_from_problem_type_spec",
 )

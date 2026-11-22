@@ -1,5 +1,29 @@
 {
   "skill_id": "vh_數學B1_CompletingTheSquare",
-  "generated_at": "2026-08-12T13:39:19",
-  "source": "b1_13_14_materialize_quadratic_components"
+  "publish_status": "production_manifest_compiled",
+  "component_count": 2,
+  "components": [
+    {
+      "component_id": "src_4468",
+      "textbook_example_id": 4468,
+      "status": "verified",
+      "problem_type_id": "expression_complete_square_to_vertex",
+      "domain_operation": "expression_complete_square_to_vertex",
+      "presentation_mode": "short_answer",
+      "answer_type": "expression",
+      "source_kind": "example",
+      "generate_py": "components/src_4468/generate.py"
+    },
+    {
+      "component_id": "src_4501",
+      "textbook_example_id": 4501,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_graph_vertex_axis_choice",
+      "domain_operation": "integer_quadratic_graph_vertex_axis_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4501/generate.py"
+    }
+  ]
 }

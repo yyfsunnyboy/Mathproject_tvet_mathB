@@ -119,9 +119,9 @@ def test_standard_text_structured_and_drawing_paths_share_success_handler() -> N
 
     assert "buildCheckAnswerPayload(userAnswer)" in submit_body
     assert "isMultiPartQuestion(currentQuestion)" in submit_body
-    assert "await handleCorrectAnswer()" in submit_body
+    assert "await handleCorrectAnswer(data)" in submit_body
     assert "fetch('/check_answer'" in drawing_body
-    assert "await handleCorrectAnswer()" in drawing_body
+    assert "await handleCorrectAnswer(data)" in drawing_body
 
 
 def test_handwriting_recognition_uses_checker_before_success_flow() -> None:
@@ -144,11 +144,12 @@ def test_standard_handwriting_is_submitted_as_first_class_answer() -> None:
     recognition_pos = body.index("/api/practice/ai-check-handwriting")
     checker_pos = body.index("/check_answer")
     correct_pos = body.index("if (grade.correct === true)")
-    success_pos = body.index("await handleCorrectAnswer()")
+    success_pos = body.index("await handleCorrectAnswer(grade)")
     feedback_pos = body.index("/analyze_handwriting")
     assert recognition_pos < checker_pos < correct_pos < success_pos < feedback_pos
     assert "buildCheckAnswerPayload(normalizedAnswer)" in body
-    assert "updateStreak(grade.correct === true, grade.consecutive_correct, grade.pass_target)" in body
+    assert "updateStreak(grade.correct === true, grade.consecutive_correct, grade.pass_target, grade.progress_mode)" in body
+    assert "maybeShowB1SkillCompletion" in source
 
 
 def test_wrong_handwriting_stays_on_question_and_requests_socratic_feedback() -> None:
@@ -231,7 +232,7 @@ def test_wrong_answer_does_not_enter_success_handler_branch() -> None:
     source = STANDARD_TEMPLATE.read_text(encoding="utf-8")
     submit_body = _function_body(source, "function setupSubmit")
     completion_flow = submit_body.split(
-        "updateStreak(data.correct, data.consecutive_correct, data.pass_target);", 1
+        "updateStreak(data.correct, data.consecutive_correct, data.pass_target, data.progress_mode);", 1
     )[1]
     success_branch, wrong_branch = completion_flow.split("// [Phase 6]", 1)
 

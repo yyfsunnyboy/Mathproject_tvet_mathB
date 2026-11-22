@@ -3493,25 +3493,59 @@ def _build_perpendicular_bisector_application(
     coord_max: int,
     constraints: dict[str, object],
 ) -> tuple[dict[str, object], dict[str, object], str]:
-    xA = rng.randint(coord_min, coord_max)
-    yA = rng.randint(coord_min, coord_max)
-    
-    xB = rng.randint(coord_min, coord_max)
-    while xB == xA:
-        xB = rng.randint(coord_min, coord_max)
-    yB = rng.randint(coord_min, coord_max)
-    while yB == yA:
-        yB = rng.randint(coord_min, coord_max)
-        
+    # Include horizontal/vertical segments so special-case bisectors are covered.
+    case = rng.choice(["oblique", "oblique", "oblique", "horizontal", "vertical"])
+    for _ in range(256):
+        if case == "horizontal":
+            yA = yB = rng.randint(coord_min, coord_max)
+            xA = rng.randint(coord_min, coord_max)
+            xB = rng.randint(coord_min, coord_max)
+            if xA == xB:
+                continue
+        elif case == "vertical":
+            xA = xB = rng.randint(coord_min, coord_max)
+            yA = rng.randint(coord_min, coord_max)
+            yB = rng.randint(coord_min, coord_max)
+            if yA == yB:
+                continue
+        else:
+            xA = rng.randint(coord_min, coord_max)
+            yA = rng.randint(coord_min, coord_max)
+            xB = rng.randint(coord_min, coord_max)
+            yB = rng.randint(coord_min, coord_max)
+            if xA == xB or yA == yB:
+                continue
+        break
+    else:
+        xA, yA, xB, yB = -1, 1, 3, -1
+        case = "oblique"
+
     mid_x = Fraction(xA + xB, 2)
     mid_y = Fraction(yA + yB, 2)
-    
-    mAB = Fraction(yB - yA, xB - xA)
-    mPerp = -1 / mAB
-    
-    b_frac = mid_y - mPerp * mid_x
-    A, B, C = _normalize_fraction_coefficients(mPerp, Fraction(-1, 1), b_frac)
-    
+    dx = xB - xA
+    dy = yB - yA
+
+    if dx == 0:
+        # Vertical segment → horizontal bisector y = mid_y
+        A, B, C = _normalize_fraction_coefficients(Fraction(0, 1), Fraction(1, 1), Fraction(-mid_y, 1))
+        slope = "0"
+        intercept = _format_number(mid_y)
+        actual_type = "horizontal_line"
+    elif dy == 0:
+        # Horizontal segment → vertical bisector x = mid_x
+        A, B, C = _normalize_fraction_coefficients(Fraction(1, 1), Fraction(0, 1), Fraction(-mid_x, 1))
+        slope = "undefined"
+        intercept = None
+        actual_type = "vertical_line"
+    else:
+        mAB = Fraction(dy, dx)
+        mPerp = -1 / mAB
+        b_frac = mid_y - mPerp * mid_x
+        A, B, C = _normalize_fraction_coefficients(mPerp, Fraction(-1, 1), b_frac)
+        slope = _format_number(mPerp)
+        intercept = _format_number(b_frac)
+        actual_type = "oblique_line"
+
     givens = {
         "point_a": [xA, yA],
         "point_b": [xB, yB],
@@ -3521,10 +3555,10 @@ def _build_perpendicular_bisector_application(
         "canonical_form": canonical,
         "general_form": canonical,
         "coefficients": {"A": A, "B": B, "C": C},
-        "slope": _format_number(mPerp),
-        "intercept": _format_number(b_frac),
+        "slope": slope,
+        "intercept": intercept,
     }
-    return givens, answer, "oblique_line"
+    return givens, answer, actual_type
 
 
 def _build_distance_from_point_to_line(

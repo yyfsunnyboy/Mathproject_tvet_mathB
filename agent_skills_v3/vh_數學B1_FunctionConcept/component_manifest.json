@@ -1,0 +1,29 @@
+{
+  "skill_id": "vh_數學B1_FunctionConcept",
+  "publish_status": "production_manifest_compiled",
+  "component_count": 2,
+  "components": [
+    {
+      "component_id": "src_4430",
+      "textbook_example_id": 4430,
+      "status": "verified",
+      "problem_type_id": "free_fall_function_value_choice",
+      "domain_operation": "free_fall_function_value_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4430/generate.py"
+    },
+    {
+      "component_id": "src_4431",
+      "textbook_example_id": 4431,
+      "status": "verified",
+      "problem_type_id": "piecewise_utility_bill_savings_choice",
+      "domain_operation": "piecewise_utility_bill_savings_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4431/generate.py"
+    }
+  ]
+}

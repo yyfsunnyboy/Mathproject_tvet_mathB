@@ -31,6 +31,7 @@ from core.gencode.scenario_pool_manager import (
     format_answer_example_text,
     generate_quadratic_extremum_application,
     pick_quadratic_extremum_scenario,
+    should_use_application_scenario,
     should_use_literacy_scenario,
 )
 from core.gencode.template_slot_resolver import infer_registered_task_token, resolve_template_slot
@@ -518,9 +519,12 @@ def _canonical_perpendicular_bisector_from_two_points(
     dx = x2 - x1
     dy = y2 - y1
     if dx == 0:
-        return _normalize_linear_equation_coefficients(Fraction(1, 1), Fraction(0, 1), Fraction(-mx, 1))
-    if dy == 0:
+        # Vertical segment AB → horizontal bisector y = my
         return _normalize_linear_equation_coefficients(Fraction(0, 1), Fraction(1, 1), Fraction(-my, 1))
+    if dy == 0:
+        # Horizontal segment AB → vertical bisector x = mx
+        return _normalize_linear_equation_coefficients(Fraction(1, 1), Fraction(0, 1), Fraction(-mx, 1))
+    # Oblique: direction AB=(dx,dy) is normal to the bisector.
     c = Fraction(-dx, 1) * mx + Fraction(-dy, 1) * my
     return _normalize_linear_equation_coefficients(Fraction(dx, 1), Fraction(dy, 1), c)
 
@@ -702,14 +706,39 @@ def _slot_perpendicular_bisector_from_two_points(
             "平面上有兩點 $A({x1}, {y1})$、$B({x2}, {y2})$。若某直線上的點到 $A$、$B$ 距離相等，請寫出此直線的一個方程式。",
         ),
     ]
-    template_variant, template = rng.choice(variants)
-    for _ in range(200):
-        x1, y1 = rng.randint(-8, 8), rng.randint(-8, 8)
-        x2, y2 = rng.randint(-8, 8), rng.randint(-8, 8)
-        if x1 == x2 and y1 == y2:
-            continue
-        if (x1 + x2) % 2 != 0 or (y1 + y2) % 2 != 0:
-            continue
+    preferred = str(
+        spec.get("presentation_variant")
+        or spec.get("template_variant")
+        or (spec.get("generator_contract") or {}).get("presentation_variant")
+        or ""
+    ).strip()
+    by_id = {vid: (vid, tmpl) for vid, tmpl in variants}
+    if preferred in by_id:
+        template_variant, template = by_id[preferred]
+    else:
+        template_variant, template = rng.choice(variants)
+    # Mix oblique / horizontal / vertical segments so special cases are covered.
+    case = rng.choice(["oblique", "oblique", "oblique", "horizontal", "vertical"])
+    for _ in range(240):
+        if case == "horizontal":
+            y = rng.randint(-8, 8)
+            x1, x2 = rng.randint(-8, 8), rng.randint(-8, 8)
+            y1 = y2 = y
+            if x1 == x2 or (x1 + x2) % 2 != 0:
+                continue
+        elif case == "vertical":
+            x = rng.randint(-8, 8)
+            y1, y2 = rng.randint(-8, 8), rng.randint(-8, 8)
+            x1 = x2 = x
+            if y1 == y2 or (y1 + y2) % 2 != 0:
+                continue
+        else:
+            x1, y1 = rng.randint(-8, 8), rng.randint(-8, 8)
+            x2, y2 = rng.randint(-8, 8), rng.randint(-8, 8)
+            if x1 == x2 or y1 == y2:
+                continue
+            if (x1 + x2) % 2 != 0 or (y1 + y2) % 2 != 0:
+                continue
         break
     else:
         x1, y1, x2, y2 = -1, 1, 3, -1
@@ -1459,6 +1488,61 @@ def _finalize_quadratic_extremum_application_payload(
     problem_type_id: str,
     spec: dict[str, Any],
 ) -> dict[str, Any]:
+    resolved_answer = core_payload.get("correct_answer", core_payload.get("answer"))
+    stem = str(core_payload.get("question_text") or "").strip()
+    metadata = dict(core_payload.get("metadata") or {})
+    givens = dict(metadata.get("givens") or {})
+    scenario_type = str(givens.get("scenario_type", "application")).strip()
+
+    if str(core_payload.get("answer_type") or "") == "multi_part" or isinstance(resolved_answer, dict):
+        checker = "multi_part_answer_checker"
+        answer_type = "multi_part"
+        equivalence = "multi_part_answer"
+        ac = dict(core_payload.get("answer_contract") or get_answer_contract(spec))
+        ac.update(
+            {
+                "checker": checker,
+                "checker_key": checker,
+                "selected_checker": checker,
+                "answer_type": answer_type,
+                "answer_equivalence": equivalence,
+                "equivalence_type": equivalence,
+                "presentation_mode": "short_answer",
+                "choices_required": False,
+            }
+        )
+        ans_text = "；".join(str(v) for v in dict(resolved_answer).values()) if isinstance(resolved_answer, dict) else str(resolved_answer)
+        explanation = (
+            f"將{scenario_type}應用題轉化為二次函數極值模型後，"
+            f"依序求得 {ans_text}。"
+        )
+        metadata.update(
+            {
+                "template_slot": "quadratic_extremum_application",
+                "template_variant": scenario_type,
+                "problem_type_id": problem_type_id,
+                "routing_track": "application_scenario_multi_part",
+            }
+        )
+        return {
+            "skill_id": skill_id,
+            "problem_type_id": problem_type_id,
+            "question_text": stem,
+            "question": stem,
+            "choices": [],
+            "answer": resolved_answer,
+            "correct_answer": resolved_answer,
+            "answer_type": answer_type,
+            "checker_type": checker,
+            "checker": checker,
+            "checker_key": checker,
+            "equivalence_type": equivalence,
+            "answer_contract": ac,
+            "explanation": explanation,
+            "metadata": metadata,
+            "source": "gencode_slot_generator",
+        }
+
     ac = dict(get_answer_contract(spec))
     checker, answer_type, equivalence = _contract_checker_and_type(spec, core_payload)
     ac["checker"] = checker
@@ -1470,11 +1554,7 @@ def _finalize_quadratic_extremum_application_payload(
     ac["presentation_mode"] = "short_answer"
     ac["choices_required"] = False
 
-    resolved_numeric_answer = core_payload.get("correct_answer", core_payload.get("answer"))
-    stem = str(core_payload.get("question_text") or "").strip()
-    metadata = dict(core_payload.get("metadata") or {})
-    givens = dict(metadata.get("givens") or {})
-    scenario_type = str(givens.get("scenario_type", "application")).strip()
+    resolved_numeric_answer = resolved_answer
     ans_text = format_answer_example_text(resolved_numeric_answer)
     explanation = (
         f"將{scenario_type}應用題轉化為二次函數極值模型後，"
@@ -2009,14 +2089,210 @@ def _slot_reverse_quadratic_inequality_coefficients(
     }
 
 
+def _resolve_applied_quadratic_presentation_variant(spec: dict[str, Any], rng: random.Random) -> str:
+    """Prefer explicit presentation_variant; otherwise keep legacy random mix."""
+    for key in ("presentation_variant", "template_variant", "preferred_scenario"):
+        raw = str(spec.get(key) or "").strip()
+        if raw:
+            return raw
+    gc = spec.get("generator_contract")
+    if isinstance(gc, dict):
+        for key in ("presentation_variant", "template_variant", "preferred_scenario"):
+            raw = str(gc.get(key) or "").strip()
+            if raw:
+                return raw
+        variants = gc.get("template_variants")
+        if isinstance(variants, list):
+            for row in variants:
+                if isinstance(row, dict) and row.get("enabled", True):
+                    vid = str(row.get("id") or "").strip()
+                    if vid and vid != "default":
+                        return vid
+    return rng.choice(["triangle_side", "coffee_profit"])
+
+
 def _slot_applied_quadratic_inequality_problem(
     skill_id: str, pt: str, spec: dict[str, Any], seed: int | None
 ) -> dict[str, Any]:
     rng = random.Random(f"{seed}|quad_ineq_applied|{pt}")
-    scenario = rng.choice(["triangle_side", "coffee_profit"])
+    scenario = _resolve_applied_quadratic_presentation_variant(spec, rng)
     direction = ">"
     strict = True
     op = ">"
+
+    # Textbook fidelity variants: cake/coffee/profit sources ask for the minimal
+    # positive integer that satisfies a profit inequality — not an interval stem.
+    if scenario in {
+        "min_integer_profit",
+        "coffee_profit_min_integer",
+        "integer_min_profit",
+        "profit_min_integer",
+    }:
+        # Model: income - cost = (n - beta)(n + c) > 0 with c>0.
+        # For n>0 this forces n>beta; minimal positive integer is beta+1.
+        beta = rng.randint(10, 28)
+        c = rng.randint(3, 12)
+        cost_a = rng.randint(1, 9)
+        income_linear = cost_a + (c - beta)
+        cost_b = beta * c
+        income_term = (
+            f"n^{{2}}+{income_linear}n"
+            if income_linear > 0
+            else (f"n^{{2}}{income_linear}n" if income_linear < 0 else "n^{2}")
+        )
+        stem = (
+            f"已知製作 $n$ 杯飲品的成本為 ${cost_a}n+{cost_b}$ 元，"
+            f"而售出 $n$ 杯的收入為 ${income_term}$ 元。"
+            f"假設全部售出，問最少要製作多少杯才會開始賺錢？"
+        )
+        answer = beta + 1
+        explanation = (
+            f"收入−成本 $=(n-{beta})(n+{c})>0$，在 $n>0$ 時得 $n>{beta}$，"
+            f"故最少製作 ${answer}$ 杯。"
+        )
+        return {
+            "skill_id": skill_id,
+            "problem_type_id": pt,
+            "question_text": stem,
+            "question": stem,
+            "choices": [],
+            "answer": answer,
+            "correct_answer": answer,
+            "answer_type": "integer",
+            "checker_type": "integer_checker",
+            "answer_contract": {
+                "answer_type": "integer",
+                "checker": "integer_checker",
+                "checker_key": "integer_checker",
+                "equivalence_type": "numeric_exact",
+                "answer_equivalence": "numeric_exact",
+                "presentation_mode": "short_answer",
+                "answer_format_example": "41",
+                "accepted_formats": ["41", "12"],
+            },
+            "explanation": explanation,
+            "diagnosis_tags": ["quadratic_inequality", "contextual_application", "min_integer_profit"],
+            "metadata": {
+                "givens": [f"scenario=min_integer_profit", f"beta={beta}", f"c={c}"],
+                "target": "min_positive_integer",
+                "derivation": [str(answer)],
+                "problem_type_id": pt,
+                "template_slot": "applied_quadratic_inequality_problem",
+                "template_variant": "min_integer_profit",
+            },
+            "source": "gencode_slot_generator",
+        }
+
+    if scenario in {"consecutive_integer_product", "min_consecutive_integers"}:
+        # n(n+1) > K ⇒ n^2 + n - K > 0; pick K so roots are clean-ish.
+        n0 = rng.randint(8, 14)
+        k = n0 * (n0 + 1) - rng.randint(1, n0)
+        # smallest positive integer n with n(n+1) > k is n0
+        stem = (
+            f"已知兩個連續正整數的積大於 ${k}$，試求滿足條件的最小連續兩數。"
+            f"（請以「a,b」格式作答，且 a < b）"
+        )
+        answer = f"{n0},{n0 + 1}"
+        return {
+            "skill_id": skill_id,
+            "problem_type_id": pt,
+            "question_text": stem,
+            "question": stem,
+            "choices": [],
+            "answer": answer,
+            "correct_answer": answer,
+            "answer_type": "text_short",
+            "checker_type": "text_short_checker",
+            "answer_contract": {
+                "answer_type": "text_short",
+                "checker": "text_short_checker",
+                "checker_key": "text_short_checker",
+                "equivalence_type": "exact_string",
+                "answer_equivalence": "exact_string",
+                "presentation_mode": "short_answer",
+                "answer_format_example": "10,11",
+                "accepted_formats": ["10,11"],
+            },
+            "explanation": f"由 $n(n+1)>{k}$ 得最小正整數解 $n={n0}$，故為 ${n0},{n0 + 1}$。",
+            "diagnosis_tags": ["quadratic_inequality", "consecutive_integers"],
+            "metadata": {
+                "givens": [f"scenario=consecutive_integer_product", f"k={k}"],
+                "target": "min_consecutive_pair",
+                "derivation": [answer],
+                "problem_type_id": pt,
+                "template_slot": "applied_quadratic_inequality_problem",
+                "template_variant": "consecutive_integer_product",
+            },
+            "source": "gencode_slot_generator",
+        }
+
+    if scenario in {
+        "right_triangle_area_mcq",
+        "triangle_area_mcq",
+        "applied_triangle_area_choice",
+    }:
+        # Faithful to src_4517: height h, base = h+d, area ≤ A → choose interval for h>0.
+        # ½ h(h+d) ≤ A ⇒ h² + d h - 2A ≤ 0. Pick d even and A so positive root is integer.
+        d = rng.choice([2, 4, 6])
+        h_max = rng.choice([4, 5, 6, 8])
+        # Root of h² + d h - 2A = 0 at h_max ⇒ 2A = h_max(h_max+d)
+        two_a = h_max * (h_max + d)
+        area_bound = two_a // 2
+        neg_root = -h_max - d  # other root of monic quadratic
+        correct_interval = f"0 < h \\le {h_max}"
+        choices = [
+            {"id": "A", "label": "A", "text": f"$0 < h \\le {h_max}$"},
+            {"id": "B", "label": "B", "text": f"$0 \\le h \\le {h_max}$"},
+            {"id": "C", "label": "C", "text": f"${neg_root} \\le h \\le {h_max}$"},
+            {"id": "D", "label": "D", "text": f"${neg_root} \\le h < {h_max}$"},
+        ]
+        stem = (
+            f"某直角三角形的高度 $h$ cm 比它的底邊長度少 ${d}$ cm，"
+            f"且三角形的面積不大於 ${area_bound}$ cm$^2$，則 $h$ 可取的範圍為"
+        )
+        return {
+            "skill_id": skill_id,
+            "problem_type_id": pt,
+            "question_text": stem,
+            "question": stem,
+            "choices": choices,
+            "answer": "A",
+            "correct_answer": "A",
+            "answer_type": "choice_label",
+            "checker_type": "choice_label_checker",
+            "presentation_mode": "single_choice",
+            "answer_contract": {
+                "answer_type": "choice_label",
+                "checker": "choice_label_checker",
+                "checker_key": "choice_label_checker",
+                "equivalence_type": "choice_label",
+                "answer_equivalence": "choice_label",
+                "presentation_mode": "single_choice",
+                "answer_format_example": "A",
+                "accepted_formats": ["A", "B", "C", "D"],
+            },
+            "explanation": (
+                f"底邊為 $h+{d}$，由 $\\tfrac12 h(h+{d})\\le {area_bound}$ 得"
+                f"$h^2+{d}h-{two_a}\\le 0$，正根為 $h={h_max}$；"
+                f"配合 $h>0$ 得 ${correct_interval}$，選 (A)。"
+            ),
+            "diagnosis_tags": ["quadratic_inequality", "right_triangle_area", "mcq"],
+            "metadata": {
+                "givens": [
+                    f"scenario=right_triangle_area_mcq",
+                    f"d={d}",
+                    f"h_max={h_max}",
+                    f"area={area_bound}",
+                ],
+                "target": "choice_label",
+                "derivation": ["A"],
+                "problem_type_id": pt,
+                "template_slot": "applied_quadratic_inequality_problem",
+                "template_variant": "right_triangle_area_mcq",
+            },
+            "source": "gencode_slot_generator",
+        }
+
     if scenario == "triangle_side":
         third = rng.randint(6, 9)
         lower = max(1, (third - 1) // 2 + (1 if (third - 1) % 2 else 0))
@@ -2039,7 +2315,10 @@ def _slot_applied_quadratic_inequality_problem(
             f"得 $x$ 的範圍為 ${answer}$。"
         )
         template_variant = "triangle_side"
+        answer_type = "interval"
+        checker_type = "interval_checker"
     else:
+        # Legacy coffee_profit interval stem (kept for non-overridden components).
         alpha = rng.randint(1, 3)
         beta = rng.randint(alpha + 3, alpha + 8)
         b_val = alpha + beta
@@ -2061,6 +2340,8 @@ def _slot_applied_quadratic_inequality_problem(
             f"開口向下且要求 ${op}0$，解為 ${answer}$。"
         )
         template_variant = "coffee_profit"
+        answer_type = "interval"
+        checker_type = "interval_checker"
     return {
         "skill_id": skill_id,
         "problem_type_id": pt,
@@ -2069,8 +2350,8 @@ def _slot_applied_quadratic_inequality_problem(
         "choices": [],
         "answer": answer,
         "correct_answer": answer,
-        "answer_type": "interval",
-        "checker_type": "interval_checker",
+        "answer_type": answer_type,
+        "checker_type": checker_type,
         "explanation": explanation,
         "diagnosis_tags": ["quadratic_inequality", "contextual_application", scenario],
         "metadata": {
@@ -2859,12 +3140,21 @@ def generate_from_problem_type_spec(
     if pt == "integer_compute_quadratic_vertex":
         difficulty = _resolve_slot_difficulty(problem_type_spec)
         route_seed = seed if seed is not None else 0
-
-        if route_seed % 2 == 1:
+        # Extremum textbook sources are applied word problems; do not dilute with
+        # pure-formula stems when the skill/problem_type requires application fidelity.
+        prefer_application = should_use_application_scenario(skill_id, pt)
+        preferred_scenario = str(
+            problem_type_spec.get("presentation_variant")
+            or problem_type_spec.get("template_variant")
+            or problem_type_spec.get("preferred_scenario")
+            or ""
+        ).strip()
+        if prefer_application or route_seed % 2 == 1 or preferred_scenario:
             core_payload = generate_quadratic_extremum_application(
                 route_seed,
                 pt,
                 require_integer=_requires_integer_vertex_answer(problem_type_spec),
+                preferred_scenario=preferred_scenario or None,
             )
             payload = _finalize_quadratic_extremum_application_payload(
                 core_payload,
@@ -2887,7 +3177,18 @@ def generate_from_problem_type_spec(
                 force_direct_formula=True,
             )
 
+        # Component-level presentation variants (e.g. multi-part group-buy) may
+        # override the curated integer contract; prefer payload-embedded contract.
+        if str(payload.get("answer_type") or "") == "multi_part" and isinstance(
+            payload.get("answer_contract"), dict
+        ):
+            problem_type_spec = dict(problem_type_spec)
+            problem_type_spec["answer_contract"] = dict(payload["answer_contract"])
         ac = get_answer_contract(problem_type_spec)
+        if str(payload.get("answer_type") or "") == "multi_part" and isinstance(
+            payload.get("answer_contract"), dict
+        ):
+            ac = dict(payload["answer_contract"])
         payload = apply_coordinate_pair_runtime_fields(payload, ac)
         payload = _reinforce_slot_question_text(payload, problem_type_spec)
         payload = finalize_question_text(payload, problem_type_spec)
@@ -2924,6 +3225,19 @@ def generate_from_problem_type_spec(
             raise RuntimeError(f"slot_generator_not_registered:{slot or at}")
     payload = fn(skill_id, pt, problem_type_spec, seed)
     ac = get_answer_contract(problem_type_spec)
+    if isinstance(payload, dict):
+        embedded = payload.get("answer_contract")
+        if isinstance(ac, dict) and ac and not (
+            isinstance(embedded, dict) and str(embedded.get("answer_type") or "").strip()
+        ):
+            payload["answer_contract"] = dict(ac)
+        if isinstance(ac, dict) and ac:
+            payload.setdefault("answer_type", ac.get("answer_type"))
+            payload.setdefault("checker_key", ac.get("checker_key") or ac.get("checker"))
+            payload.setdefault(
+                "equivalence_type",
+                ac.get("equivalence_type") or ac.get("answer_equivalence"),
+            )
     payload = apply_coordinate_pair_runtime_fields(payload, ac)
     payload = _reinforce_slot_question_text(payload, problem_type_spec)
     payload = finalize_question_text(payload, problem_type_spec)

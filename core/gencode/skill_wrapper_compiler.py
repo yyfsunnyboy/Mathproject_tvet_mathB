@@ -324,7 +324,9 @@ def _minimal_answer_contract(payload: dict[str, Any], spec: dict[str, Any]) -> d
     ).strip()
     answer_type = str(
         payload.get("answer_type")
+        or payload.get("answer_value_type")
         or spec.get("answer_type")
+        or spec.get("answer_value_type")
         or (payload.get("metadata") or {{}}).get("answer_type")
         or ("single_choice" if presentation_mode == "single_choice" else "expression")
     ).strip()
@@ -333,9 +335,10 @@ def _minimal_answer_contract(payload: dict[str, Any], spec: dict[str, Any]) -> d
         or (payload.get("metadata") or {{}}).get("semantic_answer")
         or payload.get("display_answer")
         or payload.get("correct_answer")
+        or payload.get("answer")
         or ""
     ).strip()
-    if presentation_mode == "single_choice":
+    if presentation_mode == "single_choice" or answer_type in {{"single_choice", "choice", "choice_label"}}:
         return {{
             "presentation_mode": "single_choice",
             "answer_type": "single_choice",
@@ -345,13 +348,47 @@ def _minimal_answer_contract(payload: dict[str, Any], spec: dict[str, Any]) -> d
             "equivalence": "choice_label",
             "semantic_answer": semantic_answer,
         }}
+    checker = str(
+        spec.get("checker_key")
+        or payload.get("checker_key")
+        or payload.get("checker_type")
+        or payload.get("checker")
+        or (payload.get("metadata") or {{}}).get("checker_key")
+        or ""
+    ).strip()
+    equivalence = str(
+        spec.get("equivalence_type")
+        or payload.get("equivalence_type")
+        or payload.get("answer_equivalence")
+        or payload.get("equivalence")
+        or (payload.get("metadata") or {{}}).get("equivalence_type")
+        or ""
+    ).strip()
+    try:
+        from core.gencode.answer_contract_gate import _DEFAULT_CONTRACT_BY_ANSWER_TYPE
+
+        default_eq, default_ck = _DEFAULT_CONTRACT_BY_ANSWER_TYPE.get(answer_type, ("", ""))
+    except Exception:
+        default_eq, default_ck = ("", "")
+    if not equivalence:
+        equivalence = str(default_eq or "").strip() or "exact_string"
+    if not checker:
+        checker = str(default_ck or "").strip() or "text_short_checker"
+    # Guard: never keep equation checker for non-equation answer types.
+    if checker == "linear_equation_equivalent_checker" and answer_type not in {{
+        "equation",
+        "linear_equation",
+        "expression",
+    }}:
+        checker = str(default_ck or "").strip() or "text_short_checker"
+        equivalence = str(default_eq or "").strip() or equivalence
     return {{
-        "presentation_mode": "short_answer",
+        "presentation_mode": presentation_mode or "short_answer",
         "answer_type": answer_type,
-        "checker": "linear_equation_equivalent_checker",
-        "checker_key": "linear_equation_equivalent_checker",
-        "answer_equivalence": "linear_equation_equivalent",
-        "equivalence": "linear_equation_equivalent",
+        "checker": checker,
+        "checker_key": checker,
+        "answer_equivalence": equivalence,
+        "equivalence": equivalence,
         "semantic_answer": semantic_answer,
     }}
 
@@ -361,7 +398,7 @@ def _merge_generator_spec(payload: dict[str, Any], component_id: str) -> dict[st
         return payload
     spec = _spec_for_component(component_id)
     out = dict(payload)
-    merge_keys = (
+    identity_keys = (
         "textbook_example_id",
         "component_id",
         "generator_key",
@@ -373,9 +410,18 @@ def _merge_generator_spec(payload: dict[str, Any], component_id: str) -> dict[st
         "source_order",
         "sampling_weight",
     )
-    for key in merge_keys:
+    contract_keys = (
+        "answer_type",
+        "answer_value_type",
+        "checker_key",
+        "equivalence_type",
+    )
+    for key in identity_keys:
         if spec.get(key) is not None:
             out[key] = spec[key]
+    for key in contract_keys:
+        if spec.get(key) is not None:
+            out.setdefault(key, spec[key])
     out.setdefault("component_id", component_id)
     out.setdefault("generator_key", component_id)
     meta = dict(out.get("metadata") or {{}}) if isinstance(out.get("metadata"), dict) else {{}}
@@ -388,6 +434,8 @@ def _merge_generator_spec(payload: dict[str, Any], component_id: str) -> dict[st
         "source_kind",
         "line_type",
         "semantic_answer",
+        "checker_key",
+        "equivalence_type",
     ):
         if out.get(key) is not None:
             meta.setdefault(key, out.get(key))

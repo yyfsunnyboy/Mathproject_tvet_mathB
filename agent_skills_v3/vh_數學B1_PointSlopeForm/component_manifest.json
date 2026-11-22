@@ -27,14 +27,17 @@
     },
     {
       "component_id": "src_4542",
-      "status": "draft_written",
+      "status": "verified",
       "presentation_mode": "short_answer",
       "source_kind": "ex_4542",
       "textbook_example_id": 4542,
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4542"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4542",
+      "problem_type_id": "write_perpendicular_bisector_from_two_points",
+      "domain_operation": "write_perpendicular_bisector_from_two_points",
+      "answer_type": "equation"
     },
     {
       "component_id": "src_4543",
@@ -71,14 +74,17 @@
     },
     {
       "component_id": "src_4550",
-      "status": "draft_written",
+      "status": "verified",
       "presentation_mode": "short_answer",
       "source_kind": "ex_4550",
       "textbook_example_id": 4550,
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4550"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4550",
+      "problem_type_id": "write_perpendicular_bisector_from_two_points",
+      "domain_operation": "write_perpendicular_bisector_from_two_points",
+      "answer_type": "equation"
     },
     {
       "component_id": "src_4551",
@@ -115,14 +121,17 @@
     },
     {
       "component_id": "src_4557",
-      "status": "draft_written",
+      "status": "verified",
       "presentation_mode": "short_answer",
       "source_kind": "ex_4557",
       "textbook_example_id": 4557,
       "line_type": "point_slope",
       "domain_module": "core.domain.coordinate_geometry.line_equation_domain",
       "entrypoint": "build_line_equation_matrix",
-      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4557"
+      "component_dir": "D:\\Python\\Mathproject_tvet_mathB\\reports\\gencode_v3_dryrun\\vh_數學B1_PointSlopeForm\\components\\src_4557",
+      "problem_type_id": "write_perpendicular_bisector_from_two_points",
+      "domain_operation": "write_perpendicular_bisector_from_two_points",
+      "answer_type": "equation"
     },
     {
       "component_id": "src_4560",

@@ -121,7 +121,7 @@ def test_practice_templates_have_dual_canvas_and_ui_contract_helpers():
 
     # Check is_correct === true and handleCorrectAnswer hook in standard template
     assert "isCorrectVal === true" in standard
-    assert "handleCorrectAnswer()" in standard
+    assert "handleCorrectAnswer(data)" in standard
     assert "consecutiveWrongs++" in standard
 
     # Check is_correctVal !== null and handleCorrectAnswer hook in adaptive template

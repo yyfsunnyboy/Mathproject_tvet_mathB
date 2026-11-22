@@ -1,5 +1,51 @@
 {
   "skill_id": "vh_數學B1_QuadraticFunctionGraph",
-  "generated_at": "2026-08-12T13:39:19",
-  "source": "b1_13_14_materialize_quadratic_components"
+  "publish_status": "production_manifest_compiled",
+  "component_count": 4,
+  "components": [
+    {
+      "component_id": "src_4450",
+      "textbook_example_id": 4450,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
+      "domain_operation": "integer_quadratic_graph_translation_fill_blank",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "example",
+      "generate_py": "components/src_4450/generate.py"
+    },
+    {
+      "component_id": "src_4460",
+      "textbook_example_id": 4460,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
+      "domain_operation": "integer_quadratic_graph_translation_fill_blank",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "example",
+      "generate_py": "components/src_4460/generate.py"
+    },
+    {
+      "component_id": "src_4466",
+      "textbook_example_id": 4466,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
+      "domain_operation": "integer_quadratic_graph_translation_fill_blank",
+      "presentation_mode": "short_answer",
+      "answer_type": "text_short",
+      "source_kind": "example",
+      "generate_py": "components/src_4466/generate.py"
+    },
+    {
+      "component_id": "src_4503",
+      "textbook_example_id": 4503,
+      "status": "verified",
+      "problem_type_id": "integer_quadratic_graph_properties_choice",
+      "domain_operation": "integer_quadratic_graph_properties_choice",
+      "presentation_mode": "single_choice",
+      "answer_type": "single_choice",
+      "source_kind": "example",
+      "generate_py": "components/src_4503/generate.py"
+    }
+  ]
 }
