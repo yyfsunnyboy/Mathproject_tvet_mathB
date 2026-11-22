@@ -16,6 +16,7 @@
 - 數學等價與 required form：`docs/系統SOP/數學答案檢核原則_v1.12_20260908.md`。
 - 已知債：同目錄 `KnownIssues_TechnicalDebt.md`；Complete Master SOP 僅供歷史與案例查考，非預設必讀。
 - 修改 vocational practice / generator runtime 前讀 `docs/VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md`。
+- 技高 B1 學生晉級（題型掌握 X/Y、完成 MsgBox、同章略過／補缺導航）以該契約 **§12** 為準；B2～B4 未經逐冊驗收不得默認套用。實作錨點：`core/practice_type_mastery.py`、`student_problem_type_mastery`。
 - 已支援 AI Tutor 的 Skill 遵循 `docs/AI_TUTOR_CONVERSATION_CONTRACT.md` 共用多輪契約，不另建不相容服務。
 - 專案概觀與成熟度：`README.md`；目錄治理與 Canonical 文件表：`docs/REPOSITORY_STRUCTURE.md`；更新既有文件，不建立平行副本。
 - 自適應（AKT stub／PPO 路由）規格：`docs/自適應實作/`；`docs/audits/SYSTEM_CURRENT_STATE_AUDIT.md` 為歷史快照，不代表現況。
@@ -83,3 +84,4 @@
 6. 預設以完整 Unit 為執行單位（流程見 Lean §0.1），不逐 Skill、逐 Gate 要求人工確認；已授權範圍內自動完成 Generator、Bundle 與隔離驗證，保留所有必要 Gate。
 7. 只有真正的 Blocker 或正式寫入、Promotion、Publish 授權需求才中斷；每個 Unit 集中一次人工發布核可。
 8. 最終一次回報 PASS／DEFERRED／Blocker、是否需要發布授權及是否需要重啟 Flask，並依 Lean §7 第 13 點的六項結案報告；驗收完成即停止，不自動進入下一 Unit。
+9. 技高新冊若要沿用 B1 題型掌握／導航，須先對照 `VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md` §12 做逐冊決策與驗收；未核准前維持該冊既有晉級語意，且不得自動展開 B3／B4。

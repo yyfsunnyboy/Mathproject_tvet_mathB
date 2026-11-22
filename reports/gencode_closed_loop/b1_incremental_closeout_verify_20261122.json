@@ -1,0 +1,102 @@
+{
+  "passed": 19,
+  "total": 19,
+  "failed": [],
+  "results": [
+    {
+      "label": "poly_src_4618",
+      "pass": true,
+      "detail": "pt=polynomial_descending_power_table check=True"
+    },
+    {
+      "label": "poly_src_4629",
+      "pass": true,
+      "detail": "pt=polynomial_descending_power_table check=True"
+    },
+    {
+      "label": "remainder_src_4638",
+      "pass": true,
+      "detail": "ans={'part_1': 'f(-1)', 'part_2': 'f(2)'} check=True"
+    },
+    {
+      "label": "remainder_src_4664",
+      "pass": true,
+      "detail": "ans={'part_1': 'f(5)', 'part_2': 'f(-6)'} check=True"
+    },
+    {
+      "label": "remainder_src_4640",
+      "pass": true,
+      "detail": "ans={'part_1': 'f(-5)', 'part_2': 'f(5)'} check=True"
+    },
+    {
+      "label": "remainder_src_4666",
+      "pass": true,
+      "detail": "ans={'part_1': 'f(3)', 'part_2': 'f(-2)'} check=True"
+    },
+    {
+      "label": "numberline_src_4401",
+      "pass": true,
+      "detail": "cells=12 fidelity=NATIVE_COVERED"
+    },
+    {
+      "label": "extremum_src_4465_multi",
+      "pass": true,
+      "detail": "ans={'part_1': '5', 'part_2': '7000', 'part_3': '245000'} stem=某電信行想利用網路團購手機促銷活動（每人限購1支），預定人數為 30 人，且每支手機售價 8000 元，若達 30 人以"
+    },
+    {
+      "label": "extremum_src_4471_multi",
+      "pass": true,
+      "detail": "ans={'part_1': '5', 'part_2': '62500'} stem=旅行社舉辦旅遊活動，預定 20 人出團，每人收費 3000 元，超過 20 人以後，每增加 1 人，每人收費可減少 10"
+    },
+    {
+      "label": "extremum_src_4457_single",
+      "pass": true,
+      "detail": "ans=7200"
+    },
+    {
+      "label": "qis_src_4476",
+      "pass": true,
+      "detail": "at=integer ans=27 check=True"
+    },
+    {
+      "label": "qis_src_4484",
+      "pass": true,
+      "detail": "at=text_short ans=13,14 check=True"
+    },
+    {
+      "label": "qis_src_4488",
+      "pass": true,
+      "detail": "at=integer ans=27 check=True"
+    },
+    {
+      "label": "qis_src_4517",
+      "pass": true,
+      "detail": "at=choice_label ans=A check=True"
+    },
+    {
+      "label": "regress_vh_數學B1_QuadraticInequalitySolution_src_4474",
+      "pass": true,
+      "detail": "pt=integer_reverse_quadratic_inequality_coefficients ans=-4"
+    },
+    {
+      "label": "regress_vh_數學B1_DistanceBetweenPointAndLine_src_4584",
+      "pass": true,
+      "detail": "pt=slope_and_point_line_distance_parameter_choice ans=A"
+    },
+    {
+      "label": "regress_vh_數學B1_DistanceBetweenTwoParallelLines_default",
+      "pass": true,
+      "detail": "pt=distance_between_parallel_lines ans={'(1)': '5/13', '(2)': 'sqrt(5)'}"
+    },
+    {
+      "label": "regress_vh_數學B1_SlopeOfALine_default",
+      "pass": true,
+      "detail": "pt=collinear_three_points_parameter ans=-6"
+    },
+    {
+      "label": "regress_vh_數學B1_PointSlopeForm_src_4542",
+      "pass": true,
+      "detail": "pt=write_perpendicular_bisector_from_two_points ans=-x - y + 1 = 0"
+    }
+  ]
+}

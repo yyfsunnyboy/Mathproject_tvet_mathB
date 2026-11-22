@@ -1,0 +1,77 @@
+{
+  "passed": 14,
+  "total": 14,
+  "failed": [],
+  "results": [
+    {
+      "label": "structural_same_chapter",
+      "pass": true,
+      "detail": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning"
+    },
+    {
+      "label": "skip_completed_next",
+      "pass": true,
+      "detail": "{'skill_id': 'vh_數學B1_CartesianCoordinateSystemEstablishment', 'skill_ch_name': '直角坐標系的建立', 'volume': '數學B1', 'chapter': '1 坐標系與函數圖形', 'nav_kind': 'same_chapter', 'button_label': '繼續挑戰：直角坐標系的建立', 'celebration_kind': 'skill', 'target': 'practice'}"
+    },
+    {
+      "label": "student_isolation",
+      "pass": true,
+      "detail": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning"
+    },
+    {
+      "label": "same_chapter_backfill",
+      "pass": true,
+      "detail": "{'skill_id': 'vh_數學B1_AbsoluteValue', 'skill_ch_name': '絕對值', 'volume': '數學B1', 'chapter': '1 坐標系與函數圖形', 'nav_kind': 'same_chapter_backfill', 'button_label': '繼續挑戰：絕對值', 'celebration_kind': 'skill', 'target': 'practice'}"
+    },
+    {
+      "label": "chapter_complete_to_ch2",
+      "pass": true,
+      "detail": "{'skill_id': 'vh_數學B1_SlopeOfALine', 'skill_ch_name': '直線的斜率', 'volume': '數學B1', 'chapter': '2 直線方程式', 'nav_kind': 'chapter_complete', 'button_label': '前往下一章', 'celebration_kind': 'chapter', 'target': 'practice'}"
+    },
+    {
+      "label": "celebration_chapter_kind",
+      "pass": true,
+      "detail": "{'just': True, 'chapter': True, 'kind': 'chapter', 'nav': 'chapter_complete'}"
+    },
+    {
+      "label": "volume_complete",
+      "pass": true,
+      "detail": "{'nav_kind': 'volume_complete', 'button_label': '返回學習儀表板', 'celebration_kind': 'volume', 'target': 'dashboard', 'skill_id': None, 'volume': '數學B1', 'chapter': '3 式的運算', 'reason': 'all_practiceable_skills_complete_in_volume'}"
+    },
+    {
+      "label": "no_numberline",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "no_subsection332",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ui_chapter_msg",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ui_volume_msg",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ui_review_link",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ui_continue_colon",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "b2_fallback",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

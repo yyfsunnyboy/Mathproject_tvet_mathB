@@ -1,0 +1,675 @@
+{
+  "generated_at": "20261121_155248",
+  "isolated_db": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\b1_runtime_accept_20261121_155248\\kumon_math_accept.db",
+  "test_username": "b1_audit_probe_20261121_155248",
+  "summary": {
+    "skills_total": 45,
+    "executable_attempted": 34,
+    "generate_pass": 33,
+    "generate_fail": 1,
+    "checker_pass": 33,
+    "checker_fail": 0,
+    "checker_skipped": 0,
+    "outline_skipped": 10,
+    "zero_generator_skipped": 1
+  },
+  "results": [
+    {
+      "skill_id": "outline_vocational_數學B1_11",
+      "skill_ch_name": "1-1 數線與絕對值",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_12",
+      "skill_ch_name": "1-2 平面坐標系與線型函數",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_13",
+      "skill_ch_name": "1-3 二次函數",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_14",
+      "skill_ch_name": "1-4 一元二次不等式",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_21",
+      "skill_ch_name": "2-1 斜率",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_22",
+      "skill_ch_name": "2-2 直線方程式",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_23",
+      "skill_ch_name": "2-3 直線的一般式與點到直線的距離",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_31",
+      "skill_ch_name": "3-1 多項式的基本概念與四則運算",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_32",
+      "skill_ch_name": "3-2 除法原理與餘式定理",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "outline_vocational_數學B1_33",
+      "skill_ch_name": "3-3 因式分解與分式",
+      "is_outline": true,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "outline"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "skill_ch_name": "絕對值",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4398",
+      "problem_type_id": "solve_basic_absolute_value_equation",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "skill_ch_name": "絕對值不等式",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4400",
+      "problem_type_id": "absolute_value_inequality_zero_center_basic",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "skill_ch_name": "絕對值不等式的展開與幾何意義",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4411",
+      "problem_type_id": "absolute_value_inequality_linear_expression_basic",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "skill_ch_name": "直角坐標系的建立",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4417",
+      "problem_type_id": "cartesian_coordinate_quadrant_symbol_reasoning",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_CompletingTheSquare",
+      "skill_ch_name": "配方法",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4468",
+      "problem_type_id": "expression_complete_square_to_vertex",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+      "skill_ch_name": "點到直線的距離",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4584",
+      "problem_type_id": "slope_and_point_line_distance_parameter_choice",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "skill_ch_name": "兩條平行線間的距離",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4570",
+      "problem_type_id": "distance_between_parallel_lines",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "skill_ch_name": "平面上兩點間的距離",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4419",
+      "problem_type_id": "solve_unknown_coordinate_from_two_point_distance",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_DivisionPointCoordinates",
+      "skill_ch_name": "分點坐標",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4420",
+      "problem_type_id": "compute_internal_division_point_coordinates",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "skill_ch_name": "因式定理",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4646",
+      "problem_type_id": "factor_theorem_root_factor",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_FunctionConcept",
+      "skill_ch_name": "函數的概念",
+      "is_outline": false,
+      "is_active": false,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4430",
+      "problem_type_id": "free_fall_function_value_choice",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_GeneralFormOfLinearEquation",
+      "skill_ch_name": "直線的一般式",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4565",
+      "problem_type_id": "slope_from_general_or_intercept_form",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_HorizontalAndVerticalLineEquations",
+      "skill_ch_name": "水平線與鉛直線的直線方程式",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4544",
+      "problem_type_id": "write_line_equation_from_point_slope",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_InterceptForm",
+      "skill_ch_name": "截距式",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4547",
+      "problem_type_id": "intercept_form_equation_and_triangle_area",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_LinearFunction",
+      "skill_ch_name": "線型函數",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4424",
+      "problem_type_id": "graph_intercepts_and_linear_equation",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_MidpointCoordinates",
+      "skill_ch_name": "中點坐標",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4418",
+      "problem_type_id": "multi_part_midpoint_application",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_NumberLine",
+      "skill_ch_name": "數線",
+      "is_outline": false,
+      "is_active": false,
+      "generate": "SKIP",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "no_generator_keys"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_PointSlopeForm",
+      "skill_ch_name": "點斜式",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4540",
+      "problem_type_id": "write_line_equation_from_point_slope",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "skill_ch_name": "多項式的四則運算",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4612",
+      "problem_type_id": "polynomial_add_sub",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "skill_ch_name": "多項式的基本概念",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4609",
+      "problem_type_id": "polynomial_descending_power_properties",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "skill_ch_name": "多項式的相等",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4611",
+      "problem_type_id": "polynomial_equality_identity",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "skill_ch_name": "因式分解",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4671",
+      "problem_type_id": "polynomial_factoring",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "skill_ch_name": "兩平行線的性質",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4530",
+      "problem_type_id": "parallel_segments_parameter",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "skill_ch_name": "兩垂直線的性質",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4526",
+      "problem_type_id": "parallel_and_perpendicular_slopes_from_reference",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "skill_ch_name": "二次函數 $y = ax^{2} + bx + c$ 的最大（小）值",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4454",
+      "problem_type_id": "integer_quadratic_vertex_or_parameter_computation",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+      "skill_ch_name": "二次函數的圖形",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4450",
+      "problem_type_id": "integer_quadratic_graph_translation_fill_blank",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticInequalityAndFactoring",
+      "skill_ch_name": "一元二次不等式的基本概念與十字交乘法",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4473",
+      "problem_type_id": "integer_factor_quadratic_by_cross_multiplication",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "skill_ch_name": "一元二次不等式的解",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4474",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_RationalEquation",
+      "skill_ch_name": "分式方程式",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4678",
+      "problem_type_id": "rational_equation_solve",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "skill_ch_name": "分式的四則運算",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4676",
+      "problem_type_id": "rational_expression_arithmetic",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "skill_ch_name": "餘式定理",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4639",
+      "problem_type_id": "remainder_theorem_evaluate",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_SlopeInterceptForm",
+      "skill_ch_name": "斜截式",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4603",
+      "problem_type_id": "slope_intercept_read_slope_and_intercept",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "skill_ch_name": "直線的斜率",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4519",
+      "problem_type_id": "slopes_of_named_segments",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_SubSection332",
+      "skill_ch_name": "分式",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "FAIL",
+      "checker": "SKIP",
+      "component_id": null,
+      "problem_type_id": null,
+      "route_source": null,
+      "notes": [
+        "import_error:No module named 'skills.vh_數學B1_SubSection332'"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "skill_ch_name": "頂點式",
+      "is_outline": false,
+      "is_active": true,
+      "generate": "PASS",
+      "checker": "PASS",
+      "component_id": "src_4451",
+      "problem_type_id": "text_quadratic_graph_translation_fill_blank_short_answer",
+      "route_source": "gencode_wrapper",
+      "notes": [
+        "oracle_from_store"
+      ]
+    }
+  ],
+  "priority": [
+    "vh_數學B1_DistanceBetweenPointAndLine",
+    "vh_數學B1_DistanceBetweenTwoParallelLines",
+    "vh_數學B1_QuadraticInequalitySolution",
+    "vh_數學B1_SlopeInterceptForm",
+    "vh_數學B1_SlopeOfALine"
+  ],
+  "src_4584": {
+    "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+    "skill_ch_name": "點到直線的距離",
+    "is_outline": false,
+    "is_active": true,
+    "generate": "PASS",
+    "checker": "PASS",
+    "component_id": "src_4584",
+    "problem_type_id": "slope_and_point_line_distance_parameter_choice",
+    "route_source": "gencode_wrapper",
+    "notes": [
+      "oracle_from_store",
+      "wrong_answer_rejected"
+    ]
+  }
+}

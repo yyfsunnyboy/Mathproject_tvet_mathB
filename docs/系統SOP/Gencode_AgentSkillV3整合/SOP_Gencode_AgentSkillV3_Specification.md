@@ -257,7 +257,7 @@ $$\text{數學內容層} \rightarrow \text{Data Presentation (呈現維度)} \ri
 
 | 欄位名 | 類型 | 預設值/格式 | 狀態 | 證據來源 |
 | --- | --- | --- | --- | --- |
-| `problem_type_id` | `str` | `"point_slope"` 等 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L204) |
+| `problem_type_id` | `str` | `"point_slope"` 等 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L204)；技高 B1 學生端「已掌握題型 X/Y」的 Y 以 Runtime 去重後的可用 `problem_type_id` 計（見 [VOCATIONAL §12](../../VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md)），不得用例題數／檔案數冒充 |
 | `base_problem_type_id` | `str` | 基礎題型 ID | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L216) |
 | `checker_key` | `str` | `"integer_checker"` 等 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L205) |
 | `equivalence_type` | `str` | `"numeric_exact"` 等 | `[Current]` | [phase3_skill_codegen.py](file:///e:/Python/Mathproject_tvet_mathB/core/gencode/phase3_skill_codegen.py#L206) |

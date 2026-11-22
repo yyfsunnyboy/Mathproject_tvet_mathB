@@ -1,0 +1,83 @@
+{
+  "passed": 15,
+  "total": 15,
+  "failed": [],
+  "results": [
+    {
+      "label": "is_b1_true",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "is_b1_false_b2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "is_b1_false_subsection",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "point_slope_has_types",
+      "pass": true,
+      "detail": "n=2 types=['write_line_equation_from_point_slope', 'write_perpendicular_bisector_from_two_points']"
+    },
+    {
+      "label": "found_multi_type_skill",
+      "pass": true,
+      "detail": "skill=vh_數學B1_AbsoluteValueInequality n=4"
+    },
+    {
+      "label": "same_type_four_correct_is_1",
+      "pass": true,
+      "detail": "1/4"
+    },
+    {
+      "label": "after_second_type",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "wrong_keeps_mastered",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "assisted_not_mastered",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "independent_after_assist",
+      "pass": true,
+      "detail": "3"
+    },
+    {
+      "label": "all_types_complete",
+      "pass": true,
+      "detail": "4/4 complete=True"
+    },
+    {
+      "label": "persisted_reload",
+      "pass": true,
+      "detail": "4"
+    },
+    {
+      "label": "zero_types_not_complete",
+      "pass": true,
+      "detail": "暫無可練習題型"
+    },
+    {
+      "label": "db_mastered_rows",
+      "pass": true,
+      "detail": "rows=4"
+    },
+    {
+      "label": "b2_skipped",
+      "pass": true,
+      "detail": "{'skipped': True, 'reason': 'not_b1_mastery_skill'}"
+    }
+  ],
+  "iso_db": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\b1_type_mastery_20261122_023252\\kumon_math.db"
+}

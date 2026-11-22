@@ -1,0 +1,67 @@
+{
+  "counts": {
+    "PASS": 13,
+    "FAIL_OR_BLOCKED": 13,
+    "PARTIAL": 9,
+    "N/A_OUTLINE": 10
+  },
+  "pass_skills": [
+    "vh_數學B1_AbsoluteValue",
+    "vh_數學B1_PolynomialBasicConcepts",
+    "vh_數學B1_PolynomialFactoring",
+    "vh_數學B1_RemainderTheorem",
+    "vh_數學B1_SlopeOfALine",
+    "vh_數學B1_FactorTheorem",
+    "vh_數學B1_PolynomialArithmeticOperations",
+    "vh_數學B1_PropertiesOfParallelLines",
+    "vh_數學B1_RationalExpressionArithmeticOperations",
+    "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+    "vh_數學B1_PolynomialEquality",
+    "vh_數學B1_PropertiesOfPerpendicularLines",
+    "vh_數學B1_RationalEquation"
+  ],
+  "partial_skills": [
+    "vh_數學B1_GeneralFormOfLinearEquation",
+    "vh_數學B1_AbsoluteValueInequality",
+    "vh_數學B1_DistanceBetweenPointAndLine",
+    "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+    "vh_數學B1_DistanceBetweenTwoParallelLines",
+    "vh_數學B1_SlopeInterceptForm",
+    "vh_數學B1_InterceptForm",
+    "vh_數學B1_MidpointCoordinates",
+    "vh_數學B1_DivisionPointCoordinates"
+  ],
+  "fail_or_blocked": [
+    "vh_數學B1_CartesianCoordinateSystemEstablishment",
+    "vh_數學B1_PointSlopeForm",
+    "vh_數學B1_QuadraticFunctionGraph",
+    "vh_數學B1_QuadraticInequalityAndFactoring",
+    "vh_數學B1_FunctionConcept",
+    "vh_數學B1_HorizontalAndVerticalLineEquations",
+    "vh_數學B1_QuadraticInequalitySolution",
+    "vh_數學B1_VertexFormOfQuadraticFunction",
+    "vh_數學B1_CompletingTheSquare",
+    "vh_數學B1_NumberLine",
+    "vh_數學B1_QuadraticFunctionExtremum",
+    "vh_數學B1_SubSection332",
+    "vh_數學B1_LinearFunction"
+  ],
+  "outline": [
+    "outline_vocational_數學B1_14",
+    "outline_vocational_數學B1_32",
+    "outline_vocational_數學B1_21",
+    "outline_vocational_數學B1_23",
+    "outline_vocational_數學B1_31",
+    "outline_vocational_數學B1_33",
+    "outline_vocational_數學B1_11",
+    "outline_vocational_數學B1_13",
+    "outline_vocational_數學B1_22",
+    "outline_vocational_數學B1_12"
+  ],
+  "notes": {
+    "PASS": "Has Domain Evidence + promotion gate pass",
+    "PARTIAL": "Executable but incomplete evidence package",
+    "FAIL_OR_BLOCKED": "Missing evidence / empty shell / blocked runtime / not ready",
+    "N/A_OUTLINE": "Outline skills — not applicable for Promotion completion rate"
+  }
+}

@@ -318,8 +318,10 @@ be preserved from generation through student rendering.
 - generator correctness
 - chapter-specific diagrams
 - chapter-specific validators
+-（若該冊採用題型掌握制）§12 的掌握／導航契約，不得另建平行晉級系統
 
 不要重新修改已穩定的 B2 practice runtime，除非新章節揭露真正的共用 regression。
+B2～B4 **尚未**自動改用 §12 題型掌握制；擴冊前須逐冊驗收，不得默認複製 B1 晉級規則。
 
 
 ## 11. Visual Asset Acceptance Contract
@@ -369,3 +371,81 @@ Legacy assets 若缺少 `visual_status`，為相容視為 accepted（不得倒�
 - `core/question_image_assets.py`（student list gate）
 - regression：`tests/test_b2_ch3_visual_pipeline_hardening.py`
 - Ch1 vs Ch3 診斷：`reports/b2_visual_pipeline_ch1_vs_ch3.md`
+
+
+## 12. B1 Generator problem-type mastery & learning navigation（2026-11-22）
+
+本節記錄 **技高數學 B1** 已由程式與自動化測試驗證的學生練習晉級契約。  
+證據報告（不得把 NOT_TESTED 寫成已驗收）：
+
+- `reports/gencode_closed_loop/B1_ProblemType_Mastery_改造報告.md`
+- `reports/gencode_closed_loop/B1_SkillCompletion_MsgBox_報告.md`
+- `reports/gencode_closed_loop/B1_Completion_SameChapter_Navigation_報告.md`
+- `reports/gencode_closed_loop/B1_Nav_SkipCompleted_ChapterEncourage_報告.md`
+- 自動化：略過／補缺 14/14、結構導航 13/13、完成旗標 16/16 PASS  
+- **仍待人工**：真人瀏覽器／iPad 互動驗收
+
+實作錨點：`core/practice_type_mastery.py`、`core/gencode/services/generator_problem_type_inventory.py`、`student_problem_type_mastery`、`templates/index.html`（完成 MsgBox）。
+
+### 12.1 Textbook Generator coverage
+
+- 每一道教材例題應有符合原始數學結構的 Generator；相同題型可共用 Generator family／component。
+- 覆蓋須保真題幹推理拓樸（見 §9.1）；不得只覆蓋寬泛主題。
+- Outline／習題來源類型不得自動建成 Skill；空殼／inactive Skill 不得當學生過關目標。
+
+### 12.2 Problem-type counting（X/Y 的 Y）
+
+- Y＝該 Skill **Runtime 實際可用**、去重後的 `problem_type_id` 數（`usable_problem_type_ids`）。
+- **禁止**用教材例題數、Generator Python 檔案數、component 檔案數、V3 eligible 來源數或舊「連續答對門檻」冒充 Y。
+- 相同 `problem_type_id` 的多個 component 只算一種題型。
+- 學生端不可選用的題型不得計入目前過關分母。
+
+### 12.3 Mastery rule（X/Y 的 X）
+
+- 學生在正常練習中，對某一 `problem_type_id` **獨立答對**一次 → 該題型 `MASTERED`。
+- Multipart：必須整題 `overall_correct`（所有 parts 皆正確）才算該次答對；部分小題正確不得提前 MASTERED。有序多值 part（如 `a、b` 之值）的友善輸入格式見數學答案檢核原則「有序多值答案」。
+- 學生端顯示「已掌握題型 X/Y」；數字必須來自後端真實進度。
+- 答錯：記錄錯誤；**不清除**其他已掌握題型；不要求全 Skill 重來。
+- AI 提示／分步／看過解答後的答對 **不算** MASTERED；須以**新的同型變化題**再獨立答對。
+- 同一題型重複答對不重複累加 X；不得只憑同一題型答對 Y 次就判定 Skill 完成。
+- Y＝0 不得自動晉級；顯示「暫無可練習題型」。
+
+### 12.4 Persistence
+
+- 權威表：`student_problem_type_mastery`（per user × skill × problem_type）。
+- 不得把舊 `Progress.consecutive_correct` 直接換算成 MASTERED。
+- 題型新增：舊掌握保留，新題型待完成；題型下線：歷史保留，但不再計入目前 Y。
+- 不同學生進度必須隔離。
+
+### 12.5 Skill-complete MsgBox
+
+- 僅當本次作答使 Skill 由未完成→完成，且 DB commit 成功（`skill_just_completed`）才顯示。
+- 重整頁面、重複提交、已完成 Skill 重練 → **不**重複彈出。
+- **不自動跳轉**；學生按主按鈕後才導航；次要按鈕「留在目前技能／留在本章」。
+
+### 12.6 Learning navigation（Curriculum order）
+
+正式順序來源：`skill_curriculum`＋`get_chapters_by_curriculum_volume`／`chapter_natural_sort_key`；章內 `section → display_order`（與章複習一致）。不得用 Skill ID 字母序或檔案時間。
+
+完成目前 Skill 後，對**該生**查找下一目標：
+
+1. 同章、目前之後的第一個**未完成**可練習 Skill →「繼續挑戰：{技能名}」
+2. 後面都完成 → 同章前面未完成補缺（`same_chapter_backfill`）
+3. 同章適用 Skill 皆完成 → 章節完成鼓勵；主按鈕「前往下一章」
+4. 後續章節亦略過已完成，找第一個未完成
+5. 本冊適用 Skill 皆完成 → 本冊完成鼓勵；「返回學習儀表板」
+
+自動推薦須排除：inactive、Outline、無 Runtime 可用題型之空殼、學生端不可練習者（例如 NumberLine inactive、SubSection332 空殼）。不可把它們假設為已掌握，也不可因此永久卡關。
+
+### 12.7 Free review of completed skills
+
+- 允許學生主動進入已完成 Skill 繼續出題作答。
+- 保留已掌握 X/Y；答錯不撤銷既有 MASTERED（錯題仍可進錯題本）。
+- 不再次觸發首次完成鼓勵；可提供「前往下一個未完成技能」操作。
+- 不得強制學生離開已完成 Skill；暫時離開未完成 Skill 亦不把跳過當成完成。
+
+### 12.8 Scope & non-goals
+
+- §12 預設範圍：**B1 only**。B2～B4 維持既有連對／Skill 卡語意，除非該冊明確導入並通過驗收。
+- 不新增排行榜、扣分、懲罰或強迫連對機制。
+- 不平行發明第二套晉級系統；變更應落在本契約與既有 GenCode V3 Lean／Specification／PipelineFlow。

@@ -1,0 +1,63 @@
+{
+  "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+  "component_id": "src_4610",
+  "source_example_id": 4610,
+  "expected_part1": "a=-3,b=2",
+  "variable_order": [
+    "a",
+    "b"
+  ],
+  "answer_shape": "ordered_named_values",
+  "results": [
+    {
+      "name": "space",
+      "correct": true,
+      "status": null,
+      "failed_parts": [],
+      "result": "答對了！",
+      "expect": true,
+      "ok": true
+    },
+    {
+      "name": "comma",
+      "correct": true,
+      "status": null,
+      "failed_parts": [],
+      "result": "答對了！",
+      "expect": true,
+      "ok": true
+    },
+    {
+      "name": "labeled",
+      "correct": true,
+      "status": null,
+      "failed_parts": [],
+      "result": "答對了！",
+      "expect": true,
+      "ok": true
+    },
+    {
+      "name": "reversed",
+      "correct": false,
+      "status": null,
+      "failed_parts": [
+        "part_1"
+      ],
+      "result": "部分小題答錯。\npart_1：錯誤\npart_2：正確",
+      "expect": false,
+      "ok": true
+    },
+    {
+      "name": "partial_poly_wrong",
+      "correct": false,
+      "status": null,
+      "failed_parts": [
+        "part_2"
+      ],
+      "result": "部分小題答錯。\npart_1：正確\npart_2：錯誤",
+      "expect": false,
+      "ok": true
+    }
+  ],
+  "all_pass": true
+}

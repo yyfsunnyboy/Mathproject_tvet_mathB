@@ -1,0 +1,72 @@
+{
+  "passed": 13,
+  "total": 13,
+  "failed": [],
+  "results": [
+    {
+      "label": "same_chapter_mid",
+      "pass": true,
+      "detail": "{'skill_id': 'vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning', 'skill_ch_name': '絕對值不等式的展開與幾何意義', 'volume': '數學B1', 'chapter': '1 坐標系與函數圖形', 'nav_kind': 'same_chapter', 'button_label': '繼續挑戰：絕對值不等式的展開與幾何意義', 'celebration_kind': 'skill', 'target': 'practice'}"
+    },
+    {
+      "label": "same_chapter_after_skip_inactive",
+      "pass": true,
+      "detail": "{'skill_id': 'vh_數學B1_CartesianCoordinateSystemEstablishment', 'skill_ch_name': '直角坐標系的建立', 'volume': '數學B1', 'chapter': '1 坐標系與函數圖形', 'nav_kind': 'same_chapter', 'button_label': '繼續挑戰：直角坐標系的建立', 'celebration_kind': 'skill', 'target': 'practice'}"
+    },
+    {
+      "label": "skips_numberline_inactive",
+      "pass": true,
+      "detail": "vh_數學B1_CartesianCoordinateSystemEstablishment"
+    },
+    {
+      "label": "cross_chapter_to_ch2_first",
+      "pass": true,
+      "detail": "{'skill_id': 'vh_數學B1_SlopeOfALine', 'skill_ch_name': '直線的斜率', 'volume': '數學B1', 'chapter': '2 直線方程式', 'nav_kind': 'chapter_complete', 'button_label': '前往下一章', 'celebration_kind': 'chapter', 'target': 'practice'}"
+    },
+    {
+      "label": "volume_last_to_dashboard",
+      "pass": true,
+      "detail": "{'nav_kind': 'volume_complete', 'button_label': '返回學習儀表板', 'celebration_kind': 'volume', 'target': 'dashboard', 'skill_id': None, 'volume': '數學B1', 'chapter': '3 式的運算', 'reason': 'all_practiceable_skills_complete_in_volume'}"
+    },
+    {
+      "label": "skip_subsection_shell",
+      "pass": true,
+      "detail": "{'skill_id': 'vh_數學B1_RationalExpressionArithmeticOperations', 'skill_ch_name': '分式的四則運算', 'volume': '數學B1', 'chapter': '3 式的運算', 'nav_kind': 'same_chapter', 'button_label': '繼續挑戰：分式的四則運算', 'celebration_kind': 'skill', 'target': 'practice'}"
+    },
+    {
+      "label": "chapter2_same_chapter",
+      "pass": true,
+      "detail": "{'skill_id': 'vh_數學B1_HorizontalAndVerticalLineEquations', 'skill_ch_name': '水平線與鉛直線的直線方程式', 'volume': '數學B1', 'chapter': '2 直線方程式', 'nav_kind': 'same_chapter', 'button_label': '繼續挑戰：水平線與鉛直線的直線方程式', 'celebration_kind': 'skill', 'target': 'practice'}"
+    },
+    {
+      "label": "b2_fallback",
+      "pass": true,
+      "detail": "{'nav_kind': 'fallback_dashboard', 'button_label': '返回學習儀表板', 'celebration_kind': 'skill', 'target': 'dashboard', 'reason': 'not_b1_mastery_skill', 'skill_id': None}"
+    },
+    {
+      "label": "ui_same_skill_label",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ui_next_chapter_label",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ui_stay_skill",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ui_uses_nav_kind",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ui_chapter_complete_copy",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

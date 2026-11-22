@@ -1,0 +1,99 @@
+{
+  "generated_at": "20261121_161933",
+  "offline": {
+    "type_keys": {
+      "write_line_equation_from_point_slope": [
+        "src_4540",
+        "src_4541",
+        "src_4543",
+        "src_4546",
+        "src_4549",
+        "src_4551",
+        "src_4552",
+        "src_4556",
+        "src_4560",
+        "src_4561",
+        "src_4606"
+      ],
+      "write_perpendicular_bisector_from_two_points": [
+        "src_4542",
+        "src_4550",
+        "src_4557"
+      ]
+    },
+    "type_count": 2,
+    "textbook_4542_canonical": "2x - y - 2 = 0",
+    "rows": [
+      {
+        "case": "basic_point_slope",
+        "component_id": "src_4540",
+        "problem_type_id": "write_line_equation_from_point_slope",
+        "self_check": true,
+        "wrong_rejected": true,
+        "has_bisector_token": false
+      },
+      {
+        "case": "bisector",
+        "component_id": "src_4542",
+        "problem_type_id": "write_perpendicular_bisector_from_two_points",
+        "question_preview": "已知兩點 $A(0, -1)$、$B(2, 3)$，請寫出線段 $AB$ 的垂直平分線方程式。（請輸入直線方程式，例如 $3x - y - 1 = 0$ 或 $y = 3x - 1$）",
+        "answer": "x + 2y - 3 = 0",
+        "self_check": true,
+        "wrong_rejected": true,
+        "negated_form_accepted": true,
+        "has_bisector_token": true
+      },
+      {
+        "case": "bisector",
+        "component_id": "src_4557",
+        "problem_type_id": "write_perpendicular_bisector_from_two_points",
+        "question_preview": "已知兩點 $A(-7, -8)$、$B(3, 6)$，請寫出線段 $AB$ 的垂直平分線方程式。（請輸入直線方程式，例如 $3x - y - 1 = 0$ 或 $y = 3x - 1$）",
+        "answer": "5x + 7y + 17 = 0",
+        "self_check": true,
+        "wrong_rejected": true,
+        "negated_form_accepted": true,
+        "has_bisector_token": true
+      },
+      {
+        "case": "bisector",
+        "component_id": "src_4550",
+        "problem_type_id": "write_perpendicular_bisector_from_two_points",
+        "question_preview": "平面上有兩點 $A(0, 3)$、$B(-4, 3)$。若某直線上的點到 $A$、$B$ 距離相等，請寫出此直線的一個方程式。（請輸入直線方程式，例如 $3x - y - 1 = 0$ 或 $y = ",
+        "answer": "x + 2 = 0",
+        "self_check": true,
+        "wrong_rejected": true,
+        "negated_form_accepted": true,
+        "has_bisector_token": true
+      }
+    ]
+  },
+  "student_route": {
+    "forced_components": [
+      {
+        "component_id": "src_4542",
+        "generate": "PASS",
+        "problem_type_id": "write_perpendicular_bisector_from_two_points",
+        "question_preview": "已知兩點 $A(8, -2)$、$B(0, 6)$，請寫出線段 $AB$ 的垂直平分線方程式。（請輸入直線方程式，例如 $3x - y - 1 = 0$ 或 $y = 3x - 1$）",
+        "checker": "PASS"
+      },
+      {
+        "component_id": "src_4550",
+        "generate": "PASS",
+        "problem_type_id": "write_perpendicular_bisector_from_two_points",
+        "question_preview": "平面上有兩點 $A(-1, 8)$、$B(7, 6)$。若某直線上的點到 $A$、$B$ 距離相等，請寫出此直線的一個方程式。（請輸入直線方程式，例如 $3x - y - 1 = 0$ 或 $y = 3x - 1$）",
+        "checker": "PASS"
+      },
+      {
+        "component_id": "src_4540",
+        "generate": "PASS",
+        "problem_type_id": "write_line_equation_from_point_slope",
+        "question_preview": "已知直線過點 $(-4,\\,2)$，斜率為 $-5$，求此直線方程式。",
+        "checker": "PASS"
+      }
+    ],
+    "rotation_seen_types": [
+      "write_line_equation_from_point_slope",
+      "write_perpendicular_bisector_from_two_points"
+    ]
+  }
+}

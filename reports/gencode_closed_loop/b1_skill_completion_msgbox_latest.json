@@ -1,0 +1,87 @@
+{
+  "passed": 16,
+  "total": 16,
+  "failed": [],
+  "results": [
+    {
+      "label": "has_four_types",
+      "pass": true,
+      "detail": "n=4"
+    },
+    {
+      "label": "not_complete_before_last",
+      "pass": true,
+      "detail": "3/4"
+    },
+    {
+      "label": "wrong_no_completion",
+      "pass": true,
+      "detail": "3"
+    },
+    {
+      "label": "assisted_no_completion",
+      "pass": true,
+      "detail": "3"
+    },
+    {
+      "label": "just_completed_true",
+      "pass": true,
+      "detail": "已掌握題型 4/4"
+    },
+    {
+      "label": "unpersisted_no_just_completed",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "already_complete_no_retrigger",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "repeat_type_no_retrigger",
+      "pass": true,
+      "detail": "4"
+    },
+    {
+      "label": "next_skill_resolved_or_dashboard",
+      "pass": true,
+      "detail": "{'skill_id': 'vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning', 'skill_ch_name': '絕對值不等式的展開與幾何意義', 'volume': '數學B1', 'chapter': '1 坐標系與函數圖形', 'nav_kind': 'same_chapter', 'button_label': '繼續挑戰：絕對值不等式的展開與幾何意義', 'celebration_kind': 'skill', 'target': 'practice'}"
+    },
+    {
+      "label": "modal_markup",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "modal_title",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "modal_primary_btn",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "modal_stay_btn",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "js_just_completed_gate",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "js_no_autoload_on_complete",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "b2_not_gated",
+      "pass": true,
+      "detail": ""
+    }
+  ]
+}

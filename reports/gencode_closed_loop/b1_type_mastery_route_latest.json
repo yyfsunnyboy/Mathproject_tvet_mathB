@@ -1,0 +1,33 @@
+{
+  "passed": 4,
+  "total": 4,
+  "failed": [],
+  "results": [
+    {
+      "label": "seed_progress",
+      "pass": true,
+      "detail": "2/4"
+    },
+    {
+      "label": "practice_page_mastery_label",
+      "pass": true,
+      "detail": "status=200 has_label=True"
+    },
+    {
+      "label": "get_next_question_progress",
+      "pass": true,
+      "detail": {
+        "status": 200,
+        "progress_mode": "problem_type_mastery",
+        "consecutive_correct": 2,
+        "pass_target": 4
+      }
+    },
+    {
+      "label": "b1_only_scope_note",
+      "pass": true,
+      "detail": "b2_probe_status=200"
+    }
+  ],
+  "iso_db": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\b1_type_mastery_route_20261122_023258\\kumon_math.db"
+}

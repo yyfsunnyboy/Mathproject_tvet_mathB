@@ -1,0 +1,1145 @@
+{
+  "scope": "B1_only_delta_after_registry_repair",
+  "health_after": {
+    "PASS": 34,
+    "WARN": 1
+  },
+  "pass": 34,
+  "warn": 1,
+  "fail": 0,
+  "unknown": 0,
+  "zero_usable_executable": [
+    "vh_數學B1_SubSection332"
+  ],
+  "skills": [
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_AbsoluteValue",
+      "skill_ch_name": "絕對值",
+      "category": "1-1 數線與絕對值",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "before_usable": 2,
+      "before_impl": 4,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 2,
+      "after_impl": 4,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "number_line_distance_between_two_points",
+        "solve_basic_absolute_value_equation"
+      ],
+      "display_label": "2 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_CartesianCoordinateSystemEstablishment",
+      "skill_ch_name": "直角坐標系的建立",
+      "category": "1-2 平面坐標系與線型函數",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "before_usable": 3,
+      "before_impl": 4,
+      "before_health": "WARN",
+      "before_anomalies": [
+        "facade_generator_specs_not_literal_using_package"
+      ],
+      "after_usable": 3,
+      "after_impl": 4,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "axis_distance_coordinate_point_numerical_choice",
+        "cartesian_coordinate_quadrant_symbol_reasoning",
+        "quadrant_statement_reasoning_choice"
+      ],
+      "display_label": "3 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_GeneralFormOfLinearEquation",
+      "skill_ch_name": "直線的一般式",
+      "category": "2-3 直線的一般式與點到直線的距離",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "before_usable": 11,
+      "before_impl": 17,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 11,
+      "after_impl": 17,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "compare_line_slopes",
+        "line_through_intersection_parallel_to_line",
+        "line_through_point_parallel_to_line",
+        "line_through_point_perpendicular_to_line",
+        "parallel_line_slope",
+        "perpendicular_bisector_application",
+        "perpendicular_condition_parameter",
+        "perpendicular_line_slope",
+        "slope_from_general_form",
+        "slope_from_general_or_intercept_form",
+        "slope_of_horizontal_or_vertical_line"
+      ],
+      "display_label": "11 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_PointSlopeForm",
+      "skill_ch_name": "點斜式",
+      "category": "2-2 直線方程式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "before_usable": 1,
+      "before_impl": 14,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 1,
+      "after_impl": 14,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "write_line_equation_from_point_slope"
+      ],
+      "display_label": "1 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_PolynomialBasicConcepts",
+      "skill_ch_name": "多項式的基本概念",
+      "category": "3-1 多項式的基本概念與四則運算",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "before_usable": 4,
+      "before_impl": 7,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 4,
+      "after_impl": 7,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "polynomial_degree_product_sum",
+        "polynomial_descending_power_properties",
+        "polynomial_param_degree_constraint",
+        "zero_polynomial_find_coeffs"
+      ],
+      "display_label": "4 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_PolynomialFactoring",
+      "skill_ch_name": "因式分解",
+      "category": "3-3 因式分解與分式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "before_usable": 1,
+      "before_impl": 18,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 1,
+      "after_impl": 18,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "polynomial_factoring"
+      ],
+      "display_label": "1 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_QuadraticFunctionGraph",
+      "skill_ch_name": "二次函數的圖形",
+      "category": "1-3 二次函數",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "before_usable": 0,
+      "before_impl": 4,
+      "before_health": "WARN",
+      "before_anomalies": [
+        "generators_exist_but_not_runtime_selectable",
+        "unregistered_generate_py:src_4450,src_4460,src_4466,src_4503",
+        "registered_without_generate_py:vh_數學B1_QuadraticFunctionGraph:integer_quadratic_graph_properties_choice:draft_v1,vh_數學B1_QuadraticFunctionGraph:integer_quadratic_graph_translation_fill_blank:draft_v1,vh_數學B1_QuadraticFunctionGraph:rational_quadratic_graph_translation_fill_blank:draft_v1"
+      ],
+      "after_usable": 2,
+      "after_impl": 4,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "integer_quadratic_graph_properties_choice",
+        "integer_quadratic_graph_translation_fill_blank"
+      ],
+      "display_label": "2 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_QuadraticInequalityAndFactoring",
+      "skill_ch_name": "一元二次不等式的基本概念與十字交乘法",
+      "category": "1-4 一元二次不等式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-4 一元二次不等式",
+      "before_usable": 0,
+      "before_impl": 3,
+      "before_health": "WARN",
+      "before_anomalies": [
+        "generators_exist_but_not_runtime_selectable",
+        "unregistered_generate_py:src_4473,src_4480,src_4490",
+        "registered_without_generate_py:vh_數學B1_QuadraticInequalityAndFactoring:integer_factor_quadratic_by_cross_multiplication:draft_v1"
+      ],
+      "after_usable": 1,
+      "after_impl": 3,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "integer_factor_quadratic_by_cross_multiplication"
+      ],
+      "display_label": "1 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "skill_ch_name": "餘式定理",
+      "category": "3-2 除法原理與餘式定理",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "3 式的運算",
+      "section": "3-2 除法原理與餘式定理",
+      "before_usable": 1,
+      "before_impl": 20,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 1,
+      "after_impl": 20,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "remainder_theorem_evaluate"
+      ],
+      "display_label": "1 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "skill_ch_name": "直線的斜率",
+      "category": "2-1 斜率",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "before_usable": 9,
+      "before_impl": 12,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 9,
+      "after_impl": 12,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "classify_and_compare_figure_slopes",
+        "collinear_three_points_parameter",
+        "collinear_three_points_parameter_choice",
+        "non_triangle_collinear_parameter",
+        "parallel_segments_parameter",
+        "slope_from_two_points",
+        "slopes_of_named_segments",
+        "solve_parameter_from_known_slope",
+        "solve_parameter_from_known_slope_choice"
+      ],
+      "display_label": "9 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_AbsoluteValueInequality",
+      "skill_ch_name": "絕對值不等式",
+      "category": "1-1 數線與絕對值",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "before_usable": 4,
+      "before_impl": 10,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 4,
+      "after_impl": 10,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "absolute_value_inequality_integer_solution_count_choice",
+        "absolute_value_inequality_linear_expression_basic",
+        "absolute_value_inequality_shifted_basic",
+        "absolute_value_inequality_zero_center_basic"
+      ],
+      "display_label": "4 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+      "skill_ch_name": "點到直線的距離",
+      "category": "2-3 直線的一般式與點到直線的距離",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "before_usable": 5,
+      "before_impl": 8,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 5,
+      "after_impl": 8,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "compare_point_to_line_distances",
+        "distance_from_point_to_line",
+        "distance_from_point_to_line_parameter",
+        "distance_from_point_to_line_parameter_single_choice_scalar",
+        "slope_and_point_line_distance_parameter_choice"
+      ],
+      "display_label": "5 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_FactorTheorem",
+      "skill_ch_name": "因式定理",
+      "category": "3-2 除法原理與餘式定理",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "3 式的運算",
+      "section": "3-2 除法原理與餘式定理",
+      "before_usable": 1,
+      "before_impl": 17,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 1,
+      "after_impl": 17,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "factor_theorem_root_factor"
+      ],
+      "display_label": "1 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_FunctionConcept",
+      "skill_ch_name": "函數的概念",
+      "category": "1-2 平面坐標系與線型函數",
+      "is_outline": false,
+      "is_active": false,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "before_usable": 0,
+      "before_impl": 2,
+      "before_health": "WARN",
+      "before_anomalies": [
+        "facade_missing_package_only_not_runtime",
+        "generators_exist_but_not_runtime_selectable",
+        "unregistered_generate_py:src_4430,src_4431"
+      ],
+      "after_usable": 2,
+      "after_impl": 2,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "free_fall_function_value_choice",
+        "piecewise_utility_bill_savings_choice"
+      ],
+      "display_label": "2 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_HorizontalAndVerticalLineEquations",
+      "skill_ch_name": "水平線與鉛直線的直線方程式",
+      "category": "2-2 直線方程式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "before_usable": 1,
+      "before_impl": 4,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 1,
+      "after_impl": 4,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "write_line_equation_from_point_slope"
+      ],
+      "display_label": "1 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_PolynomialArithmeticOperations",
+      "skill_ch_name": "多項式的四則運算",
+      "category": "3-1 多項式的基本概念與四則運算",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "before_usable": 7,
+      "before_impl": 22,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 7,
+      "after_impl": 22,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "polynomial_add_sub",
+        "polynomial_long_division",
+        "polynomial_multiply",
+        "polynomial_product_term_coefficient",
+        "polynomial_remainder_param_solve",
+        "polynomial_shifted_basis_eval",
+        "polynomial_synthetic_division"
+      ],
+      "display_label": "7 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_PropertiesOfParallelLines",
+      "skill_ch_name": "兩平行線的性質",
+      "category": "2-1 斜率",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "before_usable": 3,
+      "before_impl": 4,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 3,
+      "after_impl": 4,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "parallel_segments_parameter",
+        "parallel_segments_parameter_choice",
+        "parallel_two_point_lines_parameter_choice"
+      ],
+      "display_label": "3 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "skill_ch_name": "一元二次不等式的解",
+      "category": "1-4 一元二次不等式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-4 一元二次不等式",
+      "before_usable": 0,
+      "before_impl": 29,
+      "before_health": "WARN",
+      "before_anomalies": [
+        "generators_exist_but_not_runtime_selectable",
+        "unregistered_generate_py:src_4474,src_4475,src_4476,src_4477,src_4478,src_4479,src_4481,src_4482",
+        "registered_without_generate_py:vh_數學B1_QuadraticInequalitySolution:integer_applied_quadratic_inequality_problem:draft_v1,vh_數學B1_QuadraticInequalitySolution:integer_reverse_quadratic_inequality_coefficients:draft_v1,vh_數學B1_QuadraticInequalitySolution:integer_solve_quadratic_inequality:draft_v1,vh_數學B1_QuadraticInequalitySolution:integer_solve_quadratic_inequality_parameter_range:draft_v1,vh_數學B1_QuadraticInequalitySolution:rational_solve_quadratic_inequality:draft_v1,vh_數學B1_QuadraticInequalitySolution:rational_solve_quadratic_inequality_special_cases:draft_v1,vh_數學B1_QuadraticInequalitySolution:text_short_factor_quadratic_by_cross_multiplication:draft_v1"
+      ],
+      "after_usable": 5,
+      "after_impl": 29,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "integer_applied_quadratic_inequality_problem",
+        "integer_reverse_quadratic_inequality_coefficients",
+        "integer_solve_quadratic_inequality",
+        "integer_solve_quadratic_inequality_parameter_range",
+        "rational_solve_quadratic_inequality_special_cases"
+      ],
+      "display_label": "5 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "skill_ch_name": "分式的四則運算",
+      "category": "3-3 因式分解與分式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "before_usable": 1,
+      "before_impl": 8,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 1,
+      "after_impl": 8,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "rational_expression_arithmetic"
+      ],
+      "display_label": "1 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_VertexFormOfQuadraticFunction",
+      "skill_ch_name": "頂點式",
+      "category": "1-3 二次函數",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "before_usable": 0,
+      "before_impl": 5,
+      "before_health": "WARN",
+      "before_anomalies": [
+        "generators_exist_but_not_runtime_selectable",
+        "unregistered_generate_py:src_4451,src_4452,src_4453,src_4456,src_4504",
+        "registered_without_generate_py:vh_數學B1_VertexFormOfQuadraticFunction:numeric_quadratic_vertex_or_parameter_computation_short_answer:spec_v1,vh_數學B1_VertexFormOfQuadraticFunction:numeric_quadratic_vertex_or_parameter_computation_single_choice:spec_v1,vh_數學B1_VertexFormOfQuadraticFunction:quadratic_standard_to_vertex_properties:spec_v1,vh_數學B1_VertexFormOfQuadraticFunction:single_choice_quadratic_vertex_form_properties_single_choice:spec_v1,vh_數學B1_VertexFormOfQuadraticFunction:text_quadratic_graph_translation_fill_blank_short_answer:spec_v1,vh_數學B1_VertexFormOfQuadraticFunction:text_quadratic_vertex_form_translation_to_new_function_short_answer:spec_v1"
+      ],
+      "after_usable": 5,
+      "after_impl": 5,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "numeric_quadratic_vertex_or_parameter_computation_short_answer",
+        "numeric_quadratic_vertex_or_parameter_computation_single_choice",
+        "single_choice_quadratic_vertex_form_properties_single_choice",
+        "text_quadratic_graph_translation_fill_blank_short_answer",
+        "text_quadratic_vertex_form_translation_to_new_function_short_answer"
+      ],
+      "display_label": "5 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_14",
+      "skill_ch_name": "1-4 一元二次不等式",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-4 一元二次不等式",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_32",
+      "skill_ch_name": "3-2 除法原理與餘式定理",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "3 式的運算",
+      "section": "3-2 除法原理與餘式定理",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_AbsoluteValueInequalityExpansionAndGeometricMeaning",
+      "skill_ch_name": "絕對值不等式的展開與幾何意義",
+      "category": "1-1 數線與絕對值",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "before_usable": 2,
+      "before_impl": 3,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 2,
+      "after_impl": 3,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "absolute_value_inequality_interval_interpretation",
+        "absolute_value_inequality_linear_expression_basic"
+      ],
+      "display_label": "2 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_CompletingTheSquare",
+      "skill_ch_name": "配方法",
+      "category": "1-3 二次函數",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "before_usable": 0,
+      "before_impl": 2,
+      "before_health": "WARN",
+      "before_anomalies": [
+        "generators_exist_but_not_runtime_selectable",
+        "unregistered_generate_py:src_4468,src_4501",
+        "registered_without_generate_py:vh_數學B1_CompletingTheSquare:integer_quadratic_graph_vertex_axis_choice:draft_v1,vh_數學B1_CompletingTheSquare:integer_quadratic_vertex_or_parameter_computation:draft_v1"
+      ],
+      "after_usable": 2,
+      "after_impl": 2,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "expression_complete_square_to_vertex",
+        "integer_quadratic_graph_vertex_axis_choice"
+      ],
+      "display_label": "2 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "skill_ch_name": "兩條平行線間的距離",
+      "category": "2-3 直線的一般式與點到直線的距離",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "before_usable": 3,
+      "before_impl": 10,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 3,
+      "after_impl": 10,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "area_using_parallel_distance",
+        "distance_between_parallel_lines",
+        "solve_parameter_from_parallel_distance"
+      ],
+      "display_label": "3 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_DistanceBetweenTwoPointsInPlane",
+      "skill_ch_name": "平面上兩點間的距離",
+      "category": "1-2 平面坐標系與線型函數",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "before_usable": 2,
+      "before_impl": 4,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 2,
+      "after_impl": 4,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "compute_distance_between_two_points",
+        "solve_unknown_coordinate_from_two_point_distance"
+      ],
+      "display_label": "2 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_PolynomialEquality",
+      "skill_ch_name": "多項式的相等",
+      "category": "3-1 多項式的基本概念與四則運算",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "before_usable": 1,
+      "before_impl": 4,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 1,
+      "after_impl": 4,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "polynomial_equality_identity"
+      ],
+      "display_label": "1 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_PropertiesOfPerpendicularLines",
+      "skill_ch_name": "兩垂直線的性質",
+      "category": "2-1 斜率",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "before_usable": 5,
+      "before_impl": 8,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 5,
+      "after_impl": 8,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "parallel_and_perpendicular_slopes_from_reference",
+        "perpendicular_segments_parameter",
+        "perpendicular_slope_quadrant_choice",
+        "perpendicular_two_point_lines_parameter",
+        "triangle_right_angle_verification"
+      ],
+      "display_label": "5 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_RationalEquation",
+      "skill_ch_name": "分式方程式",
+      "category": "3-3 因式分解與分式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "before_usable": 1,
+      "before_impl": 14,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 1,
+      "after_impl": 14,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "rational_equation_solve"
+      ],
+      "display_label": "1 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_SlopeInterceptForm",
+      "skill_ch_name": "斜截式",
+      "category": "2-2 直線方程式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "before_usable": 3,
+      "before_impl": 5,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 3,
+      "after_impl": 5,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "slope_intercept_equation",
+        "slope_intercept_find_x_intercept",
+        "slope_intercept_read_slope_and_intercept"
+      ],
+      "display_label": "3 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_21",
+      "skill_ch_name": "2-1 斜率",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "2 直線方程式",
+      "section": "2-1 斜率",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_23",
+      "skill_ch_name": "2-3 直線的一般式與點到直線的距離",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "2 直線方程式",
+      "section": "2-3 直線的一般式與點到直線的距離",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_31",
+      "skill_ch_name": "3-1 多項式的基本概念與四則運算",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "3 式的運算",
+      "section": "3-1 多項式的基本概念與四則運算",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_33",
+      "skill_ch_name": "3-3 因式分解與分式",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_InterceptForm",
+      "skill_ch_name": "截距式",
+      "category": "2-2 直線方程式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "before_usable": 5,
+      "before_impl": 7,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 5,
+      "after_impl": 7,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "intercept_form_equation_and_triangle_area",
+        "intercept_form_from_intercept_sum_and_slope",
+        "intercept_form_triangle_area",
+        "parabola_secant_parallel_line_choice",
+        "triangle_area_bisector_line_equation"
+      ],
+      "display_label": "5 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_MidpointCoordinates",
+      "skill_ch_name": "中點坐標",
+      "category": "1-2 平面坐標系與線型函數",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "before_usable": 6,
+      "before_impl": 10,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 6,
+      "after_impl": 10,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "centroid_coordinate",
+        "inverse_centroid_vertex",
+        "midpoint_distance_from_origin",
+        "multi_part_midpoint_application",
+        "parallelogram_fourth_vertex",
+        "triangle_median_length"
+      ],
+      "display_label": "6 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_NumberLine",
+      "skill_ch_name": "數線",
+      "category": "1-1 數線與絕對值",
+      "is_outline": false,
+      "is_active": false,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "WARN",
+      "before_anomalies": [
+        "package_missing_facade_only"
+      ],
+      "after_usable": 2,
+      "after_impl": 0,
+      "after_health": "WARN",
+      "after_anomalies": [
+        "package_missing_facade_only"
+      ],
+      "after_types": [
+        "number_line_distance_between_points",
+        "number_line_point_value_reading"
+      ],
+      "display_label": "2 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "skill_ch_name": "二次函數 $y = ax^{2} + bx + c$ 的最大（小）值",
+      "category": "1-3 二次函數",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "before_usable": 0,
+      "before_impl": 13,
+      "before_health": "WARN",
+      "before_anomalies": [
+        "generators_exist_but_not_runtime_selectable",
+        "unregistered_generate_py:src_4454,src_4455,src_4457,src_4458,src_4459,src_4463,src_4464,src_4465",
+        "registered_without_generate_py:vh_數學B1_QuadraticFunctionExtremum:integer_compute_quadratic_vertex:draft_v1,vh_數學B1_QuadraticFunctionExtremum:integer_quadratic_vertex_or_parameter_computation:draft_v1,vh_數學B1_QuadraticFunctionExtremum:text_short_quadratic_vertex_or_parameter_computation:draft_v1"
+      ],
+      "after_usable": 3,
+      "after_impl": 13,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "integer_compute_quadratic_vertex",
+        "integer_quadratic_vertex_or_parameter_computation",
+        "text_short_quadratic_vertex_or_parameter_computation"
+      ],
+      "display_label": "3 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_11",
+      "skill_ch_name": "1-1 數線與絕對值",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-1 數線與絕對值",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_13",
+      "skill_ch_name": "1-3 二次函數",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-3 二次函數",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_22",
+      "skill_ch_name": "2-2 直線方程式",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "2 直線方程式",
+      "section": "2-2 直線方程式",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_DivisionPointCoordinates",
+      "skill_ch_name": "分點坐標",
+      "category": "1-2 平面坐標系與線型函數",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "before_usable": 3,
+      "before_impl": 7,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 3,
+      "after_impl": 7,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "compute_centroid_coordinates",
+        "compute_internal_division_point_coordinates",
+        "compute_section_point_distance_from_origin"
+      ],
+      "display_label": "3 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_SubSection332",
+      "skill_ch_name": "分式",
+      "category": "3-3 因式分解與分式",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "3 式的運算",
+      "section": "3-3 因式分解與分式",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "no_generator_artifacts"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "no_generator_artifacts"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "vh_數學B1_LinearFunction",
+      "skill_ch_name": "線型函數",
+      "category": "1-2 平面坐標系與線型函數",
+      "is_outline": false,
+      "is_active": true,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "before_usable": 10,
+      "before_impl": 15,
+      "before_health": "PASS",
+      "before_anomalies": [],
+      "after_usable": 10,
+      "after_impl": 15,
+      "after_health": "PASS",
+      "after_anomalies": [],
+      "after_types": [
+        "collinear_trisection_coordinate",
+        "draw_constant_function_graph",
+        "draw_linear_function_graph",
+        "graph_based_linear_application_inverse",
+        "graph_based_linear_model_equation",
+        "graph_based_tiered_linear_application_multi_part",
+        "graph_intercepts_and_linear_equation",
+        "linear_equation_from_two_points_choice",
+        "linear_graph_feasibility_choice",
+        "robust_budget_feasibility_choice"
+      ],
+      "display_label": "10 種"
+    },
+    {
+      "volume": "B1",
+      "skill_id": "outline_vocational_數學B1_12",
+      "skill_ch_name": "1-2 平面坐標系與線型函數",
+      "category": "outline",
+      "is_outline": true,
+      "is_active": false,
+      "chapter": "1 坐標系與函數圖形",
+      "section": "1-2 平面坐標系與線型函數",
+      "before_usable": 0,
+      "before_impl": 0,
+      "before_health": "PASS",
+      "before_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_usable": 0,
+      "after_impl": 0,
+      "after_health": "PASS",
+      "after_anomalies": [
+        "outline_skill_excluded_from_executable_types"
+      ],
+      "after_types": [],
+      "display_label": "0 種"
+    }
+  ]
+}

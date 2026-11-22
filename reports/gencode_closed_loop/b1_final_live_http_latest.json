@@ -1,0 +1,259 @@
+{
+  "generated_at": "20261122_010044",
+  "healthz": {
+    "app": "alive",
+    "database": "ok",
+    "status": "ok"
+  },
+  "test_username": "b1_final_accept_20261122_010044",
+  "test_user_id": 2809,
+  "logged_in": true,
+  "summary": {
+    "PASS": 12,
+    "FAIL": 0,
+    "total": 12
+  },
+  "results": [
+    {
+      "tag": "remainder_symbolic",
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "component_id": "src_4638",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "remainder_theorem_state_symbolic",
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question_uid": "4173baab-6f4d-4f12-a099-b1fee47d3eea",
+      "question_preview": "寫出當多項式 $f(x)$ 除以下列各式時所得的餘式。(1) $x+1$ (2) $x-2$",
+      "notes": [
+        "pt=remainder_theorem_state_symbolic",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "remainder_symbolic",
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "component_id": "src_4640",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "remainder_theorem_state_symbolic",
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question_uid": "f4e97f0b-7f62-437a-9e6d-83b6b7934f9c",
+      "question_preview": "寫出當多項式 $f(x)$ 除以下列各式時所得的餘式。(1) $x+1$ (2) $x-3$",
+      "notes": [
+        "pt=remainder_theorem_state_symbolic",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "remainder_symbolic",
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "component_id": "src_4664",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "remainder_theorem_state_symbolic",
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question_uid": "75fa9833-c18c-4e38-ad68-9f7e1647fc2a",
+      "question_preview": "寫出當多項式 $f(x)$ 除以下列各式時所得的餘式。(1) $x-5$ (2) $x+6$",
+      "notes": [
+        "pt=remainder_theorem_state_symbolic",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "remainder_symbolic",
+      "skill_id": "vh_數學B1_RemainderTheorem",
+      "component_id": "src_4666",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "remainder_theorem_state_symbolic",
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question_uid": "1d19c2a9-d1b7-4d36-8d7e-365cc5d79754",
+      "question_preview": "寫出當多項式 $f(x)$ 除以下列各式時所得的餘式。(1) $x-1$ (2) $x-2$",
+      "notes": [
+        "pt=remainder_theorem_state_symbolic",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "farmer_fence",
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "component_id": "src_4457",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "answer_type": "integer",
+      "presentation_mode": "short_answer",
+      "question_uid": "6a7621ae-7173-44c7-af29-63fe3eff103c",
+      "question_preview": "一位農夫想利用 120 公尺長的籬笆沿河的一岸圍成一個矩形區域，靠河的一邊不圍，試求農夫可圍成的最大矩形面積為何？（答案範例：5）",
+      "notes": [
+        "pt=integer_compute_quadratic_vertex",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "group_buy_multi",
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "component_id": "src_4465",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question_uid": "e2dcf0bf-050a-44ff-8cf1-8a535611580e",
+      "question_preview": "某電信行想利用網路團購手機促銷活動（每人限購1支），預定人數為 20 人，且每支手機售價 6000 元，若達 20 人以上，每增加 1 人，則每支手機減收 100 元，試問整個促銷方案應增加多少人，才能使手機有最大的銷售金額？此時手機價格為",
+      "notes": [
+        "at=multi_part",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "tour_multi",
+      "skill_id": "vh_數學B1_QuadraticFunctionExtremum",
+      "component_id": "src_4471",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "integer_compute_quadratic_vertex",
+      "answer_type": "multi_part",
+      "presentation_mode": "short_answer",
+      "question_uid": "31b28e94-31e4-49dd-9a05-8b1bec818b8a",
+      "question_preview": "旅行社舉辦旅遊活動，預定 20 人出團，每人收費 3000 元，超過 20 人以後，每增加 1 人，每人收費可減少 100 元。試問增加多少人時，旅行社可收到最多的錢？且最多可收到多少錢？（請依序填：增加人數、最多金額）（答案範例：5；62",
+      "notes": [
+        "at=multi_part",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "triangle_mcq",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "component_id": "src_4517",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "answer_type": "choice_label",
+      "presentation_mode": "short_answer",
+      "question_uid": "524d5693-b56c-4603-9c3f-ac51be2af7c4",
+      "question_preview": "某直角三角形的高度 $h$ cm 比它的底邊長度少 $4$ cm，且三角形的面積不大於 $16$ cm$^2$，則 $h$ 可取的範圍為",
+      "notes": [
+        "at=choice_label choices=4",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "qis_reverse",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "component_id": "src_4474",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "answer_type": "integer",
+      "presentation_mode": "short_answer",
+      "question_uid": "0fb12393-f414-4089-9a80-5c66d8739f62",
+      "question_preview": "若不等式 $2x^2+bx-16<0$ 的解為 $-2<x<4$，且與 $2x^2-4x-16<0$ 的解相同，求 $b$ 的值。（答案範例：5）",
+      "notes": [
+        "pt=integer_reverse_quadratic_inequality_coefficients",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "qis_min_integer",
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "component_id": "src_4476",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "integer_applied_quadratic_inequality_problem",
+      "answer_type": "integer",
+      "presentation_mode": "short_answer",
+      "question_uid": "a712a2db-45bf-4e66-ac71-d56aa27af507",
+      "question_preview": "已知製作 $n$ 杯飲品的成本為 $1n+147$ 元，而售出 $n$ 杯的收入為 $n^{2}-13n$ 元。假設全部售出，問最少要製作多少杯才會開始賺錢？（答案範例：41）",
+      "notes": [
+        "at=integer",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "perpendicular_bisector",
+      "skill_id": "vh_數學B1_PointSlopeForm",
+      "component_id": "src_4542",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "write_perpendicular_bisector_from_two_points",
+      "answer_type": "equation",
+      "presentation_mode": "short_answer",
+      "question_uid": "537240f3-b649-443c-b6bd-6685009af6e2",
+      "question_preview": "已知兩點 $A(6, 4)$、$B(-4, 2)$，請寫出線段 $AB$ 的垂直平分線方程式。（請輸入直線方程式，例如 $3x - y - 1 = 0$ 或 $y = 3x - 1$）",
+      "notes": [
+        "pt=write_perpendicular_bisector_from_two_points",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "tag": "point_line_regress",
+      "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+      "component_id": "src_4584",
+      "http_generate": 200,
+      "generate": "PASS",
+      "structure": "PASS",
+      "checker_correct": "PASS",
+      "checker_wrong": "PASS",
+      "problem_type_id": "slope_and_point_line_distance_parameter_choice",
+      "answer_type": "choice_label",
+      "presentation_mode": "single_choice",
+      "question_uid": "ab671740-2ade-4b3a-99eb-580018b4b1d8",
+      "question_preview": "已知 $k>0$。若直線 $L: ax+12y+k=0$ 的斜率為 $-\\frac{5}{12}$，且點 $(0,0)$ 到直線 $L$ 的距離為 $1$，則 $a+k=$？",
+      "notes": [
+        "pt=slope_and_point_line_distance_parameter_choice",
+        "oracle_from_flask_session_cookie",
+        "wrong_answer_rejected"
+      ]
+    }
+  ],
+  "note": "Traceable audit student left on formal DB; practice attempts may exist for this username only."
+}

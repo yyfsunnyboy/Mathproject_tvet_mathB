@@ -1,0 +1,74 @@
+{
+  "numberline": {
+    "skill_id": "vh_數學B1_NumberLine",
+    "skill_ch_name": "數線",
+    "is_active": 0,
+    "category": "1-1 數線與絕對值",
+    "recommendation": "Keep inactive until student-route UI for 12-cell multi_part is browser-accepted; then activate with controlled DB change + backup.",
+    "generator_status": "NATIVE_COVERED (inequality_operation_table)",
+    "do_not": "Do not mark JH bootstrap as B1-native PASS."
+  },
+  "subsection332": {
+    "skill_id": "vh_數學B1_SubSection332",
+    "skill_ch_name": "分式",
+    "is_active": 1,
+    "category": "3-3 因式分解與分式",
+    "examples": 0,
+    "module_exists": false,
+    "recommendation": "Prefer deactivate or convert to Outline; or merge narrative into RationalExpressionArithmeticOperations / RationalEquation. Do not delete skill_id this round.",
+    "siblings": [
+      {
+        "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+        "examples": 8,
+        "is_active": 1,
+        "module_exists": true
+      },
+      {
+        "skill_id": "vh_數學B1_RationalEquation",
+        "examples": 14,
+        "is_active": 1,
+        "module_exists": true
+      },
+      {
+        "skill_id": "vh_數學B1_SubSection332",
+        "examples": 0,
+        "is_active": 1,
+        "module_exists": false
+      }
+    ]
+  },
+  "promotion_layers": {
+    "PASS": 13,
+    "PARTIAL": 9,
+    "FAIL_OR_BLOCKED": 13,
+    "N/A_OUTLINE": 10,
+    "source": "closeout_report_20261122"
+  },
+  "promotion_note": "Runtime PASS != Domain Evidence PASS != Promotion PASS. Do not forge evidence.",
+  "siblings_snapshot": [
+    {
+      "skill_id": "vh_數學B1_RationalExpressionArithmeticOperations",
+      "examples": 8,
+      "is_active": 1,
+      "module_exists": true
+    },
+    {
+      "skill_id": "vh_數學B1_RationalEquation",
+      "examples": 14,
+      "is_active": 1,
+      "module_exists": true
+    },
+    {
+      "skill_id": "vh_數學B1_SubSection332",
+      "examples": 0,
+      "is_active": 1,
+      "module_exists": false
+    },
+    {
+      "skill_id": "vh_數學B1_NumberLine",
+      "examples": 1,
+      "is_active": 0,
+      "module_exists": true
+    }
+  ]
+}

@@ -43,7 +43,7 @@
 
 ### 0.2 單元導入核心原則：教材可用性與 Generator 分離（MUST）
 
-適用於普高（`gh_`）單元的教材匯入、GenCode V3 與學生端出題；技高練習仍依 [VOCATIONAL_PRACTICE_RUNTIME_CONTRACT](../../VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md)，本節不取代。每個新單元開工前必讀本節，以下決策視為已定案，不逐單元重新討論。
+適用於普高（`gh_`）單元的教材匯入、GenCode V3 與學生端出題；技高練習仍依 [VOCATIONAL_PRACTICE_RUNTIME_CONTRACT](../../VOCATIONAL_PRACTICE_RUNTIME_CONTRACT.md)，本節不取代。技高 B1 已驗證的「Runtime `problem_type_id` 題型掌握制／完成 MsgBox／同章導航」見該契約 **§12**（預設不自動套用到 B2～B4）。每個新單元開工前必讀本節，以下決策視為已定案，不逐單元重新討論。
 
 1. **教材匯入與 Generator 發布是兩個獨立階段**：Stage 1 READY（§2.3 封板）證明教材完整，文字、公式、表格、圖形與 Skill 綁定均已保留。Generator 未完成不得阻止已封板教材的原題練習；Generator 成功也不能掩蓋 Stage 1 缺陷（§5.1）。
 2. **Generator 優先，原題 Fallback 保底**：每次學生取題時——

@@ -1,0 +1,156 @@
+{
+  "volume": "數學B2",
+  "skill_count_total": 48,
+  "skill_count_active": 44,
+  "skill_count_inactive": 4,
+  "te_total": 321,
+  "facade_count": 42,
+  "v3_pkg_count": 42,
+  "missing_curriculum": [],
+  "active_no_facade": [
+    "vh_數學B2_SubSection_1_4_1",
+    "vh_數學B2_SubSection_1_4_2"
+  ],
+  "active_no_te": [
+    "vh_數學B2_SubSection_1_4_1",
+    "vh_數學B2_SubSection_1_4_2"
+  ],
+  "active_no_v3": [
+    "vh_數學B2_SubSection_1_4_1",
+    "vh_數學B2_SubSection_1_4_2"
+  ],
+  "pilot_candidates": [
+    {
+      "skill_id": "vh_數學B2_RatioAndRatioValue",
+      "name": "比與比值",
+      "chapter": "第1章 三角函數",
+      "te_count": 2,
+      "usable_n": 1,
+      "usable_ids": [
+        "solve_similar_triangle_proportion"
+      ],
+      "is_outline": false
+    },
+    {
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "name": "銳角三角函數",
+      "chapter": "第1章 三角函數",
+      "te_count": 11,
+      "usable_n": 4,
+      "usable_ids": [
+        "compute_chord_and_arc_length",
+        "compute_right_triangle_trig_ratios",
+        "simplify_fundamental_trig_expression",
+        "solve_acute_trig_constraints"
+      ],
+      "is_outline": false
+    },
+    {
+      "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "name": "角的度量與換算",
+      "chapter": "第1章 三角函數",
+      "te_count": 5,
+      "usable_n": 1,
+      "usable_ids": [
+        "convert_angle_measure"
+      ],
+      "is_outline": false
+    },
+    {
+      "skill_id": "vh_數學B2_TrigonometricValuesOfSpecialAngles",
+      "name": "30°、45°、60° 特別角的三角函數值",
+      "chapter": "第1章 三角函數",
+      "te_count": 6,
+      "usable_n": 2,
+      "usable_ids": [
+        "evaluate_exact_special_angle_expression",
+        "solve_right_triangle_projection"
+      ],
+      "is_outline": false
+    },
+    {
+      "skill_id": "vh_數學B2_ArcLengthAndAreaOfSector",
+      "name": "扇形的弧長與面積",
+      "chapter": "第1章 三角函數",
+      "te_count": 7,
+      "usable_n": 1,
+      "usable_ids": [
+        "sector_arc_and_area"
+      ],
+      "is_outline": false
+    },
+    {
+      "skill_id": "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+      "name": "使用計算機計算函數值",
+      "chapter": "第1章 三角函數",
+      "te_count": 2,
+      "usable_n": 1,
+      "usable_ids": [
+        "evaluate_trig_decimal"
+      ],
+      "is_outline": false
+    },
+    {
+      "skill_id": "vh_數學B2_FundamentalTrigonometricIdentities",
+      "name": "三角函數的基本關係式",
+      "chapter": "第1章 三角函數",
+      "te_count": 10,
+      "usable_n": 3,
+      "usable_ids": [
+        "complete_cofunction_identity",
+        "simplify_fundamental_trig_expression",
+        "solve_acute_trig_constraints"
+      ],
+      "is_outline": false
+    },
+    {
+      "skill_id": "vh_數學B2_CoterminalAngles",
+      "name": "同界角",
+      "chapter": "第1章 三角函數",
+      "te_count": 8,
+      "usable_n": 1,
+      "usable_ids": [
+        "coterminal_angles"
+      ],
+      "is_outline": false
+    }
+  ],
+  "pilot_selected": [
+    {
+      "skill_id": "vh_數學B2_RatioAndRatioValue",
+      "name": "比與比值",
+      "chapter": "第1章 三角函數",
+      "te_count": 2,
+      "usable_n": 1,
+      "usable_ids": [
+        "solve_similar_triangle_proportion"
+      ],
+      "is_outline": false
+    },
+    {
+      "skill_id": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "name": "銳角三角函數",
+      "chapter": "第1章 三角函數",
+      "te_count": 11,
+      "usable_n": 4,
+      "usable_ids": [
+        "compute_chord_and_arc_length",
+        "compute_right_triangle_trig_ratios",
+        "simplify_fundamental_trig_expression",
+        "solve_acute_trig_constraints"
+      ],
+      "is_outline": false
+    },
+    {
+      "skill_id": "vh_數學B2_AngleMeasurementAndConversion",
+      "name": "角的度量與換算",
+      "chapter": "第1章 三角函數",
+      "te_count": 5,
+      "usable_n": 1,
+      "usable_ids": [
+        "convert_angle_measure"
+      ],
+      "is_outline": false
+    }
+  ]
+}

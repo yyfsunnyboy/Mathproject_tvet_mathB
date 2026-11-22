@@ -1,0 +1,70 @@
+{
+  "generated_at": "20261121_155449",
+  "healthz": {
+    "app": "alive",
+    "database": "ok",
+    "status": "ok"
+  },
+  "test_username": "b1_live_audit_20261121_155449",
+  "test_user_id": 2808,
+  "logged_in": true,
+  "results": [
+    {
+      "skill_id": "vh_數學B1_QuadraticInequalitySolution",
+      "component_id": "src_4474",
+      "http_generate": 200,
+      "generate": "PASS",
+      "checker": "PASS",
+      "problem_type_id": "integer_reverse_quadratic_inequality_coefficients",
+      "question_uid": "b4d36d3f-073d-445b-8f08-564ac45bd2e6",
+      "notes": [
+        "oracle_from_flask_session_cookie",
+        "correct_accepted",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenPointAndLine",
+      "component_id": "src_4584",
+      "http_generate": 200,
+      "generate": "PASS",
+      "checker": "PASS",
+      "problem_type_id": "slope_and_point_line_distance_parameter_choice",
+      "question_uid": "ecf460c7-d32e-4e21-b3ba-fef41635d8d8",
+      "notes": [
+        "oracle_from_flask_session_cookie",
+        "correct_accepted",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_DistanceBetweenTwoParallelLines",
+      "component_id": "src_4570",
+      "http_generate": 200,
+      "generate": "PASS",
+      "checker": "PASS",
+      "problem_type_id": "distance_between_parallel_lines",
+      "question_uid": "413f3fb9-da97-401b-8c82-b535c1a78780",
+      "notes": [
+        "oracle_from_flask_session_cookie",
+        "correct_accepted",
+        "wrong_answer_rejected"
+      ]
+    },
+    {
+      "skill_id": "vh_數學B1_SlopeOfALine",
+      "component_id": "src_4519",
+      "http_generate": 200,
+      "generate": "PASS",
+      "checker": "PASS",
+      "problem_type_id": "slopes_of_named_segments",
+      "question_uid": "329d3cdf-4768-45a2-8caa-bbe18e5d6a08",
+      "notes": [
+        "oracle_from_flask_session_cookie",
+        "correct_accepted",
+        "wrong_answer_rejected"
+      ]
+    }
+  ],
+  "note": "Traceable audit student left on formal DB; practice attempts may exist for this username only."
+}
