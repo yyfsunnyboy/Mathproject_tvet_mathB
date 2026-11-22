@@ -1749,6 +1749,16 @@ def chat_ai():
     if trust_error:
         error, status_code = trust_error
         return jsonify({"error": error}), status_code
+    # B1 mastery: any successful AI-tutor turn on this question blocks independent MASTERED credit.
+    try:
+        from core.practice_type_mastery import mark_question_assisted
+
+        mark_question_assisted(session, requested_question_uid)
+    except Exception:
+        current_app.logger.exception(
+            "[B1 type mastery] mark assisted failed question_uid=%s",
+            requested_question_uid,
+        )
     question_text = str(
         trusted_question.get('question_text')
         or trusted_question.get('question')

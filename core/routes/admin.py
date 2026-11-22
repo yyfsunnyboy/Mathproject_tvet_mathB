@@ -433,6 +433,33 @@ def _load_skills_v3_gencode_status_map(skill_ids: list[str]) -> dict[str, dict[s
         raw_conn.close()
 
 
+def _load_skills_generator_problem_type_count_map(
+    skills: list[dict[str, object]],
+) -> dict[str, dict[str, object]]:
+    """Admin list column: usable Generator problem-type counts (not promotion threshold)."""
+    from core.gencode.services.generator_problem_type_inventory import (
+        build_generator_problem_type_count_map,
+    )
+
+    if not skills:
+        return {}
+    skill_ids = [str(s.get("skill_id") or "").strip() for s in skills if str(s.get("skill_id") or "").strip()]
+    categories = {
+        str(s.get("skill_id") or "").strip(): str(s.get("category") or "")
+        for s in skills
+        if str(s.get("skill_id") or "").strip()
+    }
+    try:
+        return build_generator_problem_type_count_map(
+            skill_ids,
+            project_root=_resolve_admin_project_root(),
+            categories=categories,
+        )
+    except Exception as exc:
+        current_app.logger.exception("Failed to build generator problem-type count map: %s", exc)
+        return {}
+
+
 def _skills_route_timing_enabled() -> bool:
     return str(os.environ.get("SKILLS_ROUTE_TIMING", "")).strip().lower() in {"1", "true", "yes", "on"}
 
@@ -3150,11 +3177,21 @@ def admin_skills():
         filters=selected,
     )
 
+    type_count_started = _time.time()
+    generator_problem_type_count_map = _load_skills_generator_problem_type_count_map(skills)
+    _log_skills_route_phase(
+        "generator_problem_type_count_map",
+        _time.time() - type_count_started,
+        count=len(generator_problem_type_count_map),
+        filters=selected,
+    )
+
     render_started = _time.time()
     response = render_template('admin_skills.html',
                            skills_data=skills_data,
                            skills=skills,
                            v3_gencode_status_map=v3_gencode_status_map,
+                           generator_problem_type_count_map=generator_problem_type_count_map,
                            filters=filters_data,
                            selected_filters=selected,
                            grade_map={str(g):str(g) for g in filters_data['grades']},

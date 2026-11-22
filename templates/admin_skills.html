@@ -812,7 +812,7 @@
                         <th class="skill-info-cell">技能資訊</th>
                         <th style="width: 15%;">類別</th>
                         <th>作者</th>
-                        <th>晉級門檻</th>
+                        <th>Generator 題型數</th>
                         <th>狀態</th>
                         <th>Gencode V3</th>
                         <th>操作</th>
@@ -830,7 +830,10 @@
                         </td>
                         <td>{{ skill.category }}</td>
                         <td>{{ skill.author | default('-', true) }}</td>
-                        <td>{{ skill.consecutive_correct_required }} 題</td>
+                        <td>
+                            {% set type_inv = (generator_problem_type_count_map or {}).get(skill.skill_id, {}) %}
+                            {{ type_inv.get('display_label', '—') }}
+                        </td>
                         <td>
                             <span class="status-badge status-{{ 'active' if skill.is_active else 'inactive' }}">
                                 {{ '啟用' if skill.is_active else '停用' }}
