@@ -22,12 +22,18 @@ STATUS_MASTERED = "MASTERED"
 _ASSISTED_SESSION_KEY = "b1_assisted_question_uids"
 _WRONG_STREAK_FOR_REMEDIATION = 2
 
-# B2 phase-1 opt-in only: chapter-1 named skills with runtime-usable types.
-# SubSection shells and other B2 chapters stay on legacy consecutive-correct
-# until a later per-volume acceptance. Do not convert Progress.consecutive_correct
-# into MASTERED rows.
+# B2 opt-in allowlist (shared mastery path; not full-volume default).
+# Phase-1: chapter-1 named skills.
+# Phase-1b (teacher 2026-11-22): chapter-1 A-class practice SubSections with
+# TE + facade + Y>=1 (excludes empty 1_4_1 / 1_4_2 shells).
+# Phase-2: chapter-2 practice SubSections with runtime-usable types.
+# Other B2 chapters / incomplete shells stay on legacy consecutive-correct.
+# Do not convert Progress.consecutive_correct into MASTERED rows.
+# Mastery is per (user, skill, problem_type); shared type ids across skills
+# do not auto-credit and are not migrated from legacy streaks.
 B2_TYPE_MASTERY_PILOT_SKILL_IDS: frozenset[str] = frozenset(
     {
+        # Chapter 1 named (phase 1)
         "vh_數學B2_RatioAndRatioValue",
         "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
         "vh_數學B2_AngleMeasurementAndConversion",
@@ -36,6 +42,21 @@ B2_TYPE_MASTERY_PILOT_SKILL_IDS: frozenset[str] = frozenset(
         "vh_數學B2_FundamentalTrigonometricIdentities",
         "vh_數學B2_ArcLengthAndAreaOfSector",
         "vh_數學B2_CalculatingFunctionValuesUsingCalculator",
+        # Chapter 1 A-class practice SubSections (phase 1b)
+        "vh_數學B2_SubSection_1_3_1",
+        "vh_數學B2_SubSection_1_3_2",
+        "vh_數學B2_SubSection_1_3_4",
+        "vh_數學B2_SubSection_1_3_5",
+        "vh_數學B2_SubSection_1_3_6",
+        "vh_數學B2_SubSection_1_3_7",
+        "vh_數學B2_SubSection_1_4_3",
+        "vh_數學B2_SubSection_1_4_4",
+        # Chapter 2 practice SubSections (phase 2) — B2 ch2 has no separate named skills
+        "vh_數學B2_SubSection_2_1_1",
+        "vh_數學B2_SubSection_2_1_2",
+        "vh_數學B2_SubSection_2_2_3",
+        "vh_數學B2_SubSection_2_2_4",
+        "vh_數學B2_SubSection_2_2_5",
     }
 )
 

@@ -1,0 +1,24 @@
+{
+  "stamp": "20261122_closeout",
+  "flask_5001": "restarted_for_allowlist",
+  "checks": {
+    "subsection_1_3_2_xy": {"pass": true, "display": "已掌握題型 0/1"},
+    "subsection_1_3_2_labels": {"pass": true, "labels": ["sinθ", "cosθ", "tanθ"]},
+    "phone_390_overflow": {"pass": true, "overflowX": false, "answerOverflow": false},
+    "ipad_1180x820_canvas": {
+      "pass": true,
+      "skill": "TrigonometricFunctionsOfAcuteAngles src_11584",
+      "qmc": "none",
+      "stemImgs": 0,
+      "hasFigures": true,
+      "spH": 560,
+      "figure_bounds": [241, 298],
+      "overflowX": false
+    },
+    "same_type_no_double_count": {"pass": true, "source": "test_b2_phase2_ch1_runtime_accept 32/32"},
+    "assisted_not_mastered": {"pass": true, "source": "test_b2_phase2_ch1_runtime_accept"},
+    "nav_same_chapter": {"pass": true, "source": "pilot+phase2 scripts"},
+    "ai_tutor_ocr_live": "NOT_TESTED",
+    "full_manual_chapter_acceptance": "NOT_TESTED"
+  }
+}

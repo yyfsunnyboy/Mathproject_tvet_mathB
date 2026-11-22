@@ -1,0 +1,197 @@
+{
+  "named": {
+    "vh_數學B2_AngleMeasurementAndConversion": [
+      "convert_angle_measure"
+    ],
+    "vh_數學B2_ArcLengthAndAreaOfSector": [
+      "compute_chord_and_arc_length",
+      "sector_arc_and_area"
+    ],
+    "vh_數學B2_CalculatingFunctionValuesUsingCalculator": [
+      "evaluate_trig_decimal"
+    ],
+    "vh_數學B2_CoterminalAngles": [
+      "coterminal_angles"
+    ],
+    "vh_數學B2_FundamentalTrigonometricIdentities": [
+      "complete_cofunction_identity",
+      "simplify_fundamental_trig_expression",
+      "solve_acute_trig_constraints"
+    ],
+    "vh_數學B2_RatioAndRatioValue": [
+      "solve_similar_triangle_proportion"
+    ],
+    "vh_數學B2_TrigonometricFunctionsOfAcuteAngles": [
+      "compute_right_triangle_trig_ratios",
+      "simplify_fundamental_trig_expression",
+      "solve_acute_trig_constraints",
+      "solve_right_triangle_projection"
+    ],
+    "vh_數學B2_TrigonometricValuesOfSpecialAngles": [
+      "evaluate_exact_special_angle_expression",
+      "solve_right_triangle_projection"
+    ]
+  },
+  "subs": [
+    {
+      "skill": "vh_數學B2_SubSection_1_3_1",
+      "Y": 1,
+      "types": [
+        "classify_standard_position_angle"
+      ],
+      "overlap_named": [],
+      "overlap_other_sub": []
+    },
+    {
+      "skill": "vh_數學B2_SubSection_1_3_2",
+      "Y": 1,
+      "types": [
+        "compute_terminal_ray_trig_ratios"
+      ],
+      "overlap_named": [],
+      "overlap_other_sub": []
+    },
+    {
+      "skill": "vh_數學B2_SubSection_1_3_4",
+      "Y": 2,
+      "types": [
+        "classify_trig_derived_point_quadrant",
+        "solve_signed_trig_constraints"
+      ],
+      "overlap_named": [],
+      "overlap_other_sub": [
+        {
+          "vh_數學B2_SubSection_1_3_7": [
+            "classify_trig_derived_point_quadrant"
+          ]
+        }
+      ]
+    },
+    {
+      "skill": "vh_數學B2_SubSection_1_3_5",
+      "Y": 1,
+      "types": [
+        "evaluate_exact_arbitrary_angle_trig_expression"
+      ],
+      "overlap_named": [],
+      "overlap_other_sub": [
+        {
+          "vh_數學B2_SubSection_1_3_6": [
+            "evaluate_exact_arbitrary_angle_trig_expression"
+          ]
+        },
+        {
+          "vh_數學B2_SubSection_1_3_7": [
+            "evaluate_exact_arbitrary_angle_trig_expression"
+          ]
+        }
+      ]
+    },
+    {
+      "skill": "vh_數學B2_SubSection_1_3_6",
+      "Y": 2,
+      "types": [
+        "evaluate_exact_arbitrary_angle_trig_expression",
+        "solve_arbitrary_angle_vertical_projection"
+      ],
+      "overlap_named": [],
+      "overlap_other_sub": [
+        {
+          "vh_數學B2_SubSection_1_3_5": [
+            "evaluate_exact_arbitrary_angle_trig_expression"
+          ]
+        },
+        {
+          "vh_數學B2_SubSection_1_3_7": [
+            "evaluate_exact_arbitrary_angle_trig_expression"
+          ]
+        }
+      ]
+    },
+    {
+      "skill": "vh_數學B2_SubSection_1_3_7",
+      "Y": 4,
+      "types": [
+        "classify_trig_derived_point_quadrant",
+        "complete_reference_angle_conversion",
+        "evaluate_exact_arbitrary_angle_trig_expression",
+        "simplify_fundamental_trig_expression"
+      ],
+      "overlap_named": [
+        {
+          "simplify_fundamental_trig_expression": [
+            "vh_數學B2_FundamentalTrigonometricIdentities",
+            "vh_數學B2_TrigonometricFunctionsOfAcuteAngles"
+          ]
+        }
+      ],
+      "overlap_other_sub": [
+        {
+          "vh_數學B2_SubSection_1_3_4": [
+            "classify_trig_derived_point_quadrant"
+          ]
+        },
+        {
+          "vh_數學B2_SubSection_1_3_5": [
+            "evaluate_exact_arbitrary_angle_trig_expression"
+          ]
+        },
+        {
+          "vh_數學B2_SubSection_1_3_6": [
+            "evaluate_exact_arbitrary_angle_trig_expression"
+          ]
+        }
+      ]
+    },
+    {
+      "skill": "vh_數學B2_SubSection_1_4_3",
+      "Y": 3,
+      "types": [
+        "analyze_affine_transformed_trig_graph",
+        "compare_trig_values_by_monotonicity",
+        "solve_trig_value_quadratic_constraint"
+      ],
+      "overlap_named": [],
+      "overlap_other_sub": [
+        {
+          "vh_數學B2_SubSection_1_4_4": [
+            "analyze_affine_transformed_trig_graph",
+            "compare_trig_values_by_monotonicity",
+            "solve_trig_value_quadratic_constraint"
+          ]
+        }
+      ]
+    },
+    {
+      "skill": "vh_數學B2_SubSection_1_4_4",
+      "Y": 9,
+      "types": [
+        "analyze_affine_transformed_trig_graph",
+        "analyze_tangent_absolute_graph_period",
+        "calculate_trig_period_from_argument_scale",
+        "classify_trig_equation_feasibility",
+        "classify_trig_expression_sign_change",
+        "compare_trig_values_by_monotonicity",
+        "count_sine_cosine_intersections",
+        "evaluate_trig_decimal",
+        "solve_trig_value_quadratic_constraint"
+      ],
+      "overlap_named": [
+        {
+          "evaluate_trig_decimal": [
+            "vh_數學B2_CalculatingFunctionValuesUsingCalculator"
+          ]
+        }
+      ],
+      "overlap_other_sub": [
+        {
+          "vh_數學B2_SubSection_1_4_3": [
+            "analyze_affine_transformed_trig_graph",
+            "compare_trig_values_by_monotonicity",
+            "solve_trig_value_quadratic_constraint"
+          ]
+        }
+      ]
+    }
+  ]
+}

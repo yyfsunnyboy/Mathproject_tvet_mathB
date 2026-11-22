@@ -1,0 +1,77 @@
+{
+  "decision_date": "2026-11-22",
+  "teacher_principle": "A-class SubSections may join X/Y mastery allowlist",
+  "include_all_eight": true,
+  "rationale": "Each has TE+facade+Y>=1 and independent teaching goal. Mastery is per (user,skill,problem_type); shared type ids across skills do not auto-credit and legacy streaks are not converted.",
+  "included": [
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_1",
+      "action": "INCLUDE",
+      "named_overlap": [],
+      "note": "標準位置角；無具名重疊"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_2",
+      "action": "INCLUDE",
+      "named_overlap": [],
+      "note": "終邊三角比；無具名重疊"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_4",
+      "action": "INCLUDE",
+      "named_overlap": [],
+      "cross_sub_shared": ["classify_trig_derived_point_quadrant with 1_3_7"],
+      "note": "象限正負；跨 SubSection 共用 type 仍須在本 Skill 獨立 MASTERED"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_5",
+      "action": "INCLUDE",
+      "named_overlap": [],
+      "cross_sub_shared": ["evaluate_exact_arbitrary_angle_trig_expression with 1_3_6/1_3_7"],
+      "note": "象限角求值；教學層次不同"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_6",
+      "action": "INCLUDE",
+      "named_overlap": [],
+      "cross_sub_shared": ["evaluate_exact_arbitrary_angle_trig_expression with 1_3_5/1_3_7"],
+      "note": "任意角求值＋投影"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_3_7",
+      "action": "INCLUDE",
+      "named_overlap": [
+        "simplify_fundamental_trig_expression also in FundamentalTrigonometricIdentities and TrigonometricFunctionsOfAcuteAngles"
+      ],
+      "note": "化任意角為銳角；與具名 Skill 共用 type id 但不自動計入，須本節獨立掌握"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_3",
+      "action": "INCLUDE",
+      "named_overlap": [],
+      "cross_sub_shared": ["three types also in 1_4_4"],
+      "note": "正切圖形；1_4_4 為更廣綜合節"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_4",
+      "action": "INCLUDE",
+      "named_overlap": [
+        "evaluate_trig_decimal also in CalculatingFunctionValuesUsingCalculator"
+      ],
+      "note": "圖形變化與週期；Y=9 且多題型低變化列 P2，仍納入掌握制"
+    }
+  ],
+  "excluded": [
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_1",
+      "action": "KEEP_INACTIVE",
+      "reason": "TE=0 Y=0 empty shell"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_1_4_2",
+      "action": "KEEP_INACTIVE",
+      "reason": "TE=0 Y=0 empty shell"
+    }
+  ],
+  "blocked_from_include": []
+}

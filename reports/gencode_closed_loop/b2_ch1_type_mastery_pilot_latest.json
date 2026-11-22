@@ -1,37 +1,52 @@
 {
-  "stamp": "20261122_023651",
-  "pass": 10,
-  "total": 10,
+  "stamp": "20261122_161547",
+  "pass": 13,
+  "total": 13,
   "results": [
     {
-      "label": "pilot_count_8",
+      "label": "ch1_named_count_8",
       "pass": true,
       "detail": "8"
     },
     {
-      "label": "all_pilot_gated",
+      "label": "all_ch1_named_gated",
       "pass": true,
       "detail": ""
     },
     {
-      "label": "subsection_not_gated",
+      "label": "ch1_a_subsection_count_8",
+      "pass": true,
+      "detail": "[\"vh_數學B2_SubSection_1_3_1\", \"vh_數學B2_SubSection_1_3_2\", \"vh_數學B2_SubSection_1_3_4\", \"vh_數學B2_SubSection_1_3_5\", \"vh_數學B2_SubSection_1_3_6\", \"vh_數學B2_SubSection_1_3_7\", \"vh_數學B2_SubSection_1_4_3\", \"vh_數學B2_SubSection_1_4_4\"]"
+    },
+    {
+      "label": "all_ch1_a_subsection_gated",
       "pass": true,
       "detail": ""
     },
     {
-      "label": "b2_ch2_not_gated",
+      "label": "ch1_empty_shells_not_gated",
       "pass": true,
       "detail": ""
     },
     {
-      "label": "all_pilot_have_usable_types",
+      "label": "b2_ch2_practice_subsection_gated",
       "pass": true,
-      "detail": "{\"vh_數學B2_AngleMeasurementAndConversion\": 1, \"vh_數學B2_ArcLengthAndAreaOfSector\": 1, \"vh_數學B2_CalculatingFunctionValuesUsingCalculator\": 1, \"vh_數學B2_CoterminalAngles\": 1, \"vh_數學B2_FundamentalTrigonometricIdentities\": 3, \"vh_數學B2_RatioAndRatioValue\": 1, \"vh_數學B2_TrigonometricFunctionsOfAcuteAngles\": 4, \"vh_數學B2_TrigonometricValuesOfSpecialAngles\": 2}"
+      "detail": ""
+    },
+    {
+      "label": "all_ch1_named_have_usable_types",
+      "pass": true,
+      "detail": "{\"vh_數學B2_AngleMeasurementAndConversion\": 1, \"vh_數學B2_ArcLengthAndAreaOfSector\": 2, \"vh_數學B2_CalculatingFunctionValuesUsingCalculator\": 1, \"vh_數學B2_CoterminalAngles\": 1, \"vh_數學B2_FundamentalTrigonometricIdentities\": 3, \"vh_數學B2_RatioAndRatioValue\": 1, \"vh_數學B2_TrigonometricFunctionsOfAcuteAngles\": 4, \"vh_數學B2_TrigonometricValuesOfSpecialAngles\": 2}"
+    },
+    {
+      "label": "all_ch1_a_subsection_have_usable_types",
+      "pass": true,
+      "detail": "{\"vh_數學B2_SubSection_1_3_1\": 1, \"vh_數學B2_SubSection_1_3_2\": 1, \"vh_數學B2_SubSection_1_3_4\": 2, \"vh_數學B2_SubSection_1_3_5\": 1, \"vh_數學B2_SubSection_1_3_6\": 2, \"vh_數學B2_SubSection_1_3_7\": 4, \"vh_數學B2_SubSection_1_4_3\": 3, \"vh_數學B2_SubSection_1_4_4\": 9}"
     },
     {
       "label": "legacy_streak_not_mastery",
       "pass": true,
-      "detail": "{'mode': 'problem_type_mastery', 'skill_id': 'vh_數學B2_TrigonometricFunctionsOfAcuteAngles', 'mastered_count': 0, 'total_types': 4, 'complete': False, 'types': [{'problem_type_id': 'compute_chord_and_arc_length', 'status': 'NOT_STARTED', 'consecutive_wrong': 0, 'needs_independent_verify': False, 'mastered_at': None}, {'problem_type_id': 'compute_right_triangle_trig_ratios', 'status': 'NOT_STARTED', 'consecutive_wrong': 0, 'needs_independent_verify': False, 'mastered_at': None}, {'problem_type_id': 'simplify_fundamental_trig_expression', 'status': 'NOT_STARTED', 'consecutive_wrong': 0, 'needs_independent_verify': False, 'mastered_at': None}, {'problem_type_id': 'solve_acute_trig_constraints', 'status': 'NOT_STARTED', 'consecutive_wrong': 0, 'needs_independent_verify': False, 'mastered_at': None}], 'display_label': '已掌握題型 0/4', 'consecutive_correct': 0, 'pass_target': 4}"
+      "detail": "{'mode': 'problem_type_mastery', 'skill_id': 'vh_數學B2_TrigonometricFunctionsOfAcuteAngles', 'mastered_count': 0, 'total_types': 4, 'complete': False, 'types': [{'problem_type_id': 'compute_right_triangle_trig_ratios', 'status': 'NOT_STARTED', 'consecutive_wrong': 0, 'needs_independent_verify': False, 'mastered_at': None}, {'problem_type_id': 'simplify_fundamental_trig_expression', 'status': 'NOT_STARTED', 'consecutive_wrong': 0, 'needs_independent_verify': False, 'mastered_at': None}, {'problem_type_id': 'solve_acute_trig_constraints', 'status': 'NOT_STARTED', 'consecutive_wrong': 0, 'needs_independent_verify': False, 'mastered_at': None}, {'problem_type_id': 'solve_right_triangle_projection', 'status': 'NOT_STARTED', 'consecutive_wrong': 0, 'needs_independent_verify': False, 'mastered_at': None}], 'display_label': '已掌握題型 0/4', 'consecutive_correct': 0, 'pass_target': 4}"
     },
     {
       "label": "independent_mastery_works",
@@ -54,7 +69,7 @@
       "detail": "vh_數學B2_TrigonometricValuesOfSpecialAngles"
     }
   ],
-  "pilot_skills": [
+  "ch1_named_skills": [
     "vh_數學B2_AngleMeasurementAndConversion",
     "vh_數學B2_ArcLengthAndAreaOfSector",
     "vh_數學B2_CalculatingFunctionValuesUsingCalculator",

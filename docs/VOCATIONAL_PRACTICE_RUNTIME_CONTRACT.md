@@ -238,8 +238,13 @@ delimited through serialization; vocational MCQ remains exactly 4 choices.
 Do not convert MCQ families to text input to bypass UI contract issues.
 
 For multi-part questions, every input must have explicit student-visible
-meaning (`display_label` / `label`). Internal keys (`k1`, `alpha`, …) may
-exist in the payload but must not be the only student-facing label.
+meaning (`display_label` / `label`). Internal keys (`k1`, `alpha`, `sin`,
+`cos`, `tan`, `sum`, `elevation`, …) may exist in the payload but must not
+be the only student-facing label. Component assembly must not overwrite an
+already-humanized Domain/Adapter `display_label` with the raw key; trig
+ratio fields that ask for angle θ must show complete meaning such as
+`$\sin\theta$` / `sinθ`, not bare `sin`. Frontend label resolution prefers
+`display_label` → `math_label` → `label` → `prompt`.
 
 For vector-valued free-response answers, keyboard-friendly notation is part
 of the student runtime contract (see §3.1): directed-segment and symbolic
@@ -359,6 +364,7 @@ Legacy assets 若缺少 `visual_status`，為相容視為 accepted（不得倒�
 3. **Multi-figure completeness** — 題幹含「圖（一）/圖（二）」等時，不可在只掛單一子圖時標為完整 accepted。
 4. **Contamination** — crop 與 PDF text-layer 明顯重疊「熟習度自評 / 輸入訊息 / 解」等非本題區域 → reject 或 needs_review。
 5. **Prefer review over guess** — 系統不確定時，允許 `needs_review`；禁止 `wrong mapping + accepted`。
+6. **Separate Skill placement from visual pairing** — 題幹／圖不符時，必須先分開判定「題型是否掛錯 Skill／problem_type」與「PDF crop／asset 是否錯配或跨題 residual」。不得只換圖而保留錯誤 Registry；也不得把不同數學概念硬塞進同一 `problem_type_id`。
 
 ### Student runtime
 
@@ -447,7 +453,12 @@ Legacy assets 若缺少 `visual_status`，為相容視為 accepted（不得倒�
 ### 12.8 Scope & non-goals
 
 - §12 預設範圍：**B1 full**。B3／B4 維持既有連對／Skill 卡語意，未經逐冊驗收不得默認套用。
-- **B2 第一批試點（2026-11-22）**：僅 `core/practice_type_mastery.py` 的 `B2_TYPE_MASTERY_PILOT_SKILL_IDS`（第1章具名 Skill，不含 SubSection）啟用 X/Y、完成 MsgBox 與同章導航；其餘 B2 Skill 仍用連對語意。
+- **B2 試點 allowlist（`B2_TYPE_MASTERY_PILOT_SKILL_IDS`）**：
+  - 第1章具名：8 個 Skill。
+  - 第1章 A 類練習 SubSection（教師 2026-11-22 核准）：`1_3_1`、`1_3_2`、`1_3_4`～`1_3_7`、`1_4_3`、`1_4_4`（皆有 TE＋facade＋Y≥1）。掌握紀錄仍按 `(user, skill, problem_type)`；跨 Skill 共用同一 `problem_type_id` 不自動計入、亦不把舊連對換算成 MASTERED。
+  - 第2章：5 個具 Runtime 可用題型的練習 SubSection（`2_1_1`、`2_1_2`、`2_2_3`、`2_2_4`、`2_2_5`）；第2章無另立具名 Skill。
+  - 其餘 B2（含第3／4章、inactive／空殼）仍用連對語意。
 - 試點不得把 `Progress.consecutive_correct` 換算成 `student_problem_type_mastery` MASTERED。
+- `vh_數學B2_SubSection_1_4_1`／`1_4_2`：無 TE／facade／可用題型的空殼，治理上應 inactive，不得當學生過關目標，亦不得納入掌握制 allowlist。
 - 不新增排行榜、扣分、懲罰或強迫連對機制。
 - 不平行發明第二套晉級系統；變更應落在本契約與既有 GenCode V3 Lean／Specification／PipelineFlow。

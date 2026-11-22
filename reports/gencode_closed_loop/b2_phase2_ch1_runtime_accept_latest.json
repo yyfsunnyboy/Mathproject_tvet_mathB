@@ -1,0 +1,175 @@
+{
+  "stamp": "20261122_161550",
+  "pass": 32,
+  "total": 32,
+  "results": [
+    {
+      "label": "gated:vh_數學B2_RatioAndRatioValue",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "gated:vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "gated:vh_數學B2_FundamentalTrigonometricIdentities",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_1_3_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "vh_數學B2_RatioAndRatioValue:Y_gt0",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_RatioAndRatioValue:Y_matches_progress",
+      "pass": true,
+      "detail": "progress=1 inv=1"
+    },
+    {
+      "label": "vh_數學B2_RatioAndRatioValue:same_type_no_double_count",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_RatioAndRatioValue:wrong_keeps_mastered",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles:Y_gt0",
+      "pass": true,
+      "detail": "4"
+    },
+    {
+      "label": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles:Y_matches_progress",
+      "pass": true,
+      "detail": "progress=4 inv=4"
+    },
+    {
+      "label": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles:same_type_no_double_count",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles:wrong_keeps_mastered",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles:assisted_not_mastered",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_TrigonometricFunctionsOfAcuteAngles:independent_after_assist",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "vh_數學B2_FundamentalTrigonometricIdentities:Y_gt0",
+      "pass": true,
+      "detail": "3"
+    },
+    {
+      "label": "vh_數學B2_FundamentalTrigonometricIdentities:Y_matches_progress",
+      "pass": true,
+      "detail": "progress=3 inv=3"
+    },
+    {
+      "label": "vh_數學B2_FundamentalTrigonometricIdentities:same_type_no_double_count",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_FundamentalTrigonometricIdentities:wrong_keeps_mastered",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_FundamentalTrigonometricIdentities:assisted_not_mastered",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_FundamentalTrigonometricIdentities:independent_after_assist",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "vh_數學B2_SubSection_1_3_2:Y_gt0",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_SubSection_1_3_2:Y_matches_progress",
+      "pass": true,
+      "detail": "progress=1 inv=1"
+    },
+    {
+      "label": "vh_數學B2_SubSection_1_3_2:same_type_no_double_count",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "vh_數學B2_SubSection_1_3_2:wrong_keeps_mastered",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "multi_complete",
+      "pass": true,
+      "detail": "已掌握題型 4/4"
+    },
+    {
+      "label": "nav_curriculum_same_chapter",
+      "pass": true,
+      "detail": "{\"skill_id\": \"vh_數學B2_TrigonometricValuesOfSpecialAngles\", \"skill_ch_name\": \"30°、45°、60° 特別角的三角函數值\", \"volume\": \"數學B2\", \"chapter\": \"第1章 三角函數\", \"nav_kind\": \"same_chapter\", \"button_label\": \"繼續挑戰：30°、45°、60° 特別角的三角函數值\", \"celebration_kind\": \"skill\", \"target\": \"practice\"}"
+    },
+    {
+      "label": "nav_target_still_pilot",
+      "pass": true,
+      "detail": "vh_數學B2_TrigonometricValuesOfSpecialAngles"
+    },
+    {
+      "label": "free_review_wrong_keeps_complete",
+      "pass": true,
+      "detail": "4"
+    },
+    {
+      "label": "student_isolation",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "label": "student_isolation_rows",
+      "pass": true,
+      "detail": "0"
+    },
+    {
+      "label": "msgbox_markup",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "msgbox_just_completed_gate",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "representatives": [
+    "vh_數學B2_RatioAndRatioValue",
+    "vh_數學B2_TrigonometricFunctionsOfAcuteAngles",
+    "vh_數學B2_FundamentalTrigonometricIdentities",
+    "vh_數學B2_SubSection_1_3_2"
+  ],
+  "browser_ui": "NOT_TESTED",
+  "multipart_live_submit": "NOT_TESTED"
+}

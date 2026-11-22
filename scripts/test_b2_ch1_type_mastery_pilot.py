@@ -43,34 +43,75 @@ def _ok(label: str, cond: bool, detail: str = "") -> dict:
 
 def main() -> int:
     results: list[dict] = []
+    ch1_named = sorted(
+        sid
+        for sid in B2_TYPE_MASTERY_PILOT_SKILL_IDS
+        if sid.startswith("vh_數學B2_") and "SubSection" not in sid
+    )
+    ch1_a_subs = sorted(
+        sid
+        for sid in B2_TYPE_MASTERY_PILOT_SKILL_IDS
+        if sid.startswith("vh_數學B2_SubSection_1_")
+    )
+    expected_a_subs = {
+        "vh_數學B2_SubSection_1_3_1",
+        "vh_數學B2_SubSection_1_3_2",
+        "vh_數學B2_SubSection_1_3_4",
+        "vh_數學B2_SubSection_1_3_5",
+        "vh_數學B2_SubSection_1_3_6",
+        "vh_數學B2_SubSection_1_3_7",
+        "vh_數學B2_SubSection_1_4_3",
+        "vh_數學B2_SubSection_1_4_4",
+    }
     with flask_app.app_context():
-        pilot = sorted(B2_TYPE_MASTERY_PILOT_SKILL_IDS)
-        results.append(_ok("pilot_count_8", len(pilot) == 8, str(len(pilot))))
+        results.append(_ok("ch1_named_count_8", len(ch1_named) == 8, str(len(ch1_named))))
         results.append(
             _ok(
-                "all_pilot_gated",
-                all(is_b1_type_mastery_skill(sid) for sid in pilot),
+                "all_ch1_named_gated",
+                all(is_b1_type_mastery_skill(sid) for sid in ch1_named),
             )
         )
         results.append(
             _ok(
-                "subsection_not_gated",
-                not is_b1_type_mastery_skill("vh_數學B2_SubSection_1_3_1"),
+                "ch1_a_subsection_count_8",
+                set(ch1_a_subs) == expected_a_subs,
+                json.dumps(ch1_a_subs, ensure_ascii=False),
             )
         )
         results.append(
             _ok(
-                "b2_ch2_not_gated",
-                not is_b1_type_mastery_skill("vh_數學B2_SubSection_2_1_1"),
+                "all_ch1_a_subsection_gated",
+                all(is_b1_type_mastery_skill(sid) for sid in expected_a_subs),
+            )
+        )
+        results.append(
+            _ok(
+                "ch1_empty_shells_not_gated",
+                not is_b1_type_mastery_skill("vh_數學B2_SubSection_1_4_1")
+                and not is_b1_type_mastery_skill("vh_數學B2_SubSection_1_4_2"),
+            )
+        )
+        results.append(
+            _ok(
+                "b2_ch2_practice_subsection_gated",
+                is_b1_type_mastery_skill("vh_數學B2_SubSection_2_1_1"),
             )
         )
 
-        usable = {sid: list_required_problem_types(sid) for sid in pilot}
+        usable = {sid: list_required_problem_types(sid) for sid in ch1_named}
+        usable_subs = {sid: list_required_problem_types(sid) for sid in sorted(expected_a_subs)}
         results.append(
             _ok(
-                "all_pilot_have_usable_types",
+                "all_ch1_named_have_usable_types",
                 all(len(v) >= 1 for v in usable.values()),
                 json.dumps({k: len(v) for k, v in usable.items()}, ensure_ascii=False),
+            )
+        )
+        results.append(
+            _ok(
+                "all_ch1_a_subsection_have_usable_types",
+                all(len(v) >= 1 for v in usable_subs.values()),
+                json.dumps({k: len(v) for k, v in usable_subs.items()}, ensure_ascii=False),
             )
         )
 
@@ -137,7 +178,7 @@ def main() -> int:
             _ok(
                 "nav_next_is_pilot_or_chapter",
                 (
-                    (nxt in B2_TYPE_MASTERY_PILOT_SKILL_IDS)
+                    (nxt in ch1_named)
                     or nav.get("nav_kind")
                     in {
                         "chapter_complete",
@@ -163,7 +204,7 @@ def main() -> int:
         "pass": sum(1 for r in results if r["pass"]),
         "total": len(results),
         "results": results,
-        "pilot_skills": sorted(B2_TYPE_MASTERY_PILOT_SKILL_IDS),
+        "ch1_named_skills": ch1_named,
     }
     out = ROOT / "reports/gencode_closed_loop" / f"b2_ch1_type_mastery_pilot_{STAMP}.json"
     latest = ROOT / "reports/gencode_closed_loop/b2_ch1_type_mastery_pilot_latest.json"
