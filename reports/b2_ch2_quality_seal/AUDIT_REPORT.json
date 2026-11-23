@@ -1,0 +1,1250 @@
+{
+  "stamp": "20261123_133052",
+  "scope": "B2 chapter 2 三角函數的應用",
+  "git_head_expected": "8f0ae5b3",
+  "db_copy": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\b2_ch2_audit_20261123_133052\\kumon_math.db",
+  "sample_fast": 10,
+  "sample_expand": 30,
+  "skills": [
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_1",
+      "display_name": "測量的名詞與術語",
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 1,
+      "is_active": false,
+      "te_count": 0,
+      "source_ids": [],
+      "y": 0,
+      "problem_type_ids": [],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "usable": [],
+        "health": "WARN",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SKIPPED_INACTIVE",
+      "generator_samples": {},
+      "status": "INACTIVE_OK"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_1_1",
+      "display_name": "正弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-1 正弦定理與餘弦定理",
+      "display_order": 2,
+      "is_active": true,
+      "te_count": 13,
+      "source_ids": [
+        11676,
+        11677,
+        11678,
+        11679,
+        11680,
+        11681,
+        11707,
+        11708,
+        11709,
+        11710,
+        11716,
+        11717,
+        11718
+      ],
+      "y": 6,
+      "problem_type_ids": [
+        "compute_sin_from_side_and_circumradius",
+        "compute_triangle_area_sas",
+        "solve_angle_by_law_of_sines",
+        "solve_side_and_circumradius_by_sines",
+        "solve_side_by_law_of_sines",
+        "solve_side_ratio_by_law_of_sines"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "usable": [
+          "compute_sin_from_side_and_circumradius",
+          "compute_triangle_area_sas",
+          "solve_angle_by_law_of_sines",
+          "solve_side_and_circumradius_by_sines",
+          "solve_side_by_law_of_sines",
+          "solve_side_ratio_by_law_of_sines"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_sin_from_side_and_circumradius": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 9,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "sinA",
+                "label": "$\\sin A$",
+                "display_label": "$\\sin A$"
+              }
+            ],
+            [
+              {
+                "key": "sinA",
+                "label": "$\\sin A$",
+                "display_label": "$\\sin A$"
+              }
+            ],
+            [
+              {
+                "key": "sinA",
+                "label": "$\\sin A$",
+                "display_label": "$\\sin A$"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "compute_triangle_area_sas": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": null,
+          "unique_answers": 8,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "area",
+                "label": "面積",
+                "display_label": "面積"
+              }
+            ],
+            [
+              {
+                "key": "area",
+                "label": "面積",
+                "display_label": "面積"
+              }
+            ],
+            [
+              {
+                "key": "area",
+                "label": "面積",
+                "display_label": "面積"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_angle_by_law_of_sines": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": null,
+          "unique_answers": 6,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "angle",
+                "label": "∠B（角度）",
+                "display_label": "∠B（角度）"
+              }
+            ],
+            [
+              {
+                "key": "angle",
+                "label": "∠C（角度）",
+                "display_label": "∠C（角度）"
+              }
+            ],
+            [
+              {
+                "key": "angle",
+                "label": "∠C（角度）",
+                "display_label": "∠C（角度）"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_side_and_circumradius_by_sines": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": null,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "side",
+                "label": "邊長",
+                "display_label": "邊長"
+              },
+              {
+                "key": "R",
+                "label": "R",
+                "display_label": "R"
+              }
+            ],
+            [
+              {
+                "key": "side",
+                "label": "邊長",
+                "display_label": "邊長"
+              },
+              {
+                "key": "R",
+                "label": "R",
+                "display_label": "R"
+              }
+            ],
+            [
+              {
+                "key": "side",
+                "label": "邊長",
+                "display_label": "邊長"
+              },
+              {
+                "key": "R",
+                "label": "R",
+                "display_label": "R"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_side_by_law_of_sines": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 8,
+          "unique_params": null,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_side_ratio_by_law_of_sines": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 5,
+          "unique_params": null,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_2",
+      "display_name": "求解平面三角測量問題的原則",
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 2,
+      "is_active": false,
+      "te_count": 0,
+      "source_ids": [],
+      "y": 0,
+      "problem_type_ids": [],
+      "mastery_mode": "consecutive_correct_legacy",
+      "in_b2_pilot_allowlist": false,
+      "inventory": {
+        "usable": [],
+        "health": "WARN",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SKIPPED_INACTIVE",
+      "generator_samples": {},
+      "status": "INACTIVE_OK"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_3",
+      "display_name": "直角三角形的測量",
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 15,
+      "source_ids": [
+        11687,
+        11688,
+        11689,
+        11690,
+        11698,
+        11699,
+        11700,
+        11701,
+        11704,
+        11720,
+        11723,
+        11725,
+        11728,
+        11729,
+        11730
+      ],
+      "y": 10,
+      "problem_type_ids": [
+        "solve_adjacent_from_hypotenuse_ground_angle",
+        "solve_broken_tree_original_height",
+        "solve_building_height_with_flagpole_elevations",
+        "solve_height_decimal_from_sight_line_elevation",
+        "solve_height_from_sight_line_elevation",
+        "solve_horizontal_from_height_depression",
+        "solve_horizontal_from_height_elevation",
+        "solve_opposite_from_adjacent_elevation",
+        "solve_two_elevation_horizontal_shift",
+        "solve_two_elevation_unknown_height"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "usable": [
+          "solve_adjacent_from_hypotenuse_ground_angle",
+          "solve_broken_tree_original_height",
+          "solve_building_height_with_flagpole_elevations",
+          "solve_height_decimal_from_sight_line_elevation",
+          "solve_height_from_sight_line_elevation",
+          "solve_horizontal_from_height_depression",
+          "solve_horizontal_from_height_elevation",
+          "solve_opposite_from_adjacent_elevation",
+          "solve_two_elevation_horizontal_shift",
+          "solve_two_elevation_unknown_height"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "solve_adjacent_from_hypotenuse_ground_angle": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 6,
+          "unique_params": null,
+          "unique_answers": 6,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "distance",
+                "label": "距離",
+                "display_label": "距離"
+              }
+            ],
+            [
+              {
+                "key": "distance",
+                "label": "距離",
+                "display_label": "距離"
+              }
+            ],
+            [
+              {
+                "key": "distance",
+                "label": "距離",
+                "display_label": "距離"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_broken_tree_original_height": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 7,
+          "unique_params": null,
+          "unique_answers": 7,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "original_height",
+                "label": "原高度",
+                "display_label": "原高度"
+              }
+            ],
+            [
+              {
+                "key": "original_height",
+                "label": "原高度",
+                "display_label": "原高度"
+              }
+            ],
+            [
+              {
+                "key": "original_height",
+                "label": "原高度",
+                "display_label": "原高度"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_building_height_with_flagpole_elevations": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 7,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_height_decimal_from_sight_line_elevation": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 9,
+          "unique_params": null,
+          "unique_answers": 9,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "height",
+                "label": "高",
+                "display_label": "高"
+              }
+            ],
+            [
+              {
+                "key": "height",
+                "label": "高",
+                "display_label": "高"
+              }
+            ],
+            [
+              {
+                "key": "height",
+                "label": "高",
+                "display_label": "高"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_height_from_sight_line_elevation": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 7,
+          "unique_params": null,
+          "unique_answers": 7,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "height",
+                "label": "高",
+                "display_label": "高"
+              }
+            ],
+            [
+              {
+                "key": "height",
+                "label": "高",
+                "display_label": "高"
+              }
+            ],
+            [
+              {
+                "key": "height",
+                "label": "高",
+                "display_label": "高"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_horizontal_from_height_depression": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 7,
+          "unique_params": null,
+          "unique_answers": 6,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "horizontal",
+                "label": "水平距離",
+                "display_label": "水平距離"
+              }
+            ],
+            [
+              {
+                "key": "horizontal",
+                "label": "水平距離",
+                "display_label": "水平距離"
+              }
+            ],
+            [
+              {
+                "key": "horizontal",
+                "label": "水平距離",
+                "display_label": "水平距離"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_horizontal_from_height_elevation": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 6,
+          "unique_params": null,
+          "unique_answers": 6,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "horizontal",
+                "label": "水平距離",
+                "display_label": "水平距離"
+              }
+            ],
+            [
+              {
+                "key": "horizontal",
+                "label": "水平距離",
+                "display_label": "水平距離"
+              }
+            ],
+            [
+              {
+                "key": "horizontal",
+                "label": "水平距離",
+                "display_label": "水平距離"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_opposite_from_adjacent_elevation": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 6,
+          "unique_params": null,
+          "unique_answers": 7,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "opposite",
+                "label": "對邊",
+                "display_label": "對邊"
+              }
+            ],
+            [
+              {
+                "key": "opposite",
+                "label": "對邊",
+                "display_label": "對邊"
+              }
+            ],
+            [
+              {
+                "key": "opposite",
+                "label": "對邊",
+                "display_label": "對邊"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_two_elevation_horizontal_shift": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 6,
+          "unique_params": null,
+          "unique_answers": 5,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "shift",
+                "label": "位移",
+                "display_label": "位移"
+              }
+            ],
+            [
+              {
+                "key": "shift",
+                "label": "位移",
+                "display_label": "位移"
+              }
+            ],
+            [
+              {
+                "key": "shift",
+                "label": "位移",
+                "display_label": "位移"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_two_elevation_unknown_height": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 7,
+          "unique_params": null,
+          "unique_answers": 7,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "height",
+                "label": "高",
+                "display_label": "高"
+              }
+            ],
+            [
+              {
+                "key": "height",
+                "label": "高",
+                "display_label": "高"
+              }
+            ],
+            [
+              {
+                "key": "height",
+                "label": "高",
+                "display_label": "高"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_1_2",
+      "display_name": "餘弦定理",
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-1 正弦定理與餘弦定理",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 14,
+      "source_ids": [
+        11682,
+        11683,
+        11684,
+        11685,
+        11686,
+        11706,
+        11711,
+        11712,
+        11713,
+        11714,
+        11715,
+        11719,
+        11726,
+        11727
+      ],
+      "y": 5,
+      "problem_type_ids": [
+        "compute_circumradius_from_three_sides",
+        "solve_angle_by_law_of_cosines",
+        "solve_cosine_identity_angle",
+        "solve_detour_extra_distance_by_cosines",
+        "solve_side_by_law_of_cosines"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "usable": [
+          "compute_circumradius_from_three_sides",
+          "solve_angle_by_law_of_cosines",
+          "solve_cosine_identity_angle",
+          "solve_detour_extra_distance_by_cosines",
+          "solve_side_by_law_of_cosines"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_circumradius_from_three_sides": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 4,
+          "unique_params": null,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "R",
+                "label": "R",
+                "display_label": "R"
+              }
+            ],
+            [
+              {
+                "key": "R",
+                "label": "R",
+                "display_label": "R"
+              }
+            ],
+            [
+              {
+                "key": "R",
+                "label": "R",
+                "display_label": "R"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_angle_by_law_of_cosines": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 7,
+          "unique_params": null,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "angle",
+                "label": "∠C（角度）",
+                "display_label": "∠C（角度）"
+              }
+            ],
+            [
+              {
+                "key": "angle",
+                "label": "∠C（角度）",
+                "display_label": "∠C（角度）"
+              }
+            ],
+            [
+              {
+                "key": "angle",
+                "label": "∠B（角度）",
+                "display_label": "∠B（角度）"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_cosine_identity_angle": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 4,
+          "unique_params": null,
+          "unique_answers": 1,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "angle",
+                "label": "∠A（角度）",
+                "display_label": "∠A（角度）"
+              }
+            ],
+            [
+              {
+                "key": "angle",
+                "label": "∠A（角度）",
+                "display_label": "∠A（角度）"
+              }
+            ],
+            [
+              {
+                "key": "angle",
+                "label": "∠A（角度）",
+                "display_label": "∠A（角度）"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_detour_extra_distance_by_cosines": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 5,
+          "unique_params": null,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_side_by_law_of_cosines": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 6,
+          "unique_params": null,
+          "unique_answers": 5,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "side",
+                "label": "邊長",
+                "display_label": "邊長"
+              }
+            ],
+            [
+              {
+                "key": "side",
+                "label": "邊長",
+                "display_label": "邊長"
+              }
+            ],
+            [
+              {
+                "key": "side",
+                "label": "邊長",
+                "display_label": "邊長"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_4",
+      "display_name": "非直角三角形測量",
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 9,
+      "source_ids": [
+        11691,
+        11692,
+        11693,
+        11694,
+        11702,
+        11703,
+        11705,
+        11721,
+        11722
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "solve_side_by_law_of_cosines",
+        "solve_side_by_law_of_sines"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "usable": [
+          "solve_side_by_law_of_cosines",
+          "solve_side_by_law_of_sines"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "solve_side_by_law_of_cosines": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 4,
+          "unique_params": null,
+          "unique_answers": 6,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "side",
+                "label": "邊長",
+                "display_label": "邊長"
+              }
+            ],
+            [
+              {
+                "key": "side",
+                "label": "邊長",
+                "display_label": "邊長"
+              }
+            ],
+            [
+              {
+                "key": "side",
+                "label": "邊長",
+                "display_label": "邊長"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_side_by_law_of_sines": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 8,
+          "unique_params": null,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_2_2_5",
+      "display_name": "簡單的立體測量",
+      "chapter": "第2章 三角函數的應用",
+      "section": "2-2 三角測量",
+      "display_order": 5,
+      "is_active": true,
+      "te_count": 4,
+      "source_ids": [
+        11695,
+        11696,
+        11697,
+        11724
+      ],
+      "y": 3,
+      "problem_type_ids": [
+        "solve_height_from_isosceles_bearing_walk_elevation",
+        "solve_height_from_two_elevation_tan_ratios",
+        "solve_tower_two_elevation_path_and_river_width"
+      ],
+      "mastery_mode": "problem_type_mastery",
+      "in_b2_pilot_allowlist": true,
+      "inventory": {
+        "usable": [
+          "solve_height_from_isosceles_bearing_walk_elevation",
+          "solve_height_from_two_elevation_tan_ratios",
+          "solve_tower_two_elevation_path_and_river_width"
+        ],
+        "health": "PASS",
+        "error": null
+      },
+      "bugs": [],
+      "decision_needed": null,
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "solve_height_from_isosceles_bearing_walk_elevation": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 8,
+          "unique_params": null,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_height_from_two_elevation_tan_ratios": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 9,
+          "unique_params": null,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        },
+        "solve_tower_two_elevation_path_and_river_width": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 7,
+          "unique_params": null,
+          "unique_answers": 7,
+          "unique_uids": 0,
+          "errors": [],
+          "error_count": 0,
+          "label_samples": [
+            [
+              {
+                "key": "AC",
+                "label": "$\\overrightarrow{AC}$",
+                "display_label": "$\\overrightarrow{AC}$"
+              },
+              {
+                "key": "BC",
+                "label": "$\\overrightarrow{BC}$",
+                "display_label": "$\\overrightarrow{BC}$"
+              },
+              {
+                "key": "AB",
+                "label": "$\\overrightarrow{AB}$",
+                "display_label": "$\\overrightarrow{AB}$"
+              }
+            ],
+            [
+              {
+                "key": "AC",
+                "label": "$\\overrightarrow{AC}$",
+                "display_label": "$\\overrightarrow{AC}$"
+              },
+              {
+                "key": "BC",
+                "label": "$\\overrightarrow{BC}$",
+                "display_label": "$\\overrightarrow{BC}$"
+              },
+              {
+                "key": "AB",
+                "label": "$\\overrightarrow{AB}$",
+                "display_label": "$\\overrightarrow{AB}$"
+              }
+            ],
+            [
+              {
+                "key": "AC",
+                "label": "$\\overrightarrow{AC}$",
+                "display_label": "$\\overrightarrow{AC}$"
+              },
+              {
+                "key": "BC",
+                "label": "$\\overrightarrow{BC}$",
+                "display_label": "$\\overrightarrow{BC}$"
+              },
+              {
+                "key": "AB",
+                "label": "$\\overrightarrow{AB}$",
+                "display_label": "$\\overrightarrow{AB}$"
+              }
+            ]
+          ],
+          "label_issues": [],
+          "image_count_max": 0,
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS"
+          }
+        }
+      },
+      "status": "PASS"
+    }
+  ],
+  "summary": {
+    "skill_count": 7,
+    "active": 5,
+    "inactive": 2,
+    "mastery_pilot": 5,
+    "status_counts": {
+      "INACTIVE_OK": 2,
+      "PASS": 5
+    },
+    "p0": [],
+    "p1": [],
+    "p2": [],
+    "gate": "PASS_ENGINEERING"
+  }
+}
