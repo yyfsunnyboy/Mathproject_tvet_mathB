@@ -27,6 +27,8 @@ _WRONG_STREAK_FOR_REMEDIATION = 2
 # Phase-1b (teacher 2026-11-22): chapter-1 A-class practice SubSections with
 # TE + facade + Y>=1 (excludes empty 1_4_1 / 1_4_2 shells).
 # Phase-2: chapter-2 practice SubSections with runtime-usable types.
+# Phase-3: chapter-3 practice SubSections with TE + facade + Y>=1
+#          (quality sample 2026-11-23; no separate named skills).
 # Other B2 chapters / incomplete shells stay on legacy consecutive-correct.
 # Do not convert Progress.consecutive_correct into MASTERED rows.
 # Mastery is per (user, skill, problem_type); shared type ids across skills
@@ -57,6 +59,22 @@ B2_TYPE_MASTERY_PILOT_SKILL_IDS: frozenset[str] = frozenset(
         "vh_數學B2_SubSection_2_2_3",
         "vh_數學B2_SubSection_2_2_4",
         "vh_數學B2_SubSection_2_2_5",
+        # Chapter 3 practice SubSections (phase 3) — vectors; no separate named skills
+        "vh_數學B2_SubSection_3_1_1",
+        "vh_數學B2_SubSection_3_1_2",
+        "vh_數學B2_SubSection_3_1_3",
+        "vh_數學B2_SubSection_3_1_4",
+        "vh_數學B2_SubSection_3_2_1",
+        "vh_數學B2_SubSection_3_2_2",
+        "vh_數學B2_SubSection_3_2_3",
+        "vh_數學B2_SubSection_3_2_4",
+        "vh_數學B2_SubSection_3_2_5",
+        "vh_數學B2_SubSection_3_2_6",
+        "vh_數學B2_SubSection_3_3_1",
+        "vh_數學B2_SubSection_3_3_2",
+        "vh_數學B2_SubSection_3_3_3",
+        "vh_數學B2_SubSection_3_3_4",
+        "vh_數學B2_SubSection_3_3_5",
     }
 )
 

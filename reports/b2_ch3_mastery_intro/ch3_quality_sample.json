@@ -1,0 +1,591 @@
+{
+  "stamp": "20261123_133211",
+  "skills": [
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_1",
+      "y": 2,
+      "status": "PASS",
+      "types": {
+        "express_named_vectors_in_given_basis": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 4,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "identify_equal_vector_mcq": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        }
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "identify_equal_vector_mcq"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_2",
+      "y": 1,
+      "status": "PASS",
+      "types": {
+        "simplify_vector_path_expression": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 5,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_3",
+      "y": 1,
+      "status": "PASS",
+      "types": {
+        "simplify_vector_path_expression": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 5,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "y": 6,
+      "status": "PASS",
+      "types": {
+        "construct_linear_combination_choice": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 8,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "express_linear_combination_from_givens": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 8,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "express_section_point_vector": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        },
+        "identify_resultant_path_mcq": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        },
+        "solve_scalar_multiple_relation_fill": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 3,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "solve_section_coefficient_pair": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        }
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "express_section_point_vector"
+        },
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "identify_resultant_path_mcq"
+        },
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "solve_section_coefficient_pair"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "y": 6,
+      "status": "PASS",
+      "types": {
+        "compute_directed_segment_and_magnitude": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_directed_segment_mixed_multipart": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_triangle_perimeter_from_two_vectors": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        },
+        "compute_vector_components_and_magnitude": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "solve_equal_vector_coordinates": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 2,
+          "checker": "PASS",
+          "diversity": "LIMITED_VARIATION",
+          "label_issues": []
+        },
+        "solve_parallelogram_fourth_vertex": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "compute_triangle_perimeter_from_two_vectors"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_2",
+      "y": 6,
+      "status": "PASS",
+      "types": {
+        "compute_chain_closure_vector_mcq": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_point_vectors_linear_combination": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_triangle_chain_and_perimeter": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_vector_linear_combination": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_vector_sum_difference": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "solve_parallelogram_fourth_vertex": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_3",
+      "y": 2,
+      "status": "PASS",
+      "types": {
+        "solve_collinear_ratio_mcq": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        },
+        "solve_point_from_vector_combination": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "solve_collinear_ratio_mcq"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_4",
+      "y": 2,
+      "status": "PASS",
+      "types": {
+        "compute_vector_linear_combination": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "solve_unknown_vector_linear_equation": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        }
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "solve_unknown_vector_linear_equation"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_5",
+      "y": 2,
+      "status": "PASS",
+      "types": {
+        "solve_parallel_then_magnitude_mcq": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 4,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "solve_parallel_vector_parameter": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_6",
+      "y": 2,
+      "status": "PASS",
+      "types": {
+        "compute_scaled_direction_vector": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "identify_unit_vector_mcq": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        }
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "identify_unit_vector_mcq"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_1",
+      "y": 3,
+      "status": "PASS",
+      "types": {
+        "classify_angle_quality_from_dot_mcq": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        },
+        "compute_cosine_of_angle_from_dot": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "solve_navigation_heading_correction": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 9,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "classify_angle_quality_from_dot_mcq"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_2",
+      "y": 3,
+      "status": "PASS",
+      "types": {
+        "compute_dot_identity_multipart": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 9,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_dot_product_from_magnitudes_angle": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 9,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_regular_polygon_edge_dot": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 5,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_3",
+      "y": 5,
+      "status": "PASS",
+      "types": {
+        "compute_cosine_of_angle_from_dot": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_dot_product_coordinates": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "compute_midpoint_dot_product": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        },
+        "plot_navigation_points_coordinates": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "solve_dot_product_parameter_mcq": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        }
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "compute_midpoint_dot_product"
+        },
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "solve_dot_product_parameter_mcq"
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_4",
+      "y": 2,
+      "status": "PASS",
+      "types": {
+        "solve_perpendicular_composite_parameter": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "solve_perpendicular_vector_parameter": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": []
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_5",
+      "y": 4,
+      "status": "PASS",
+      "types": {
+        "classify_dot_sign_from_diagram_mcq": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 1,
+          "checker": "PASS",
+          "diversity": "LOW_VARIATION_SUSPECT",
+          "label_issues": []
+        },
+        "compute_dot_product_from_magnitudes_angle": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 9,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "expand_perpendicular_dot_product": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 10,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        },
+        "solve_angle_from_magnitude_identity": {
+          "ok": 10,
+          "err": 0,
+          "unique_stems": 7,
+          "checker": "PASS",
+          "diversity": "HAS_VARIATION",
+          "label_issues": []
+        }
+      },
+      "bugs": [
+        {
+          "severity": "P2",
+          "code": "LOW_PARAM_VARIATION",
+          "pt": "classify_dot_sign_from_diagram_mcq"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "include": [
+      "vh_數學B2_SubSection_3_1_1",
+      "vh_數學B2_SubSection_3_1_2",
+      "vh_數學B2_SubSection_3_1_3",
+      "vh_數學B2_SubSection_3_1_4",
+      "vh_數學B2_SubSection_3_2_1",
+      "vh_數學B2_SubSection_3_2_2",
+      "vh_數學B2_SubSection_3_2_3",
+      "vh_數學B2_SubSection_3_2_4",
+      "vh_數學B2_SubSection_3_2_5",
+      "vh_數學B2_SubSection_3_2_6",
+      "vh_數學B2_SubSection_3_3_1",
+      "vh_數學B2_SubSection_3_3_2",
+      "vh_數學B2_SubSection_3_3_3",
+      "vh_數學B2_SubSection_3_3_4",
+      "vh_數學B2_SubSection_3_3_5"
+    ],
+    "blocked": [],
+    "gate": "PASS_BATCH"
+  }
+}

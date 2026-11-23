@@ -456,8 +456,9 @@ Legacy assets 若缺少 `visual_status`，為相容視為 accepted（不得倒�
 - **B2 試點 allowlist（`B2_TYPE_MASTERY_PILOT_SKILL_IDS`）**：
   - 第1章具名：8 個 Skill。
   - 第1章 A 類練習 SubSection（教師 2026-11-22 核准）：`1_3_1`、`1_3_2`、`1_3_4`～`1_3_7`、`1_4_3`、`1_4_4`（皆有 TE＋facade＋Y≥1）。掌握紀錄仍按 `(user, skill, problem_type)`；跨 Skill 共用同一 `problem_type_id` 不自動計入、亦不把舊連對換算成 MASTERED。
-  - 第2章：5 個具 Runtime 可用題型的練習 SubSection（`2_1_1`、`2_1_2`、`2_2_3`、`2_2_4`、`2_2_5`）；第2章無另立具名 Skill。
-  - 其餘 B2（含第3／4章、inactive／空殼）仍用連對語意。
+  - 第2章：5 個具 Runtime 可用題型的練習 SubSection（`2_1_1`、`2_1_2`、`2_2_3`、`2_2_4`、`2_2_5`）；第2章無另立具名 Skill。`2_2_1`／`2_2_2` inactive 組織節點不納入。
+  - 第3章：15 個練習 SubSection（`3_1_1`～`3_1_4`、`3_2_1`～`3_2_6`、`3_3_1`～`3_3_5`；皆 TE＋facade＋Y≥1，2026-11-23 品質抽樣通過）；第3章無另立具名 Skill。
+  - 其餘 B2（含第4章、inactive／空殼）仍用連對語意。
 - 試點不得把 `Progress.consecutive_correct` 換算成 `student_problem_type_mastery` MASTERED。
 - `vh_數學B2_SubSection_1_4_1`／`1_4_2`：無 TE／facade／可用題型的空殼，治理上應 inactive，不得當學生過關目標，亦不得納入掌握制 allowlist。
 - 不新增排行榜、扣分、懲罰或強迫連對機制。

@@ -1,0 +1,415 @@
+{
+  "stamp": "20261123_134435",
+  "pass": 59,
+  "total": 59,
+  "results": [
+    {
+      "label": "ch3_count_15",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_1_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_1_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_1_1",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_1_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_1_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_1_2",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_1_3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_1_3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_1_3",
+      "pass": true,
+      "detail": "1"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_1_4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_1_4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_1_4",
+      "pass": true,
+      "detail": "6"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_2_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_2_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_2_1",
+      "pass": true,
+      "detail": "6"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_2_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_2_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_2_2",
+      "pass": true,
+      "detail": "6"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_2_3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_2_3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_2_3",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_2_4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_2_4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_2_4",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_2_5",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_2_5",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_2_5",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_2_6",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_2_6",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_2_6",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_3_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_3_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_3_1",
+      "pass": true,
+      "detail": "3"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_3_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_3_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_3_2",
+      "pass": true,
+      "detail": "3"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_3_3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_3_3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_3_3",
+      "pass": true,
+      "detail": "5"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_3_4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_3_4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_3_4",
+      "pass": true,
+      "detail": "2"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_3_3_5",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_3_3_5",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_3_3_5",
+      "pass": true,
+      "detail": "4"
+    },
+    {
+      "label": "not_gated:vh_數學B2_SubSection_2_2_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "not_gated:vh_數學B2_SubSection_4_1_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ch2_still_gated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ch1_named_still_gated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "legacy_streak_not_mastery",
+      "pass": true,
+      "detail": "已掌握題型 0/2"
+    },
+    {
+      "label": "same_type_once",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "wrong_keeps",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "assisted_blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "independent_ok",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "skill_complete",
+      "pass": true,
+      "detail": "已掌握題型 2/2"
+    },
+    {
+      "label": "nav_same_chapter_or_complete",
+      "pass": true,
+      "detail": "{\"skill_id\": \"vh_數學B2_SubSection_3_1_2\", \"skill_ch_name\": \"向量的加法作圖\", \"volume\": \"數學B2\", \"chapter\": \"第3章 向 量\", \"nav_kind\": \"same_chapter\", \"button_label\": \"繼續挑戰：向量的加法作圖\", \"celebration_kind\": \"skill\", \"target\": \"practice\"}"
+    },
+    {
+      "label": "nav_target_in_ch3_pilot",
+      "pass": true,
+      "detail": "vh_數學B2_SubSection_3_1_2"
+    },
+    {
+      "label": "shared_type_no_autocredit",
+      "pass": true,
+      "detail": "已掌握題型 0/1"
+    }
+  ],
+  "ch3_pilot": [
+    "vh_數學B2_SubSection_3_1_1",
+    "vh_數學B2_SubSection_3_1_2",
+    "vh_數學B2_SubSection_3_1_3",
+    "vh_數學B2_SubSection_3_1_4",
+    "vh_數學B2_SubSection_3_2_1",
+    "vh_數學B2_SubSection_3_2_2",
+    "vh_數學B2_SubSection_3_2_3",
+    "vh_數學B2_SubSection_3_2_4",
+    "vh_數學B2_SubSection_3_2_5",
+    "vh_數學B2_SubSection_3_2_6",
+    "vh_數學B2_SubSection_3_3_1",
+    "vh_數學B2_SubSection_3_3_2",
+    "vh_數學B2_SubSection_3_3_3",
+    "vh_數學B2_SubSection_3_3_4",
+    "vh_數學B2_SubSection_3_3_5"
+  ],
+  "usable_Y": {
+    "vh_數學B2_SubSection_3_1_1": 2,
+    "vh_數學B2_SubSection_3_1_2": 1,
+    "vh_數學B2_SubSection_3_1_3": 1,
+    "vh_數學B2_SubSection_3_1_4": 6,
+    "vh_數學B2_SubSection_3_2_1": 6,
+    "vh_數學B2_SubSection_3_2_2": 6,
+    "vh_數學B2_SubSection_3_2_3": 2,
+    "vh_數學B2_SubSection_3_2_4": 2,
+    "vh_數學B2_SubSection_3_2_5": 2,
+    "vh_數學B2_SubSection_3_2_6": 2,
+    "vh_數學B2_SubSection_3_3_1": 3,
+    "vh_數學B2_SubSection_3_3_2": 3,
+    "vh_數學B2_SubSection_3_3_3": 5,
+    "vh_數學B2_SubSection_3_3_4": 2,
+    "vh_數學B2_SubSection_3_3_5": 4
+  },
+  "usable_ids": {
+    "vh_數學B2_SubSection_3_1_1": [
+      "express_named_vectors_in_given_basis",
+      "identify_equal_vector_mcq"
+    ],
+    "vh_數學B2_SubSection_3_1_2": [
+      "simplify_vector_path_expression"
+    ],
+    "vh_數學B2_SubSection_3_1_3": [
+      "simplify_vector_path_expression"
+    ],
+    "vh_數學B2_SubSection_3_1_4": [
+      "construct_linear_combination_choice",
+      "express_linear_combination_from_givens",
+      "express_section_point_vector",
+      "identify_resultant_path_mcq",
+      "solve_scalar_multiple_relation_fill",
+      "solve_section_coefficient_pair"
+    ],
+    "vh_數學B2_SubSection_3_2_1": [
+      "compute_directed_segment_and_magnitude",
+      "compute_directed_segment_mixed_multipart",
+      "compute_triangle_perimeter_from_two_vectors",
+      "compute_vector_components_and_magnitude",
+      "solve_equal_vector_coordinates",
+      "solve_parallelogram_fourth_vertex"
+    ],
+    "vh_數學B2_SubSection_3_2_2": [
+      "compute_chain_closure_vector_mcq",
+      "compute_point_vectors_linear_combination",
+      "compute_triangle_chain_and_perimeter",
+      "compute_vector_linear_combination",
+      "compute_vector_sum_difference",
+      "solve_parallelogram_fourth_vertex"
+    ],
+    "vh_數學B2_SubSection_3_2_3": [
+      "solve_collinear_ratio_mcq",
+      "solve_point_from_vector_combination"
+    ],
+    "vh_數學B2_SubSection_3_2_4": [
+      "compute_vector_linear_combination",
+      "solve_unknown_vector_linear_equation"
+    ],
+    "vh_數學B2_SubSection_3_2_5": [
+      "solve_parallel_then_magnitude_mcq",
+      "solve_parallel_vector_parameter"
+    ],
+    "vh_數學B2_SubSection_3_2_6": [
+      "compute_scaled_direction_vector",
+      "identify_unit_vector_mcq"
+    ],
+    "vh_數學B2_SubSection_3_3_1": [
+      "classify_angle_quality_from_dot_mcq",
+      "compute_cosine_of_angle_from_dot",
+      "solve_navigation_heading_correction"
+    ],
+    "vh_數學B2_SubSection_3_3_2": [
+      "compute_dot_identity_multipart",
+      "compute_dot_product_from_magnitudes_angle",
+      "compute_regular_polygon_edge_dot"
+    ],
+    "vh_數學B2_SubSection_3_3_3": [
+      "compute_cosine_of_angle_from_dot",
+      "compute_dot_product_coordinates",
+      "compute_midpoint_dot_product",
+      "plot_navigation_points_coordinates",
+      "solve_dot_product_parameter_mcq"
+    ],
+    "vh_數學B2_SubSection_3_3_4": [
+      "solve_perpendicular_composite_parameter",
+      "solve_perpendicular_vector_parameter"
+    ],
+    "vh_數學B2_SubSection_3_3_5": [
+      "classify_dot_sign_from_diagram_mcq",
+      "compute_dot_product_from_magnitudes_angle",
+      "expand_perpendicular_dot_product",
+      "solve_angle_from_magnitude_identity"
+    ]
+  }
+}

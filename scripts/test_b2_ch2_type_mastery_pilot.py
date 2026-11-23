@@ -44,7 +44,7 @@ CH2_PILOT = (
 )
 LEGACY_INACTIVE_OR_NON = (
     "vh_數學B2_SubSection_2_2_1",  # inactive org
-    "vh_數學B2_SubSection_3_1_1",  # ch3 not opted in
+    "vh_數學B2_SubSection_4_1_1",  # ch4 not opted in (may be absent; still not gated)
 )
 
 
@@ -70,7 +70,7 @@ def main() -> int:
                 )
             )
 
-        # Ch1 named still gated; ch1 practice SubSection still NOT auto-gated this round
+        # Ch1 named + A-class SubSections remain gated after teacher 2026-11-22 decision.
         results.append(
             _ok(
                 "ch1_named_still_gated",
@@ -79,8 +79,8 @@ def main() -> int:
         )
         results.append(
             _ok(
-                "ch1_subsection_not_auto_gated",
-                not is_b1_type_mastery_skill("vh_數學B2_SubSection_1_3_1"),
+                "ch1_subsection_still_gated",
+                is_b1_type_mastery_skill("vh_數學B2_SubSection_1_3_1"),
             )
         )
 

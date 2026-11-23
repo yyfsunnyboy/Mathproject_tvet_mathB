@@ -1,0 +1,299 @@
+{
+  "stamp": "20261123_133133",
+  "skills": [
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_1",
+      "name": "向量定義",
+      "section": "3-1 向量的作圖",
+      "display_order": 1,
+      "is_active": true,
+      "te_count": 3,
+      "y": 2,
+      "problem_type_ids": [
+        "express_named_vectors_in_given_basis",
+        "identify_equal_vector_mcq"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_2",
+      "name": "向量的加法作圖",
+      "section": "3-1 向量的作圖",
+      "display_order": 2,
+      "is_active": true,
+      "te_count": 3,
+      "y": 1,
+      "problem_type_ids": [
+        "simplify_vector_path_expression"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_3",
+      "name": "向量的減法作圖",
+      "section": "3-1 向量的作圖",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 7,
+      "y": 1,
+      "problem_type_ids": [
+        "simplify_vector_path_expression"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "name": "向量的實數積作圖",
+      "section": "3-1 向量的作圖",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 14,
+      "y": 6,
+      "problem_type_ids": [
+        "construct_linear_combination_choice",
+        "express_linear_combination_from_givens",
+        "express_section_point_vector",
+        "identify_resultant_path_mcq",
+        "solve_scalar_multiple_relation_fill",
+        "solve_section_coefficient_pair"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "name": "向量的坐標表示法",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 1,
+      "is_active": true,
+      "te_count": 11,
+      "y": 6,
+      "problem_type_ids": [
+        "compute_directed_segment_and_magnitude",
+        "compute_directed_segment_mixed_multipart",
+        "compute_triangle_perimeter_from_two_vectors",
+        "compute_vector_components_and_magnitude",
+        "solve_equal_vector_coordinates",
+        "solve_parallelogram_fourth_vertex"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_2",
+      "name": "向量加減的坐標表示法",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 15,
+      "y": 6,
+      "problem_type_ids": [
+        "compute_chain_closure_vector_mcq",
+        "compute_point_vectors_linear_combination",
+        "compute_triangle_chain_and_perimeter",
+        "compute_vector_linear_combination",
+        "compute_vector_sum_difference",
+        "solve_parallelogram_fourth_vertex"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_3",
+      "name": "向量實數積的坐標表示法",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 2,
+      "y": 2,
+      "problem_type_ids": [
+        "solve_collinear_ratio_mcq",
+        "solve_point_from_vector_combination"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_4",
+      "name": "向量實數積的基本性質",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 6,
+      "is_active": true,
+      "te_count": 3,
+      "y": 2,
+      "problem_type_ids": [
+        "compute_vector_linear_combination",
+        "solve_unknown_vector_linear_equation"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_5",
+      "name": "向量的平行",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 8,
+      "is_active": true,
+      "te_count": 4,
+      "y": 2,
+      "problem_type_ids": [
+        "solve_parallel_then_magnitude_mcq",
+        "solve_parallel_vector_parameter"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_6",
+      "name": "單位向量",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 10,
+      "is_active": true,
+      "te_count": 5,
+      "y": 2,
+      "problem_type_ids": [
+        "compute_scaled_direction_vector",
+        "identify_unit_vector_mcq"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_1",
+      "name": "向量的夾角",
+      "section": "3-3 向量的內積",
+      "display_order": 1,
+      "is_active": true,
+      "te_count": 4,
+      "y": 3,
+      "problem_type_ids": [
+        "classify_angle_quality_from_dot_mcq",
+        "compute_cosine_of_angle_from_dot",
+        "solve_navigation_heading_correction"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_2",
+      "name": "向量內積的定義",
+      "section": "3-3 向量的內積",
+      "display_order": 2,
+      "is_active": true,
+      "te_count": 5,
+      "y": 3,
+      "problem_type_ids": [
+        "compute_dot_identity_multipart",
+        "compute_dot_product_from_magnitudes_angle",
+        "compute_regular_polygon_edge_dot"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_3",
+      "name": "向量內積的坐標表示法",
+      "section": "3-3 向量的內積",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 9,
+      "y": 5,
+      "problem_type_ids": [
+        "compute_cosine_of_angle_from_dot",
+        "compute_dot_product_coordinates",
+        "compute_midpoint_dot_product",
+        "plot_navigation_points_coordinates",
+        "solve_dot_product_parameter_mcq"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_4",
+      "name": "兩向量的垂直",
+      "section": "3-3 向量的內積",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 4,
+      "y": 2,
+      "problem_type_ids": [
+        "solve_perpendicular_composite_parameter",
+        "solve_perpendicular_vector_parameter"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_5",
+      "name": "向量內積的性質",
+      "section": "3-3 向量的內積",
+      "display_order": 5,
+      "is_active": true,
+      "te_count": 6,
+      "y": 4,
+      "problem_type_ids": [
+        "classify_dot_sign_from_diagram_mcq",
+        "compute_dot_product_from_magnitudes_angle",
+        "expand_perpendicular_dot_product",
+        "solve_angle_from_magnitude_identity"
+      ],
+      "facade_ok": true,
+      "already_mastery": false,
+      "decision": "INCLUDE_CANDIDATE",
+      "error": null
+    }
+  ],
+  "include_candidates": [
+    "vh_數學B2_SubSection_3_1_1",
+    "vh_數學B2_SubSection_3_1_2",
+    "vh_數學B2_SubSection_3_1_3",
+    "vh_數學B2_SubSection_3_1_4",
+    "vh_數學B2_SubSection_3_2_1",
+    "vh_數學B2_SubSection_3_2_2",
+    "vh_數學B2_SubSection_3_2_3",
+    "vh_數學B2_SubSection_3_2_4",
+    "vh_數學B2_SubSection_3_2_5",
+    "vh_數學B2_SubSection_3_2_6",
+    "vh_數學B2_SubSection_3_3_1",
+    "vh_數學B2_SubSection_3_3_2",
+    "vh_數學B2_SubSection_3_3_3",
+    "vh_數學B2_SubSection_3_3_4",
+    "vh_數學B2_SubSection_3_3_5"
+  ],
+  "counts": {
+    "total": 15,
+    "include_candidates": 15,
+    "blocked": 0
+  }
+}
