@@ -1,7 +1,7 @@
 {
-  "stamp": "20261123_134435",
-  "pass": 59,
-  "total": 59,
+  "stamp": "20261123_142713",
+  "pass": 58,
+  "total": 58,
   "results": [
     {
       "label": "ch3_count_15",
@@ -235,11 +235,6 @@
     },
     {
       "label": "not_gated:vh_數學B2_SubSection_2_2_1",
-      "pass": true,
-      "detail": ""
-    },
-    {
-      "label": "not_gated:vh_數學B2_SubSection_4_1_1",
       "pass": true,
       "detail": ""
     },

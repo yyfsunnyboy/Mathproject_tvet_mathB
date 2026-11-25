@@ -1,5 +1,5 @@
 {
-  "stamp": "20261122_031015",
+  "stamp": "20261123_134432",
   "pass": 27,
   "total": 27,
   "results": [
@@ -84,7 +84,7 @@
       "detail": ""
     },
     {
-      "label": "not_gated:vh_數學B2_SubSection_3_1_1",
+      "label": "not_gated:vh_數學B2_SubSection_4_1_1",
       "pass": true,
       "detail": ""
     },
@@ -94,7 +94,7 @@
       "detail": ""
     },
     {
-      "label": "ch1_subsection_not_auto_gated",
+      "label": "ch1_subsection_still_gated",
       "pass": true,
       "detail": ""
     },

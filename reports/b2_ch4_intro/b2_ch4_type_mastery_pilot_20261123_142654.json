@@ -1,0 +1,234 @@
+{
+  "stamp": "20261123_142654",
+  "pass": 31,
+  "total": 31,
+  "results": [
+    {
+      "label": "ch4_count_6",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_4_1_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_4_1_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_4_1_1",
+      "pass": true,
+      "detail": "9"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_4_1_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_4_1_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_4_1_2",
+      "pass": true,
+      "detail": "10"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_4_2_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_4_2_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_4_2_1",
+      "pass": true,
+      "detail": "3"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_4_2_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_4_2_2",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_4_2_2",
+      "pass": true,
+      "detail": "12"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_4_2_3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_4_2_3",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_4_2_3",
+      "pass": true,
+      "detail": "5"
+    },
+    {
+      "label": "gated:vh_數學B2_SubSection_4_2_4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "enabled:vh_數學B2_SubSection_4_2_4",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "usable_Y:vh_數學B2_SubSection_4_2_4",
+      "pass": true,
+      "detail": "3"
+    },
+    {
+      "label": "not_gated:vh_數學B2_SubSection_2_2_1",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ch3_still_gated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "ch1_named_still_gated",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "legacy_streak_not_mastery",
+      "pass": true,
+      "detail": "已掌握題型 0/9"
+    },
+    {
+      "label": "same_type_once",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "wrong_keeps",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "assisted_blocked",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "independent_ok",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "label": "skill_complete",
+      "pass": true,
+      "detail": "已掌握題型 9/9"
+    },
+    {
+      "label": "nav_same_chapter_or_complete",
+      "pass": true,
+      "detail": "{\"skill_id\": \"vh_數學B2_SubSection_4_1_2\", \"skill_ch_name\": \"圓的一般式\", \"volume\": \"數學B2\", \"chapter\": \"第4章 圓與直線\", \"nav_kind\": \"same_chapter\", \"button_label\": \"繼續挑戰：圓的一般式\", \"celebration_kind\": \"skill\", \"target\": \"practice\"}"
+    },
+    {
+      "label": "nav_target_in_ch4_or_gated",
+      "pass": true,
+      "detail": "vh_數學B2_SubSection_4_1_2"
+    },
+    {
+      "label": "mcq_type_mastery_isolated",
+      "pass": true,
+      "detail": "已掌握題型 1/9"
+    }
+  ],
+  "ch4_pilot": [
+    "vh_數學B2_SubSection_4_1_1",
+    "vh_數學B2_SubSection_4_1_2",
+    "vh_數學B2_SubSection_4_2_1",
+    "vh_數學B2_SubSection_4_2_2",
+    "vh_數學B2_SubSection_4_2_3",
+    "vh_數學B2_SubSection_4_2_4"
+  ],
+  "usable_Y": {
+    "vh_數學B2_SubSection_4_1_1": 9,
+    "vh_數學B2_SubSection_4_1_2": 10,
+    "vh_數學B2_SubSection_4_2_1": 3,
+    "vh_數學B2_SubSection_4_2_2": 12,
+    "vh_數學B2_SubSection_4_2_3": 5,
+    "vh_數學B2_SubSection_4_2_4": 3
+  },
+  "usable_ids": {
+    "vh_數學B2_SubSection_4_1_1": [
+      "circle_center_tangent_to_line",
+      "circle_equal_radius_at_origin",
+      "circle_from_diameter_endpoints",
+      "circle_origin_through_lines_intersection",
+      "circle_same_center_scaled_area",
+      "identify_center_radius_from_standard",
+      "interpret_circular_locus_equation",
+      "translate_and_scale_circle",
+      "write_circle_equations_from_conditions"
+    ],
+    "vh_數學B2_SubSection_4_1_2": [
+      "circle_center_on_axis_area",
+      "circle_through_three_points",
+      "classify_general_circle_graph",
+      "compute_circle_area_from_general",
+      "evaluate_center_radius_expression",
+      "identify_center_radius_from_general",
+      "identify_circle_from_product_form",
+      "solve_circle_parameter_range",
+      "solve_circle_parameter_range_mcq",
+      "translate_and_scale_circle"
+    ],
+    "vh_數學B2_SubSection_4_2_1": [
+      "classify_point_vs_circles_multipart",
+      "identify_point_on_circle_mcq",
+      "solve_point_circle_parameter_range"
+    ],
+    "vh_數學B2_SubSection_4_2_2": [
+      "classify_line_circle_relation",
+      "classify_line_circle_relation_mcq",
+      "classify_lines_vs_circle_multipart",
+      "compute_chord_length",
+      "compute_storm_path_length_in_circle",
+      "compute_triangle_center_chord_area",
+      "count_line_circle_intersections",
+      "solve_axis_tangent_parameter",
+      "solve_diameter_chord_parameter_mcq",
+      "solve_line_circle_parameter_range",
+      "solve_line_circle_relation_ranges_multipart",
+      "solve_line_circle_tangent_parameter"
+    ],
+    "vh_數學B2_SubSection_4_2_3": [
+      "compute_tangents_from_point_quad_area",
+      "tangent_at_point_on_circle",
+      "tangent_at_point_on_circle_mcq",
+      "tangents_parallel_to_line",
+      "tangents_perpendicular_to_line"
+    ],
+    "vh_數學B2_SubSection_4_2_4": [
+      "compute_tangent_segment_length_mcq",
+      "compute_tangent_segment_lengths",
+      "count_line_vs_two_circles_intersections"
+    ]
+  }
+}

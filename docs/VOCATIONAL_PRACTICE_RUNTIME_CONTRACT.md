@@ -231,6 +231,13 @@ student practice:
 - Different explicit seeds → parameterized meaningful variation
 - Normal student next-question → new production generation state
   (must not replay a fixed seed, cached payload, or fixed-template instance)
+- Runtime `problem_type` coverage ≠ type_rotation health; a usable Y does not prove
+  students can reach unmastered types or see parameter change
+- Distinct `question_uid` alone is **not** diversity evidence — compare stem
+  parameters / math signature
+- Diagram-backed items: stem numbers, `visual_spec`/asset labels, oracle and
+  checker must stay synchronized; PDF crops with baked-in numbers must not be
+  reused when parameters change
 
 For MCQ, choices, answer mapping and checker behavior are part of the
 student runtime contract. Choice text containing TeX must remain MathJax-
@@ -282,6 +289,13 @@ consistent rendering/typography contract:
 Generated content may not expose renderer-specific differences in font
 scale or baseline to students. This is a shared practice invariant for
 B2 / B3 / B4 — not a chapter exception.
+
+Student-facing **compound / nested fractions** in stems (e.g. trig expressions
+with squared terms in both numerator and denominator) must ship as delimited
+stacked TeX (`\frac` / `\displaystyle\frac`), not ASCII slash prose such as
+`(1-sin²(π/4))/(1+sin²(π/4))`. Do not convert every `/` globally; prefer
+fixing the generator stem (or a shared display formatter) for the specific
+math atom.
 
 ### 9.4 Multipart subquestion structure
 
@@ -413,6 +427,7 @@ Legacy assets 若缺少 `visual_status`，為相容視為 accepted（不得倒�
 - 學生端顯示「已掌握題型 X/Y」；數字必須來自後端真實進度。
 - 答錯：記錄錯誤；**不清除**其他已掌握題型；不要求全 Skill 重來。
 - AI 提示／分步／看過解答後的答對 **不算** MASTERED；須以**新的同型變化題**再獨立答對。
+- **手寫**：自行手寫＋首次 AI 檢查辨識全對＋正式 `/check_answer` 通過 → 與 Textbox 獨立答對相同，可 MASTERED。純 OCR／AI 檢查不 mark assisted；`/chat_ai` 或 `/analyze_handwriting` 助教提示／診斷後同題改對則不算。
 - 同一題型重複答對不重複累加 X；不得只憑同一題型答對 Y 次就判定 Skill 完成。
 - Y＝0 不得自動晉級；顯示「暫無可練習題型」。
 
@@ -458,7 +473,9 @@ Legacy assets 若缺少 `visual_status`，為相容視為 accepted（不得倒�
   - 第1章 A 類練習 SubSection（教師 2026-11-22 核准）：`1_3_1`、`1_3_2`、`1_3_4`～`1_3_7`、`1_4_3`、`1_4_4`（皆有 TE＋facade＋Y≥1）。掌握紀錄仍按 `(user, skill, problem_type)`；跨 Skill 共用同一 `problem_type_id` 不自動計入、亦不把舊連對換算成 MASTERED。
   - 第2章：5 個具 Runtime 可用題型的練習 SubSection（`2_1_1`、`2_1_2`、`2_2_3`、`2_2_4`、`2_2_5`）；第2章無另立具名 Skill。`2_2_1`／`2_2_2` inactive 組織節點不納入。
   - 第3章：15 個練習 SubSection（`3_1_1`～`3_1_4`、`3_2_1`～`3_2_6`、`3_3_1`～`3_3_5`；皆 TE＋facade＋Y≥1，2026-11-23 品質抽樣通過）；第3章無另立具名 Skill。
-  - 其餘 B2（含第4章、inactive／空殼）仍用連對語意。
+  - 第4章：6 個練習 SubSection（`4_1_1`、`4_1_2`、`4_2_1`～`4_2_4`；皆 TE＋facade＋Y≥1，2026-11-23 導入）；第4章無另立具名 Skill。Vocational MCQ 須保證四選一完整可見（長方程式優先單欄，避免 2×2 裁切 B/D）。
+  - 其餘 B2（inactive／空殼）仍用連對語意。
+- **Allowlist 變更後**：學生端 Flask（含 5001）須載入新版 `practice_type_mastery.py` 才會切換 X/Y；僅跑隔離腳本 PASS 不能代替 live 頁面驗收。變更後若頁面仍顯示「連續答對／暫無門檻」，先確認進程是否已重載 allowlist。
 - 試點不得把 `Progress.consecutive_correct` 換算成 `student_problem_type_mastery` MASTERED。
 - `vh_數學B2_SubSection_1_4_1`／`1_4_2`：無 TE／facade／可用題型的空殼，治理上應 inactive，不得當學生過關目標，亦不得納入掌握制 allowlist。
 - 不新增排行榜、扣分、懲罰或強迫連對機制。

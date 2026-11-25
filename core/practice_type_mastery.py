@@ -75,6 +75,13 @@ B2_TYPE_MASTERY_PILOT_SKILL_IDS: frozenset[str] = frozenset(
         "vh_數學B2_SubSection_3_3_3",
         "vh_數學B2_SubSection_3_3_4",
         "vh_數學B2_SubSection_3_3_5",
+        # Chapter 4 practice SubSections (phase 4) — circles/lines; no separate named skills
+        "vh_數學B2_SubSection_4_1_1",
+        "vh_數學B2_SubSection_4_1_2",
+        "vh_數學B2_SubSection_4_2_1",
+        "vh_數學B2_SubSection_4_2_2",
+        "vh_數學B2_SubSection_4_2_3",
+        "vh_數學B2_SubSection_4_2_4",
     }
 )
 

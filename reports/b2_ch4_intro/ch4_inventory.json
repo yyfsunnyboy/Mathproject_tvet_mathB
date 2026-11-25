@@ -1,0 +1,757 @@
+{
+  "ch4_curriculum_rows": [
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "chapter": "第4章 圓與直線",
+      "section": "4-2 圓與直線的關係",
+      "display_order": 1,
+      "skill_ch_name": "點與圓的關係",
+      "is_active": 1
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "chapter": "第4章 圓與直線",
+      "section": "4-1 圓方程式",
+      "display_order": 2,
+      "skill_ch_name": "圓的標準式",
+      "is_active": 1
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "chapter": "第4章 圓與直線",
+      "section": "4-2 圓與直線的關係",
+      "display_order": 2,
+      "skill_ch_name": "圓與直線的關係",
+      "is_active": 1
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "chapter": "第4章 圓與直線",
+      "section": "4-1 圓方程式",
+      "display_order": 3,
+      "skill_ch_name": "圓的一般式",
+      "is_active": 1
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "chapter": "第4章 圓與直線",
+      "section": "4-2 圓與直線的關係",
+      "display_order": 3,
+      "skill_ch_name": "圓的切線方程式",
+      "is_active": 1
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "chapter": "第4章 圓與直線",
+      "section": "4-2 圓與直線的關係",
+      "display_order": 5,
+      "skill_ch_name": "切線段長",
+      "is_active": 1
+    }
+  ],
+  "skills": [
+    {
+      "skill_id": "vh_數學B2_SubSection_4_1_1",
+      "skill_ch_name": "圓的標準式",
+      "is_active": 1,
+      "chapter": "第4章 圓與直線",
+      "section": "4-1 圓方程式",
+      "te_count": 16,
+      "te_ids": [
+        11826,
+        11827,
+        11828,
+        11829,
+        11830,
+        11831,
+        11841,
+        11842,
+        11843,
+        11844,
+        11850,
+        11877,
+        11886,
+        11887,
+        11890,
+        11891
+      ],
+      "facade": true,
+      "v3_manifest": true,
+      "Y": 9,
+      "problem_type_ids": [
+        "circle_center_tangent_to_line",
+        "circle_equal_radius_at_origin",
+        "circle_from_diameter_endpoints",
+        "circle_origin_through_lines_intersection",
+        "circle_same_center_scaled_area",
+        "identify_center_radius_from_standard",
+        "interpret_circular_locus_equation",
+        "translate_and_scale_circle",
+        "write_circle_equations_from_conditions"
+      ],
+      "inventory_error": null,
+      "in_allowlist": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_1_2",
+      "skill_ch_name": "圓的一般式",
+      "is_active": 1,
+      "chapter": "第4章 圓與直線",
+      "section": "4-1 圓方程式",
+      "te_count": 19,
+      "te_ids": [
+        11832,
+        11833,
+        11834,
+        11835,
+        11836,
+        11837,
+        11838,
+        11839,
+        11840,
+        11845,
+        11846,
+        11847,
+        11848,
+        11849,
+        11876,
+        11888,
+        11889,
+        11892,
+        11893
+      ],
+      "facade": true,
+      "v3_manifest": true,
+      "Y": 10,
+      "problem_type_ids": [
+        "circle_center_on_axis_area",
+        "circle_through_three_points",
+        "classify_general_circle_graph",
+        "compute_circle_area_from_general",
+        "evaluate_center_radius_expression",
+        "identify_center_radius_from_general",
+        "identify_circle_from_product_form",
+        "solve_circle_parameter_range",
+        "solve_circle_parameter_range_mcq",
+        "translate_and_scale_circle"
+      ],
+      "inventory_error": null,
+      "in_allowlist": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_1",
+      "skill_ch_name": "點與圓的關係",
+      "is_active": 1,
+      "chapter": "第4章 圓與直線",
+      "section": "4-2 圓與直線的關係",
+      "te_count": 5,
+      "te_ids": [
+        11851,
+        11852,
+        11866,
+        11875,
+        11884
+      ],
+      "facade": true,
+      "v3_manifest": true,
+      "Y": 3,
+      "problem_type_ids": [
+        "classify_point_vs_circles_multipart",
+        "identify_point_on_circle_mcq",
+        "solve_point_circle_parameter_range"
+      ],
+      "inventory_error": null,
+      "in_allowlist": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_2",
+      "skill_ch_name": "圓與直線的關係",
+      "is_active": 1,
+      "chapter": "第4章 圓與直線",
+      "section": "4-2 圓與直線的關係",
+      "te_count": 17,
+      "te_ids": [
+        11853,
+        11854,
+        11855,
+        11856,
+        11857,
+        11858,
+        11867,
+        11868,
+        11869,
+        11870,
+        11874,
+        11878,
+        11879,
+        11880,
+        11881,
+        11882,
+        11883
+      ],
+      "facade": true,
+      "v3_manifest": true,
+      "Y": 12,
+      "problem_type_ids": [
+        "classify_line_circle_relation",
+        "classify_line_circle_relation_mcq",
+        "classify_lines_vs_circle_multipart",
+        "compute_chord_length",
+        "compute_storm_path_length_in_circle",
+        "compute_triangle_center_chord_area",
+        "count_line_circle_intersections",
+        "solve_axis_tangent_parameter",
+        "solve_diameter_chord_parameter_mcq",
+        "solve_line_circle_parameter_range",
+        "solve_line_circle_relation_ranges_multipart",
+        "solve_line_circle_tangent_parameter"
+      ],
+      "inventory_error": null,
+      "in_allowlist": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_3",
+      "skill_ch_name": "圓的切線方程式",
+      "is_active": 1,
+      "chapter": "第4章 圓與直線",
+      "section": "4-2 圓與直線的關係",
+      "te_count": 8,
+      "te_ids": [
+        11859,
+        11860,
+        11861,
+        11862,
+        11871,
+        11872,
+        11885,
+        11895
+      ],
+      "facade": true,
+      "v3_manifest": true,
+      "Y": 5,
+      "problem_type_ids": [
+        "compute_tangents_from_point_quad_area",
+        "tangent_at_point_on_circle",
+        "tangent_at_point_on_circle_mcq",
+        "tangents_parallel_to_line",
+        "tangents_perpendicular_to_line"
+      ],
+      "inventory_error": null,
+      "in_allowlist": false
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_4_2_4",
+      "skill_ch_name": "切線段長",
+      "is_active": 1,
+      "chapter": "第4章 圓與直線",
+      "section": "4-2 圓與直線的關係",
+      "te_count": 5,
+      "te_ids": [
+        11863,
+        11864,
+        11865,
+        11873,
+        11894
+      ],
+      "facade": true,
+      "v3_manifest": true,
+      "Y": 3,
+      "problem_type_ids": [
+        "compute_tangent_segment_length_mcq",
+        "compute_tangent_segment_lengths",
+        "count_line_vs_two_circles_intersections"
+      ],
+      "inventory_error": null,
+      "in_allowlist": false
+    }
+  ],
+  "mcq_11887_summary": {
+    "seeds": 30,
+    "all_have_4": true,
+    "all_unique": true,
+    "all_correct_present": true,
+    "check_pass": 30
+  },
+  "mcq_11887_rows": [
+    {
+      "seed": 0,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-3 \\right)^{2}+\\left( y-2 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "D"
+    },
+    {
+      "seed": 1,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+2 \\right)^{2}+\\left( y+3 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "C"
+    },
+    {
+      "seed": 2,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+4 \\right)^{2}+\\left( y+3 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "D"
+    },
+    {
+      "seed": 3,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+1 \\right)^{2}+\\left( y-4 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "A"
+    },
+    {
+      "seed": 4,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+1 \\right)^{2}+y^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "D"
+    },
+    {
+      "seed": 5,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-1 \\right)^{2}+\\left( y-1 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "D"
+    },
+    {
+      "seed": 6,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+3 \\right)^{2}+\\left( y-3 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "C"
+    },
+    {
+      "seed": 7,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-2 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "B"
+    },
+    {
+      "seed": 8,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+1 \\right)^{2}+\\left( y-1 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "C"
+    },
+    {
+      "seed": 9,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-4 \\right)^{2}+\\left( y-1 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "C"
+    },
+    {
+      "seed": 10,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+4 \\right)^{2}+\\left( y-2 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "B"
+    },
+    {
+      "seed": 11,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-4 \\right)^{2}+\\left( y-4 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "B"
+    },
+    {
+      "seed": 12,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-4 \\right)^{2}+y^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "C"
+    },
+    {
+      "seed": 13,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-1 \\right)^{2}+y^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "B"
+    },
+    {
+      "seed": 14,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+3 \\right)^{2}+\\left( y-4 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "A"
+    },
+    {
+      "seed": 15,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+1 \\right)^{2}+\\left( y+4 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "D"
+    },
+    {
+      "seed": 16,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-2 \\right)^{2}+\\left( y-3 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "A"
+    },
+    {
+      "seed": 17,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-3 \\right)^{2}+y^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "B"
+    },
+    {
+      "seed": 18,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+2 \\right)^{2}+\\left( y+3 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "B"
+    },
+    {
+      "seed": 19,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+4 \\right)^{2}+\\left( y-4 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "D"
+    },
+    {
+      "seed": 20,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+2 \\right)^{2}+y^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "D"
+    },
+    {
+      "seed": 21,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+2 \\right)^{2}+\\left( y-2 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "A"
+    },
+    {
+      "seed": 22,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+2 \\right)^{2}+\\left( y+1 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "D"
+    },
+    {
+      "seed": 23,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-1 \\right)^{2}+\\left( y+3 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "D"
+    },
+    {
+      "seed": 24,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-3 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "C"
+    },
+    {
+      "seed": 25,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-3 \\right)^{2}+\\left( y+4 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "A"
+    },
+    {
+      "seed": 26,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+1 \\right)^{2}+\\left( y+1 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "B"
+    },
+    {
+      "seed": 27,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x-4 \\right)^{2}+y^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "C"
+    },
+    {
+      "seed": 28,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+3 \\right)^{2}+\\left( y+2 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "C"
+    },
+    {
+      "seed": 29,
+      "n_choices": 4,
+      "labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "unique_texts": 4,
+      "correct_in_labels": true,
+      "check_ok": true,
+      "check_wrong_fail": true,
+      "snip": "與 $C_1:\\left( x+3 \\right)^{2}+\\left( y-1 \\right)^{2}=16$ 有相同圓心，且面積為圓 $C_1$ 面積的 $1/2$ 的圓方程式為",
+      "ans": "C"
+    }
+  ]
+}

@@ -56,8 +56,7 @@ CH3_PILOT = (
     "vh_數學B2_SubSection_3_3_5",
 )
 NOT_GATED = (
-    "vh_數學B2_SubSection_2_2_1",  # inactive ch2 org
-    "vh_數學B2_SubSection_4_1_1",  # ch4 outside allowlist
+    "vh_數學B2_SubSection_2_2_1",  # inactive ch2 org node
 )
 
 
