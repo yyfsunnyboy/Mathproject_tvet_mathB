@@ -690,13 +690,15 @@ def _build_long_division(rng: random.Random) -> dict[str, Any]:
     question = (
         f"試求$\\left({poly_plain(dividend)}\\right)\\div\\left({poly_plain(divisor)}\\right)$的商式和餘式。"
     )
+    answer = _answer_bundle("；".join(parts.values()), parts=parts)
+    answer["part_labels"] = {"part_1": "商式", "part_2": "餘式"}
     return {
         "givens": {
             "question_text": question,
             "dividend": {str(k): _frac_plain(v) for k, v in dividend.items()},
             "divisor": {str(k): _frac_plain(v) for k, v in divisor.items()},
         },
-        "answer": _answer_bundle("；".join(parts.values()), parts=parts),
+        "answer": answer,
         "distractors": [],
         "explanation_steps": [
             "用長除法：每次以首項相除得商項，乘回後從被除式減去。",
@@ -727,29 +729,37 @@ def _build_synthetic_division(rng: random.Random) -> dict[str, Any]:
         if c not in cs:
             cs.append(c)
     parts: dict[str, str] = {}
+    part_labels: dict[str, str] = {}
     case_texts: list[str] = []
     for i, c in enumerate(cs):
         divisor = {1: Fraction(1), 0: Fraction(-c)}  # x - c
         q, r = _poly_long_division(f, divisor)
         # pair each case: quotient then remainder
-        parts[f"part_{2 * i + 1}"] = poly_plain(q)
-        parts[f"part_{2 * i + 2}"] = poly_plain(r)
+        q_key = f"part_{2 * i + 1}"
+        r_key = f"part_{2 * i + 2}"
+        parts[q_key] = poly_plain(q)
+        parts[r_key] = poly_plain(r)
         if c >= 0:
             g_tex = f"x-{c}" if c else "x"
         else:
             g_tex = f"x+{-c}"
         case_texts.append(f"({i + 1}) $g(x)={g_tex}$")
+        # Display-only labels; checker keys remain part_N.
+        part_labels[q_key] = f"({i + 1}) 除以 $g(x)={g_tex}$ 的商式"
+        part_labels[r_key] = f"({i + 1}) 除以 $g(x)={g_tex}$ 的餘式"
     question = (
         f"試利用綜合除法，求多項式${poly_latex(f)}$除以$g(x)$的商式及餘式："
         + " ".join(case_texts)
     )
+    answer = _answer_bundle("；".join(parts.values()), parts=parts)
+    answer["part_labels"] = part_labels
     return {
         "givens": {
             "question_text": question,
             "f": {str(k): _frac_plain(v) for k, v in _trim(f).items()},
             "roots": cs,
         },
-        "answer": _answer_bundle("；".join(parts.values()), parts=parts),
+        "answer": answer,
         "distractors": [],
         "explanation_steps": [
             "對一次因式 x−c 可用綜合除法。",
@@ -2155,13 +2165,13 @@ def _build_rational_equation_solve_legacy(rng: random.Random) -> dict[str, Any]:
             s = rng.choice([-2, -1, 1, 2, 3, 4])
             while s == b:
                 s = rng.choice([-2, -1, 1, 2, 3, 4])
-            a = k * (s - b) + s  # from s-a = k(s-b)
+            a = s - k * (s - b)  # from s-a = k(s-b)
             sol = s
         else:
             sol = num // den
             if sol == b:
                 sol = b + 1
-                a = k * (sol - b) + sol
+                a = sol - k * (sol - b)
         excluded = b
         question = (
             f"解方程式$\\dfrac{{{_linear_factor_tex(a)}}}{{{_linear_factor_tex(b)}}}={k}$，"

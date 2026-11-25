@@ -619,6 +619,29 @@ def stem_states_answer_format(question_text: str, example: str) -> bool:
     return False
 
 
+_STEM_ASKS_K_RE = re.compile(
+    r"(?:則\s*k\s*=|求\s*k\b|k\s*的(?:值|範圍)|實數\s*k|參數\s*k)",
+    re.IGNORECASE,
+)
+
+
+def _align_example_variable_to_stem(example: str, question_text: str) -> str:
+    """Display-only: if the stem asks for k, do not show an x=… format example."""
+    text = str(example or "").strip()
+    stem = str(question_text or "")
+    if not text or not stem or not _STEM_ASKS_K_RE.search(stem):
+        return text
+    if re.fullmatch(r"x\s*=\s*[^\s]+", text, flags=re.IGNORECASE):
+        return re.sub(r"^x", "k", text, count=1, flags=re.IGNORECASE)
+    if text.startswith("x<") or text.startswith("x>") or text.startswith("x≤") or text.startswith("x≥"):
+        return "k" + text[1:]
+    if text.startswith("x<-") or "x<-2 or x>5" in text or text == "x<-2 or x>5":
+        return text.replace("x", "k")
+    if re.match(r"^x(?=[<>=≤≥])", text):
+        return "k" + text[1:]
+    return text
+
+
 def build_answer_format_suffix_for_stem(
     answer_contract: dict[str, Any] | None,
     question_text: str,
@@ -635,6 +658,13 @@ def build_answer_format_suffix_for_stem(
     example = answer_format_example_for_contract(ac)
     if not example:
         return "", ""
+    # Stem already ends with a fill-in cue such as 「則 k =」— do not tack on a
+    # conflicting x= example; the answer box is the blank.
+    stem = str(question_text or "").rstrip()
+    if re.search(r"則\s*[A-Za-z]\s*=\s*$", stem) or stem.endswith("="):
+        if stem_states_answer_format(question_text, example) or _STEM_ASKS_K_RE.search(stem):
+            return "", "stem_fill_in_cue"
+    example = _align_example_variable_to_stem(example, question_text)
     if stem_states_answer_format(question_text, example):
         return "", "stem_states_answer_format"
     return f"（答案範例：{example}）", ""

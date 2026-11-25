@@ -62,7 +62,13 @@ def test_shared_renderer_configures_mathjax_v3_and_safe_dynamic_card_typesetting
     assert "element.isConnected" in renderer
     assert "MutationObserver" in renderer
     assert ".skill-card-description" in renderer
+    assert "overflow-y: visible" in renderer
+    assert "overflow-y: hidden" not in renderer
     assert "innerHTML" not in renderer
+    # Guard: never re-typeset MathJax-flattened textContent ("12") as LaTeX.
+    assert "startup: { typeset: false }" in renderer
+    assert "data-math-source" in renderer
+    assert "captureMathSource" in renderer
 
 
 def test_shared_skill_card_keeps_jinja_autoescape_and_all_card_pages_use_renderer():

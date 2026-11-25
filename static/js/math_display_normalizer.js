@@ -119,6 +119,12 @@
     } else {
       return -1;
     }
+    // Classroom coefficients bind to the following atom: 16\sqrt{41}/41, 20\pi/3.
+    if (start > 0 && /\\(?:sqrt|pi)\b/.test(text.slice(start, start + 6))) {
+      let k = start - 1;
+      while (k >= 0 && /[0-9.]/.test(text[k])) k -= 1;
+      start = k + 1;
+    }
     if (start > 1 && (text[start - 1] === '^' || text[start - 1] === '_')) {
       const base = atomStart(text, start - 2);
       if (base >= 0) start = base;
@@ -229,6 +235,7 @@
           if (latex !== null) {
             return whole.replace(originalBody, () => (assignment ? assignment[1] : '') + latex);
           }
+          body = asciiSymbolicToLatex(body);
         }
         const converted = slashFractionsToLatex(body);
         return converted === originalBody ? whole : whole.replace(originalBody, () => converted);
@@ -237,6 +244,7 @@
       return replaceUnicodeRadicals(repaired, true);
     }
     // Undelimited prose may still contain Unicode radicals (e.g. sinθ=√3cosθ).
+    // Prefer numericLatex on the original ASCII (sqrt/pi-free paths) before symbolic upgrades.
     const source = replaceUnicodeRadicals(raw, true);
     // "(1)" / "（2）" are subquestion markers; typesetting them drops the parentheses.
     if (/^[\(（]\s*\d{1,2}\s*[\)）]$/.test(source.trim())) return source;
@@ -266,6 +274,27 @@
     if (!isPlainTextException(source) || options?.mathContext === true) {
       text = text.replace(/(^|[^\w\\/])(-?)(\d+)\s*\/\s*(\d+)(?![\w/])/g,
         (_, prefix, sign, numerator, denominator) => `${prefix}${wrap(fraction(sign, numerator, denominator, false))}`);
+    }
+    // Residual SymPy/ASCII (** / sqrt( / 2*(x / >=). Do not pull URLs or bare trig prose.
+    if (
+      text === source
+      && !CJK.test(source)
+      && !isPlainTextException(source)
+      && (/\*\*/.test(source) || /\bsqrt\s*\(/i.test(source) || /\d\s*\*\s*[A-Za-z(\\)]/.test(source)
+        || /[<>]=|!=/.test(source) || (options?.mathContext === true && /[\^_/]/.test(source)))
+    ) {
+      const stacked = slashFractionsToLatex(asciiSymbolicToLatex(source));
+      if (/\\[a-zA-Z]+/.test(stacked) || /[\^_]/.test(stacked) || /[<>≤≥≠]/.test(stacked)) {
+        return wrap(stacked);
+      }
+    }
+    // Mixed Chinese stems still need x^1 → x and ASCII inequalities (display only).
+    text = text.replace(/\bx\^1(?!\d)/g, "x");
+    if (!isPlainTextException(source)) {
+      text = text.replace(/([A-Za-z0-9\)\u3400-\u9fff])\s*>=\s*([A-Za-z0-9\(\-\u3400-\u9fff])/g,
+        (_, a, b) => `${a} \\(\\geq\\) ${b}`);
+      text = text.replace(/([A-Za-z0-9\)\u3400-\u9fff])\s*<=\s*([A-Za-z0-9\(\-\u3400-\u9fff])/g,
+        (_, a, b) => `${a} \\(\\leq\\) ${b}`);
     }
     return text;
   }
@@ -377,17 +406,86 @@
     return text;
   }
 
+  // SymPy / ASCII classroom answers: ** powers, sqrt(...), pi, and * juxtaposition.
+  // Display only — never changes checker canonical forms.
+  function replaceSqrtCalls(text) {
+    let out = "";
+    let i = 0;
+    while (i < text.length) {
+      const match = text.slice(i).match(/^sqrt\s*\(/i);
+      if (!match) {
+        out += text[i];
+        i += 1;
+        continue;
+      }
+      const open = i + match[0].length - 1;
+      const close = matchForward(text, open);
+      if (close < 0) {
+        out += text[i];
+        i += 1;
+        continue;
+      }
+      out += `\\sqrt{${replaceSqrtCalls(text.slice(open + 1, close))}}`;
+      i = close + 1;
+    }
+    return out;
+  }
+
+  function asciiSymbolicToLatex(value) {
+    let text = String(value ?? "");
+    if (!text) return text;
+    text = text.replace(/\*\*/g, "^");
+    // Leave bare "pi" for normalizeMathText's dedicated π-fraction patterns.
+    // Only upgrade sqrt / juxtaposition / inequalities / x^1 here.
+    if (!/\\sqrt\b/.test(text)) text = replaceSqrtCalls(text);
+    text = text.replace(/(\d)\s*\*\s*(?=\\(?:pi|sqrt)|[A-Za-z(])/g, "$1");
+    text = text.replace(/(\))\s*\*\s*(?=\\(?:pi|sqrt)|[A-Za-z(\d])/g, "$1");
+    text = text.replace(/([A-Za-z])\s*\*\s*(?=\\(?:pi|sqrt)|[(])/g, "$1");
+    text = text.replace(/\*\s*(?=\\sqrt)/g, "");
+    text = text.replace(/\bx\^1(?!\d)/g, "x");
+    text = text.replace(/([A-Za-z0-9\)])\^(\d+)\b/g, (_, base, exp) => `${base}^{${exp}}`);
+    text = text.replace(/>=/g, "\\geq ").replace(/<=/g, "\\leq ").replace(/!=/g, "\\neq ");
+    return text;
+  }
+
+  function looksLikeAsciiMathAnswer(source) {
+    if (ANSWER_MATH.test(source)) return true;
+    if (/\bsqrt\s*\(|\bpi\b|\*\*|(?:^|[^A-Za-z])(?:sin|cos|tan)\b/i.test(source)) return true;
+    if (/\d\s*\*\s*[A-Za-z(\\)]/.test(source)) return true;
+    if (/[<>]=|!=/.test(source)) return true;
+    return false;
+  }
+
   function normalizeAnswerText(value) {
     const source = String(value ?? "").trim();
     if (!source || CHOICE_LETTER.test(source)) return source;
-    if (/\\\(|\\\[|\$/.test(source) || source.includes("√")) return normalizeMathText(source);
-    if (CJK.test(source) || isPlainTextException(source)) return normalizeMathText(normalizeTutorText(source));
-    if (!ANSWER_MATH.test(source) || source.length > 400 || /<\/?[A-Za-z][^>]*>/.test(source)) return source;
+    if (/\\\(|\\\[|\$/.test(source) || source.includes("√")) {
+      return normalizeMathText(asciiSymbolicToLatex(source));
+    }
+    if (CJK.test(source) || isPlainTextException(source)) {
+      return normalizeMathText(normalizeTutorText(asciiSymbolicToLatex(source)));
+    }
+    if (source.length > 400 || /<\/?[A-Za-z][^>]*>/.test(source)) return source;
+
+    // Prefer the shared math pipeline (pi / sqrt / slash) before the slash-only shortcut.
+    const viaMath = normalizeMathText(source, { mathContext: true });
+    if (viaMath !== source) return viaMath;
+
+    const symbolic = asciiSymbolicToLatex(source);
+    if (symbolic !== source) {
+      const again = normalizeMathText(symbolic, { mathContext: true });
+      if (again !== symbolic) return again;
+      if (/\\[a-zA-Z]+/.test(symbolic) || /[\^_]|\\(?:geq|leq|neq)\b/.test(symbolic)) {
+        return `\\(${setBracesToLatex(slashFractionsToLatex(symbolic))}\\)`;
+      }
+    }
+
+    if (!looksLikeAsciiMathAnswer(source)) return source;
     return `\\(${setBracesToLatex(slashFractionsToLatex(replaceUnicodeRadicals(source, false)))}\\)`;
   }
 
   function normalizeQuestionText(value) {
-    return normalizeMathText(normalizeTutorText(value));
+    return normalizeMathText(normalizeTutorText(asciiSymbolicToLatex(value)));
   }
 
   // MathJax typeset calls must not overlap; concurrent calls on the same

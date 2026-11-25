@@ -545,7 +545,7 @@ def grade_answer_for_current_question(
                 str(row.get("reason") or "") == "missing_part" for row in per_part
             )
             if all_missing:
-                msg = "尚未填寫答案。請在文字欄輸入各小題答案後再按「送出答案」；若已在白板作答，請改按「AI 檢查」。"
+                msg = "尚未填寫答案。請在文字欄輸入答案後再按「提交」；若已在白板作答，請改按「AI檢查」。"
             else:
                 lines = []
                 for row in per_part:
@@ -559,8 +559,15 @@ def grade_answer_for_current_question(
                     label = str(row.get("display_label") or row.get("label") or row.get("key") or "")
                     lines.append(f"{label}：{mark}")
                 any_filled = any(str(row.get("reason") or "") != "missing_part" for row in per_part)
-                prefix = "部分小題答錯。" if any_filled else "尚未填寫完整答案。"
-                msg = prefix + "\n" + "\n".join(lines)
+                # Single-field contracts must not use the multipart error template.
+                if len(per_part) <= 1:
+                    if any_filled:
+                        msg = "答錯了。"
+                    else:
+                        msg = "尚未填寫答案。請在文字欄輸入答案後再按「提交」；若已在白板作答，請改按「AI檢查」。"
+                else:
+                    prefix = "部分小題答錯。" if any_filled else "尚未填寫完整答案。"
+                    msg = prefix + "\n" + "\n".join(lines)
         else:
             msg = "答錯了。"
         log_check_answer_debug(

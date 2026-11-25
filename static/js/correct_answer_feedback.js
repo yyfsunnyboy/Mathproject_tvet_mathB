@@ -67,6 +67,8 @@
   function studentGradingMessage(data, message) {
     const rows = data ? data.per_part_results : undefined;
     if (!Array.isArray(rows) || !rows.length || typeof message !== "string") return message;
+    // Single-field contracts must not rewrite into a multipart error template.
+    if (rows.length <= 1) return message;
     const header = "部分小題答錯。";
     const lineFor = (row, label) => `${label}：${row && row.correct ? "正確" : "錯誤"}`;
     const rawLabel = (row) => String((row && (row.label || row.key)) || "").trim();

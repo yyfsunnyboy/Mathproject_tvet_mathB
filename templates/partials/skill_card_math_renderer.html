@@ -4,21 +4,41 @@
   is inserted through unsafe HTML assignment.
 #}
 <style>
-    .skill-card-description { min-width: 0; overflow-wrap: anywhere; }
-    .skill-card-description mjx-container { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
+    /* Keep fractions / superscripts visible: overflow-y:hidden clipped MathJax
+       stacked fractions into "12" / "22" and ate sin²θ → sin2θ. */
+    .skill-card-description {
+        min-width: 0;
+        overflow-wrap: break-word;
+        /* Tall enough for stacked \frac / \sqrt / superscripts at 12.5px. */
+        line-height: 1.85;
+    }
+    .skill-card-description mjx-container {
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: visible;
+        padding: 0.2em 0;
+        vertical-align: middle;
+    }
 </style>
 <script>
     (function () {
         "use strict";
 
+        // Disable MathJax auto-typeset. Default page-wide typeset flattens
+        // $\frac{1}{2}$ into textContent "12"; a later card pass then re-wraps
+        // that flattened ASCII and permanently loses the fraction bar.
         window.MathJax = window.MathJax || {
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
                 displayMath: [['$$', '$$'], ['\\[', '\\]']],
                 processEscapes: true
             },
-            svg: { fontCache: 'global' }
+            svg: { fontCache: 'global' },
+            startup: { typeset: false }
         };
+        if (window.MathJax.startup && window.MathJax.startup.typeset !== false) {
+            window.MathJax.startup.typeset = false;
+        }
 
         var renderQueue = Promise.resolve();
         var rendered = new WeakSet();
@@ -52,18 +72,34 @@
             return output + formatBareEquations(text.slice(last));
         }
 
-        function hasMathSource(element) {
-            return Boolean(element && delimiterPattern.test(element.textContent || ''));
+        function hasMathSource(text) {
+            return Boolean(text && delimiterPattern.test(text));
+        }
+
+        function captureMathSource(element) {
+            if (!element || element.getAttribute('data-math-source') != null) return;
+            // Capture before any MathJax pass flattens \frac{1}{2} → "12".
+            if (element.querySelector && element.querySelector('mjx-container')) return;
+            element.setAttribute('data-math-source', element.textContent || '');
         }
 
         function typesetSkillCardDescriptions(elements) {
             var targets = Array.from(new Set(elements || []))
                 .filter(function (element) {
                     if (!element.isConnected || rendered.has(element)) return false;
-                    var original = element.textContent || '';
+                    captureMathSource(element);
+                    var original = element.getAttribute('data-math-source');
+                    if (original == null) return false;
+                    if (!hasMathSource(original)) {
+                        rendered.add(element);
+                        return false;
+                    }
                     var formatted = formatDescription(original);
-                    if (formatted !== original) element.textContent = formatted;
-                    return hasMathSource(element);
+                    if (element.querySelector('mjx-container') && window.MathJax && window.MathJax.typesetClear) {
+                        try { window.MathJax.typesetClear([element]); } catch (e) { /* ignore */ }
+                    }
+                    element.textContent = formatted;
+                    return true;
                 });
             if (!targets.length || !window.MathJax || !window.MathJax.startup) return;
             targets.forEach(function (element) { rendered.add(element); });
@@ -74,7 +110,11 @@
                     if (targets.length) return window.MathJax.typesetPromise(targets);
                 });
             }).catch(function (error) {
-                targets.forEach(function (element) { rendered.delete(element); });
+                targets.forEach(function (element) {
+                    rendered.delete(element);
+                    var original = element.getAttribute('data-math-source');
+                    if (original != null) element.textContent = original;
+                });
                 console.warn('Skill-card MathJax render error:', error);
             });
         }
@@ -96,6 +136,8 @@
         function loadAndRenderInitialCards() {
             var initial = skillCardDescriptions(document);
             if (!initial.length) return;
+            // Freeze LaTeX sources before MathJax can auto-flatten them.
+            initial.forEach(captureMathSource);
 
             if (window.MathJax && window.MathJax.typesetPromise) {
                 typesetSkillCardDescriptions(initial);
@@ -112,6 +154,11 @@
             document.head.appendChild(script);
         }
 
+        // Capture sources as early as possible (parser-blocking inline script).
+        if (document.body) {
+            skillCardDescriptions(document).forEach(captureMathSource);
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             loadAndRenderInitialCards();
             if (typeof MutationObserver === 'undefined') return;
@@ -124,6 +171,8 @@
                         added = added.concat(skillCardDescriptions(node));
                     });
                 });
+                if (!added.length) return;
+                added.forEach(captureMathSource);
                 typesetSkillCardDescriptions(added);
             }).observe(document.body, { childList: true, subtree: true });
         });

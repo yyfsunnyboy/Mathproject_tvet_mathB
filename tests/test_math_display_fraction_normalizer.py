@@ -69,8 +69,43 @@ def test_adaptive_question_choice_and_hint_typesetting_uses_shared_normalizer():
 
 def test_correct_answer_display_delegates_to_shared_normalizer_and_mathjax():
     source = (ROOT / "static" / "js" / "correct_answer_feedback.js").read_text(encoding="utf-8")
-    assert "MathDisplayNormalizer.normalizeMathText" in source
-    assert "MathJax.typesetPromise" in source
+    assert "MathDisplayNormalizer.normalizeAnswerText" in source
+    assert "typesetMathDisplay" in source or "MathJax.typesetPromise" in source
+
+
+def _normalize_answers(values: list[str]) -> list[str]:
+    script = (
+        "const n=require(process.argv[1]);"
+        "const values=JSON.parse(process.argv[2]);"
+        "process.stdout.write(JSON.stringify(values.map(v=>n.normalizeAnswerText(v))));"
+    )
+    completed = subprocess.run(
+        ["node", "-e", script, str(NORMALIZER), json.dumps(values, ensure_ascii=False)],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+    )
+    return json.loads(completed.stdout)
+
+
+def test_answer_display_pi_sqrt_vector_and_power_become_latex():
+    assert _normalize_answers([
+        "20*pi/3",
+        "250*sqrt(3)",
+        "(16*sqrt(41)/41, 20*sqrt(41)/41)",
+        "2*(x+1)**2-3",
+        "k>=0",
+        "x^1 項係數",
+    ]) == [
+        r"\(\frac{20\pi}{3}\)",
+        r"\(250\sqrt{3}\)",
+        r"\((\frac{16\sqrt{41}}{41}, \frac{20\sqrt{41}}{41})\)",
+        r"\(2(x+1)^{2}-3\)",
+        r"\(k\geq 0\)",
+        "x 項係數",
+    ]
 
 
 def test_textbook_example_preview_uses_same_shared_renderer():
@@ -133,7 +168,7 @@ def test_plain_text_slashes_outside_math_are_unchanged():
 
 def test_slash_fractions_inside_explicit_math_spans():
     assert _normalize([r"已知點 $C(u^2/v, -v)$ 在第三象限", r"\(a_n=(-1/2)a_{n-1}\)"]) == [
-        r"已知點 $C(\frac{u^2}{v}, -v)$ 在第三象限", r"\(a_n=(-\frac{1}{2})a_{n-1}\)",
+        r"已知點 $C(\frac{u^{2}}{v}, -v)$ 在第三象限", r"\(a_n=(-\frac{1}{2})a_{n-1}\)",
     ]
 
 
