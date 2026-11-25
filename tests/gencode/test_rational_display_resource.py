@@ -13,6 +13,8 @@ from core.gencode.resources.rational_display import (
     fraction_to_plain,
     normalize_fraction_value,
     normalize_linear_expression_display,
+    sanitize_student_math_display_text,
+    sanitize_trivial_vector_coefficients,
 )
 
 
@@ -83,3 +85,19 @@ def test_canonicalize_multi_part_display_normalizes_parts_without_changing_expec
         "area": r"\frac{5}{2}",
         "negative": r"-\frac{3}{2}",
     }
+
+
+def test_sanitize_trivial_vector_coefficients_keeps_k_subscripts():
+    """k_1\\vec{b} must not lose the subscript digit (B2 vector stems)."""
+    stem = r"如圖，已知 $\vec{a}=k_1\vec{b}$，$\vec{c}=k_2\vec{a}$，試求實數 $k_1$、$k_2$。"
+    cleaned = sanitize_trivial_vector_coefficients(stem)
+    assert r"k_1\vec{b}" in cleaned
+    assert r"k_2\vec{a}" in cleaned
+    assert r"k_\vec" not in cleaned
+
+    braced = r"$\vec{a}=k_{1}\vec{b}$，$\vec{c}=k_{2}\vec{a}$"
+    assert sanitize_trivial_vector_coefficients(braced) == braced
+
+    # Still strip bare coefficient 1/-1 before vectors.
+    assert sanitize_trivial_vector_coefficients(r"$1\vec{a}-1\vec{b}$") == r"$\vec{a}-\vec{b}$"
+    assert r"k_1\vec{b}" in sanitize_student_math_display_text(stem, break_multipart_items=False)

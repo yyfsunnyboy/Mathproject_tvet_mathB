@@ -479,16 +479,16 @@ def build_gap_matrix(
             ks = [rng.choice([-3, -2, -1, 2, 3]), rng.choice([-3, -2, -1, 2, 3])]
             pair_templates = [
                 [
-                    {"left": "a", "right": "b", "k": ks[0], "latex": r"\vec{a}=k_1\vec{b}"},
-                    {"left": "c", "right": "a", "k": ks[1], "latex": r"\vec{c}=k_2\vec{a}"},
+                    {"left": "a", "right": "b", "k": ks[0], "latex": r"\vec{a}=k_{1}\vec{b}"},
+                    {"left": "c", "right": "a", "k": ks[1], "latex": r"\vec{c}=k_{2}\vec{a}"},
                 ],
                 [
-                    {"left": "OP", "right": "OQ", "k": ks[0], "latex": r"\overrightarrow{OP}=k_1\overrightarrow{OQ}"},
-                    {"left": "OR", "right": "OP", "k": ks[1], "latex": r"\overrightarrow{OR}=k_2\overrightarrow{OP}"},
+                    {"left": "OP", "right": "OQ", "k": ks[0], "latex": r"\overrightarrow{OP}=k_{1}\overrightarrow{OQ}"},
+                    {"left": "OR", "right": "OP", "k": ks[1], "latex": r"\overrightarrow{OR}=k_{2}\overrightarrow{OP}"},
                 ],
                 [
-                    {"left": "u", "right": "v", "k": ks[0], "latex": r"\vec{u}=k_1\vec{v}"},
-                    {"left": "w", "right": "v", "k": ks[1], "latex": r"\vec{w}=k_2\vec{v}"},
+                    {"left": "u", "right": "v", "k": ks[0], "latex": r"\vec{u}=k_{1}\vec{v}"},
+                    {"left": "w", "right": "v", "k": ks[1], "latex": r"\vec{w}=k_{2}\vec{v}"},
                 ],
             ]
             pairs = list(rng.choice(pair_templates))
@@ -526,7 +526,7 @@ def build_gap_matrix(
         question = (
             "如圖，已知 "
             + "，".join(eq_bits)
-            + r"，試求實數 $k_1$、$k_2$。"
+            + r"，試求實數 $k_{1}$、$k_{2}$。"
         )
         parts = dict(result["canonical"])
         answer_value = parts

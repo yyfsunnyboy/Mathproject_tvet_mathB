@@ -1,0 +1,1227 @@
+{
+  "skills": [
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_3",
+      "y": 1,
+      "types": [
+        "simplify_vector_path_expression"
+      ],
+      "mastery_on_disk": true,
+      "te": [
+        {
+          "id": 11735,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_example_例3_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_example_例3_vocation_fig1.png",
+              "page_index": 8,
+              "source_page": 9,
+              "bbox": [
+                85.03860473632812,
+                111.301025390625,
+                524.4085693359375,
+                197.7239990234375
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "shared_phrase+order",
+              "match_score": 0.88,
+              "question_anchor": "vocational_math_B2_3-1_example_003_005",
+              "width": 1229,
+              "height": 248,
+              "file_size": 36046,
+              "sha256": "d3741def2d7673cc48a55700c16ecd166d1b6cced7fbb8b3cf0d7cc1a636c2a6",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11736,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/in_class_practice_隨堂練習3_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/in_class_practice_隨堂練習3_vocation_fig1.png",
+              "page_index": 8,
+              "source_page": 9,
+              "bbox": [
+                410.0,
+                350.0,
+                520.0,
+                440.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "隨堂練習3 △ABC（非例4/隨堂4五邊形）",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "manual_fail11_surgical_mount",
+              "match_score": 1.0,
+              "question_anchor": "vocational_math_B2_3-1_in_class_practice_003_006",
+              "width": 311,
+              "height": 256,
+              "file_size": 7005,
+              "sha256": "b5f29a29eb0ef670f8ad28aacf5507b436e34cee091b6ac9c9e3dcb3a10be336",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11737,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_example_例4_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_example_例4_vocation_fig1.png",
+              "page_index": 8,
+              "source_page": 9,
+              "bbox": [
+                86.05509185791016,
+                453.11962890625,
+                523.4090576171875,
+                737.506591796875
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "unique_phrase+order",
+              "match_score": 0.96,
+              "question_anchor": "vocational_math_B2_3-1_example_004_007",
+              "width": 1223,
+              "height": 798,
+              "file_size": 99994,
+              "sha256": "aadf00052521adf03f2a2b42cb6fa009334d46dbecb064aeda8f5c23a45e8655",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11738,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/in_class_practice_隨堂練習4_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/in_class_practice_隨堂練習4_vocation_fig1.png",
+              "page_index": 8,
+              "source_page": 9,
+              "bbox": [
+                86.05509185791016,
+                453.11962890625,
+                523.4090576171875,
+                737.506591796875
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "unique_phrase+order",
+              "match_score": 0.96,
+              "question_anchor": "vocational_math_B2_3-1_in_class_practice_004_008",
+              "width": 1223,
+              "height": 798,
+              "file_size": 99994,
+              "sha256": "aadf00052521adf03f2a2b42cb6fa009334d46dbecb064aeda8f5c23a45e8655",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11746,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題3_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題3_vocation_fig1.png",
+              "page_index": 14,
+              "source_page": 15,
+              "bbox": [
+                440.48638916015625,
+                364.1642150878906,
+                516.2514038085938,
+                420.5732116699219
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "shared_phrase+order",
+              "match_score": 0.88,
+              "question_anchor": "vocational_math_B2_3-1_exercise_003_016",
+              "width": 218,
+              "height": 164,
+              "file_size": 8718,
+              "sha256": "647b65974719d4c796804778df3a8e73ce9e0220995bde6dbf71a6bef1b02e5d",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11747,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題4_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題4_vocation_fig1.png",
+              "page_index": 14,
+              "source_page": 15,
+              "bbox": [
+                441.797607421875,
+                453.03961181640625,
+                517.74658203125,
+                494.5746154785156
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "unique_phrase+order",
+              "match_score": 0.84,
+              "question_anchor": "vocational_math_B2_3-1_exercise_004_017",
+              "width": 219,
+              "height": 124,
+              "file_size": 8153,
+              "sha256": "4a786230a1c03dcd17ede3a21908201c660de57001a060c167c6d0717f64eab9",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11816,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_unknown_第三章_自我評量/self_assessment_CH3自我評量_題2_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_unknown_第三章_自我評量/self_assessment_CH3自我評量_題2_vocation_fig1.png",
+              "page_index": 0,
+              "source_page": 1,
+              "bbox": [
+                444.15692138671875,
+                324.02099609375,
+                516.1569213867188,
+                364.68701171875
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "unique_phrase+order",
+              "match_score": 0.96,
+              "question_anchor": "vocational_math_B2_3-1_self_assessment_002_002",
+              "width": 208,
+              "height": 121,
+              "file_size": 3275,
+              "sha256": "8407076be2870897e12b3479012deca9c09a5695cdd30a9df4ee77d932444098",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        }
+      ],
+      "generator_samples": [
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，試化簡：$\\overrightarrow{AB}$+$\\overrightarrow{BD}$-$\\overrightarrow{CD}$。",
+          "mentions_figure": true,
+          "component_id": "src_11735",
+          "problem_type_id": "simplify_vector_path_expression",
+          "textbook_example_id": 11735,
+          "correct_answer": {
+            "simplified": "\\overrightarrow{AC}"
+          },
+          "spec_problem_type_id": "simplify_vector_path_expression",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，試化簡：$\\overrightarrow{AB}$+$\\overrightarrow{BD}$-$\\overrightarrow{CD}$。",
+          "mentions_figure": true,
+          "component_id": "src_11736",
+          "problem_type_id": "simplify_vector_path_expression",
+          "textbook_example_id": 11736,
+          "correct_answer": {
+            "simplified": "\\overrightarrow{AC}"
+          },
+          "spec_problem_type_id": "simplify_vector_path_expression",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，試化簡：$\\overrightarrow{AB}$+$\\overrightarrow{BD}$-$\\overrightarrow{CD}$。",
+          "mentions_figure": true,
+          "component_id": "src_11737",
+          "problem_type_id": "simplify_vector_path_expression",
+          "textbook_example_id": 11737,
+          "correct_answer": {
+            "simplified": "\\overrightarrow{AC}"
+          },
+          "spec_problem_type_id": "simplify_vector_path_expression",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，試化簡：$\\overrightarrow{AB}$-$\\overrightarrow{AC}$。",
+          "mentions_figure": true,
+          "component_id": "src_11738",
+          "problem_type_id": "simplify_vector_path_expression",
+          "textbook_example_id": 11738,
+          "correct_answer": {
+            "simplified": "\\overrightarrow{CB}"
+          },
+          "spec_problem_type_id": "simplify_vector_path_expression",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，試化簡：$\\overrightarrow{AB}$+$\\overrightarrow{BC}$。",
+          "mentions_figure": true,
+          "component_id": "src_11746",
+          "problem_type_id": "simplify_vector_path_expression",
+          "textbook_example_id": 11746,
+          "correct_answer": {
+            "simplified": "\\overrightarrow{AC}"
+          },
+          "spec_problem_type_id": "simplify_vector_path_expression",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，試化簡：$\\overrightarrow{AB}$-$\\overrightarrow{AC}$。",
+          "mentions_figure": true,
+          "component_id": "src_11747",
+          "problem_type_id": "simplify_vector_path_expression",
+          "textbook_example_id": 11747,
+          "correct_answer": {
+            "simplified": "\\overrightarrow{CB}"
+          },
+          "spec_problem_type_id": "simplify_vector_path_expression",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，試化簡：$\\overrightarrow{AB}$+$\\overrightarrow{BC}$。",
+          "mentions_figure": true,
+          "component_id": "src_11816",
+          "problem_type_id": "simplify_vector_path_expression",
+          "textbook_example_id": 11816,
+          "correct_answer": {
+            "simplified": "\\overrightarrow{AC}"
+          },
+          "spec_problem_type_id": "simplify_vector_path_expression",
+          "ok": true
+        }
+      ]
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "y": 6,
+      "types": [
+        "construct_linear_combination_choice",
+        "express_linear_combination_from_givens",
+        "express_section_point_vector",
+        "identify_resultant_path_mcq",
+        "solve_scalar_multiple_relation_fill",
+        "solve_section_coefficient_pair"
+      ],
+      "mastery_on_disk": true,
+      "te": [
+        {
+          "id": 11739,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_example_例5_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_example_例5_vocation_fig1.png",
+              "page_index": 11,
+              "source_page": 12,
+              "bbox": [
+                85.03860473632812,
+                111.301025390625,
+                524.4085693359375,
+                254.10205078125
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "unique_phrase+order",
+              "match_score": 0.99,
+              "question_anchor": "vocational_math_B2_3-1_example_005_009",
+              "width": 1229,
+              "height": 405,
+              "file_size": 55659,
+              "sha256": "42825b0fa9571586124620cc688c21a6299f11842dcb5f00108999a0df90812b",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11740,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/in_class_practice_隨堂練習5_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/in_class_practice_隨堂練習5_vocation_fig1.png",
+              "page_index": 11,
+              "source_page": 12,
+              "bbox": [
+                359.5845947265625,
+                441.4310302734375,
+                501.317626953125,
+                526.4700317382812
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "unique_phrase+order",
+              "match_score": 0.99,
+              "question_anchor": "vocational_math_B2_3-1_in_class_practice_005_010",
+              "width": 402,
+              "height": 244,
+              "file_size": 5964,
+              "sha256": "f83c42ff4eef962e4e1dcad0af42b2bb5469a2532a793bf67f5b83432b90d297",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11741,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_example_例6_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_example_例6_vocation_fig1.png",
+              "page_index": 12,
+              "source_page": 13,
+              "bbox": [
+                85.03860473632812,
+                409.291015625,
+                524.4085693359375,
+                501.46099853515625
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "shared_phrase+order",
+              "match_score": 0.82,
+              "question_anchor": "vocational_math_B2_3-1_example_006_011",
+              "width": 1229,
+              "height": 264,
+              "file_size": 53429,
+              "sha256": "eb2ae9e1369516620471e1f462e3c66bf3db1221e6f64df592b94c4e0541ac6d",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11742,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/in_class_practice_隨堂練習6_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/in_class_practice_隨堂練習6_vocation_fig1.png",
+              "page_index": 12,
+              "source_page": 13,
+              "bbox": [
+                85.03860473632812,
+                409.291015625,
+                524.4085693359375,
+                501.46099853515625
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "shared_phrase+order",
+              "match_score": 0.82,
+              "question_anchor": "vocational_math_B2_3-1_in_class_practice_006_012",
+              "width": 1229,
+              "height": 264,
+              "file_size": 53429,
+              "sha256": "eb2ae9e1369516620471e1f462e3c66bf3db1221e6f64df592b94c4e0541ac6d",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11743,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/exam_practice_113統測B_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/exam_practice_113統測B_vocation_fig1.png",
+              "page_index": 13,
+              "source_page": 14,
+              "bbox": [
+                327.92120361328125,
+                203.966552734375,
+                521.1812133789062,
+                333.8665466308594
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "unique_phrase+order",
+              "match_score": 0.99,
+              "question_anchor": "vocational_math_B2_3-1_exam_113b_013",
+              "width": 545,
+              "height": 368,
+              "file_size": 54095,
+              "sha256": "9351f377c6392799490f761c68fb2a656a79129e5058311f56079a56cb27fad8",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11744,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題1_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題1_vocation_fig1.png",
+              "page_index": 14,
+              "source_page": 15,
+              "bbox": [
+                420.0,
+                155.0,
+                555.0,
+                265.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "基礎題1 三角形中點 D,E,F",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "manual_fail11_surgical_mount",
+              "match_score": 1.0,
+              "question_anchor": "vocational_math_B2_3-1_exercise_001_014",
+              "width": 381,
+              "height": 311,
+              "file_size": 11096,
+              "sha256": "57f0a3fc52d570382c6fe756b3f51b1e1cf9d361c76e9d7e06ecc7edc3c60ce2",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11748,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題5_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題5_vocation_fig1.png",
+              "page_index": 14,
+              "source_page": 15,
+              "bbox": [
+                400.0,
+                505.0,
+                560.0,
+                610.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "基礎題5 線段 A-C-D-B 等分（非基礎6網格）",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "manual_fail11_surgical_mount",
+              "match_score": 1.0,
+              "question_anchor": "vocational_math_B2_3-1_exercise_005_018",
+              "width": 451,
+              "height": 297,
+              "file_size": 3691,
+              "sha256": "fafe4cfbcbb711ae02909ae3c33fc05a31953411dc038709555a674a6c8bc456",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11749,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題6_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題6_vocation_fig1.png",
+              "page_index": 14,
+              "source_page": 15,
+              "bbox": [
+                410.8660888671875,
+                622.1527099609375,
+                524.3630981445312,
+                735.6917114257812
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "unique_phrase+order",
+              "match_score": 0.96,
+              "question_anchor": "vocational_math_B2_3-1_exercise_006_019",
+              "width": 324,
+              "height": 324,
+              "file_size": 7703,
+              "sha256": "d853fdf870d657ead2bf6d1c52e393e7374fe35880084639c7d77dbf0751e079",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11750,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題7_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題7_vocation_fig1.png",
+              "page_index": 15,
+              "source_page": 16,
+              "bbox": [
+                382.55059814453125,
+                140.90802001953125,
+                524.2836303710938,
+                225.947021484375
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "figure_keyword_and_compact_visual_in_region",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "unique_phrase+order",
+              "match_score": 0.99,
+              "question_anchor": "vocational_math_B2_3-1_exercise_007_020",
+              "width": 401,
+              "height": 245,
+              "file_size": 5944,
+              "sha256": "bbfbd302ec73dcbc23988ad0e3893b2699859f20bec8ad42e08e71080be85e66",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11751,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題8_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/textbook_exercise_3-1習題_基礎題8_vocation_fig1.png",
+              "page_index": 15,
+              "source_page": 16,
+              "bbox": [
+                400.0,
+                235.0,
+                560.0,
+                350.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "基礎題8 完整三角形標籤",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "manual_fail11_surgical_mount",
+              "match_score": 1.0,
+              "question_anchor": "vocational_math_B2_3-1_exercise_008_021",
+              "width": 451,
+              "height": 325,
+              "file_size": 15818,
+              "sha256": "b9aec04879892dbc7172cbf9b843f1a45d8c1f695436da5c238a6c3dcef5aaae",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11752,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/advanced_exercise_3-1習題_進階題9_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/advanced_exercise_3-1習題_進階題9_vocation_fig1.png",
+              "page_index": 15,
+              "source_page": 16,
+              "bbox": [
+                395.0,
+                365.0,
+                555.0,
+                475.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "進階題9 獨立構形（不共用基礎8）",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "manual_fail11_surgical_mount",
+              "match_score": 1.0,
+              "question_anchor": "vocational_math_B2_3-1_advanced_exercise_009_022",
+              "width": 451,
+              "height": 311,
+              "file_size": 17010,
+              "sha256": "86c2e262eb8b09f38ea05b27b9f6ec0c79c43e67160a06c230a5ef8558629e1d",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11753,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/advanced_exercise_3-1習題_進階題10_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_3-1_向量的作圖/advanced_exercise_3-1習題_進階題10_vocation_fig1.png",
+              "page_index": 15,
+              "source_page": 16,
+              "bbox": [
+                400.0,
+                455.0,
+                560.0,
+                585.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "進階題10 平行四邊形（排除熟習度自評表）",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "manual_fail11_surgical_mount",
+              "match_score": 1.0,
+              "question_anchor": "vocational_math_B2_3-1_advanced_exercise_010_023",
+              "width": 451,
+              "height": 367,
+              "file_size": 16337,
+              "sha256": "e9b76dfb6c32ed94f7408129a36de08e464e1c5f5f1fb2f8f0c114fb79c2c672",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11817,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 1,
+          "image_assets": [
+            {
+              "asset_type": "pdf_visual_crop",
+              "asset_slot": "pdf_visual_01",
+              "source": "pdf",
+              "path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_unknown_第三章_自我評量/self_assessment_CH3自我評量_題3_vocation_fig1.png",
+              "display_path": "uploads/question_assets/vocational/longteng/數學B2/ch03_向量/sec_unknown_第三章_自我評量/self_assessment_CH3自我評量_題3_vocation_fig1.png",
+              "page_index": 0,
+              "source_page": 1,
+              "bbox": [
+                400.0,
+                395.0,
+                540.0,
+                520.0
+              ],
+              "needs_crop_review": false,
+              "needs_image_conversion": false,
+              "reason": "自我評量題3 完整含 A/E/F/G/M",
+              "image_description": "required",
+              "visual_type": "diagram",
+              "visual_classification": "required",
+              "match_method": "manual_fail11_surgical_mount",
+              "match_score": 1.0,
+              "question_anchor": "vocational_math_B2_3-1_self_assessment_003_003",
+              "width": 395,
+              "height": 353,
+              "file_size": 14562,
+              "sha256": "26bb3a483a8e650f706ce2f976409177ed9c8a747752ffa5227866a825dd1d6e",
+              "dpi": 200
+            }
+          ],
+          "question_snip": ""
+        },
+        {
+          "id": 11818,
+          "has_image_path": false,
+          "image_path": null,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "question_snip": ""
+        }
+      ],
+      "generator_samples": [
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，已知 $\\vec{a}=k_\\vec{b}$，$\\vec{c}=k_2\\vec{a}$，試求實數 $k_1$、$k_2$。",
+          "mentions_figure": true,
+          "component_id": "src_11739",
+          "problem_type_id": "solve_scalar_multiple_relation_fill",
+          "textbook_example_id": 11739,
+          "correct_answer": {
+            "k1": "3",
+            "k2": "2"
+          },
+          "spec_problem_type_id": "solve_scalar_multiple_relation_fill",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，已知 $\\vec{a}=k_\\vec{b}$，$\\vec{c}=k_2\\vec{a}$，試求實數 $k_1$、$k_2$。",
+          "mentions_figure": true,
+          "component_id": "src_11740",
+          "problem_type_id": "solve_scalar_multiple_relation_fill",
+          "textbook_example_id": 11740,
+          "correct_answer": {
+            "k1": "-2",
+            "k2": "-3"
+          },
+          "spec_problem_type_id": "solve_scalar_multiple_relation_fill",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，$\\triangle ABC$ 中，$D$、$E$ 為 $\\overline{AB}$ 三等分點（$AD:DE:EB=1:1:1$），$F$ 為 $\\overline{AC}$ 中點，令 $\\overrightarrow{AB}=\\vec{a}$、$\\overrightarrow{AC}=\\vec{b}$，試以 $\\vec{a}$、$\\vec{b}$ 表示 $\\overrightarrow{",
+          "mentions_figure": true,
+          "component_id": "src_11741",
+          "problem_type_id": "express_section_point_vector",
+          "textbook_example_id": 11741,
+          "correct_answer": {
+            "vector": "-a + b/2"
+          },
+          "spec_problem_type_id": "express_section_point_vector",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，$\\triangle ABC$ 中，$D$、$E$ 為 $\\overline{AB}$ 三等分點（$AD:DE:EB=1:1:1$），$F$ 為 $\\overline{AC}$ 中點，令 $\\overrightarrow{AB}=\\vec{a}$、$\\overrightarrow{AC}=\\vec{b}$，試以 $\\vec{a}$、$\\vec{b}$ 表示 $\\overrightarrow{",
+          "mentions_figure": true,
+          "component_id": "src_11742",
+          "problem_type_id": "express_section_point_vector",
+          "textbook_example_id": 11742,
+          "correct_answer": {
+            "vector": "-b/2"
+          },
+          "spec_problem_type_id": "express_section_point_vector",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，與 $\\overrightarrow{AB}+\\overrightarrow{BC}$ 最接近（方向與大小）的向量為？",
+          "mentions_figure": true,
+          "component_id": "src_11743",
+          "problem_type_id": "identify_resultant_path_mcq",
+          "textbook_example_id": 11743,
+          "correct_answer": "D",
+          "spec_problem_type_id": "identify_resultant_path_mcq",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，$\\triangle ABC$ 中，$D$、$E$ 為 $\\overline{AB}$ 三等分點（$AD:DE:EB=1:1:1$），$F$ 為 $\\overline{AC}$ 中點，令 $\\overrightarrow{AB}=\\vec{a}$、$\\overrightarrow{AC}=\\vec{b}$，試以 $\\vec{a}$、$\\vec{b}$ 表示 $\\overrightarrow{",
+          "mentions_figure": true,
+          "component_id": "src_11744",
+          "problem_type_id": "express_section_point_vector",
+          "textbook_example_id": 11744,
+          "correct_answer": {
+            "vector": "-b/2"
+          },
+          "spec_problem_type_id": "express_section_point_vector",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，$\\triangle ABC$ 中，$D$、$E$ 為 $\\overline{AB}$ 三等分點（$AD:DE:EB=1:1:1$），$F$ 為 $\\overline{AC}$ 中點，令 $\\overrightarrow{AB}=\\vec{a}$、$\\overrightarrow{AC}=\\vec{b}$，試以 $\\vec{a}$、$\\vec{b}$ 表示 $\\overrightarrow{",
+          "mentions_figure": true,
+          "component_id": "src_11748",
+          "problem_type_id": "express_section_point_vector",
+          "textbook_example_id": 11748,
+          "correct_answer": {
+            "vector": "-a + b/2"
+          },
+          "spec_problem_type_id": "express_section_point_vector",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "以 $A$ 為起點，下列哪一個終點坐標對應 $\\frac{1}{3}\\vec{a}-\\frac{1}{3}\\vec{b}$？（設 $\\vec{a}=\\left( 3,\\ 0 \\right)$、$\\vec{b}=\\left( 0,\\ 5 \\right)$）",
+          "mentions_figure": false,
+          "component_id": "src_11749",
+          "problem_type_id": "construct_linear_combination_choice",
+          "textbook_example_id": 11749,
+          "correct_answer": "D",
+          "spec_problem_type_id": "construct_linear_combination_choice",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，已知 $\\overrightarrow{OP}=k_\\overrightarrow{OQ}$，$\\overrightarrow{OR}=k_2\\overrightarrow{OP}$，試求實數 $k_1$、$k_2$。",
+          "mentions_figure": true,
+          "component_id": "src_11750",
+          "problem_type_id": "solve_scalar_multiple_relation_fill",
+          "textbook_example_id": 11750,
+          "correct_answer": {
+            "k1": "2",
+            "k2": "3"
+          },
+          "spec_problem_type_id": "solve_scalar_multiple_relation_fill",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，$\\triangle ABC$ 中，$D$、$E$ 為 $\\overline{AB}$ 三等分點（$AD:DE:EB=1:1:1$），$F$ 為 $\\overline{AC}$ 中點，令 $\\overrightarrow{AB}=\\vec{a}$、$\\overrightarrow{AC}=\\vec{b}$，試以 $\\vec{a}$、$\\vec{b}$ 表示 $\\overrightarrow{",
+          "mentions_figure": true,
+          "component_id": "src_11751",
+          "problem_type_id": "express_section_point_vector",
+          "textbook_example_id": 11751,
+          "correct_answer": {
+            "vector": "-a/3 + b/2"
+          },
+          "spec_problem_type_id": "express_section_point_vector",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，$\\triangle ABC$ 中，$D$、$E$ 為 $\\overline{AB}$ 三等分點（$AD:DE:EB=1:1:1$），$F$ 為 $\\overline{AC}$ 中點，令 $\\overrightarrow{AB}=\\vec{a}$、$\\overrightarrow{AC}=\\vec{b}$，試以 $\\vec{a}$、$\\vec{b}$ 表示 $\\overrightarrow{",
+          "mentions_figure": true,
+          "component_id": "src_11752",
+          "problem_type_id": "express_section_point_vector",
+          "textbook_example_id": 11752,
+          "correct_answer": {
+            "vector": "-a/3 + b/2"
+          },
+          "spec_problem_type_id": "express_section_point_vector",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，$\\triangle ABC$ 中，$D$、$E$ 為 $\\overline{AB}$ 三等分點（$AD:DE:EB=1:1:1$），$F$ 為 $\\overline{AC}$ 中點，令 $\\overrightarrow{AB}=\\vec{a}$、$\\overrightarrow{AC}=\\vec{b}$，試以 $\\vec{a}$、$\\vec{b}$ 表示 $\\overrightarrow{",
+          "mentions_figure": true,
+          "component_id": "src_11753",
+          "problem_type_id": "express_section_point_vector",
+          "textbook_example_id": 11753,
+          "correct_answer": {
+            "vector": "a/3"
+          },
+          "spec_problem_type_id": "express_section_point_vector",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": true,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "如圖，已知點 $E$、$F$、$M$，且 $\\overrightarrow{AM}=\\alpha\\overrightarrow{AE}+\\beta\\overrightarrow{AF}$，試求實數 $\\alpha$、$\\beta$。",
+          "mentions_figure": true,
+          "component_id": "src_11817",
+          "problem_type_id": "solve_section_coefficient_pair",
+          "textbook_example_id": 11817,
+          "correct_answer": {
+            "alpha": "2/3",
+            "beta": "1/2"
+          },
+          "spec_problem_type_id": "solve_section_coefficient_pair",
+          "ok": true
+        },
+        {
+          "has_image_url": false,
+          "has_image_base64": false,
+          "has_visual_spec": false,
+          "has_diagram_spec": false,
+          "has_figure": false,
+          "image_assets_n": 0,
+          "image_assets": null,
+          "visual_aids": [],
+          "question_snip": "已知 $\\overrightarrow{DE}=4\\vec{a}$、$\\overrightarrow{DF}=2\\vec{b}-\\vec{a}$、$\\overrightarrow{FG}=-\\vec{b}+4\\vec{c}$，試求 $\\overrightarrow{GE}$。",
+          "mentions_figure": false,
+          "component_id": "src_11818",
+          "problem_type_id": "express_linear_combination_from_givens",
+          "textbook_example_id": 11818,
+          "correct_answer": {
+            "vector": "5*a - b - 4*c"
+          },
+          "spec_problem_type_id": "express_linear_combination_from_givens",
+          "ok": true
+        }
+      ]
+    }
+  ],
+  "allowlist_disk": {
+    "vh_數學B2_SubSection_3_1_3": true,
+    "vh_數學B2_SubSection_3_1_4": true,
+    "vh_數學B2_SubSection_3_1_1": true,
+    "vh_數學B2_SubSection_3_1_2": true
+  }
+}

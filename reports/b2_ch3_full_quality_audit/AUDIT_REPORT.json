@@ -1,0 +1,2650 @@
+{
+  "stamp": "20261123_134714",
+  "scope": "B2 chapter 3 向量 full quality seal",
+  "git_head": "dc21df72",
+  "db_copy": "C:\\Projects\\Mathproject_tvet_mathB\\tmp\\b2_ch3_full_audit_20261123_134714\\kumon_math.db",
+  "sample_fast": 10,
+  "sample_expand": 30,
+  "skills": [
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_1",
+      "display_name": "向量定義",
+      "chapter": "第3章 向 量",
+      "section": "3-1 向量的作圖",
+      "display_order": 1,
+      "is_active": true,
+      "te_count": 3,
+      "source_ids": [
+        11731,
+        11732,
+        11806
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "express_named_vectors_in_given_basis",
+        "identify_equal_vector_mcq"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "express_named_vectors_in_given_basis": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 4,
+          "unique_params": 6,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "BA",
+                "label": "$\\overrightarrow{BA}$",
+                "display_label": "$\\overrightarrow{BA}$"
+              },
+              {
+                "key": "BC",
+                "label": "$\\overrightarrow{BC}$",
+                "display_label": "$\\overrightarrow{BC}$"
+              }
+            ],
+            [
+              {
+                "key": "BC",
+                "label": "$\\overrightarrow{BC}$",
+                "display_label": "$\\overrightarrow{BC}$"
+              },
+              {
+                "key": "CD",
+                "label": "$\\overrightarrow{CD}$",
+                "display_label": "$\\overrightarrow{CD}$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11731": 5,
+            "11732": 5
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11731",
+            "src_11732"
+          ]
+        },
+        "identify_equal_vector_mcq": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11806": 30
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11806"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_2",
+      "display_name": "向量的加法作圖",
+      "chapter": "第3章 向 量",
+      "section": "3-1 向量的作圖",
+      "display_order": 2,
+      "is_active": true,
+      "te_count": 3,
+      "source_ids": [
+        11733,
+        11734,
+        11745
+      ],
+      "y": 1,
+      "problem_type_ids": [
+        "simplify_vector_path_expression"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "simplify_vector_path_expression": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 6,
+          "unique_params": 9,
+          "unique_answers": 5,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "simplified",
+                "label": "化簡結果",
+                "display_label": "化簡結果"
+              }
+            ],
+            [
+              {
+                "key": "simplified",
+                "label": "化簡結果",
+                "display_label": "化簡結果"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11733": 4,
+            "11734": 3,
+            "11745": 3
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11733",
+            "src_11734",
+            "src_11745"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_3",
+      "display_name": "向量的減法作圖",
+      "chapter": "第3章 向 量",
+      "section": "3-1 向量的作圖",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 7,
+      "source_ids": [
+        11735,
+        11736,
+        11737,
+        11738,
+        11746,
+        11747,
+        11816
+      ],
+      "y": 1,
+      "problem_type_ids": [
+        "simplify_vector_path_expression"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "simplify_vector_path_expression": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 4,
+          "unique_params": 7,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "simplified",
+                "label": "化簡結果",
+                "display_label": "化簡結果"
+              }
+            ],
+            [
+              {
+                "key": "simplified",
+                "label": "化簡結果",
+                "display_label": "化簡結果"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11735": 2,
+            "11736": 2,
+            "11737": 2,
+            "11738": 1,
+            "11746": 1,
+            "11747": 1,
+            "11816": 1
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11735",
+            "src_11736",
+            "src_11737",
+            "src_11738",
+            "src_11746",
+            "src_11747",
+            "src_11816"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_1_4",
+      "display_name": "向量的實數積作圖",
+      "chapter": "第3章 向 量",
+      "section": "3-1 向量的作圖",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 14,
+      "source_ids": [
+        11739,
+        11740,
+        11741,
+        11742,
+        11743,
+        11744,
+        11748,
+        11749,
+        11750,
+        11751,
+        11752,
+        11753,
+        11817,
+        11818
+      ],
+      "y": 6,
+      "problem_type_ids": [
+        "construct_linear_combination_choice",
+        "express_linear_combination_from_givens",
+        "express_section_point_vector",
+        "identify_resultant_path_mcq",
+        "solve_scalar_multiple_relation_fill",
+        "solve_section_coefficient_pair"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "construct_linear_combination_choice": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11749": 10
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11749"
+          ]
+        },
+        "express_linear_combination_from_givens": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 9,
+          "unique_params": 9,
+          "unique_answers": 9,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ],
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11818": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11818"
+          ]
+        },
+        "express_section_point_vector": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 3,
+          "unique_params": 10,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ],
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11741": 2,
+            "11742": 2,
+            "11744": 2,
+            "11748": 1,
+            "11751": 1,
+            "11752": 1,
+            "11753": 1
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11741",
+            "src_11742",
+            "src_11744",
+            "src_11748",
+            "src_11751",
+            "src_11752",
+            "src_11753"
+          ]
+        },
+        "identify_resultant_path_mcq": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11743": 30
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11743"
+          ]
+        },
+        "solve_scalar_multiple_relation_fill": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 3,
+          "unique_params": 9,
+          "unique_answers": 7,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "k1",
+                "label": "$k_{1}$",
+                "display_label": "$k_{1}$"
+              },
+              {
+                "key": "k2",
+                "label": "$k_{2}$",
+                "display_label": "$k_{2}$"
+              }
+            ],
+            [
+              {
+                "key": "k1",
+                "label": "$k_{1}$",
+                "display_label": "$k_{1}$"
+              },
+              {
+                "key": "k2",
+                "label": "$k_{2}$",
+                "display_label": "$k_{2}$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11739": 4,
+            "11740": 3,
+            "11750": 3
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11739",
+            "src_11740",
+            "src_11750"
+          ]
+        },
+        "solve_section_coefficient_pair": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 14,
+          "unique_answers": 14,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "alpha",
+                "label": "$\\alpha$",
+                "display_label": "$\\alpha$"
+              },
+              {
+                "key": "beta",
+                "label": "$\\beta$",
+                "display_label": "$\\beta$"
+              }
+            ],
+            [
+              {
+                "key": "alpha",
+                "label": "$\\alpha$",
+                "display_label": "$\\alpha$"
+              },
+              {
+                "key": "beta",
+                "label": "$\\beta$",
+                "display_label": "$\\beta$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11817": 30
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11817"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_1",
+      "display_name": "向量的坐標表示法",
+      "chapter": "第3章 向 量",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 1,
+      "is_active": true,
+      "te_count": 11,
+      "source_ids": [
+        11754,
+        11755,
+        11756,
+        11757,
+        11758,
+        11759,
+        11760,
+        11761,
+        11775,
+        11783,
+        11822
+      ],
+      "y": 6,
+      "problem_type_ids": [
+        "compute_directed_segment_and_magnitude",
+        "compute_directed_segment_mixed_multipart",
+        "compute_triangle_perimeter_from_two_vectors",
+        "compute_vector_components_and_magnitude",
+        "solve_equal_vector_coordinates",
+        "solve_parallelogram_fourth_vertex"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_directed_segment_and_magnitude": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              },
+              {
+                "key": "magnitude",
+                "label": "大小",
+                "display_label": "大小"
+              }
+            ],
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              },
+              {
+                "key": "magnitude",
+                "label": "大小",
+                "display_label": "大小"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11758": 4,
+            "11759": 3,
+            "11783": 3
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11758",
+            "src_11759",
+            "src_11783"
+          ]
+        },
+        "compute_directed_segment_mixed_multipart": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "AB",
+                "label": "$\\overrightarrow{AB}$",
+                "display_label": "$\\overrightarrow{AB}$"
+              },
+              {
+                "key": "magnitude",
+                "label": "大小",
+                "display_label": "大小"
+              },
+              {
+                "key": "B",
+                "label": "B",
+                "display_label": "B"
+              }
+            ],
+            [
+              {
+                "key": "AB",
+                "label": "$\\overrightarrow{AB}$",
+                "display_label": "$\\overrightarrow{AB}$"
+              },
+              {
+                "key": "magnitude",
+                "label": "大小",
+                "display_label": "大小"
+              },
+              {
+                "key": "B",
+                "label": "B",
+                "display_label": "B"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11775": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11775"
+          ]
+        },
+        "compute_triangle_perimeter_from_two_vectors": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11822": 30
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11822"
+          ]
+        },
+        "compute_vector_components_and_magnitude": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 9,
+          "unique_params": 9,
+          "unique_answers": 9,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "x_component",
+                "label": "$x$ 分量",
+                "display_label": "$x$ 分量"
+              },
+              {
+                "key": "y_component",
+                "label": "$y$ 分量",
+                "display_label": "$y$ 分量"
+              },
+              {
+                "key": "magnitude",
+                "label": "大小",
+                "display_label": "大小"
+              }
+            ],
+            [
+              {
+                "key": "x_component",
+                "label": "$x$ 分量",
+                "display_label": "$x$ 分量"
+              },
+              {
+                "key": "y_component",
+                "label": "$y$ 分量",
+                "display_label": "$y$ 分量"
+              },
+              {
+                "key": "magnitude",
+                "label": "大小",
+                "display_label": "大小"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11754": 5,
+            "11755": 5
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11754",
+            "src_11755"
+          ]
+        },
+        "solve_equal_vector_coordinates": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 2,
+          "unique_params": 4,
+          "unique_answers": 2,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "x",
+                "label": "$x$",
+                "display_label": "$x$"
+              },
+              {
+                "key": "y",
+                "label": "$y$",
+                "display_label": "$y$"
+              }
+            ],
+            [
+              {
+                "key": "x",
+                "label": "$x$",
+                "display_label": "$x$"
+              },
+              {
+                "key": "y",
+                "label": "$y$",
+                "display_label": "$y$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11756": 15,
+            "11757": 15
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11756",
+            "src_11757"
+          ]
+        },
+        "solve_parallelogram_fourth_vertex": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "D",
+                "label": "D",
+                "display_label": "D"
+              }
+            ],
+            [
+              {
+                "key": "D",
+                "label": "D",
+                "display_label": "D"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11760": 5,
+            "11761": 5
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11760",
+            "src_11761"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_2",
+      "display_name": "向量加減的坐標表示法",
+      "chapter": "第3章 向 量",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 15,
+      "source_ids": [
+        11762,
+        11763,
+        11764,
+        11765,
+        11766,
+        11767,
+        11776,
+        11777,
+        11778,
+        11779,
+        11780,
+        11807,
+        11808,
+        11819,
+        11821
+      ],
+      "y": 6,
+      "problem_type_ids": [
+        "compute_chain_closure_vector_mcq",
+        "compute_point_vectors_linear_combination",
+        "compute_triangle_chain_and_perimeter",
+        "compute_vector_linear_combination",
+        "compute_vector_sum_difference",
+        "solve_parallelogram_fourth_vertex"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_chain_closure_vector_mcq": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 3,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11821": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11821"
+          ]
+        },
+        "compute_point_vectors_linear_combination": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ],
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11764": 4,
+            "11765": 3,
+            "11778": 3
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11764",
+            "src_11765",
+            "src_11778"
+          ]
+        },
+        "compute_triangle_chain_and_perimeter": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "AC",
+                "label": "$\\overrightarrow{AC}$",
+                "display_label": "$\\overrightarrow{AC}$"
+              },
+              {
+                "key": "perimeter",
+                "label": "周長",
+                "display_label": "周長"
+              }
+            ],
+            [
+              {
+                "key": "AC",
+                "label": "$\\overrightarrow{AC}$",
+                "display_label": "$\\overrightarrow{AC}$"
+              },
+              {
+                "key": "perimeter",
+                "label": "周長",
+                "display_label": "周長"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11766": 4,
+            "11767": 3,
+            "11779": 3
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11766",
+            "src_11767",
+            "src_11779"
+          ]
+        },
+        "compute_vector_linear_combination": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ],
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11780": 5,
+            "11808": 5
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11780",
+            "src_11808"
+          ]
+        },
+        "compute_vector_sum_difference": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ],
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11762": 2,
+            "11763": 2,
+            "11777": 2,
+            "11807": 2,
+            "11819": 2
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11762",
+            "src_11763",
+            "src_11777",
+            "src_11807",
+            "src_11819"
+          ]
+        },
+        "solve_parallelogram_fourth_vertex": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "D",
+                "label": "D",
+                "display_label": "D"
+              }
+            ],
+            [
+              {
+                "key": "D",
+                "label": "D",
+                "display_label": "D"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11776": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11776"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_3",
+      "display_name": "向量實數積的坐標表示法",
+      "chapter": "第3章 向 量",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 2,
+      "source_ids": [
+        11784,
+        11820
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "solve_collinear_ratio_mcq",
+        "solve_point_from_vector_combination"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "solve_collinear_ratio_mcq": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11820": 30
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11820"
+          ]
+        },
+        "solve_point_from_vector_combination": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "D",
+                "label": "D",
+                "display_label": "D"
+              }
+            ],
+            [
+              {
+                "key": "D",
+                "label": "D",
+                "display_label": "D"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11784": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11784"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_4",
+      "display_name": "向量實數積的基本性質",
+      "chapter": "第3章 向 量",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 6,
+      "is_active": true,
+      "te_count": 3,
+      "source_ids": [
+        11768,
+        11769,
+        11823
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "compute_vector_linear_combination",
+        "solve_unknown_vector_linear_equation"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_vector_linear_combination": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ],
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11768": 5,
+            "11769": 5
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11768",
+            "src_11769"
+          ]
+        },
+        "solve_unknown_vector_linear_equation": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11823": 30
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11823"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_5",
+      "display_name": "向量的平行",
+      "chapter": "第3章 向 量",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 8,
+      "is_active": true,
+      "te_count": 4,
+      "source_ids": [
+        11770,
+        11771,
+        11781,
+        11809
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "solve_parallel_then_magnitude_mcq",
+        "solve_parallel_vector_parameter"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "solve_parallel_then_magnitude_mcq": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 4,
+          "unique_params": 3,
+          "unique_answers": 3,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11809": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11809"
+          ]
+        },
+        "solve_parallel_vector_parameter": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 9,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "k",
+                "label": "$k$",
+                "display_label": "$k$"
+              }
+            ],
+            [
+              {
+                "key": "k",
+                "label": "$k$",
+                "display_label": "$k$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11770": 4,
+            "11771": 3,
+            "11781": 3
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11770",
+            "src_11771",
+            "src_11781"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_2_6",
+      "display_name": "單位向量",
+      "chapter": "第3章 向 量",
+      "section": "3-2 向量的坐標表示法",
+      "display_order": 10,
+      "is_active": true,
+      "te_count": 5,
+      "source_ids": [
+        11772,
+        11773,
+        11774,
+        11782,
+        11810
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "compute_scaled_direction_vector",
+        "identify_unit_vector_mcq"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_scaled_direction_vector": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 2,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ],
+            [
+              {
+                "key": "vector",
+                "label": "向量",
+                "display_label": "向量"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11772": 3,
+            "11773": 3,
+            "11782": 2,
+            "11810": 2
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11772",
+            "src_11773",
+            "src_11782",
+            "src_11810"
+          ]
+        },
+        "identify_unit_vector_mcq": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11774": 30
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11774"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_1",
+      "display_name": "向量的夾角",
+      "chapter": "第3章 向 量",
+      "section": "3-3 向量的內積",
+      "display_order": 1,
+      "is_active": true,
+      "te_count": 4,
+      "source_ids": [
+        11799,
+        11805,
+        11815,
+        11824
+      ],
+      "y": 3,
+      "problem_type_ids": [
+        "classify_angle_quality_from_dot_mcq",
+        "compute_cosine_of_angle_from_dot",
+        "solve_navigation_heading_correction"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "classify_angle_quality_from_dot_mcq": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11815": 30
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11815"
+          ]
+        },
+        "compute_cosine_of_angle_from_dot": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 8,
+          "unique_answers": 8,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "cosine",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "cosine",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11799": 5,
+            "11824": 5
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11799",
+            "src_11824"
+          ]
+        },
+        "solve_navigation_heading_correction": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 9,
+          "unique_params": 9,
+          "unique_answers": 9,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 2,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "turn_degrees",
+                "label": "左轉角度（度）",
+                "display_label": "左轉角度（度）"
+              }
+            ],
+            [
+              {
+                "key": "turn_degrees",
+                "label": "左轉角度（度）",
+                "display_label": "左轉角度（度）"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11805": 10
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11805"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_2",
+      "display_name": "向量內積的定義",
+      "chapter": "第3章 向 量",
+      "section": "3-3 向量的內積",
+      "display_order": 2,
+      "is_active": true,
+      "te_count": 5,
+      "source_ids": [
+        11785,
+        11786,
+        11796,
+        11797,
+        11802
+      ],
+      "y": 3,
+      "problem_type_ids": [
+        "compute_dot_identity_multipart",
+        "compute_dot_product_from_magnitudes_angle",
+        "compute_regular_polygon_edge_dot"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_dot_identity_multipart": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 9,
+          "unique_params": 9,
+          "unique_answers": 9,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "a_dot_a",
+                "label": "$\\vec{a}\\cdot\\vec{a}$",
+                "display_label": "$\\vec{a}\\cdot\\vec{a}$"
+              },
+              {
+                "key": "a_dot_b",
+                "label": "$\\vec{a}\\cdot\\vec{b}$",
+                "display_label": "$\\vec{a}\\cdot\\vec{b}$"
+              },
+              {
+                "key": "mag_2a_3b",
+                "label": "$\\left|2\\vec{a}-3\\vec{b}\\right|$",
+                "display_label": "$\\left|2\\vec{a}-3\\vec{b}\\right|$"
+              }
+            ],
+            [
+              {
+                "key": "a_dot_a",
+                "label": "$\\vec{a}\\cdot\\vec{a}$",
+                "display_label": "$\\vec{a}\\cdot\\vec{a}$"
+              },
+              {
+                "key": "a_dot_b",
+                "label": "$\\vec{a}\\cdot\\vec{b}$",
+                "display_label": "$\\vec{a}\\cdot\\vec{b}$"
+              },
+              {
+                "key": "mag_2a_3b",
+                "label": "$\\left|2\\vec{a}-3\\vec{b}\\right|$",
+                "display_label": "$\\left|2\\vec{a}-3\\vec{b}\\right|$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11802": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11802"
+          ]
+        },
+        "compute_dot_product_from_magnitudes_angle": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 9,
+          "unique_params": 9,
+          "unique_answers": 9,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 2,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "dot",
+                "label": "內積",
+                "display_label": "內積"
+              }
+            ],
+            [
+              {
+                "key": "dot",
+                "label": "內積",
+                "display_label": "內積"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11797": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11797"
+          ]
+        },
+        "compute_regular_polygon_edge_dot": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 8,
+          "unique_params": 9,
+          "unique_answers": 5,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "dot1",
+                "label": "相鄰邊向量內積（$60^\\circ$）",
+                "display_label": "相鄰邊向量內積（$60^\\circ$）"
+              },
+              {
+                "key": "dot2",
+                "label": "夾角邊向量內積（$120^\\circ$）",
+                "display_label": "夾角邊向量內積（$120^\\circ$）"
+              }
+            ],
+            [
+              {
+                "key": "dot1",
+                "label": "相鄰邊向量內積（$60^\\circ$）",
+                "display_label": "相鄰邊向量內積（$60^\\circ$）"
+              },
+              {
+                "key": "dot2",
+                "label": "夾角邊向量內積（$120^\\circ$）",
+                "display_label": "夾角邊向量內積（$120^\\circ$）"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11785": 4,
+            "11786": 3,
+            "11796": 3
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11785",
+            "src_11786",
+            "src_11796"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_3",
+      "display_name": "向量內積的坐標表示法",
+      "chapter": "第3章 向 量",
+      "section": "3-3 向量的內積",
+      "display_order": 3,
+      "is_active": true,
+      "te_count": 9,
+      "source_ids": [
+        11787,
+        11788,
+        11789,
+        11790,
+        11798,
+        11804,
+        11811,
+        11812,
+        11813
+      ],
+      "y": 5,
+      "problem_type_ids": [
+        "compute_cosine_of_angle_from_dot",
+        "compute_dot_product_coordinates",
+        "compute_midpoint_dot_product",
+        "plot_navigation_points_coordinates",
+        "solve_dot_product_parameter_mcq"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "compute_cosine_of_angle_from_dot": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 2,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "cosine",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              }
+            ],
+            [
+              {
+                "key": "cosine",
+                "label": "$\\cos\\theta$",
+                "display_label": "$\\cos\\theta$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11789": 5,
+            "11790": 5
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11789",
+            "src_11790"
+          ]
+        },
+        "compute_dot_product_coordinates": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 8,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "dot",
+                "label": "內積",
+                "display_label": "內積"
+              }
+            ],
+            [
+              {
+                "key": "dot",
+                "label": "內積",
+                "display_label": "內積"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11787": 3,
+            "11788": 3,
+            "11798": 2,
+            "11811": 2
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11787",
+            "src_11788",
+            "src_11798",
+            "src_11811"
+          ]
+        },
+        "compute_midpoint_dot_product": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11812": 30
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11812"
+          ]
+        },
+        "plot_navigation_points_coordinates": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "A",
+                "label": "A",
+                "display_label": "A"
+              },
+              {
+                "key": "B",
+                "label": "B",
+                "display_label": "B"
+              }
+            ],
+            [
+              {
+                "key": "A",
+                "label": "A",
+                "display_label": "A"
+              },
+              {
+                "key": "B",
+                "label": "B",
+                "display_label": "B"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11804": 10
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11804"
+          ]
+        },
+        "solve_dot_product_parameter_mcq": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11813": 30
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11813"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_4",
+      "display_name": "兩向量的垂直",
+      "chapter": "第3章 向 量",
+      "section": "3-3 向量的內積",
+      "display_order": 4,
+      "is_active": true,
+      "te_count": 4,
+      "source_ids": [
+        11791,
+        11792,
+        11800,
+        11814
+      ],
+      "y": 2,
+      "problem_type_ids": [
+        "solve_perpendicular_composite_parameter",
+        "solve_perpendicular_vector_parameter"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "solve_perpendicular_composite_parameter": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 9,
+          "unique_answers": 9,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "x",
+                "label": "$x$",
+                "display_label": "$x$"
+              }
+            ],
+            [
+              {
+                "key": "x",
+                "label": "$x$",
+                "display_label": "$x$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11814": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11814"
+          ]
+        },
+        "solve_perpendicular_vector_parameter": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "k1",
+                "label": "$k_{1}$",
+                "display_label": "$k_{1}$"
+              },
+              {
+                "key": "k2",
+                "label": "$k_{2}$",
+                "display_label": "$k_{2}$"
+              }
+            ],
+            [
+              {
+                "key": "k1",
+                "label": "$k_{1}$",
+                "display_label": "$k_{1}$"
+              },
+              {
+                "key": "k2",
+                "label": "$k_{2}$",
+                "display_label": "$k_{2}$"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11791": 4,
+            "11792": 3,
+            "11800": 3
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11791",
+            "src_11792",
+            "src_11800"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    },
+    {
+      "skill_id": "vh_數學B2_SubSection_3_3_5",
+      "display_name": "向量內積的性質",
+      "chapter": "第3章 向 量",
+      "section": "3-3 向量的內積",
+      "display_order": 5,
+      "is_active": true,
+      "te_count": 6,
+      "source_ids": [
+        11793,
+        11794,
+        11795,
+        11801,
+        11803,
+        11825
+      ],
+      "y": 4,
+      "problem_type_ids": [
+        "classify_dot_sign_from_diagram_mcq",
+        "compute_dot_product_from_magnitudes_angle",
+        "expand_perpendicular_dot_product",
+        "solve_angle_from_magnitude_identity"
+      ],
+      "mastery_enabled": true,
+      "in_allowlist": true,
+      "bugs": [],
+      "sample_status": "SAMPLED",
+      "generator_samples": {
+        "classify_dot_sign_from_diagram_mcq": {
+          "samples_ok": 30,
+          "samples_requested": 30,
+          "expanded_to_30": true,
+          "unique_stems": 1,
+          "unique_params": 4,
+          "unique_answers": 4,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "LIMITED_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [],
+          "te_ids_seen": {
+            "11795": 30
+          },
+          "skill_mismatch": [],
+          "image_any": true,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11795"
+          ]
+        },
+        "compute_dot_product_from_magnitudes_angle": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 9,
+          "unique_params": 7,
+          "unique_answers": 6,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "dot",
+                "label": "內積",
+                "display_label": "內積"
+              }
+            ],
+            [
+              {
+                "key": "dot",
+                "label": "內積",
+                "display_label": "內積"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11793": 4,
+            "11794": 3,
+            "11825": 3
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11793",
+            "src_11794",
+            "src_11825"
+          ]
+        },
+        "expand_perpendicular_dot_product": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 10,
+          "unique_params": 10,
+          "unique_answers": 10,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 1,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "value",
+                "label": "值",
+                "display_label": "值"
+              }
+            ],
+            [
+              {
+                "key": "value",
+                "label": "值",
+                "display_label": "值"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11801": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11801"
+          ]
+        },
+        "solve_angle_from_magnitude_identity": {
+          "samples_ok": 10,
+          "samples_requested": 10,
+          "expanded_to_30": false,
+          "unique_stems": 7,
+          "unique_params": 7,
+          "unique_answers": 7,
+          "unique_uids": 0,
+          "error_count": 0,
+          "errors": [],
+          "diversity_note": "HAS_VARIATION",
+          "checker": {
+            "status": "PASS",
+            "equiv_tested": 0,
+            "equiv_fail_count": 0,
+            "equiv_fail_samples": []
+          },
+          "label_issues": [],
+          "label_samples": [
+            [
+              {
+                "key": "dot",
+                "label": "內積",
+                "display_label": "內積"
+              },
+              {
+                "key": "angle_degrees",
+                "label": "夾角（度）",
+                "display_label": "夾角（度）"
+              }
+            ],
+            [
+              {
+                "key": "dot",
+                "label": "內積",
+                "display_label": "內積"
+              },
+              {
+                "key": "angle_degrees",
+                "label": "夾角（度）",
+                "display_label": "夾角（度）"
+              }
+            ]
+          ],
+          "te_ids_seen": {
+            "11803": 10
+          },
+          "skill_mismatch": [],
+          "image_any": false,
+          "image_count_max": 0,
+          "component_ids": [
+            "src_11803"
+          ]
+        }
+      },
+      "inventory_error": null,
+      "status": "PASS"
+    }
+  ],
+  "shared_types": {
+    "compute_cosine_of_angle_from_dot": [
+      "vh_數學B2_SubSection_3_3_1",
+      "vh_數學B2_SubSection_3_3_3"
+    ],
+    "compute_dot_product_from_magnitudes_angle": [
+      "vh_數學B2_SubSection_3_3_2",
+      "vh_數學B2_SubSection_3_3_5"
+    ],
+    "compute_vector_linear_combination": [
+      "vh_數學B2_SubSection_3_2_2",
+      "vh_數學B2_SubSection_3_2_4"
+    ],
+    "simplify_vector_path_expression": [
+      "vh_數學B2_SubSection_3_1_2",
+      "vh_數學B2_SubSection_3_1_3"
+    ],
+    "solve_parallelogram_fourth_vertex": [
+      "vh_數學B2_SubSection_3_2_1",
+      "vh_數學B2_SubSection_3_2_2"
+    ]
+  },
+  "summary": {
+    "skill_count": 15,
+    "active": 15,
+    "y_sum": 47,
+    "unique_problem_types": 42,
+    "shared_type_count": 5,
+    "status_counts": {
+      "PASS": 15
+    },
+    "p0_skills": [],
+    "p1_skills": [],
+    "p2_skills": [],
+    "gate": "PASS_ENGINEERING",
+    "ui_browser": "NOT_TESTED",
+    "canvas_layout": "NOT_TESTED",
+    "ai_tutor": "NOT_TESTED"
+  }
+}

@@ -9,11 +9,13 @@ from typing import Any
 
 # Long classroom-float noise from sympy Float sstr / IEEE formatting.
 _FLOAT_NOISE_RE = re.compile(r"(?<![\d.\\])(-?\d+\.\d{6,})(?!\d)")
+# Coefficient 1/-1 before a vector symbol. Do NOT treat subscript digits
+# (e.g. k_1\vec{b}, k_{1}\vec{b}) as trivial coefficients.
 _TRIVIAL_POS_VEC_COEFF_RE = re.compile(
-    r"(?<![\d.])1(\\(?:vec|overrightarrow)\{)"
+    r"(?<![\d.A-Za-z_])1(\\(?:vec|overrightarrow)\{)"
 )
 _TRIVIAL_NEG_VEC_COEFF_RE = re.compile(
-    r"(?<![\d.])-1(\\(?:vec|overrightarrow)\{)"
+    r"(?<![\d.A-Za-z_])-1(\\(?:vec|overrightarrow)\{)"
 )
 
 

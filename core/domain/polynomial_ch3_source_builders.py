@@ -693,7 +693,8 @@ def _simple_prop_eq(rng: random.Random) -> dict[str, Any]:
     s = int(rng.choice([-4, -3, -1, 1, 3, 4]))
     while s == b:
         s = int(rng.choice([-4, -3, -1, 1, 3, 4]))
-    a = k * (s - b) + s
+    # (s - a)/(s - b) = k  ⇒  a = s - k(s - b)
+    a = s - k * (s - b)
     question = (
         f"解分式方程式$\\dfrac{{{pd.poly_plain(_lin(1, -a))}}}{{{pd.poly_plain(_lin(1, -b))}}}={k}$。"
     )
