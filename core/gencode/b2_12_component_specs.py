@@ -80,7 +80,11 @@ COMPONENT_SPECS: dict[int, dict[str, Any]] = {
         _call(CONSTRAINT, {"known": {"sin": "sqrt(3)/2"}, "targets": {"value": "cos_theta*tan_theta"}}, [_out("value", "part_1", "(1)")]),
         _call(CONSTRAINT, {"known": {"tan": "sqrt(3)"}, "targets": {"value": "sin_theta*cos_theta"}}, [_out("value", "part_2", "(2)")]),
     ]},
-    11578: {"skill_id": SPECIAL, "operation": EXACT, "answer_type": "multi_part", "question": "求：(1) (1−sin²(π/4))/(1+sin²(π/4))；(2) sin²45°+2cos²30°+tan²60°。", "calls": [
+    # Student-facing compound fraction must use stacked TeX (VOCATIONAL §9.3), not ASCII slash.
+    11578: {"skill_id": SPECIAL, "operation": EXACT, "answer_type": "multi_part", "question": (
+        r"求：(1) \(\displaystyle\frac{1-\sin^{2}\left(\frac{\pi}{4}\right)}{1+\sin^{2}\left(\frac{\pi}{4}\right)}\)；"
+        r"(2) \(\sin^{2}45^{\circ}+2\cos^{2}30^{\circ}+\tan^{2}60^{\circ}\)。"
+    ), "calls": [
         _call(EXACT, {"terms": [_term("cos", 60, coefficient="4/3", power=2)]}, [_out(key="part_1", label="(1)")]),
         _call(EXACT, {"terms": [_term("sin", 45, power=2), _term("cos", 30, coefficient=2, power=2), _term("tan", 60, power=2)]}, [_out(key="part_2", label="(2)")]),
     ]},

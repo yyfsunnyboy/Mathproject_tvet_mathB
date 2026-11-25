@@ -1,0 +1,65 @@
+{
+  "mastery_ui": "1/4",
+  "note": "mastered type excluded from rotation; cable params vary",
+  "clicks": [
+    {
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=29、BC=20，求 sin A、cos A、tan A。",
+      "cable": false
+    },
+    {
+      "snip": "θ 為銳角，求 tanθ·cosθ。",
+      "cable": false
+    },
+    {
+      "snip": "纜車站 A 到山頂站 B 距離 200 公尺、仰角 60°，A 站海拔 300 公尺",
+      "cable": true,
+      "nums": [
+        200,
+        60,
+        300
+      ]
+    },
+    {
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=13、BC=5",
+      "cable": false
+    },
+    {
+      "snip": "θ 為銳角，求 sinθ/cosθ。",
+      "cable": false
+    },
+    {
+      "snip": "纜車站…900 公尺、仰角 60°、海拔 400",
+      "cable": true,
+      "nums": [
+        900,
+        60,
+        400
+      ]
+    },
+    {
+      "snip": "直角三角形…AB=29、BC=20",
+      "cable": false
+    },
+    {
+      "snip": "θ 為銳角，求 sin²θ+cos²θ。",
+      "cable": false
+    },
+    {
+      "snip": "纜車站…400 公尺、仰角 60°、海拔 1000",
+      "cable": true,
+      "nums": [
+        400,
+        60,
+        1000
+      ]
+    },
+    {
+      "snip": "直角三角形…AB=17、BC=8",
+      "cable": false
+    },
+    {
+      "snip": "θ 為銳角，求 (1−sinθ)(1+sinθ)。",
+      "cable": false
+    }
+  ]
+}

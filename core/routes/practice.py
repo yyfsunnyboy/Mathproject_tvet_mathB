@@ -10,7 +10,7 @@
 =============================================================================
 """
 
-from flask import Blueprint, request, jsonify, current_app, render_template, session, url_for, redirect, has_app_context
+from flask import Blueprint, request, jsonify, current_app, render_template, session, url_for, redirect, flash, has_app_context
 from urllib.parse import unquote as _url_unquote
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
@@ -848,7 +848,52 @@ def _practice_type_rotation_next(
             )
         pick = ptr.next_pick(state, types)
         if pick is None:
-            state = ptr.new_state(skill_id, types)
+            # Do not wipe mastery-backed statuses. When every type is passed
+            # (skill complete), open a review cycle over all types; otherwise
+            # rebuild from remaining non-passed types only.
+            try:
+                from core.practice_type_mastery import (
+                    is_b1_type_mastery_skill,
+                    normalize_type_id,
+                    rotation_status_map,
+                )
+                from flask_login import current_user
+
+                if (
+                    is_b1_type_mastery_skill(skill_id)
+                    and getattr(current_user, "is_authenticated", False)
+                    and getattr(current_user, "id", None)
+                ):
+                    db_statuses = rotation_status_map(int(current_user.id), skill_id)
+                    mapped = {}
+                    for key in types:
+                        mapped[key] = db_statuses.get(
+                            normalize_type_id(key),
+                            db_statuses.get(key, ptr.STATUS_UNSEEN),
+                        )
+                    remaining = [
+                        k
+                        for k, st in mapped.items()
+                        if st != ptr.STATUS_PASSED
+                    ]
+                    if remaining:
+                        state = ptr.restore_state(
+                            skill_id,
+                            types,
+                            mapped,
+                            seed=f"b1-mastery-remain:{current_user.id}:{skill_id}",
+                        )
+                    else:
+                        # Review cycle after full mastery — all types eligible.
+                        state = ptr.new_state(skill_id, types)
+                else:
+                    state = ptr.new_state(skill_id, types)
+            except Exception:
+                current_app.logger.exception(
+                    "[PRACTICE type_rotation] mastery-aware reset failed skill_id=%s",
+                    skill_id,
+                )
+                state = ptr.new_state(skill_id, types)
             pick = ptr.next_pick(state, types)
     session[ptr.SESSION_KEY] = state
     session.modified = True
@@ -910,11 +955,12 @@ CHAPTER_REVIEW_NAME = "本章總複習"
 
 def _chapter_review_label(chapter: str) -> str:
     """``第N章 章名`` from a curriculum chapter value such as ``1 坐標系與函數圖形`` or ``第1章 三角函數``."""
-    text = str(chapter or "").strip()
+    text = re.sub(r"\s+", " ", str(chapter or "")).strip()
     match = re.match(r"^第\s*(\d+)\s*章\s*(.*)$", text) or re.match(r"^(\d+)[\s.、]+(.+)$", text)
     if not match:
-        return text
-    return f"第{int(match.group(1))}章 {match.group(2).strip()}".strip()
+        return re.sub(r"(?<=[\u4e00-\u9fff])\s+(?=[\u4e00-\u9fff])", "", text)
+    title = re.sub(r"(?<=[\u4e00-\u9fff])\s+(?=[\u4e00-\u9fff])", "", match.group(2).strip())
+    return f"第{int(match.group(1))}章 {title}".strip()
 
 
 def _chapter_review_ordered_sections(rows: list[Any]) -> list[str]:
@@ -2062,17 +2108,41 @@ def update_progress(user_id, skill_id, is_correct, *, commit=True):
 @login_required
 def adaptive_selection_page():
     """Adaptive selection page."""
-    curriculum = request.args.get('curriculum', 'general')
-    curriculum_map = {'general': 'general', 'vocational': 'vocational', 'junior_high': 'junior_high'}
-    
-    # ?亥岷閰脣飛蝔?????蝭
-    chapters = db.session.query(SkillCurriculum.chapter).filter_by(curriculum=curriculum).distinct().order_by(SkillCurriculum.chapter).all()
-    chapter_list = [c[0] for c in chapters]
+    from core.utils import format_vocational_b_section_display
 
-    return render_template('adaptive_selection.html', 
-                           chapters=chapter_list, 
-                           curriculum=curriculum,
-                           curriculum_name=curriculum_map.get(curriculum, '?芰'))
+    curriculum = request.args.get('curriculum', 'general')
+    curriculum_map = {
+        'general': '普通型高中',
+        'vocational': '技術型高中',
+        'junior_high': '國民中學',
+    }
+
+    rows = (
+        db.session.query(SkillCurriculum.chapter, SkillCurriculum.display_order)
+        .filter_by(curriculum=curriculum)
+        .order_by(SkillCurriculum.display_order.asc(), SkillCurriculum.chapter.asc())
+        .all()
+    )
+    chapter_list: list[str] = []
+    seen: set[str] = set()
+    for chapter, _order in rows:
+        raw = str(chapter or "").strip()
+        if not raw:
+            continue
+        # Display-only: collapse "向 量" style spacing without rewriting DB.
+        label = format_vocational_b_section_display(raw, "") or raw
+        label = " ".join(label.split())
+        if label in seen:
+            continue
+        seen.add(label)
+        chapter_list.append(label)
+
+    return render_template(
+        'adaptive_selection.html',
+        chapters=chapter_list,
+        curriculum=curriculum,
+        curriculum_name=curriculum_map.get(curriculum, curriculum),
+    )
 
 @practice_bp.route('/adaptive_practice')
 @login_required
@@ -2205,6 +2275,17 @@ def practice(skill_id):
     # depending on the URL_MAP_STRICT_SLASHES setting; be explicit).
     skill_id = _url_unquote(skill_id)
     """?脣?孵???賜?蝺渡??"""
+    try:
+        from core.skill_card_mastery import is_known_empty_shell_skill
+
+        if is_known_empty_shell_skill(skill_id):
+            flash(
+                "本單元尚無可練習題型（空殼）。請改練習同節「分式的四則運算」或「分式方程式」。",
+                "warning",
+            )
+            return redirect(url_for("dashboard"))
+    except Exception:
+        current_app.logger.exception("[PRACTICE page] empty-shell gate failed skill_id=%s", skill_id)
     switch_info = _prepare_skill_switch(skill_id)
     _log_practice_page_entry(skill_id, switch_info)
     requested_problem_type = (request.args.get("problem_type") or "").strip()
@@ -2246,30 +2327,37 @@ def practice(skill_id):
         from core.practice_type_mastery import (
             get_skill_type_progress,
             is_b1_type_mastery_skill,
+            list_required_problem_types,
             resolve_next_b1_practice_skill,
         )
 
-        if current_user.is_authenticated and is_b1_type_mastery_skill(skill_id):
-            mp = get_skill_type_progress(int(current_user.id), skill_id)
+        # Mode follows allowlist even before login so student UI cannot silently
+        # fall back to legacy streak after an allowlist deploy without reload.
+        if is_b1_type_mastery_skill(skill_id):
             progress_mode = "problem_type_mastery"
-            consecutive_correct = int(mp.get("mastered_count") or 0)
-            pass_target = int(mp.get("total_types") or 0)
-            skill_complete = bool(mp.get("complete"))
-            if skill_complete:
-                review_nav = resolve_next_b1_practice_skill(
-                    skill_id, user_id=int(current_user.id), exclude_current=True
-                )
-                if isinstance(review_nav, dict) and review_nav.get("skill_id"):
-                    review_next_skill_url = url_for(
-                        "practice.practice", skill_id=str(review_nav["skill_id"])
+            if current_user.is_authenticated:
+                mp = get_skill_type_progress(int(current_user.id), skill_id)
+                consecutive_correct = int(mp.get("mastered_count") or 0)
+                pass_target = int(mp.get("total_types") or 0)
+                skill_complete = bool(mp.get("complete"))
+                if skill_complete:
+                    review_nav = resolve_next_b1_practice_skill(
+                        skill_id, user_id=int(current_user.id), exclude_current=True
                     )
-                    review_next_skill_label = str(
-                        review_nav.get("button_label")
-                        or f"前往下一個未完成技能"
-                    )
-                elif isinstance(review_nav, dict) and review_nav.get("nav_kind") == "volume_complete":
-                    review_next_skill_url = url_for("dashboard")
-                    review_next_skill_label = "返回學習儀表板"
+                    if isinstance(review_nav, dict) and review_nav.get("skill_id"):
+                        review_next_skill_url = url_for(
+                            "practice.practice", skill_id=str(review_nav["skill_id"])
+                        )
+                        review_next_skill_label = str(
+                            review_nav.get("button_label")
+                            or f"前往下一個未完成技能"
+                        )
+                    elif isinstance(review_nav, dict) and review_nav.get("nav_kind") == "volume_complete":
+                        review_next_skill_url = url_for("dashboard")
+                        review_next_skill_label = "返回學習儀表板"
+            else:
+                consecutive_correct = 0
+                pass_target = len(list_required_problem_types(skill_id))
     except Exception:
         current_app.logger.exception(
             "[B1 type mastery] page progress failed skill_id=%s", skill_id
@@ -2328,7 +2416,7 @@ def similar_questions():
     return render_template(
         'index.html',
         skill_id='similar_questions',
-        skill_ch_name='憿?蝺渡?',
+        skill_ch_name='類題練習',
         prereq_skills=[],
         tutor_model_name=tutor_model_name,
         practice_mode='similar_practice',
@@ -2789,6 +2877,18 @@ def next_question():
     if skill_id in B4_CHAP3_REQUIRES_EXPLICIT_PROBLEM_TYPE_SKILLS and not str(problem_type or "").strip():
         return jsonify({"error": B4_CHAP3_SKILL_NOT_ENABLED_PUBLIC_ERROR}), 422
 
+    try:
+        from core.skill_card_mastery import is_known_empty_shell_skill
+
+        if is_known_empty_shell_skill(skill_id):
+            return jsonify({
+                "error": "本單元尚無可練習題型（空殼）。請改練習同節「分式的四則運算」或「分式方程式」。",
+                "error_code": "empty_shell_no_runtime",
+                "skill_id": skill_id,
+            }), 422
+    except Exception:
+        current_app.logger.exception("[PRACTICE] empty-shell gate failed skill_id=%s", skill_id)
+
     skill_info = get_skill_info(skill_id)
     # [?桀?璅∪?] ?迂 pattern skill ??瑼?????DB 閮餃????臬憿?
     if not skill_info:
@@ -2876,13 +2976,22 @@ def next_question():
         pass_target_for_payload = None
         progress_mode_for_payload = "streak"
         try:
-            from core.practice_type_mastery import get_skill_type_progress, is_b1_type_mastery_skill
+            from core.practice_type_mastery import (
+                get_skill_type_progress,
+                is_b1_type_mastery_skill,
+                list_required_problem_types,
+            )
 
-            if is_b1_type_mastery_skill(skill_id) and not is_guest_demo():
-                mp = get_skill_type_progress(int(current_user.id), skill_id)
-                consecutive = int(mp.get("mastered_count") or 0)
-                pass_target_for_payload = int(mp.get("total_types") or 0)
+            if is_b1_type_mastery_skill(skill_id):
                 progress_mode_for_payload = "problem_type_mastery"
+                if not is_guest_demo():
+                    mp = get_skill_type_progress(int(current_user.id), skill_id)
+                    consecutive = int(mp.get("mastered_count") or 0)
+                    pass_target_for_payload = int(mp.get("total_types") or 0)
+                else:
+                    # Guest demo: show X/Y contract without writing mastery rows.
+                    consecutive = 0
+                    pass_target_for_payload = len(list_required_problem_types(skill_id))
         except Exception:
             current_app.logger.exception(
                 "[B1 type mastery] get_next_question progress failed skill_id=%s", skill_id

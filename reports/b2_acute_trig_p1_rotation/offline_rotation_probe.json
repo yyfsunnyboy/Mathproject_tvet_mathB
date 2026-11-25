@@ -1,0 +1,421 @@
+{
+  "fresh30": [
+    {
+      "i": 1,
+      "type": "solve_acute_trig_constraints",
+      "component": "src_11579",
+      "seed": 3000,
+      "uid": "",
+      "nums": [
+        "3"
+      ],
+      "snip": "θ 為銳角且 $\\sin\\theta=\\sqrt{3}\\cos\\theta$，求 $\\tan\\theta$ 與 $\\sin\\theta+\\cos\\theta$。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 2,
+      "type": "simplify_fundamental_trig_expression",
+      "component": "src_11581",
+      "seed": 3001,
+      "uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 (sinθ+cosθ)²+(sinθ−cosθ)²。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 3,
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "seed": 3002,
+      "uid": "",
+      "nums": [
+        "900",
+        "45",
+        "500"
+      ],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 4,
+      "type": "compute_right_triangle_trig_ratios",
+      "component": "src_11567",
+      "seed": 3003,
+      "uid": "",
+      "nums": [],
+      "snip": "依題示兩個直角三角形的邊長，分別求 sin A、cos A、tan A。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 5,
+      "type": "simplify_fundamental_trig_expression",
+      "component": "src_11581",
+      "seed": 3004,
+      "uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 (sinθ+cosθ)²+(sinθ−cosθ)²。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 6,
+      "type": "solve_acute_trig_constraints",
+      "component": "src_11582",
+      "seed": 3005,
+      "uid": "",
+      "nums": [
+        "2"
+      ],
+      "snip": "θ 為銳角且 sinθ+cosθ=√2，求 sinθcosθ 與 sinθ−cosθ。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 7,
+      "type": "compute_right_triangle_trig_ratios",
+      "component": "src_11576",
+      "seed": 3006,
+      "uid": "",
+      "nums": [
+        "90",
+        "7",
+        "24"
+      ],
+      "snip": "直角三角形 ABC 中，∠C=90°、BC=7、AC=24，求 sin A、cos A、tan A。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 8,
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "seed": 3007,
+      "uid": "",
+      "nums": [
+        "900",
+        "45",
+        "500"
+      ],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 9,
+      "type": "solve_acute_trig_constraints",
+      "component": "src_11577",
+      "seed": 3008,
+      "uid": "",
+      "nums": [
+        "1",
+        "3",
+        "2",
+        "2",
+        "3"
+      ],
+      "snip": "θ 為銳角：(1) 已知 sinθ=√3/2，求 cosθtanθ；(2) 已知 tanθ=√3，求 sinθcosθ。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 10,
+      "type": "compute_right_triangle_trig_ratios",
+      "component": "src_11557",
+      "seed": 3009,
+      "uid": "",
+      "nums": [
+        "90",
+        "3",
+        "2"
+      ],
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=3、BC=2，求 sin A、cos A、tan A。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 11,
+      "type": "simplify_fundamental_trig_expression",
+      "component": "src_11581",
+      "seed": 3010,
+      "uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 (sinθ+cosθ)²+(sinθ−cosθ)²。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 12,
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "seed": 3011,
+      "uid": "",
+      "nums": [
+        "900",
+        "45",
+        "500"
+      ],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 13,
+      "type": "simplify_fundamental_trig_expression",
+      "component": "src_11581",
+      "seed": 3012,
+      "uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 (sinθ+cosθ)²+(sinθ−cosθ)²。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 14,
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "seed": 3013,
+      "uid": "",
+      "nums": [
+        "900",
+        "45",
+        "500"
+      ],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 15,
+      "type": "compute_right_triangle_trig_ratios",
+      "component": "src_11567",
+      "seed": 3014,
+      "uid": "",
+      "nums": [],
+      "snip": "依題示兩個直角三角形的邊長，分別求 sin A、cos A、tan A。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 16,
+      "type": "solve_acute_trig_constraints",
+      "component": "src_11558",
+      "seed": 3015,
+      "uid": "",
+      "nums": [
+        "3",
+        "4"
+      ],
+      "snip": "已知 θ 為銳角且 tan θ=3/4，求 sin θ 與 cos θ。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 17,
+      "type": "compute_right_triangle_trig_ratios",
+      "component": "src_11576",
+      "seed": 3016,
+      "uid": "",
+      "nums": [
+        "90",
+        "7",
+        "24"
+      ],
+      "snip": "直角三角形 ABC 中，∠C=90°、BC=7、AC=24，求 sin A、cos A、tan A。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 18,
+      "type": "simplify_fundamental_trig_expression",
+      "component": "src_11581",
+      "seed": 3017,
+      "uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 (sinθ+cosθ)²+(sinθ−cosθ)²。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 19,
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "seed": 3018,
+      "uid": "",
+      "nums": [
+        "900",
+        "45",
+        "500"
+      ],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 20,
+      "type": "solve_acute_trig_constraints",
+      "component": "src_11568",
+      "seed": 3019,
+      "uid": "",
+      "nums": [
+        "12",
+        "13"
+      ],
+      "snip": "已知 θ 為銳角且 cosθ=12/13，求 sinθ 與 tanθ。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 21,
+      "type": "solve_acute_trig_constraints",
+      "component": "src_11582",
+      "seed": 3020,
+      "uid": "",
+      "nums": [
+        "2"
+      ],
+      "snip": "θ 為銳角且 sinθ+cosθ=√2，求 sinθcosθ 與 sinθ−cosθ。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 22,
+      "type": "simplify_fundamental_trig_expression",
+      "component": "src_11581",
+      "seed": 3021,
+      "uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 (sinθ+cosθ)²+(sinθ−cosθ)²。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 23,
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "seed": 3022,
+      "uid": "",
+      "nums": [
+        "900",
+        "45",
+        "500"
+      ],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 24,
+      "type": "compute_right_triangle_trig_ratios",
+      "component": "src_11557",
+      "seed": 3023,
+      "uid": "",
+      "nums": [
+        "90",
+        "3",
+        "2"
+      ],
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=3、BC=2，求 sin A、cos A、tan A。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 25,
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "seed": 3024,
+      "uid": "",
+      "nums": [
+        "900",
+        "45",
+        "500"
+      ],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 26,
+      "type": "solve_acute_trig_constraints",
+      "component": "src_11568",
+      "seed": 3025,
+      "uid": "",
+      "nums": [
+        "12",
+        "13"
+      ],
+      "snip": "已知 θ 為銳角且 cosθ=12/13，求 sinθ 與 tanθ。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 27,
+      "type": "simplify_fundamental_trig_expression",
+      "component": "src_11581",
+      "seed": 3026,
+      "uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 (sinθ+cosθ)²+(sinθ−cosθ)²。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 28,
+      "type": "compute_right_triangle_trig_ratios",
+      "component": "src_11567",
+      "seed": 3027,
+      "uid": "",
+      "nums": [],
+      "snip": "依題示兩個直角三角形的邊長，分別求 sin A、cos A、tan A。",
+      "has_vs": true,
+      "has_img": false
+    },
+    {
+      "i": 29,
+      "type": "compute_right_triangle_trig_ratios",
+      "component": "src_11576",
+      "seed": 3028,
+      "uid": "",
+      "nums": [
+        "90",
+        "7",
+        "24"
+      ],
+      "snip": "直角三角形 ABC 中，∠C=90°、BC=7、AC=24，求 sin A、cos A、tan A。",
+      "has_vs": false,
+      "has_img": false
+    },
+    {
+      "i": 30,
+      "type": "simplify_fundamental_trig_expression",
+      "component": "src_11581",
+      "seed": 3029,
+      "uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 (sinθ+cosθ)²+(sinθ−cosθ)²。",
+      "has_vs": false,
+      "has_img": false
+    }
+  ],
+  "type_dist": {
+    "solve_acute_trig_constraints": 7,
+    "simplify_fundamental_trig_expression": 8,
+    "solve_right_triangle_projection": 7,
+    "compute_right_triangle_trig_ratios": 8
+  },
+  "comp_dist": {
+    "src_11579": 1,
+    "src_11581": 8,
+    "src_11584": 7,
+    "src_11567": 3,
+    "src_11582": 2,
+    "src_11576": 3,
+    "src_11577": 1,
+    "src_11557": 2,
+    "src_11558": 1,
+    "src_11568": 2
+  }
+}

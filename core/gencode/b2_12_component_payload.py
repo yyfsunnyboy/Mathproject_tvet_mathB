@@ -120,6 +120,21 @@ def generate_b2_12_component_payload(
     if not calls:
         raise ValueError("b2_12_component_requires_domain_call")
 
+    from core.gencode.b2_12_practice_variants import apply_b2_12_practice_variants
+
+    variant = apply_b2_12_practice_variants(
+        domain_operation=domain_operation,
+        question_text=question_text,
+        calls=calls,
+        seed=seed,
+        visual_asset=visual_asset,
+        textbook_example_id=textbook_example_id,
+    )
+    question_text = str(variant.get("question_text") or question_text)
+    calls = list(variant.get("calls") or calls)
+    visual_asset = str(variant.get("visual_asset") or "")
+    variant_visual_spec = variant.get("visual_spec")
+
     child_payloads = [_build_call(call, seed=seed) for call in calls]
     first = deepcopy(child_payloads[0])
     component_id = str(component_id or f"src_{textbook_example_id}")
@@ -264,7 +279,15 @@ def generate_b2_12_component_payload(
         "exact_capability_readiness": "pass",
         "generator_readiness": "verified",
     })
-    if visual_asset:
+    if isinstance(variant_visual_spec, dict) and variant_visual_spec:
+        # Seed-driven drawable diagram (Canvas). Prefer over PDF crop so labels
+        # always match sampled parameters (VOCATIONAL §9.2 stem/params/visual sync).
+        payload["visual_spec"] = variant_visual_spec
+        payload["visual_aids"] = [variant_visual_spec]
+        if visual_asset:
+            metadata["source_visual_asset"] = visual_asset
+            metadata["source_visual_asset_deferred"] = True
+    elif visual_asset:
         metadata["source_visual_asset"] = visual_asset
         payload["visual_spec"] = {
             "kind": "image",

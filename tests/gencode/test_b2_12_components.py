@@ -94,9 +94,11 @@ def test_b2_12_fixed_skill_and_answer_type_counts() -> None:
     assert skill_counts == {
         "vh_數學B2_RatioAndRatioValue": 2,
         "vh_數學B2_TrigonometricFunctionsOfAcuteAngles": 11,
-        "vh_數學B2_TrigonometricValuesOfSpecialAngles": 6,
+        "vh_數學B2_TrigonometricValuesOfSpecialAngles": 5,
         "vh_數學B2_CalculatingFunctionValuesUsingCalculator": 2,
         "vh_數學B2_FundamentalTrigonometricIdentities": 10,
+        # 11583 textbook sits under 1-2, but math is sector chord+arc.
+        "vh_數學B2_ArcLengthAndAreaOfSector": 1,
     }
     assert Counter(str(spec["answer_type"]) for spec in COMPONENT_SPECS.values()) == {
         "short_answer": 4, "single_choice": 1, "multi_part": 26
@@ -153,9 +155,13 @@ def test_required_source_visuals_are_mounted_and_exist() -> None:
         payload = _load_generator(example_id).generate(seed=0)
         visual = payload["visual_spec"]
         assert visual["required"] is True
-        production_path = production_question_asset_relpath(visual["asset_path"])
-        assert production_path and production_path.startswith("static/question_assets/")
-        assert (ROOT / production_path).is_file()
+        if str(visual.get("kind") or "") == "image":
+            production_path = production_question_asset_relpath(visual["asset_path"])
+            assert production_path and production_path.startswith("static/question_assets/")
+            assert (ROOT / production_path).is_file()
+        else:
+            # Parameterized practice may replace PDF crop with drawable Canvas specs.
+            assert visual.get("points") or visual.get("lines") or visual.get("arrows")
 
 
 def test_generators_contain_no_local_math_or_grading_authority() -> None:

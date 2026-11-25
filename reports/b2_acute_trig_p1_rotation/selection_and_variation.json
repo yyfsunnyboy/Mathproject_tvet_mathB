@@ -1,0 +1,450 @@
+{
+  "fresh30_type_dist": {
+    "solve_right_triangle_projection": 8,
+    "simplify_fundamental_trig_expression": 7,
+    "compute_right_triangle_trig_ratios": 7,
+    "solve_acute_trig_constraints": 8
+  },
+  "fresh30_comp_dist": {
+    "src_11584": 8,
+    "src_11581": 7,
+    "src_11576": 2,
+    "src_11568": 2,
+    "src_11557": 3,
+    "src_11558": 1,
+    "src_11567": 2,
+    "src_11577": 2,
+    "src_11582": 2,
+    "src_11579": 1
+  },
+  "fresh30": [
+    {
+      "i": 1,
+      "problem_type_id": "solve_right_triangle_projection",
+      "component_id": "src_11584",
+      "seed": 10000,
+      "question_uid": "",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 600 公尺、仰角 30°，A 站海拔 100 公尺；求 B 站海拔與兩站水平距離。",
+      "visual_kind": "coordinate_plane"
+    },
+    {
+      "i": 2,
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "component_id": "src_11581",
+      "seed": 10001,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 (1−sinθ)(1+sinθ)。",
+      "visual_kind": null
+    },
+    {
+      "i": 3,
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "component_id": "src_11576",
+      "seed": 10002,
+      "question_uid": "",
+      "nums": [],
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=25、BC=7，求 sin A、cos A、tan A。",
+      "visual_kind": null
+    },
+    {
+      "i": 4,
+      "problem_type_id": "solve_acute_trig_constraints",
+      "component_id": "src_11568",
+      "seed": 10003,
+      "question_uid": "",
+      "nums": [],
+      "snip": "已知 θ 為銳角且 tan θ=5/12，求 sin θ 與 cos θ。",
+      "visual_kind": null
+    },
+    {
+      "i": 5,
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "component_id": "src_11581",
+      "seed": 10004,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 sinθ/cosθ。",
+      "visual_kind": null
+    },
+    {
+      "i": 6,
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "component_id": "src_11557",
+      "seed": 10005,
+      "question_uid": "",
+      "nums": [],
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=15、BC=9，求 sin A、cos A、tan A。",
+      "visual_kind": null
+    },
+    {
+      "i": 7,
+      "problem_type_id": "solve_acute_trig_constraints",
+      "component_id": "src_11558",
+      "seed": 10006,
+      "question_uid": "",
+      "nums": [],
+      "snip": "已知 θ 為銳角且 tan θ=5/12，求 sin θ 與 cos θ。",
+      "visual_kind": null
+    },
+    {
+      "i": 8,
+      "problem_type_id": "solve_right_triangle_projection",
+      "component_id": "src_11584",
+      "seed": 10007,
+      "question_uid": "",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 600 公尺、仰角 45°，A 站海拔 200 公尺；求 B 站海拔與兩站水平距離。",
+      "visual_kind": "coordinate_plane"
+    },
+    {
+      "i": 9,
+      "problem_type_id": "solve_right_triangle_projection",
+      "component_id": "src_11584",
+      "seed": 10008,
+      "question_uid": "",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 400 公尺、仰角 45°，A 站海拔 800 公尺；求 B 站海拔與兩站水平距離。",
+      "visual_kind": "coordinate_plane"
+    },
+    {
+      "i": 10,
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "component_id": "src_11567",
+      "seed": 10009,
+      "question_uid": "",
+      "nums": [],
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=17、BC=8，求 sin A、cos A、tan A。",
+      "visual_kind": "image"
+    },
+    {
+      "i": 11,
+      "problem_type_id": "solve_acute_trig_constraints",
+      "component_id": "src_11577",
+      "seed": 10010,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角：(1) 已知 sinθ=√3/2，求 cosθtanθ；(2) 已知 tanθ=√3，求 sinθcosθ。",
+      "visual_kind": null
+    },
+    {
+      "i": 12,
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "component_id": "src_11581",
+      "seed": 10011,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 sin²θ+cos²θ。",
+      "visual_kind": null
+    },
+    {
+      "i": 13,
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "component_id": "src_11557",
+      "seed": 10012,
+      "question_uid": "",
+      "nums": [],
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=25、BC=7，求 sin A、cos A、tan A。",
+      "visual_kind": null
+    },
+    {
+      "i": 14,
+      "problem_type_id": "solve_right_triangle_projection",
+      "component_id": "src_11584",
+      "seed": 10013,
+      "question_uid": "",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 800 公尺、仰角 45°，A 站海拔 100 公尺；求 B 站海拔與兩站水平距離。",
+      "visual_kind": "coordinate_plane"
+    },
+    {
+      "i": 15,
+      "problem_type_id": "solve_acute_trig_constraints",
+      "component_id": "src_11582",
+      "seed": 10014,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角且 sinθ+cosθ=√2，求 sinθcosθ 與 sinθ−cosθ。",
+      "visual_kind": null
+    },
+    {
+      "i": 16,
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "component_id": "src_11581",
+      "seed": 10015,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 sin²θ+cos²θ。",
+      "visual_kind": null
+    },
+    {
+      "i": 17,
+      "problem_type_id": "solve_right_triangle_projection",
+      "component_id": "src_11584",
+      "seed": 10016,
+      "question_uid": "",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 1000 公尺、仰角 45°，A 站海拔 0 公尺；求 B 站海拔與兩站水平距離。",
+      "visual_kind": "coordinate_plane"
+    },
+    {
+      "i": 18,
+      "problem_type_id": "solve_acute_trig_constraints",
+      "component_id": "src_11579",
+      "seed": 10017,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角且 $\\sin\\theta=\\sqrt{3}\\cos\\theta$，求 $\\tan\\theta$ 與 $\\sin\\theta+\\cos\\theta$。",
+      "visual_kind": null
+    },
+    {
+      "i": 19,
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "component_id": "src_11567",
+      "seed": 10018,
+      "question_uid": "",
+      "nums": [],
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=15、BC=9，求 sin A、cos A、tan A。",
+      "visual_kind": "image"
+    },
+    {
+      "i": 20,
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "component_id": "src_11581",
+      "seed": 10019,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 tanθ·cosθ。",
+      "visual_kind": null
+    },
+    {
+      "i": 21,
+      "problem_type_id": "solve_acute_trig_constraints",
+      "component_id": "src_11577",
+      "seed": 10020,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角：(1) 已知 sinθ=√3/2，求 cosθtanθ；(2) 已知 tanθ=√3，求 sinθcosθ。",
+      "visual_kind": null
+    },
+    {
+      "i": 22,
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "component_id": "src_11576",
+      "seed": 10021,
+      "question_uid": "",
+      "nums": [],
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=15、BC=9，求 sin A、cos A、tan A。",
+      "visual_kind": null
+    },
+    {
+      "i": 23,
+      "problem_type_id": "solve_right_triangle_projection",
+      "component_id": "src_11584",
+      "seed": 10022,
+      "question_uid": "",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 1000 公尺、仰角 60°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。",
+      "visual_kind": "coordinate_plane"
+    },
+    {
+      "i": 24,
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "component_id": "src_11581",
+      "seed": 10023,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 sin²θ+cos²θ。",
+      "visual_kind": null
+    },
+    {
+      "i": 25,
+      "problem_type_id": "compute_right_triangle_trig_ratios",
+      "component_id": "src_11557",
+      "seed": 10024,
+      "question_uid": "",
+      "nums": [],
+      "snip": "直角三角形 ABC 中，∠C=90°、AB=13、BC=5，求 sin A、cos A、tan A。",
+      "visual_kind": null
+    },
+    {
+      "i": 26,
+      "problem_type_id": "solve_acute_trig_constraints",
+      "component_id": "src_11568",
+      "seed": 10025,
+      "question_uid": "",
+      "nums": [],
+      "snip": "已知 θ 為銳角且 sinθ=8/17，求 cosθ 與 tanθ。",
+      "visual_kind": null
+    },
+    {
+      "i": 27,
+      "problem_type_id": "simplify_fundamental_trig_expression",
+      "component_id": "src_11581",
+      "seed": 10026,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角，求 sinθ/cosθ。",
+      "visual_kind": null
+    },
+    {
+      "i": 28,
+      "problem_type_id": "solve_right_triangle_projection",
+      "component_id": "src_11584",
+      "seed": 10027,
+      "question_uid": "",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 500 公尺、仰角 60°，A 站海拔 600 公尺；求 B 站海拔與兩站水平距離。",
+      "visual_kind": "coordinate_plane"
+    },
+    {
+      "i": 29,
+      "problem_type_id": "solve_right_triangle_projection",
+      "component_id": "src_11584",
+      "seed": 10028,
+      "question_uid": "",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 800 公尺、仰角 30°，A 站海拔 300 公尺；求 B 站海拔與兩站水平距離。",
+      "visual_kind": "coordinate_plane"
+    },
+    {
+      "i": 30,
+      "problem_type_id": "solve_acute_trig_constraints",
+      "component_id": "src_11582",
+      "seed": 10029,
+      "question_uid": "",
+      "nums": [],
+      "snip": "θ 為銳角且 sinθ+cosθ=√2，求 sinθcosθ 與 sinθ−cosθ。",
+      "visual_kind": null
+    }
+  ],
+  "mastery_projection_only": [
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 200 公尺、仰角 30°，A 站海拔 0 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 300 公尺、仰角 60°，A 站海拔 500 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 60°，A 站海拔 800 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 300 公尺、仰角 30°，A 站海拔 800 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 30°，A 站海拔 300 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 45°，A 站海拔 100 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 200 公尺、仰角 30°，A 站海拔 400 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 1200 公尺、仰角 60°，A 站海拔 300 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 600 公尺、仰角 60°，A 站海拔 300 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 1200 公尺、仰角 60°，A 站海拔 0 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 900 公尺、仰角 30°，A 站海拔 600 公尺；求 B 站海拔與兩站水平距離。"
+    },
+    {
+      "type": "solve_right_triangle_projection",
+      "component": "src_11584",
+      "nums": [],
+      "snip": "纜車站 A 到山頂站 B 距離 800 公尺、仰角 60°，A 站海拔 300 公尺；求 B 站海拔與兩站水平距離。"
+    }
+  ],
+  "per_type_30seed": {
+    "compute_right_triangle_trig_ratios": {
+      "unique_stems": 6,
+      "unique_params": 6,
+      "components": {
+        "src_11557": 10,
+        "src_11567": 10,
+        "src_11576": 10
+      },
+      "candidate_ids": [
+        "src_11557",
+        "src_11567",
+        "src_11576"
+      ]
+    },
+    "solve_acute_trig_constraints": {
+      "unique_stems": 7,
+      "unique_params": 7,
+      "components": {
+        "src_11558": 6,
+        "src_11568": 6,
+        "src_11577": 6,
+        "src_11579": 6,
+        "src_11582": 6
+      },
+      "candidate_ids": [
+        "src_11558",
+        "src_11568",
+        "src_11577",
+        "src_11579",
+        "src_11582"
+      ]
+    },
+    "simplify_fundamental_trig_expression": {
+      "unique_stems": 5,
+      "unique_params": 2,
+      "components": {
+        "src_11581": 30
+      },
+      "candidate_ids": [
+        "src_11581"
+      ]
+    },
+    "solve_right_triangle_projection": {
+      "unique_stems": 30,
+      "unique_params": 30,
+      "components": {
+        "src_11584": 30
+      },
+      "candidate_ids": [
+        "src_11584"
+      ]
+    }
+  }
+}
