@@ -692,7 +692,7 @@
         {# ── Chalkboard Hero ── #}
         <section class="chalkboard-hero">
             <div class="chalkboard-hero-inner">
-                <h3>歡迎回來，{{ current_user.username }}！</h3>
+                <h3>歡迎回來，{{ (current_user.real_name if current_user.real_name else none) or username or current_user.username }}！</h3>
                 <p>今天也要一起穩扎穩打，持續進步！</p>
             </div>
             <span class="chalk-deco">💡</span>

@@ -339,17 +339,25 @@ def _build_sector(rng: random.Random, constraints: dict[str, Any]) -> dict[str, 
         include_theta = bool(constraints.get("include_theta", False))
         if include_theta:
             parts = {"part_1": _pi_plain(k), "part_2": arc, "part_3": area}
+            part_labels = {
+                "part_1": "(1) 圓心角（弧度）",
+                "part_2": "(2) 弧長 S",
+                "part_3": "(3) 面積 A",
+            }
             question = (
                 f"半徑為 {radius} 的圓被分成 {slices} 塊相等扇形。"
                 "試求每一塊的 (1)圓心角弧度 (2)弧長 S (3)面積 A。"
             )
         else:
             parts = {"part_1": area, "part_2": arc}
+            part_labels = {"part_1": "(1) 面積 A", "part_2": "(2) 弧長 S"}
             question = (
                 f"半徑為 {radius} 公分的圓形被切成 {slices} 塊大小一樣的扇形，"
                 "試求每一塊扇形的 (1)面積 A (2)弧長 S。"
             )
         canonical = "；".join(parts.values())
+        answer = _answer_bundle(canonical, parts=parts, value=parts)
+        answer["part_labels"] = part_labels
         return {
             "givens": {
                 "question_text": question,
@@ -358,7 +366,7 @@ def _build_sector(rng: random.Random, constraints: dict[str, Any]) -> dict[str, 
                 "slices": slices,
                 "theta_degrees": str(theta_deg),
             },
-            "answer": _answer_bundle(canonical, parts=parts, value=parts),
+            "answer": answer,
             "explanation_steps": [
                 f"圓心角 = 360°/{slices} = {theta_deg}° = {_pi_latex(k)}。",
                 f"A = (1/2)r^2 θ，S = rθ。",
@@ -377,6 +385,8 @@ def _build_sector(rng: random.Random, constraints: dict[str, Any]) -> dict[str, 
             f"鐘擺長為 {radius} 公分，左右最大擺角各為 {half}°，"
             "試求：(1)鐘擺掃出的最大面積 (2)鐘擺底端揮出的最大弧長。"
         )
+        answer = _answer_bundle(f"{area}；{arc}", parts=parts, value=parts)
+        answer["part_labels"] = {"part_1": "(1) 面積", "part_2": "(2) 弧長"}
         return {
             "givens": {
                 "question_text": question,
@@ -384,7 +394,7 @@ def _build_sector(rng: random.Random, constraints: dict[str, Any]) -> dict[str, 
                 "radius": radius,
                 "half_angle_deg": half,
             },
-            "answer": _answer_bundle(f"{area}；{arc}", parts=parts, value=parts),
+            "answer": answer,
             "explanation_steps": [
                 f"總圓心角 = {half}° + {half}° = {theta_deg}° = {_pi_latex(k)}。",
                 "A = (1/2)r^2 θ，S = rθ。",
@@ -420,17 +430,25 @@ def _build_sector(rng: random.Random, constraints: dict[str, Any]) -> dict[str, 
     area = _pi_plain(sector_area_pi_coeff(radius, k))
     if include_convert:
         parts = {"part_1": _pi_plain(k), "part_2": arc, "part_3": area}
+        part_labels = {
+            "part_1": "(1) 圓心角（弧度）",
+            "part_2": "(2) 弧長 S",
+            "part_3": "(3) 面積 A",
+        }
         question = (
             f"設一扇形半徑為 {radius} 公分，所對應的圓心角為 {_deg_plain(theta_deg)}°，試求：\n"
             "(1)將圓心角化為弧度。(2)此扇形弧長 S。(3)此扇形面積 A。"
         )
     else:
         parts = {"part_1": arc, "part_2": area}
+        part_labels = {"part_1": "(1) 弧長 S", "part_2": "(2) 面積 A"}
         question = (
             f"設一扇形半徑為 {radius} 公分，所對應的圓心角為 {_deg_plain(theta_deg)}°，試求：\n"
             "(1)此扇形弧長 S。(2)此扇形面積 A。"
         )
     canonical = "；".join(parts.values())
+    answer = _answer_bundle(canonical, parts=parts, value=parts)
+    answer["part_labels"] = part_labels
     return {
         "givens": {
             "question_text": question,
@@ -438,7 +456,7 @@ def _build_sector(rng: random.Random, constraints: dict[str, Any]) -> dict[str, 
             "radius": radius,
             "theta_degrees": str(theta_deg),
         },
-        "answer": _answer_bundle(canonical, parts=parts, value=parts),
+        "answer": answer,
         "explanation_steps": [
             f"θ = {_deg_plain(theta_deg)}° = {_pi_latex(k)}。",
             "S = rθ，A = (1/2)r^2 θ。",

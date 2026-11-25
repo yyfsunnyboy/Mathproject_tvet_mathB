@@ -207,7 +207,14 @@ def format_vocational_b_section_display(chapter_name, section_name):
     
     # 清理標題：移除既有的前導數字、空格或「第x章」前綴
     # 例如 "1 數線" -> "數線", "第1章 數線" -> "數線"
-    clean_title = re.sub(r'^(第\s*\d+\s*[章單元]|Unit\s*\d+|Chapter\s*\d+|\d+)\s*', '', chapter_name).strip()
+    # Also collapse "向 量" → "向量" style intra-title spaces (display only).
+    normalized_chapter = re.sub(r"\s+", " ", str(chapter_name or "")).strip()
+    clean_title = re.sub(
+        r'^(第\s*\d+\s*[章單元]|Unit\s*\d+|Chapter\s*\d+|\d+)\s*',
+        '',
+        normalized_chapter,
+    ).strip()
+    clean_title = re.sub(r"(?<=[\u4e00-\u9fff])\s+(?=[\u4e00-\u9fff])", "", clean_title)
     
     if is_review:
         return f"【複習】{clean_title}" if clean_title != '自我評量' else "自我評量"
@@ -215,7 +222,8 @@ def format_vocational_b_section_display(chapter_name, section_name):
         # [V2.6修正] 使用 sec_match.group(1) 作為章節編號，並加上「第x章」前綴
         return f"第{sec_match.group(1)}章 {clean_title}"
     else:
-        return chapter_name
+        collapsed = re.sub(r"(?<=[\u4e00-\u9fff])\s+(?=[\u4e00-\u9fff])", "", normalized_chapter)
+        return collapsed or normalized_chapter
 
 
 def apply_skill_display_order(query):

@@ -218,7 +218,7 @@
 <div class="student-navbar" role="navigation" aria-label="學生端主選單">
     <div class="student-navbar__inner">
     <a href="{{ url_for('dashboard') }}" class="logo student-navbar__brand">
-        自適應性教學系統 ( <strong>{{ username or current_user.username }}</strong>！ )
+        自適應性教學系統 ( <strong>{{ (current_user.real_name if current_user.real_name else none) or username or current_user.username }}</strong>！ )
     </a>
     <div class="student-navbar__menu">
         <div class="student-navbar__primary">

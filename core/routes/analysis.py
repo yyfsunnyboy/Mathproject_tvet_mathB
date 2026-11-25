@@ -2045,6 +2045,19 @@ def chat_ai():
     if conversation_context:
         full_question_context = f"{full_question_context}\n\n{conversation_context}"
 
+    # Sector tutoring: bind guidance to the current stem parameters / formulas.
+    # Do not paste the numeric canonical answer (disclosure policy); do forbid
+    # common whole-circle formula mix-ups that produce 450π / 60π style errors.
+    skill_text = str(skill_id or "")
+    if "ArcLengthAndAreaOfSector" in skill_text or "扇形" in str(full_question_context or ""):
+        full_question_context = (
+            f"{full_question_context}\n\n"
+            "[扇形公式約束：只使用本題題幹中的半徑與等分數／圓心角。"
+            "等分 n 塊時 θ=2π/n；面積 A=(1/2)r²θ；弧長 S=rθ。"
+            "禁止把整圓面積 πr² 或圓周 2πr 直接當成扇形答案；"
+            "引導時逐步代入本題參數，不要發明與題幹不符的數值。]"
+        )
+
 
 
 

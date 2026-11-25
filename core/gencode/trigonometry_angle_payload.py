@@ -182,6 +182,25 @@ def generate_trigonometry_angle_payload(
     else:
         if isinstance(payload.get("answer"), dict):
             ans = payload["answer"]
+            matrix_answer = matrix.get("answer") if isinstance(matrix.get("answer"), dict) else {}
+            part_labels = (
+                matrix_answer.get("part_labels")
+                if isinstance(matrix_answer.get("part_labels"), dict)
+                else {}
+            )
+            # Fallback classroom labels when Domain did not attach part_labels.
+            fallback_labels = {
+                "part_1": "(1) 面積 A",
+                "part_2": "(2) 弧長 S",
+                "part_3": "(3) 面積 A",
+                "area": "(1) 面積",
+                "arc_length": "(2) 弧長",
+            }
+            stem = str(
+                payload.get("question_text")
+                or (matrix.get("givens") or {}).get("question_text")
+                or ""
+            )
             parts = []
             for key, value in ans.items():
                 text = str(value).strip()
@@ -196,9 +215,21 @@ def generate_trigonometry_angle_payload(
                 else:
                     checker = "expression_checker"
                     equiv = "algebraic_equivalent"
+                key_text = str(key)
+                label = str(part_labels.get(key_text) or "").strip()
+                if not label:
+                    # Order-aware fallback for "弧長 then 面積" stems.
+                    if key_text == "part_1" and "弧長" in stem and stem.find("弧長") < stem.find("面積"):
+                        label = "(1) 弧長 S"
+                    elif key_text == "part_2" and "弧長" in stem and stem.find("弧長") < stem.find("面積"):
+                        label = "(2) 面積 A"
+                    else:
+                        label = str(fallback_labels.get(key_text) or key_text)
                 row = {
-                    "key": str(key),
-                    "label": str(key),
+                    "key": key_text,
+                    "label": label,
+                    "display_label": label,
+                    "prompt": label,
                     "checker": checker,
                     "checker_key": checker,
                     "equivalence_type": equiv,
