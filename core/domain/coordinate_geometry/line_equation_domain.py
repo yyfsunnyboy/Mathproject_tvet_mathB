@@ -4182,9 +4182,11 @@ def build_draw_constant_function_graph_matrix(
         "expected_drawing_spec": expected_spec,
         "visual_spec": {
             "kind": "cartesian_canvas",
+            "render_required": True,
             "axis_range": dict(expected_spec["axis_range"]),
             "show_grid": True,
             "editable": True,
+            "blank_drawing_plane": True,
         },
         "explanation_steps": [
             f"常數函數對所有 x 都有相同函數值 {constant}。",
@@ -4266,9 +4268,11 @@ def build_draw_linear_function_graph_matrix(
         "expected_drawing_spec": expected_spec,
         "visual_spec": {
             "kind": "cartesian_canvas",
+            "render_required": True,
             "axis_range": dict(expected_spec["axis_range"]),
             "show_grid": True,
             "editable": True,
+            "blank_drawing_plane": True,
         },
         "explanation_steps": [
             f"圖形斜率為 {slope}，y 截距為 {intercept}。",

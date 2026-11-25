@@ -27,6 +27,11 @@ _TRIG_DEGREE_PAREN = re.compile(
 _TRIG_DEGREE_BARE = re.compile(
     r"(sin|cos|tan|cot|sec|csc)\s*(-?\d+(?:\.\d+)?)\s*" + _DEGREE_MARK, re.IGNORECASE
 )
+# Trailing semantic units (only after a digit or closing paren; never strip identifiers).
+_UNIT_TAIL = re.compile(r"(?<=[\d)\]])\s*(?:公尺|米|次|度|°|∘|m)\s*$", re.IGNORECASE)
+_SINGLE_ASSIGNMENT = re.compile(
+    r"^\s*([A-Za-z])\s*=\s*(.+?)\s*$",
+)
 
 
 def normalize_math_expression(text: object) -> str:
@@ -60,6 +65,7 @@ def normalize_math_expression(text: object) -> str:
     )
     if s.endswith("度"):
         s = s[:-1]
+    s = _UNIT_TAIL.sub("", s)
     for _ in range(3):
         s = _FRAC_LATEX.sub(r"((\1)/(\2))", s)
         s = _SQRT_LATEX_BRACE.sub(r"sqrt(\1)", s)
@@ -272,6 +278,70 @@ def _split_value_list(text: object) -> tuple[list[str], set[str]] | None:
     if len(values) < 2 or len(names) > 1:
         return None
     return values, names
+
+
+def _strip_trailing_units(text: object) -> str:
+    """Drop trailing 度／公尺／m／次 when attached to a numeric/expression token."""
+    from core.checkers.math_input_normalization import latex_to_plain
+
+    s = unicodedata.normalize("NFKC", latex_to_plain(text)).strip()
+    if not s:
+        return ""
+    prev = None
+    while prev != s:
+        prev = s
+        s = _UNIT_TAIL.sub("", s).rstrip()
+        if s.endswith("度"):
+            s = s[:-1].rstrip()
+    return s
+
+
+def _split_single_assignment(text: object) -> tuple[str, str] | None:
+    """Return (lhs_var, rhs) for a single `x=...` / `y=...` assignment; else None."""
+    raw = _strip_trailing_units(text)
+    if not raw or raw.count("=") != 1:
+        return None
+    m = _SINGLE_ASSIGNMENT.match(raw)
+    if not m:
+        return None
+    rhs = m.group(2).strip()
+    if not rhs or "=" in rhs:
+        return None
+    return m.group(1).lower(), rhs
+
+
+def _scalar_assignment_or_rhs_equivalent(user_answer: object, correct_answer: object) -> bool | None:
+    """Accept bare value / RHS-only when canonical is a single-variable assignment.
+
+    Examples that PASS: ``2`` vs ``x=2``, ``a=1`` vs ``1``,
+    ``2(x+1)^2-3`` vs ``y=2(x+1)^2-3``.
+    Returns None when this rule does not apply.
+    """
+    ua = _strip_trailing_units(user_answer)
+    ca = _strip_trailing_units(correct_answer)
+    if not ua or not ca:
+        return None
+    user_asg = _split_single_assignment(ua)
+    correct_asg = _split_single_assignment(ca)
+    # Both bare (no assignment) → leave to generic expression compare.
+    if user_asg is None and correct_asg is None:
+        return None
+    # Both assignments with different variables → not this rule
+    # (e.g. a=1 vs b=1 should not silently pass here).
+    if user_asg is not None and correct_asg is not None and user_asg[0] != correct_asg[0]:
+        return False
+    user_rhs = user_asg[1] if user_asg else ua
+    correct_rhs = correct_asg[1] if correct_asg else ca
+    # If the non-assignment side still contains '=', it is a full equation — not RHS-only.
+    if (user_asg is None and "=" in ua) or (correct_asg is None and "=" in ca):
+        return None
+    try:
+        from sympy import simplify
+
+        diff = simplify(_parse_sympy(user_rhs) - _parse_sympy(correct_rhs))
+        return bool(diff == 0 or _numeric_equal(_parse_sympy(user_rhs), _parse_sympy(correct_rhs)))
+    except Exception:
+        return None
 
 
 def _value_list_equivalent(user_answer: object, correct_answer: object) -> bool | None:
@@ -703,6 +773,31 @@ def check_expression_equivalence_debug(
     if list_eq is not None:
         out["correct"] = list_eq
         out["simplify_result"] = "value_list_equivalent" if list_eq else "value_list_mismatch"
+        return out
+
+    # Units / single-var assignment / RHS-only (求 x、求函數式右側).
+    ua_units = _strip_trailing_units(ua_raw)
+    ca_units = _strip_trailing_units(ca_raw)
+    if ua_units != ua_raw or ca_units != ca_raw:
+        out["normalized_user_expression"] = normalize_math_expression(ua_units)
+        out["normalized_correct_expression"] = normalize_math_expression(ca_units)
+        ua_raw, ca_raw = ua_units, ca_units
+
+    asg_eq = _scalar_assignment_or_rhs_equivalent(ua_raw, ca_raw)
+    if asg_eq is not None:
+        out["correct"] = bool(asg_eq)
+        out["simplify_result"] = (
+            "scalar_assignment_or_rhs_equivalent" if asg_eq else "scalar_assignment_or_rhs_mismatch"
+        )
+        return out
+
+    # Full equations (incl. circle / unicode superscripts already normalized).
+    if "=" in normalize_math_expression(ua_raw) and "=" in normalize_math_expression(ca_raw):
+        eq_dbg = check_equation_equivalence_debug(ua_raw, ca_raw)
+        out.update({k: v for k, v in eq_dbg.items() if k in out or k in ("correct", "simplify_result", "parser_error", "error_code")})
+        out["correct"] = bool(eq_dbg.get("correct"))
+        if eq_dbg.get("simplify_result"):
+            out["simplify_result"] = eq_dbg["simplify_result"]
         return out
 
     try:

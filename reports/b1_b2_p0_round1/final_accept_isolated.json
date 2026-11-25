@@ -1,0 +1,99 @@
+{
+  "db_path": "C:\\Users\\yehiv\\AppData\\Local\\Temp\\p0_accept_iso_elkbo4l_.db",
+  "db_uri": "sqlite:///C:/Users/yehiv/AppData/Local/Temp/p0_accept_iso_elkbo4l_.db",
+  "checks": [
+    {
+      "name": "using_isolated_uri",
+      "pass": true,
+      "detail": "sqlite:///C:/Users/yehiv/AppData/Local/Temp/p0_accept_iso_elkbo4l_.db"
+    },
+    {
+      "name": "332_known_empty",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "found_types",
+      "pass": true,
+      "detail": {
+        "skill_id": "vh_數學B1_LinearFunction",
+        "Y": 10
+      }
+    },
+    {
+      "name": "indep_handwriting_mastered_plus1",
+      "pass": true,
+      "detail": {
+        "mastered": 1,
+        "status": "MASTERED"
+      }
+    },
+    {
+      "name": "assisted_no_mastery_grant",
+      "pass": true,
+      "detail": {
+        "before": 1,
+        "after": 1,
+        "status": "REMEDIATION"
+      }
+    },
+    {
+      "name": "duplicate_no_extra",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "wrong_no_increase",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "persist_after_reload",
+      "pass": true,
+      "detail": {
+        "mastered_at": "2026-11-24 14:26:56.575219",
+        "status": "MASTERED"
+      }
+    },
+    {
+      "name": "ocr_not_assisted_default",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "ai_check_source_no_mark_assisted",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "332_page_redirect",
+      "pass": true,
+      "detail": 302
+    },
+    {
+      "name": "live_healthz_before_restart_check",
+      "pass": true,
+      "detail": 200
+    },
+    {
+      "name": "live_332_not_200_practice_shell",
+      "pass": true,
+      "detail": {
+        "status": 200,
+        "location": ""
+      }
+    },
+    {
+      "name": "formal_db_clean",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "live_http": {
+    "healthz": 200,
+    "practice_332": {
+      "status": 200,
+      "location": ""
+    }
+  }
+}

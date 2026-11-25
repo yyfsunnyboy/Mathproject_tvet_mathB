@@ -78,7 +78,7 @@ Both practice templates follow the same button contract:
 - Student ink on the canvas is enough; the answer text field is not required. Background grids and system figures are not ink. A blank canvas shows a message and sends no request.
 - AI check is separate from formal submission. Recognition, `/check_answer`, and `/analyze_handwriting` each have a client timeout.
 - Multipart handwriting recognition must map onto `answer_contract.parts` keys before the authoritative checker runs. Ordered newline / semicolon segments are accepted when their count matches the part arity; do not compare the last OCR line against `str(correct_answer_dict)`.
-- Tutor prompts and structured analysis must use labeled multipart expected answers (or the formal multipart checker), never a Python `str(dict)` dump. When vision recognition or tutor feedback is used, mark the question assisted so independent MASTERED is not granted.
+- Tutor prompts and structured analysis must use labeled multipart expected answers (or the formal multipart checker), never a Python `str(dict)` dump. **AI 助教提示／診斷**（`/chat_ai`、`/analyze_handwriting`）須 mark assisted，同題改對不得直接 MASTERED。**純 OCR／AI 檢查辨識**（`/api/practice/ai-check-handwriting`）本身不 mark assisted；學生自行手寫、首次檢查全對並經正式 `/check_answer` 通過時，應與 Textbox 獨立答對一樣可取得 MASTERED。
 - An unfinished (`in_progress`) answer still gets a tutor reply on the current steps.
 - Model or vision failures return HTTP 503 with `ai_unavailable` and `retryable`. They are not reported as unclear handwriting.
 - Success and failure always end the loading state and re-enable the button. A failed check can be retried at once.

@@ -1,0 +1,54 @@
+{
+  "cases": [
+    {
+      "name": "constant_y5",
+      "equation": "y=5",
+      "correct_eval": {
+        "status": "success",
+        "is_correct": true,
+        "score": 1.0,
+        "confidence": 0.9,
+        "missing_features": [],
+        "incorrect_features": [],
+        "feedback": "圖形作答正確，所畫直線的位置與斜率都符合題目。"
+      },
+      "wrong_eval": {
+        "status": "success",
+        "is_correct": false,
+        "score": 0.0,
+        "confidence": 0.9,
+        "missing_features": [],
+        "incorrect_features": [
+          "line_position"
+        ],
+        "feedback": "圖形有不符合題目資料的部分：直線位置"
+      }
+    },
+    {
+      "name": "linear_2x_minus_1",
+      "equation": "y=2x-1",
+      "correct_eval": {
+        "status": "success",
+        "is_correct": true,
+        "score": 1.0,
+        "confidence": 0.92,
+        "missing_features": [],
+        "incorrect_features": [],
+        "feedback": "圖形作答正確，所畫直線的位置與斜率都符合題目。"
+      },
+      "wrong_eval": {
+        "status": "success",
+        "is_correct": false,
+        "score": 0.0,
+        "confidence": 0.9,
+        "missing_features": [],
+        "incorrect_features": [
+          "line_position"
+        ],
+        "feedback": "圖形有不符合題目資料的部分：直線位置"
+      }
+    }
+  ],
+  "all_correct_pass": true,
+  "all_wrong_fail": true
+}

@@ -76,6 +76,33 @@ def test_drawable_graph_and_chart_specs_require_rendering() -> None:
     assert results == [False, True, True]
 
 
+def test_arrow_only_free_vector_specs_require_rendering() -> None:
+    """B2 vector free_vectors often have arrows without lines; must still render."""
+    results = _evaluate(
+        [
+            {
+                "kind": "coordinate_plane",
+                "render_required": True,
+                "figure_kind": "free_vectors",
+                "show_axes": True,
+                "points": [
+                    {"x": 0.0, "y": 0.0, "label": "O"},
+                    {"x": 2.0, "y": 1.0, "label": "Q"},
+                    {"x": 6.0, "y": 3.0, "label": "P"},
+                ],
+                "lines": [],
+                "arrows": [
+                    {"from": "O", "to": "Q", "label": r"\overrightarrow{OQ}"},
+                    {"from": "O", "to": "P", "label": r"\overrightarrow{OP}"},
+                ],
+                "x_range": [-1.5, 7.5],
+                "y_range": [-1.5, 4.5],
+            }
+        ]
+    )
+    assert results == [True]
+
+
 def test_midpoint_text_components_do_not_require_visual_rendering() -> None:
     visual_specs = []
     for source_id in (4428, 4429, 4443, 4511):

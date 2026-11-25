@@ -28,6 +28,28 @@ STATUS_COLORS = {
     "mastered": "dark_green",
 }
 
+# Active DB shells with no Stage-1 TE and no runtime Generator.
+# Formal DB deactivate remains NEEDS_DECISION; runtime must not invite 404 practice.
+KNOWN_EMPTY_SHELL_SKILL_IDS = frozenset(
+    {
+        "vh_數學B1_SubSection332",
+    }
+)
+
+
+def is_known_empty_shell_skill(skill_id: str) -> bool:
+    return str(skill_id or "").strip() in KNOWN_EMPTY_SHELL_SKILL_IDS
+
+
+def _binding_meta(skill_id: str, *, pass_target: int) -> tuple[bool, str | None, str | None]:
+    """Return (binding_issue, binding_issue_code, binding_issue_label)."""
+    sid = str(skill_id or "").strip()
+    if is_known_empty_shell_skill(sid) or pass_target <= 0:
+        if is_known_empty_shell_skill(sid):
+            return True, "empty_shell_no_runtime", "本單元尚無可練習題型（空殼，待教材來源／停用決策）"
+        return True, "missing_textbook_references", "暫無可練習題型"
+    return False, None, None
+
 
 def get_pass_targets(skill_ids: Sequence[str]) -> dict[str, int]:
     """Return the global practice target: bound textbook-example count per skill."""
@@ -96,17 +118,18 @@ def build_skill_card_mastery(
     if student_id is None:
         # Anonymous/Guest Demo has no student identity. Return before any
         # personal PracticeAttempt or Progress query and never borrow records.
-        return {
-            skill_id: {
+        guest_cards: dict[str, dict[str, Any]] = {}
+        for skill_id in ids:
+            target = reference_counts.get(skill_id, 0)
+            issue, code, label = _binding_meta(skill_id, pass_target=target)
+            guest_cards[skill_id] = {
                 "skill_id": skill_id,
-                "pass_target": reference_counts.get(skill_id, 0),
-                "reference_count": reference_counts.get(skill_id, 0),
-                "binding_issue": reference_counts.get(skill_id, 0) == 0,
-                "binding_issue_code": (
-                    "missing_textbook_references"
-                    if reference_counts.get(skill_id, 0) == 0
-                    else None
-                ),
+                "pass_target": target,
+                "reference_count": target,
+                "binding_issue": issue,
+                "binding_issue_code": code,
+                "binding_issue_label": label,
+                "practice_enabled": not is_known_empty_shell_skill(skill_id),
                 "current_streak": 0,
                 "attempt_count": 0,
                 "recent_attempt_count": 0,
@@ -117,8 +140,7 @@ def build_skill_card_mastery(
                 "card_status_label": "展示模式／尚無個人學習紀錄",
                 "card_color": STATUS_COLORS["unpracticed"],
             }
-            for skill_id in ids
-        }
+        return guest_cards
 
     normalized_student_id = int(student_id)
     ranked_attempts = (
@@ -186,12 +208,17 @@ def build_skill_card_mastery(
             pass_target=pass_target,
             binding_issue=binding_issue,
         )
+        issue, code, label = _binding_meta(skill_id, pass_target=pass_target)
+        # Prefer empty-shell classification over generic zero-reference alarm.
+        binding_issue = issue
         result[skill_id] = {
             "skill_id": skill_id,
             "pass_target": pass_target,
             "reference_count": pass_target,
             "binding_issue": binding_issue,
-            "binding_issue_code": "missing_textbook_references" if binding_issue else None,
+            "binding_issue_code": code,
+            "binding_issue_label": label,
+            "practice_enabled": not is_known_empty_shell_skill(skill_id),
             "current_streak": int(current_streak_by_skill.get(skill_id, 0) or 0),
             "attempt_count": attempt_count,
             "recent_attempt_count": recent_count,
@@ -222,11 +249,20 @@ def build_skill_card_mastery(
             card["progress_mode"] = "problem_type_mastery"
             card["pass_target"] = total
             card["current_streak"] = mastered
-            card["binding_issue"] = total == 0
-            card["binding_issue_code"] = "missing_runtime_problem_types" if total == 0 else None
-            card["progress_label"] = (
-                f"已掌握題型 {mastered}/{total}" if total > 0 else "暫無可練習題型"
-            )
+            if is_known_empty_shell_skill(skill_id):
+                card["binding_issue"] = True
+                card["binding_issue_code"] = "empty_shell_no_runtime"
+                card["binding_issue_label"] = "本單元尚無可練習題型（空殼，待教材來源／停用決策）"
+                card["practice_enabled"] = False
+                card["progress_label"] = "暫無可練習題型"
+            else:
+                card["binding_issue"] = total == 0
+                card["binding_issue_code"] = "missing_runtime_problem_types" if total == 0 else None
+                card["binding_issue_label"] = "暫無可練習題型" if total == 0 else None
+                card["practice_enabled"] = total > 0
+                card["progress_label"] = (
+                    f"已掌握題型 {mastered}/{total}" if total > 0 else "暫無可練習題型"
+                )
             if total > 0 and mastered >= total:
                 card["card_status"] = "mastered"
                 card["card_status_label"] = STATUS_LABELS["mastered"]

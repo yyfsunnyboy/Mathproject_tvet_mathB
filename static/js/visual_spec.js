@@ -441,8 +441,9 @@
         return [x1, y1, x2, y2].every(Number.isFinite);
     }
 
+    // cartesian_canvas is a blank *drawing* plane: axes+grid only, no answer line.
+    // Keep it out of INTENTIONALLY_BLANK so students still get a usable coordinate plane.
     const INTENTIONALLY_BLANK_KINDS = [
-        'cartesian_canvas',
         'no_visual',
         'line_graph_choices',
         'cumulative_frequency_table',
@@ -462,7 +463,8 @@
         'coordinate_line_graph',
         'function_graph',
         'linear_application_graph',
-        'collinear_points'
+        'collinear_points',
+        'cartesian_canvas'
     ];
 
     const CHART_INDEPENDENT_KINDS = [
@@ -613,6 +615,27 @@
             return null;
         }
         const kind = getVisualKind(visualSpec);
+        // Student drawing canvas: empty plane with axes/grid; never paint the solution line.
+        if (kind === 'cartesian_canvas') {
+            const axis = visualSpec.axis_range || {};
+            const xRange = visualSpec.x_range
+                || [firstDefined(axis.x_min, -6), firstDefined(axis.x_max, 6)];
+            const yRange = visualSpec.y_range
+                || [firstDefined(axis.y_min, -6), firstDefined(axis.y_max, 6)];
+            return {
+                kind: 'coordinate_plane',
+                render_required: true,
+                scale_mode: SCALE_MODE.CARTESIAN_EQUAL_UNITS,
+                show_grid: visualSpec.show_grid !== false,
+                editable: true,
+                blank_drawing_plane: true,
+                points: [],
+                lines: [],
+                x_range: xRange,
+                y_range: yRange,
+                axis_range: axis
+            };
+        }
         if (kind === 'coordinate_line_graph' || kind === 'function_graph') {
             const points = normalizeStringPoints(visualSpec.points);
             const primitives = Array.isArray(visualSpec.drawable_primitives)
@@ -801,6 +824,14 @@
             return false;
         }
         if (!hasDrawablePrimitives(normalized) && !hasDrawablePrimitives(visualSpec)) {
+            // Blank drawing planes still need axes+grid (student draws the answer).
+            const blankPlane = normalized.blank_drawing_plane === true
+                || visualSpec.blank_drawing_plane === true
+                || visualSpec.editable === true
+                || kind === 'cartesian_canvas';
+            if (blankPlane && Array.isArray(normalized.x_range) && Array.isArray(normalized.y_range)) {
+                return true;
+            }
             if (!chartSpecIsRenderable(normalized)) {
                 return false;
             }
@@ -826,6 +857,20 @@
                     : []
             );
         if (curvesAreDrawable(normalized.curves)) {
+            return true;
+        }
+        const arrows = Array.isArray(normalized.arrows)
+            ? normalized.arrows
+            : (Array.isArray(visualSpec.arrows) ? visualSpec.arrows : []);
+        const arrowDrawable = arrows.some(function (arrow) {
+            if (!arrow || typeof arrow !== 'object') {
+                return false;
+            }
+            const p1 = resolvePointReference(arrow.from || arrow.start || (arrow.points && arrow.points[0]), points);
+            const p2 = resolvePointReference(arrow.to || arrow.end || (arrow.points && arrow.points[1]), points);
+            return !!(p1 && p2 && [p1.x, p1.y, p2.x, p2.y].every(Number.isFinite));
+        });
+        if (arrowDrawable) {
             return true;
         }
         if (!lines.length) {
@@ -1242,12 +1287,183 @@
         context.fillText(display, mapX(x) + 4, mapY(y) - 2);
     }
 
+    /**
+     * Choose a readable major-tick spacing from the coordinate span and pixel density.
+     * Prefers 1, 2, 5 × 10^k so labels do not crowd or clip.
+     */
+    function chooseNiceTickStep(span, pixelsPerUnit, targetLabelGapPx) {
+        const safeSpan = Math.max(1e-6, Number(span) || 1);
+        const pxPerUnit = Math.max(1e-6, Number(pixelsPerUnit) || 1);
+        const targetGap = Math.max(18, Number(targetLabelGapPx) || 28);
+        const raw = targetGap / pxPerUnit;
+        const pow10 = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
+        const candidates = [1, 2, 5, 10].map(function (m) { return m * pow10; });
+        let step = candidates[candidates.length - 1];
+        for (let i = 0; i < candidates.length; i += 1) {
+            if (candidates[i] >= raw * 0.85) {
+                step = candidates[i];
+                break;
+            }
+        }
+        // Keep at least ~3 major ticks across the span when possible.
+        while (safeSpan / step < 2.5 && step > 1e-6) {
+            step = step / 2;
+        }
+        return step;
+    }
+
+    function enumerateTicks(minValue, maxValue, step) {
+        const ticks = [];
+        if (!(maxValue > minValue) || !(step > 0)) {
+            return ticks;
+        }
+        const start = Math.ceil((minValue + 1e-9) / step) * step;
+        for (let value = start; value <= maxValue + 1e-9; value += step) {
+            const rounded = Math.abs(value) < step * 1e-9 ? 0 : Number(value.toPrecision(12));
+            if (rounded > minValue + 1e-9 && rounded < maxValue - 1e-9) {
+                ticks.push(rounded);
+            } else if (Math.abs(rounded - minValue) < 1e-9 || Math.abs(rounded - maxValue) < 1e-9) {
+                // Keep endpoints only when they land exactly on a major tick.
+                ticks.push(rounded);
+            }
+        }
+        return ticks;
+    }
+
+    function formatTickNumber(value) {
+        if (!Number.isFinite(value)) {
+            return '';
+        }
+        if (Math.abs(value) < 1e-9) {
+            return '0';
+        }
+        if (Number.isInteger(value)) {
+            return String(value);
+        }
+        const fixed = Math.abs(value) >= 10 ? value.toFixed(1) : value.toFixed(2);
+        return String(parseFloat(fixed));
+    }
+
+    function drawCartesianAxisDecorations(context, mapX, mapY, opts) {
+        const xMin = opts.xMin;
+        const xMax = opts.xMax;
+        const yMin = opts.yMin;
+        const yMax = opts.yMax;
+        const clipBox = opts.clipBox;
+        const opacity = opts.opacity;
+        const unitScaleX = opts.unitScaleX;
+        const unitScaleY = opts.unitScaleY;
+        const compact = opts.compact === true;
+        const showTicks = opts.showTicks !== false;
+        if (!showTicks || !context || typeof context.fillText !== 'function') {
+            return { xStep: 1, yStep: 1, labels: [] };
+        }
+
+        const xStep = chooseNiceTickStep(xMax - xMin, unitScaleX, compact ? 22 : 28);
+        const yStep = chooseNiceTickStep(yMax - yMin, unitScaleY, compact ? 20 : 26);
+        const xTicks = enumerateTicks(xMin, xMax, xStep);
+        const yTicks = enumerateTicks(yMin, yMax, yStep);
+        const hasOrigin = xMin <= 0 && xMax >= 0 && yMin <= 0 && yMax >= 0;
+        const axisX = hasOrigin ? 0 : xMin;
+        const axisY = hasOrigin ? 0 : yMin;
+        const fontSize = compact ? 9 : 11;
+        const tickLen = compact ? 3 : 4;
+        const labelsDrawn = [];
+
+        context.strokeStyle = applyFadedColor('#4b5563', opacity);
+        context.fillStyle = applyFadedColor('#1f2937', Math.min(1, opacity + 0.15));
+        context.lineWidth = 1;
+        context.font = '600 ' + fontSize + 'px sans-serif';
+
+        function placeLabel(text, x, y, align, baseline) {
+            const tw = typeof context.measureText === 'function'
+                ? Number(context.measureText(text).width) || text.length * fontSize * 0.55
+                : text.length * fontSize * 0.55;
+            const th = fontSize + 2;
+            let px = x;
+            let py = y;
+            if (align === 'left') {
+                px = Math.min(Math.max(x, clipBox.minX + 1), clipBox.maxX - tw - 1);
+            } else if (align === 'right') {
+                px = Math.max(Math.min(x, clipBox.maxX - 1), clipBox.minX + tw + 1);
+            } else {
+                px = Math.min(Math.max(x, clipBox.minX + tw / 2 + 1), clipBox.maxX - tw / 2 - 1);
+            }
+            if (baseline === 'top') {
+                py = Math.min(Math.max(y, clipBox.minY + 1), clipBox.maxY - th - 1);
+            } else if (baseline === 'bottom') {
+                py = Math.max(Math.min(y, clipBox.maxY - 1), clipBox.minY + th + 1);
+            } else {
+                py = Math.min(Math.max(y, clipBox.minY + th / 2 + 1), clipBox.maxY - th / 2 - 1);
+            }
+            // Skip if it would collide with a previously placed tick/axis label.
+            const box = {
+                left: align === 'right' ? px - tw : (align === 'center' ? px - tw / 2 : px),
+                right: align === 'right' ? px : (align === 'center' ? px + tw / 2 : px + tw),
+                top: baseline === 'bottom' ? py - th : (baseline === 'middle' ? py - th / 2 : py),
+                bottom: baseline === 'bottom' ? py : (baseline === 'middle' ? py + th / 2 : py + th)
+            };
+            const overlaps = labelsDrawn.some(function (prev) {
+                return box.left < prev.right + 2 && box.right > prev.left - 2
+                    && box.top < prev.bottom + 1 && box.bottom > prev.top - 1;
+            });
+            if (overlaps) {
+                return false;
+            }
+            context.textAlign = align;
+            context.textBaseline = baseline;
+            context.fillText(text, px, py);
+            labelsDrawn.push(box);
+            return true;
+        }
+
+        xTicks.forEach(function (value) {
+            const px = mapX(value);
+            const py = mapY(axisY);
+            context.beginPath();
+            context.moveTo(px, py - tickLen);
+            context.lineTo(px, py + tickLen);
+            context.stroke();
+            if (hasOrigin && Math.abs(value) < xStep * 1e-9) {
+                return; // Origin uses "O" instead of dual zeros.
+            }
+            placeLabel(formatTickNumber(value), px, py + tickLen + 1, 'center', 'top');
+        });
+
+        yTicks.forEach(function (value) {
+            const px = mapX(axisX);
+            const py = mapY(value);
+            context.beginPath();
+            context.moveTo(px - tickLen, py);
+            context.lineTo(px + tickLen, py);
+            context.stroke();
+            if (hasOrigin && Math.abs(value) < yStep * 1e-9) {
+                return;
+            }
+            placeLabel(formatTickNumber(value), px - tickLen - 2, py, 'right', 'middle');
+        });
+
+        if (hasOrigin) {
+            placeLabel('O', mapX(0) - tickLen - 2, mapY(0) + tickLen + 1, 'right', 'top');
+        }
+        // Axis name labels near the positive ends (avoid covering the graph).
+        if (xMax > (hasOrigin ? 0 : xMin)) {
+            placeLabel('x', mapX(xMax) - 2, mapY(axisY) - tickLen - 2, 'right', 'bottom');
+        }
+        if (yMax > (hasOrigin ? 0 : yMin)) {
+            placeLabel('y', mapX(axisX) + tickLen + 2, mapY(yMax) + 2, 'left', 'top');
+        }
+
+        return { xStep: xStep, yStep: yStep, labels: labelsDrawn.slice() };
+    }
+
     function buildEqualScalePlotMapper(destRect, xMin, xMax, yMin, yMax, options) {
         const opts = normalizeOptions(options);
         const width = Math.max(1, destRect.width);
         const height = Math.max(1, destRect.height);
         const labelHeight = destRect.showLabel === false ? 0 : (width < 180 ? 12 : 14);
-        const padding = Math.max(6, Math.min(opts.padding, Math.min(width, height) * 0.12));
+        // Reserve room for numeric tick labels without shrinking the handwriting canvas element.
+        const padding = Math.max(18, Math.min(opts.padding, Math.min(width, height) * 0.14));
         const plotTop = destRect.y + labelHeight;
         const plotHeight = Math.max(1, height - labelHeight);
         const innerWidth = Math.max(1, width - padding * 2);
@@ -1288,7 +1504,7 @@
         const width = Math.max(1, destRect.width);
         const height = Math.max(1, destRect.height);
         const labelHeight = destRect.showLabel === false ? 0 : (width < 180 ? 12 : 14);
-        const padding = Math.max(6, Math.min(opts.padding, Math.min(width, height) * 0.12));
+        const padding = Math.max(18, Math.min(opts.padding, Math.min(width, height) * 0.14));
         const plotTop = destRect.y + labelHeight;
         const plotHeight = Math.max(1, height - labelHeight);
         const innerWidth = Math.max(1, width - padding * 2);
@@ -1328,14 +1544,14 @@
         return buildEqualScalePlotMapper(destRect, xMin, xMax, yMin, yMax, options);
     }
 
-    function recordPlotRenderMeta(plot, visualSpec) {
-        setLastRenderMeta({
+    function recordPlotRenderMeta(plot, visualSpec, extra) {
+        setLastRenderMeta(Object.assign({
             scaleMode: plot.scaleMode || resolveScaleMode(visualSpec) || null,
             unitScaleX: plot.unitScaleX,
             unitScaleY: plot.unitScaleY,
             unitScale: plot.unitScale,
             equalUnits: plot.unitScaleX === plot.unitScaleY
-        });
+        }, extra && typeof extra === 'object' ? extra : {}));
     }
 
     function lineCoefficients(line) {
@@ -1556,17 +1772,27 @@
         context.lineWidth = 1;
         // Measured-figure questions set show_grid=false so lengths cannot be read off unit squares.
         const showGrid = visualSpec.show_grid !== false;
-        for (let value = Math.ceil(xMin); showGrid && value <= Math.floor(xMax); value += 1) {
-            context.beginPath();
-            context.moveTo(mapX(value), gridTop);
-            context.lineTo(mapX(value), gridBottom);
-            context.stroke();
+        const showAxisTicks = visualSpec.show_axis_ticks !== false;
+        const xTickStep = chooseNiceTickStep(xMax - xMin, plot.unitScaleX, width < 220 ? 22 : 28);
+        const yTickStep = chooseNiceTickStep(yMax - yMin, plot.unitScaleY, width < 220 ? 20 : 26);
+        // Minor grid follows major tick spacing when the plane is dense.
+        const xGridStep = showGrid ? (xTickStep >= 2 ? xTickStep : 1) : 0;
+        const yGridStep = showGrid ? (yTickStep >= 2 ? yTickStep : 1) : 0;
+        if (xGridStep > 0) {
+            enumerateTicks(xMin, xMax, xGridStep).forEach(function (value) {
+                context.beginPath();
+                context.moveTo(mapX(value), gridTop);
+                context.lineTo(mapX(value), gridBottom);
+                context.stroke();
+            });
         }
-        for (let value = Math.ceil(yMin); showGrid && value <= Math.floor(yMax); value += 1) {
-            context.beginPath();
-            context.moveTo(gridLeft, mapY(value));
-            context.lineTo(gridRight, mapY(value));
-            context.stroke();
+        if (yGridStep > 0) {
+            enumerateTicks(yMin, yMax, yGridStep).forEach(function (value) {
+                context.beginPath();
+                context.moveTo(gridLeft, mapY(value));
+                context.lineTo(gridRight, mapY(value));
+                context.stroke();
+            });
         }
 
         context.strokeStyle = applyFadedColor('#374151', opacity);
@@ -1583,6 +1809,19 @@
             context.lineTo(gridRight, mapY(0));
             context.stroke();
         }
+
+        const axisDecor = drawCartesianAxisDecorations(context, mapX, mapY, {
+            xMin: xMin,
+            xMax: xMax,
+            yMin: yMin,
+            yMax: yMax,
+            clipBox: clipBox,
+            opacity: opacity,
+            unitScaleX: plot.unitScaleX,
+            unitScaleY: plot.unitScaleY,
+            compact: width < 220,
+            showTicks: showAxisTicks
+        });
 
         drawInequalityShade(context, mapX, mapY, visualSpec, xMin, xMax, yMin, yMax, opacity);
 
@@ -1800,12 +2039,24 @@
             if (label) {
                 const display = formatDiagramLabel(label);
                 context.font = width < 180 ? '600 10px sans-serif' : '600 12px sans-serif';
-                context.textAlign = xValue >= 0 ? 'left' : 'right';
-                context.textBaseline = yValue >= 0 ? 'top' : 'bottom';
-                const dx = xValue >= 0 ? 5 : -5;
-                const dy = yValue >= 0 ? 4 : -3;
                 if (display) {
-                    context.fillText(display, mapX(xValue) + dx, mapY(yValue) + dy);
+                    const textWidth = typeof context.measureText === 'function'
+                        ? Number(context.measureText(display).width) || 0
+                        : display.length * 7;
+                    const preferLeft = xValue >= 0;
+                    let px = mapX(xValue) + (preferLeft ? 5 : -5);
+                    let py = mapY(yValue) + (yValue >= 0 ? 4 : -3);
+                    // Keep labels inside the clipped plot so edge ticks/points stay readable.
+                    if (preferLeft) {
+                        px = Math.min(Math.max(px, clipBox.minX + 2), clipBox.maxX - textWidth - 2);
+                        context.textAlign = 'left';
+                    } else {
+                        px = Math.max(Math.min(px, clipBox.maxX - 2), clipBox.minX + textWidth + 2);
+                        context.textAlign = 'right';
+                    }
+                    py = Math.min(Math.max(py, clipBox.minY + 12), clipBox.maxY - 2);
+                    context.textBaseline = 'bottom';
+                    context.fillText(display, px, py);
                 }
             }
         });
@@ -1820,7 +2071,11 @@
             width: plot.usedWidth,
             height: plot.plotBottom - (destRect.y + (destRect.showLabel === false ? 0 : plot.labelHeight)) + 1
         });
-        recordPlotRenderMeta(plot, visualSpec);
+        recordPlotRenderMeta(plot, visualSpec, {
+            axisTickStepX: axisDecor.xStep,
+            axisTickStepY: axisDecor.yStep,
+            axisTickLabelCount: (axisDecor.labels || []).length
+        });
         return true;
     }
 
@@ -2106,6 +2361,9 @@
         computeContainRect: computeContainRect,
         looksLikeMathDiagramLabel: looksLikeMathDiagramLabel,
         formatDiagramLabel: formatDiagramLabel,
-        diagramLabelExposesRawLatex: diagramLabelExposesRawLatex
+        diagramLabelExposesRawLatex: diagramLabelExposesRawLatex,
+        chooseNiceTickStep: chooseNiceTickStep,
+        enumerateTicks: enumerateTicks,
+        formatTickNumber: formatTickNumber
     };
 }));
